@@ -27,11 +27,6 @@
             <option value="ป.5">
             <option value="ป.6">
             <option value="ม.1">
-            <option value="ม.2">
-            <option value="ม.3">
-            <option value="ม.4">
-            <option value="ม.5">
-            <option value="ม.6">
           </datalist>
         </label>
         <label>โรงเรียน
@@ -260,7 +255,11 @@
       } else if (grade === "ป.6") {
         npValue = getRandomInt(24, 26);
         nmValue = getRandomInt(2, 6);
-      } else {
+      } else if (grade === "ม.1") { // Add this new condition
+        npValue = 28; // Set NP to 28 for ม.1
+        nmValue = 0;  // Set NM to 0 for ม.1
+      }
+      else {
         npValue = ''; // ล้างค่าถ้าไม่ใช่ชั้นที่กำหนด
         nmValue = '';
       }
