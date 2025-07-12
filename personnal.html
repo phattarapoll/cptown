@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ผังระดับการทำงาน</title>
+    <link rel="stylesheet" href="assets/css/personal.css">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="back-button">← ย้อนกลับไปหน้าหลัก</a>
+            <div class="dropdown">
+                <button class="dropdown-button">≡ เมนู</button>
+                <div class="dropdown-content">
+                    <a href="disease-details.html">ความรู้เกี่ยวกับโรค</a>
+                    <a href="download.html">ดาวน์โหลด</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="organization-chart">
+            <div class="chart-row single-item">
+                <div class="chart-item">
+                    <img src="assets/images/personnal/1.jpg" alt="บุคคล 1">
+                    <p class="name">นายศรีชัย วีระนรพานิช</p>
+                    <p class="position">นายกเทศมนตรีเมืองชุมพร</p>
+                </div>
+            </div>
+
+            <div class="chart-row single-item">
+                <div class="chart-item">
+                    <img src="assets/images/personnal/2.jpg" alt="บุคคล 2">
+                    <p class="name">นายเจริญ โพธิ์ศรีทอง</p>
+                    <p class="position">รองปลัดเทศบาลเมืองชุมพร</p>
+                </div>
+            </div>
+
+            <div class="chart-row single-item">
+                <div class="chart-item">
+                    <img src="assets/images/personnal/3.jpg" alt="บุคคล 3">
+                    <p class="name">นางรดาณัฐ สินสมบุญ</p>
+                    <p class="position">ผู้อำนวยการกองสาธารณสุขและสิ่งแวดล้อม</p>
+                </div>
+            </div>
+
+            <div class="chart-row single-item">
+                <div class="chart-item">
+                    <img src="assets/images/personnal/4.jpg" alt="บุคคล 4">
+                    <p class="name">นางสาวปุริมปรัชญ์ นาคดนตรี</p>
+                    <p class="position">หัวหน้าฝ่ายบริการสาธารณสุข</p>
+                </div>
+            </div>
+
+            <div class="chart-row multi-item">
+                <div class="chart-item">
+                    <img src="assets/images/personnal/5.1.jpg" alt="บุคคล 5">
+                    <p class="name">นางสุจิตรา พันธ์พัฒไพบูลย์</p>
+                    <p class="position">พยาบาลวิชาชีพชำนาญการพิเศษ</p>
+                </div>
+                <div class="chart-item">
+                    <img src="assets/images/personnal/5.2.jpg" alt="บุคคล 6">
+                    <p class="name">นางธนิกา โพธิ์กระสังข์</p>
+                    <p class="position">พยาบาลวิชาชีพชำนาญการพิเศษ</p>
+                </div>
+                <div class="chart-item">
+                    <img src="assets/images/personnal/5.3.png" alt="บุคคล 7">
+                    <p class="name">นายภัทรพล ไพศาลวัชรเมธี</p>
+                    <p class="position">ทันตสาธารณสุขชำนาญงาน รก.อาวุโส</p>
+                </div>
+                <div class="chart-item">
+                    <img src="assets/images/personnal/5.4.jpg" alt="บุคคล 8">
+                    <p class="name">นางสาวพันธิตรา โพธารส</p>
+                    <p class="position">พยาบาลวิชาชีพ ปฎิบัติการ</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const dropdownButton = document.querySelector('.dropdown-button');
+        const dropdownContent = document.querySelector('.dropdown-content');
+
+        // เปิด/ปิด Dropdown เมื่อคลิกปุ่ม
+        dropdownButton.addEventListener('click', () => {
+            dropdownContent.classList.toggle('show');
+        });
+
+        // ปิด Dropdown เมื่อคลิกนอกพื้นที่
+        window.addEventListener('click', (event) => {
+            if (!event.target.matches('.dropdown-button') && !event.target.closest('.dropdown-content')) {
+                if (dropdownContent.classList.contains('show')) {
+                    dropdownContent.classList.remove('show');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

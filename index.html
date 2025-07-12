@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>งานทันตสาธารณสุข ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <header id="mainHeader" >
+        <div class="text-center mb-2"> <h1 class="font-bold text-lg text-shadow">งานทันตสาธารณสุข ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร 333 ตำบลท่าตะเภา อำเภอเมืองชุมพร จังหวัดชุมพร 86000</h1><br>
+        </div>
+        <nav class="flex items-center space-x-4 justify-center">
+            <a href="onlineD/index.html" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out">
+                บริการออนไลน์
+            </a>
+            <div class="relative dropdown">
+                <button class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out">
+                    เพิ่มเติม <i class="fas fa-caret-down ml-2"></i>
+                </button>
+                <div class="dropdown-content">
+                    <a href="workReport/index.html"" target="_blank">แผนออกหน่วย</a>
+                    <a href="https://script.google.com/macros/s/AKfycbwaSTDaT0GBJod8ijKoRdk8CMGQLysXuFSYlQvggluq-bAv85SGAKAdDaR4iaZ9pJtj/exec" target="_blank">ระบบหนังสือ</a>
+                    <a href="https://script.google.com/macros/s/AKfycbwWhIympJYuEerAJj7crZc2os32Vh8DrzA74-5EsFQ470uo-b4zAVukDX-dXXrmwiYpRw/exec" target="_blank">ระบบเบิกวัสดุ</a>
+                    <a href="personnal.html" target="_blank">ผังบุคลากร</a>
+                    <a href="disease-details.html" target="_blank">ความรู้เกี่ยวกับโรค</a>
+                    <a href="clock/index.html" target="_blank">นาฬิกาพร้อมปฏิทินปฏิบัติงาน</a>
+                    <a href="download.html" target="_blank">ดาวน์โหลด</a>
+                    <a href="dentV_4.html" target="_blank">DENTCHECK V.4</a>
+                </div>
+            </div>
+            <div class="relative dropdown">
+                <button class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out">
+                    ลิงค์ที่เกี่ยวข้อง <i class="fas fa-caret-down ml-2"></i>
+                </button>
+                <div class="dropdown-content">
+                    <a href="https://www.chumphontown.go.th" target="_blank">เทศบาลเมืองชุมพร</a>
+                    <a href="http://www.cmpo.moph.go.th/cmpo/" target="_blank">สาธารณสุขจังหวัดชุมพร</a>
+                    <a href="https://www.facebook.com/tasaban.tai" target="_blank">ศูนย์ฟอกไต ทม.ชพ.</a>
+                    <a href="http://fctmc.6te.net/TARA/Tara.html" target="_blank">ศูนย์ธาราบำบัด ทม.ชพ.</a>
+                    <a href="https://cpn.hdc.moph.go.th/hdc/main/index_pk.php" target="_blank">HDC</a>
+                </div>
+            </div>
+            <button id="adminLoginBtn" class="bg-gray-800 hover:bg-gray-900 text-white font-semibold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out" 
+			onclick="window.location.href='ADM.html'">
+                <i class="fas fa-user-shield mr-2"></i> ADMIN
+            </button>
+            </a>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-6 mt-28 lg:mt-32"> 
+
+        <section class="glassy-section p-8 rounded-xl shadow-lg mb-8 flex flex-col lg:flex-row gap-8">
+            <div class="lg:w-1/3 bg-gray-50 p-6 rounded-xl shadow-inner flex flex-col">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-bold text-blue-800 pb-2">ระบบแสดงคิวบริการ</h2>
+                    <button id="queueFullscreenToggle" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-3 rounded-full shadow-md transition duration-300 ease-in-out text-sm">
+                        <i class="fas fa-expand-alt mr-1"></i>
+                    </button>
+                </div>
+                
+                <div id="scrollingQueueContainer" class="scrolling-queue-container flex-grow relative">
+                    <div id="queueDisplay" class="flex-grow overflow-y-auto bg-white p-4 rounded-lg border border-gray-200 mb-4 h-96 relative" tabindex="0">
+                        <div id="queueLoading" class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 z-10">
+                            <i class="fas fa-spinner fa-spin text-blue-500 text-3xl"></i>
+                            <p class="ml-2 text-gray-600">กำลังโหลดคิว...</p>
+                        </div>
+                        <div id="queueError" class="absolute inset-0 flex flex-col items-center justify-center bg-white bg-opacity-80 z-10 hidden text-red-600 text-center p-4">
+                            <i class="fas fa-exclamation-triangle text-3xl mb-2"></i>
+                            <p>ไม่สามารถโหลดคิวได้ กรุณาตรวจสอบ URL หรือการตั้งค่า Apps Script</p>
+                        </div>
+                        </div>
+						<div class="fullscreen-info-right hidden">
+                            <img src="assets/images/tm.png" alt="ตราเทศบาลเมืองชุมพร">
+                            <p>งานทันตสาธารณสุข</p>
+                            <p>ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร(ตึกเก่า)</p>
+
+                            <p class="mt-8 mb-4 text-xl font-bold">ผู้ให้บริการ</p>
+                            <div class="flex items-center admin-info-wrapper">
+                                <img src="assets/images/admin.jpg" alt="เจ้าหน้าที่ปฏิบัติงาน" class="admin-profile-img">
+                                <div class="admin-text-content">
+                                    <p class="admin-name">นายภัทรพล ไพศาลวัชรเมธี</p>
+                                    <p class="admin-position">จพง.ทันตสาธารณสุขชำนาญงาน รก.อาวุโส</p>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+
+
+            <div class="lg:w-2/3">
+                <h2 class="text-3xl font-bold text-blue-800 mb-6 border-b-2 border-blue-300 pb-2">แนวทางการปฏิบัติงาน</h2>
+                <div class="prose max-w-none text-gray-700 leading-relaxed">
+                    <p>
+                        งานทันตสาธารณสุข ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร มุ่งมั่นให้บริการด้านทันตกรรมที่มีคุณภาพแก่ประชาชนทุกท่าน เรายึดมั่นในหลักการทำงานที่เป็นมาตรฐานสากล เพื่อให้ผู้รับบริการได้รับความพึงพอใจสูงสุดและมีสุขภาพช่องปากที่ดีอย่างยั่งยืน
+                    </p>
+                    <h3 class="text-xl font-semibold text-blue-700 mt-4 mb-2">ขั้นตอนการให้บริการ</h3>
+                    <ol class="list-decimal list-inside ml-4">
+                        <li><strong>การลงทะเบียน:</strong> ผู้ป่วยใหม่และผู้ป่วยเก่าสามารถจองคิวบริการออนไลน์ได้ และต้องเตรียมบัตรประชาชนหรือเอกสารระบุตัวตนที่เกี่ยวข้องมาในวันรับบริการ</li>
+                        <li><strong>การตรวจวินิจฉัย:</strong> ตรวจสุขภาพช่องปากอย่างละเอียด เพื่อประเมินสภาพปัญหาและวางแผนการรักษาที่เหมาะสม</li>
+                        <li><strong>การให้คำปรึกษา:</strong>อธิบายแผนการรักษา ทางเลือก โดยละเอียด เพื่อให้ผู้ป่วยเข้าใจและตัดสินใจร่วมกัน</li>
+                        <li><strong>การรักษา:</strong> ดำเนินการรักษาตามแผนที่ตกลง เช่น การอุดฟัน, ขูดหินปูน, ถอนฟัน หรือการรักษาอื่นๆ</li>
+                        <li><strong>การติดตามผล:</strong> หลังการรักษา อาจมีการนัดหมายเพื่อติดตามผลหรือให้คำแนะนำในการดูแลสุขภาพช่องปากอย่างต่อเนื่อง</li>
+                    </ol>
+                    <h3 class="text-xl font-semibold text-blue-700 mt-4 mb-2">นโยบายสำคัญ</h3>
+                    <ul class="list-disc list-inside ml-4">
+                        <li><strong>ความปลอดภัย:</strong> ให้ความสำคัญสูงสุดกับความปลอดภัยของผู้ป่วย โดยใช้อุปกรณ์ที่ผ่านการฆ่าเชื้อ</li>
+                        <li><strong>คุณภาพ:</strong> ใช้เทคโนโลยีและวัสดุที่มีคุณภาพสูง เพื่อให้ผลการรักษามีประสิทธิภาพและคงทน</li>
+                        <li><strong>การเข้าถึง:</strong> มุ่งมั่นที่จะทำให้ผู้ป่วยไม่ต้องรอคิวบริการทันตกรรม สามารถนัดและตรวจสอบวันนัดได้ตลอด 24 ชั่วโมง</li>
+                        <li><strong>ความเป็นกันเอง:</strong>งานทันตสาธารณสุขพร้อมให้บริการด้วยความอบอุ่น เป็นกันเอง และให้คำแนะนำที่เป็นประโยชน์</li>
+                    </ul>
+                    <p class="mt-4">
+                        หากมีข้อสงสัยหรือต้องการข้อมูลเพิ่มเติม โปรดติดต่อเจ้าหน้าที่ของเรา หรือโทร 077-507082
+                    </p>
+                </div>
+                <a href="https://fctmc.6te.net/recive/index.html" target="_blank" class="inline-block mt-6 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 text-center">
+                    <i class="far fa-smile mr-2"></i> ประเมินความพึงพอใจ
+                </a>
+            </div>
+        </section>
+
+        <section class="glassy-section p-8 rounded-xl shadow-lg mb-8 flex flex-col lg:flex-row gap-8">
+            <div class="lg:w-2/3">
+                <h2 class="text-3xl font-bold text-blue-800 mb-6 border-b-2 border-blue-300 pb-2">กระดานข่าว</h2>
+                <div id="newsBoard" class="space-y-4 text-gray-700">
+                    <div id="newsLoading" class="text-center py-4">
+                        <i class="fas fa-spinner fa-spin text-blue-500 text-3xl"></i>
+                        <p class="mt-2 text-gray-600">กำลังโหลดข่าวสาร...</p>
+                    </div>
+                    <div id="newsError" class="text-center py-4 text-red-600 hidden">
+                        <i class="fas fa-exclamation-triangle text-3xl mb-2"></i>
+                        <p>ไม่สามารถโหลดข่าวสารได้ กรุณาลองใหม่อีกครั้ง หรือตรวจสอบการตั้งค่า Apps Script</p>
+                    </div>
+                    </div>
+            </div>
+
+            <div class="lg:w-1/3 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-gray-50 p-4 rounded-xl shadow-md border border-gray-200 text-center">
+                    <img src="assets/images/meeting/meeting-01.jpg" alt="กิจกรรมทันตกรรม 1" class="w-full h-auto rounded-lg mb-3 object-cover">
+                    <p class="font-semibold text-blue-700">QR CODE LINE</p>
+                    <p class="text-sm text-gray-600">ท่านสามารถเพิ่มเพื่อน</p>
+                    <p class="text-xs text-gray-500">หมายเหตุ: ระบบจองคิว</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-xl shadow-md border border-gray-200 text-center">
+                    <img src="assets/images/meeting/meeting-02.jpg" alt="กิจกรรมทันตกรรม 2" class="w-full h-auto rounded-lg mb-3 object-cover">
+                    <p class="font-semibold text-blue-700">รณรงค์ตรวจฟัน</p>
+                    <p class="text-sm text-gray-600">ทุกวันเวลาราชการ</p>
+                    <p class="text-xs text-gray-500">หมายเหตุ: เฉพาะตรวจฟัน</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-xl shadow-md border border-gray-200 text-center">
+                    <img src="assets/images/meeting/meeting-03.jpg" alt="กิจกรรมทันตกรรม 3" class="w-full h-auto rounded-lg mb-3 object-cover">
+                    <p class="font-semibold text-blue-700">วันทันตสาธารณสุขแห่งชาติ</p>
+                    <p class="text-sm text-gray-600">23 ตุลาคม ของทุกปี</p>
+                    <p class="text-xs text-gray-500">หมายเหตุ: พ่อหลวง (ร.9 )กับ พระราชกรณียกิจด้านทันตกรรม</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-xl shadow-md border border-gray-200 text-center">
+                    <img src="assets/images/meeting/meeting-04.jpg" alt="กิจกรรมทันตกรรม 4" class="w-full h-auto rounded-lg mb-3 object-cover">
+                    <p class="font-semibold text-blue-700">กิจกรรมที่จะมาถึง</p>
+                    <p class="text-sm text-gray-600"> 24 hr</p>
+                    <p class="text-xs text-gray-500">หมายเหตุ: ตรวจสอบผ่านระบบออนไลน์</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glassy-section p-8 rounded-xl shadow-lg mb-8">
+            <h2 class="text-3xl font-bold text-blue-800 mb-6 border-b-2 border-blue-300 pb-2">บริการผู้ป่วยที่เปิด</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="service-card p-6 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="open">
+                    <span class="text-xl font-semibold text-gray-800">ตรวจสุขภาพช่องปาก</span>
+                    <span class="service-status px-4 py-2 rounded-full font-bold text-sm service-status-open">open</span>
+                </div>
+                <div class="service-card p-6 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="open">
+                    <span class="text-xl font-semibold text-gray-800">อุดฟัน</span>
+                    <span class="service-status px-4 py-2 rounded-full font-bold text-sm service-status-open">open</span>
+                </div>
+                <div class="service-card p-6 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="open">
+                    <span class="text-xl font-semibold text-gray-800">ขูดหินน้ำลาย</span>
+                    <span class="service-status px-4 py-2 rounded-full font-bold text-sm service-status-open">open</span>
+                </div>
+                <div class="service-card p-6 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="open">
+                    <span class="text-xl font-semibold text-gray-800">ถอนฟัน</span>
+                    <span class="service-status px-4 py-2 rounded-full font-bold text-sm service-status-open">open</span>
+                </div>
+                <div class="service-card p-6 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="open">
+                    <span class="text-xl font-semibold text-gray-800">เคลือบหลุมร่องฟัน</span>
+                    <span class="service-status px-4 py-2 rounded-full font-bold text-sm service-status-open">open</span>
+                </div>
+                <div class="service-card p-6 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="closed">
+                    <span class="text-xl font-semibold text-gray-800">รักษารากฟัน</span>
+                    <span class="service-status px-4 py-2 rounded-full font-bold text-sm service-status-closed">closed</span>
+                </div>
+                <div class="service-card p-6 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="closed">
+                    <span class="text-xl font-semibold text-gray-800">ทำฟันปลอม</span>
+                    <span class="service-status px-4 py-2 rounded-full font-bold text-sm service-status-closed">closed</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="glassy-section p-8 rounded-xl shadow-lg mb-8 flex flex-col lg:flex-row gap-8">
+            <div class="lg:w-1/2">
+                <h2 class="text-3xl font-bold text-blue-800 mb-6 border-b-2 border-blue-300 pb-2">ความพึงพอใจของผู้รับบริการ</h2>
+                <div class="mb-4">
+                    <label class="block text-lg font-medium text-gray-700 mb-2">ความสภาพอ่อนโยน</label>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: 98.49%;">98.49%</div>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-lg font-medium text-gray-700 mb-2">ตอบข้อสงสัย (เต็มใจ)</label>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: 98.89%;">98.89%</div>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-lg font-medium text-gray-700 mb-2">ตอบข้อสงสัยแก่ท่าน</label>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: 98.70%;">98.70%</div>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-lg font-medium text-gray-700 mb-2">ความรู้ความสามารถ</label>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: 98.52%;">98.52%</div>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-lg font-medium text-gray-700 mb-2">กริยามารยาท</label>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: 98.70%;">98.70%</div>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-lg font-medium text-gray-700 mb-2">ความรวดเร็ว</label>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: 98.70%;">98.70%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:w-1/2 bg-gray-50 p-6 rounded-xl shadow-inner relative scrolling-text-container">
+                <h3 class="text-2xl font-bold text-blue-800 border-b pb-2 absolute top-0 left-0 right-0 bg-gray-50 rounded-t-xl z-10 px-6 pt-6">ความคิดเห็นจากผู้รับบริการ</h3>
+                <div id="scrollingCommentDisplay" class="scrolling-comment-content">
+                    </div>
+            </div>
+			
+        </section>
+
+        <section class="glassy-section p-8 rounded-xl shadow-lg mb-8">
+            <h2 class="text-3xl font-bold text-blue-800 mb-6 border-b-2 border-blue-300 pb-2">ช่องทางการติดต่อ</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-700">
+                <div>
+                    <p class="text-lg font-semibold text-blue-700"><i class="fas fa-phone-alt mr-2 text-blue-500"></i> Phone Number:</p>
+                    <p class="ml-6">077-507082</p>
+                </div>
+                <div>
+                    <p class="text-lg font-semibold text-blue-700"><i class="fas fa-envelope mr-2 text-blue-500"></i> Email Address:</p>
+                    <p class="ml-6">fctmc2562@gmail.com</p>
+                </div>
+                <div class="col-span-1 md:col-span-2">
+                    <p class="text-lg font-semibold text-blue-700"><i class="fas fa-map-marker-alt mr-2 text-blue-500"></i> Address:</p>
+                    <p class="ml-6">333 ถนน พิศิษฐ์พยาบาล ตำบล ท่าตะเภา อำเภอ เมืองชุมพร จังหวัด ชุมพร 86000</p>
+                </div>
+                <div>
+                    <p class="text-lg font-semibold text-blue-700"><i class="fas fa-globe mr-2 text-blue-500"></i> Website URL:</p>
+                    <p class="ml-6"><a href="http://cptown.6te.net" target="_blank" class="text-blue-600 hover:underline">http://cptown.6te.net</a></p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-blue-800 text-white p-6 text-center rounded-t-xl shadow-inner">
+        <p class="text-sm">Build & Develop : Phattarapoll PSVMT.</p>
+        <p class="text-sm">1 ตุลาคม 2562 เวลา 19:09 นาที</p>
+    </footer>
+
+    <script src="assets/js/custom.js"></script>
+</body>
+</html>
