@@ -2,8 +2,8 @@ body {
   font-family: 'Sarabun', sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #666666; /* สีเทาเข้ม */
-  color: #fff; /* เปลี่ยนสีตัวอักษรเป็นสีขาวเพื่อให้ตัดกับพื้นหลังสีเข้ม */
+  background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+  color: #333;
 }
 
 .container {
@@ -88,9 +88,9 @@ button.submit-btn:hover {
 
 /* Style for disabled submit button */
 button.submit-btn:disabled {
-  background-color: #cccccc; /* Gray background */
-  cursor: not-allowed; /* No-entry cursor */
-  opacity: 0.7;
+    background-color: #cccccc; /* Gray background */
+    cursor: not-allowed; /* No-entry cursor */
+    opacity: 0.7;
 }
 
 .section {
@@ -134,8 +134,8 @@ button.submit-btn:disabled {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 30px;
+  width: 40px; 
+  height: 30px; 
   padding: 0.2rem;
   font-size: 0.85rem;
   border: none;
@@ -150,7 +150,7 @@ button.submit-btn:disabled {
   background-color: #f0f0f0;
   color: #333;
   flex-shrink: 0;
-  box-sizing: border-box;
+  box-sizing: border-box; 
 }
 
 .action-button.selected {
@@ -189,62 +189,63 @@ button.submit-btn:disabled {
 
 /* Specific button sizes for SC and EX */
 .action-button.special {
-  width: 180px;
-  height: 40px;
-  font-size: 0.9rem;
-  margin: 0 5px;
+    width: 180px;
+    height: 40px;
+    font-size: 0.9rem;
+    margin: 0 5px;
 }
 
 /* จัดกึ่งกลางปุ่ม SC และ EX */
 .section.gray05 > .button-group {
-  justify-content: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+    justify-content: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 /* Added to center the SC and EX buttons */
 .center-buttons {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
 }
 
 /* CSS สำหรับ tooth-treatment-grid เพื่อจัดเรียงปุ่มฟันในส่วน "ให้การรักษา" */
 .tooth-treatment-grid {
-  display: grid;
-  grid-template-columns: repeat(14, 1fr);
-  gap: 0.8rem;
-  justify-items: center;
-  align-items: center;
-  margin: auto;
-  max-width: 100%;
-  grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(14, 1fr); 
+    gap: 0.8rem;
+    justify-items: center;
+    align-items: center;
+    margin: auto;
+    max-width: 100%;
+    grid-column: 1 / -1; 
 }
 
 /* **จุดที่ยืดความกว้างปุ่ม**: กำหนดให้ปุ่มภายใน .tooth-treatment-grid เท่านั้นที่ยืดเต็มความกว้างของ grid cell */
 .tooth-treatment-grid .action-button {
-  width: 100%;
-  height: 30px;
+    width: 100%; 
+    height: 30px; 
 }
 
 /* Style for disabled action buttons */
 .action-button:disabled {
-  background-color: #e0e0e0; /* Lighter gray */
-  cursor: not-allowed;
-  opacity: 0.5;
-  box-shadow: none;
+    background-color: #e0e0e0; /* Lighter gray */
+    cursor: not-allowed;
+    opacity: 0.5;
+    box-shadow: none;
 }
 
 .action-button:disabled::before {
-  background: none; /* Remove gradient overlay */
-  opacity: 0;
+    background: none; /* Remove gradient overlay */
+    opacity: 0;
 }
 
 .action-button:disabled span {
-  color: #666; /* Darker text color */
+    color: #666; /* Darker text color */
 }
+
 
 .gray1 {
   background-color: #e0e0e0;
@@ -258,7 +259,7 @@ button.submit-btn:disabled {
   background-color: #dcdcdc;
 }
 
-.gray085 {
+.gray085 { 
   background-color: #cfcfcf;
 }
 
@@ -309,11 +310,11 @@ button.submit-btn:disabled {
 }
 
 .password-input-container {
-  display: flex;
-  flex-direction: column; /* Stack input and button vertically */
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  align-items: center; /* Center items horizontally */
+    display: flex;
+    flex-direction: column; /* Stack input and button vertically */
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    align-items: center; /* Center items horizontally */
 }
 
 .password-input-container input {
@@ -419,52 +420,39 @@ button.submit-btn:disabled {
 
 /* Animation Keyframes */
 @keyframes scaleIn {
-  from {
-    transform: scale(0);
-  }
-  to {
-    transform: scale(1);
-  }
+  from { transform: scale(0); }
+  to { transform: scale(1); }
 }
 
 @keyframes drawStem {
-  from {
-    height: 0;
-  }
-  to {
-    height: 25px;
-  }
+  from { height: 0; }
+  to { height: 25px; }
 }
 
 @keyframes drawKick {
-  from {
-    height: 0;
-  }
-  to {
-    height: 15px;
-  }
+  from { height: 0; }
+  to { height: 15px; }
 }
 
 /* Admin Status Text */
 .admin-status {
-  font-size: 1.2em;
-  font-weight: bold;
-  color: #28a745; /* Green color for admin status */
-  margin-left: 10px;
-  display: none; /* Hidden by default */
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #28a745; /* Green color for admin status */
+    margin-left: 10px;
+    display: none; /* Hidden by default */
 }
 
 /* Form disabled state */
 .form-disabled {
-  pointer-events: none; /* Disable all pointer events on the form */
-  opacity: 0.6; /* Make it slightly transparent to indicate disabled state */
+    pointer-events: none; /* Disable all pointer events on the form */
+    opacity: 0.6; /* Make it slightly transparent to indicate disabled state */
 }
 
 .login-btn-container {
   text-align: center;
   margin-bottom: 20px;
 }
-
 .login-btn {
   padding: 10px 20px;
   font-size: 1.1em;
@@ -474,10 +462,10 @@ button.submit-btn:disabled {
   border-radius: 5px;
   cursor: pointer;
 }
-
 .login-btn:hover {
   background-color: #0056b3;
 }
+
 
 /* ส่วนนี้ไม่เกี่ยวข้องกับการเปลี่ยนแปลงที่ร้องขอแต่มีอยู่ในไฟล์เดิม */
 .footer-marquee {
@@ -499,12 +487,8 @@ button.submit-btn:disabled {
 }
 
 @keyframes scroll-text {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(-100%);
-  }
+  from { transform: translateX(100%); }
+  to { transform: translateX(-100%); }
 }
 
 @media screen and (max-width: 600px) {
@@ -512,17 +496,17 @@ button.submit-btn:disabled {
     grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
   }
   .action-button {
-    width: 35px;
-    height: 28px;
-    font-size: 0.75rem;
+      width: 35px; 
+      height: 28px;
+      font-size: 0.75rem;
   }
   .action-button.special {
-    width: 110px;
-    font-size: 0.7rem;
+      width: 110px;
+      font-size: 0.7rem;
   }
   .tooth-treatment-grid .action-button {
-    width: 100%;
-    height: 28px;
+      width: 100%;
+      height: 28px; 
   }
   /* Popup adjustments for mobile */
   .popup-modal {
