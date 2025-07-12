@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจองคิวออนไลน์</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styleonline.css">
+</head>
+<body>
+	<button class="back-to-previous-button" onclick="window.location.href = '../index.html'">← ย้อนกลับ</button>
+    <a href="https://maps.app.goo.gl/oRmUdGoRJJAccM3JA" target="_blank" class="navigation-button">
+        ปุ่มกดเพื่อนำทาง
+    </a>
+
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1 class="title">ปฏิทินจองคิว</h1>
+                <p class="subtitle">
+                    งานทันตสาธารณสุข <br>
+                    ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร<br>
+                    เลือกวันที่และช่วงเวลาที่คุณต้องการจอง
+                </p>
+            </div>
+        </header>
+
+        <div class="calendar-wrapper glass-effect">
+            <div class="calendar-header">
+                <button id="prevMonth" class="nav-button"><</button>
+                <h2 id="currentMonthYear" class="month-year-display"></h2>
+                <button id="nextMonth" class="nav-button">></button>
+            </div>
+            <div class="calendar-grid-container">
+                <div class="day-names">
+                    <div>อา.</div>
+                    <div>จ.</div>
+                    <div>อ.</div>
+                    <div>พ.</div>
+                    <div>พฤ.</div>
+                    <div>ศ.</div>
+                    <div>ส.</div>
+                </div>
+                <div id="calendarGrid" class="calendar-grid">
+                    </div>
+            </div>
+        </div>
+
+        <div id="timeSlotDetails" class="time-slot-details hidden glass-effect">
+            <h3 id="selectedDateDisplay"></h3>
+            <div id="timeSlots" class="time-slots-grid">
+                </div>
+            <button id="backToCalendar" class="back-button">ย้อนกลับปฏิทิน</button>
+        </div>
+    </div>
+
+    <div id="bookingPopup" class="popup-overlay hidden">
+        <div class="popup-content glass-effect">
+            <button id="closePopup" class="close-button">×</button>
+            <h2 class="popup-title">ยืนยันการจองคิว</h2>
+            <p><strong>วันที่:</strong> <span id="popupDate"></span></p>
+            <p><strong>ช่วงเวลา:</strong> <span id="popupTimeSlot"></span></p>
+            <form id="bookingForm" class="booking-form">
+                <div class="form-group">
+                    <label for="fullName">ชื่อ-นามสกุล:</label>
+                    <input type="text" id="fullName" name="fullName" required>
+                </div>
+                <div class="form-group">
+                    <label for="telNumber">เบอร์โทรศัพท์:</label>
+                    <input type="tel" id="telNumber" name="telNumber" pattern="[0-9]{10}" placeholder="08xxxxxxxx" required>
+                    <small>โปรดระบุเบอร์โทรศัพท์ 10 หลัก (ตัวอย่าง: 0812345678)</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="bookingReason">อาการ/เหตุผลในการเข้ารับบริการ:</label>
+                    <select id="bookingReason" name="bookingReason" required>
+                        <option value="">-- กรุณาเลือก --</option>
+                        <option value="ตรวจฟัน">ตรวจฟัน</option>
+                        <option value="ปวดฟัน">ปวดฟัน</option>
+                        <option value="เสียวฟัน">เสียวฟัน</option>
+                        <option value="ต้องการถอนฟัน">ต้องการถอนฟัน</option>
+                        <option value="ต้องการทาฟลูออไรด์">ต้องการทาฟลูออไรด์</option>
+						<option value="ต้องการขูดหินน้ำลาย">ต้องการขูดหินน้ำลาย</option>
+                        <option value="อื่นๆ">อื่นๆ</option>
+                    </select>
+                    <button type="submit" class="submit-button">ยืนยันการจอง</button>
+                    <div id="formMessage" class="form-message"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="loadingSpinner" class="loading-spinner hidden">
+        <div class="spinner"></div>
+        <p>กำลังดำเนินการ...</p>
+    </div>
+
+    <script src="assets/customonline.js"></script>
+
+    <footer class="footer">
+        <p>สร้างและพัฒนาโดย นายภัทรพล ไพศาลวัชรเมธี</p>
+        <p>ทันตสาธารณสุขชำนาญงาน รักษาการอาวุโส</p>
+        <p>งานทันตสาธารณสุข ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แผนการปฏิบัติงาน</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div id="print-button-fixed-container">
+        <button id="printButton">🖨️ พิมพ์แผนงาน</button>
+    </div>
+    <div class="container">
+        <div class="main-header">
+            <h1>งานทันตสาธารณสุข</h1>
+            <h2>ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร</h2>
+            <h3>แผนการตรวจสุขภาพช่องปากประจำปี <span id="current-year"></span></h3>
+        </div>
+        <div id="loading" class="loading">
+            <p>กำลังโหลดข้อมูล...</p>
+            <div class="spinner"></div>
+        </div>
+        
+        <div id="error-message" class="error-message" style="display: none;">
+            <p>เกิดข้อผิดพลาดในการโหลดข้อมูล โปรดลองอีกครั้ง</p>
+        </div>
+
+        <table id="dataTable" style="display: none;">
+            <thead>
+                <tr>
+                    <th>วัน / เดือน / ปี</th>
+                    <th>โรงเรียน</th>
+                    <th>เวลา</th>
+                    <th>ชั้น</th>
+                    <th>หมายเหตุ</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+
+        <div class="notes">
+            <h2>หมายเหตุ</h2>
+            <ol>
+                <li>แผนการตรวจสุขภาพช่องปากสามารถเปลี่ยนแปลงเวลาได้ตามความเหมาะสม</li>
+                <li>แผนออนไลน์: <a href="https://cptown.6te.net/workReport/index.html" target="_blank">https://cptown.6te.net/workReport/index.html</a></li>
+                <li>รบกวนอาจารย์ช่วยเตรียมใบรายชื่อเด็กนักเรียน</li>
+            </ol>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>

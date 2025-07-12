@@ -1,0 +1,469 @@
+/* นำเข้าฟอนต์จาก Google Fonts */
+/* @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&family=Playfair+Display:wght@400;700&display=swap'); */
+
+body {
+    font-family: 'Kanit', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #eef2f5;
+    color: #34495e;
+    line-height: 1.6;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 30px 20px;
+    box-sizing: border-box;
+}
+
+.container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    background-color: #ffffff;
+    padding: 50px 60px;
+    border-radius: 15px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+    animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* สไตล์สำหรับหัวข้อหลัก */
+.main-header {
+    text-align: center;
+    margin-bottom: 60px;
+    position: relative;
+    padding-bottom: 20px;
+}
+
+.main-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150px;
+    height: 2px;
+    background-color: #ccd7e4;
+}
+
+.main-header h1 {
+    font-family: 'Playfair Display', serif;
+    color: #1a2a4b;
+    font-size: 3.8em;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+    font-weight: 700;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+}
+
+.main-header h2 {
+    font-family: 'Kanit', sans-serif;
+    color: #2c3e50;
+    font-size: 2em;
+    margin-top: 15px;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.main-header h3 {
+    font-family: 'Kanit', sans-serif;
+    color: #5f748d;
+    font-size: 1.6em;
+    margin-top: 8px;
+    margin-bottom: 0;
+    font-weight: 400;
+}
+
+/* สไตล์สำหรับหัวข้อตาราง */
+h1.table-title {
+    font-family: 'Playfair Display', serif;
+    text-align: center;
+    color: #1a2a4b;
+    margin-bottom: 40px;
+    font-size: 2.8em;
+    position: relative;
+    padding-bottom: 18px;
+    letter-spacing: 1.2px;
+    margin-top: 60px;
+}
+
+h1.table-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 4px;
+    background-color: #3498db;
+    border-radius: 2px;
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 40px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #fcfcfc;
+    table-layout: auto;
+}
+
+/* ปรับ padding สำหรับการแสดงผลบนหน้าจอปกติ */
+th, td {
+    padding: 5px 20px; /* **เปลี่ยนจาก 12px 20px เป็น 5px 20px** เพื่อให้บน-ล่าง เหลือประมาณ 5px */
+    text-align: left;
+    border-bottom: 1px solid #e7ecef;
+}
+
+th {
+    background-color: #2c3e50;
+    color: white;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 1em;
+    letter-spacing: 0.8px;
+    text-align: center;
+}
+
+/* กำหนดให้เซลล์ "เวลา" และ "ชั้น" ไม่ให้ขึ้นบรรทัดใหม่ เพื่อให้กระชับ */
+th:nth-child(3), td:nth-child(3), /* เวลา */
+th:nth-child(4), td:nth-child(4) { /* ชั้น */
+    white-space: nowrap;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+/* สำหรับเซลล์ที่มีเนื้อหายาวในคอลัมน์ 'หมายเหตุ' ให้ขึ้นบรรทัดใหม่ได้ */
+td:nth-child(5) {
+    word-wrap: break-word;
+}
+
+/* มุมโค้งมนสำหรับหัวตาราง */
+th:first-child { border-top-left-radius: 10px; }
+th:last-child { border-top-right-radius: 10px; }
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+td {
+    background-color: #ffffff;
+    font-size: 1.0em;
+    color: #4a4a4a;
+}
+
+tr:nth-child(even) td {
+    background-color: #fdfefe;
+}
+
+tr:hover td {
+    background-color: #eaf8ff;
+    transform: translateY(-2px);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Loading Spinner */
+.loading {
+    text-align: center;
+    padding: 50px;
+    color: #555;
+    font-size: 1.3em;
+    animation: pulse 1.5s infinite;
+}
+
+.spinner {
+    border: 6px solid rgba(0, 0, 0, 0.1);
+    border-top: 6px solid #3498db;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 25px auto 0;
+}
+
+/* Error Message */
+.error-message {
+    text-align: center;
+    padding: 30px;
+    color: #e74c3c;
+    background-color: #ffeaea;
+    border: 1px solid #e74c3c;
+    border-radius: 8px;
+    margin-top: 40px;
+    font-weight: 500;
+}
+
+/* ส่วนหมายเหตุ */
+.notes {
+    margin-top: 60px;
+    padding: 35px;
+    background-color: #f7fbff;
+    border-left: 7px solid #6cb6eb;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.notes h2 {
+    font-family: 'Playfair Display', serif;
+    color: #1a2a4b;
+    margin-top: 0;
+    margin-bottom: 25px;
+    font-size: 2.2em;
+    border-bottom: 1px dashed #a0d3f7;
+    padding-bottom: 12px;
+}
+
+.notes ol {
+    list-style-type: decimal;
+    padding-left: 35px;
+    margin-top: 0;
+}
+
+.notes li {
+    margin-bottom: 15px;
+    color: #555;
+    font-size: 1.18em;
+}
+
+.notes li a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.notes li a:hover {
+    text-decoration: underline;
+    color: #2a72b2;
+}
+
+/* สไตล์สำหรับปุ่มพิมพ์ที่อยู่บนสุดขวาแบบลอยตัว */
+#print-button-fixed-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+#printButton {
+    background-color: #28a745;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#printButton:hover {
+    background-color: #218838;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
+}
+
+#printButton:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2);
+}
+
+/* สไตล์สำหรับการพิมพ์ (Print Media Queries) */
+@media print {
+    body {
+        background-color: #fff;
+        padding: 0;
+        margin: 0;
+        transform: scale(0.85); /* อาจต้องลองปรับค่านี้อีก หากเนื้อหายาวมาก */
+        transform-origin: top left;
+        width: 100vw;
+        overflow: hidden;
+        height: auto;
+    }
+
+    #print-button-fixed-container {
+        display: none;
+    }
+    
+    .container {
+        box-shadow: none;
+        border-radius: 0;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        max-width: none;
+    }
+
+    .main-header, .table-title {
+        margin-bottom: 8px;
+        padding-bottom: 2px;
+    }
+    .main-header h1 { font-size: 1.8em; margin-bottom: 2px; }
+    .main-header h2 { font-size: 1em; margin-top: 2px; margin-bottom: 1px; }
+    .main-header h3 { font-size: 0.8em; margin-top: 1px; }
+    h1.table-title { font-size: 1.4em; margin-bottom: 8px; padding-bottom: 3px;}
+    h1.table-title::after { width: 40px; height: 1px; }
+    .main-header::after { width: 70px; height: 1px; }
+
+    table {
+        box-shadow: none;
+        border-radius: 0;
+        border: 1px solid #ddd;
+        margin-top: 8px;
+        font-size: 0.75em;
+        table-layout: fixed;
+        width: 100%;
+    }
+    /* ปรับ padding สำหรับการพิมพ์ให้สั้นที่สุด */
+    th, td {
+        border: 1px solid #ccc;
+        padding: 2px 6px; /* **เปลี่ยนจาก 3px 6px เป็น 2px 6px** เพื่อให้บน-ล่าง เหลือประมาณ 2px */
+        vertical-align: top;
+    }
+    th {
+        font-size: 0.7em;
+    }
+    td {
+        font-size: 0.8em;
+    }
+
+    /* ปรับความกว้างคอลัมน์สำหรับการพิมพ์โดยเฉพาะ */
+    th:nth-child(1), td:nth-child(1) { width: 22%; }
+    th:nth-child(2), td:nth-child(2) { width: 25%; }
+    th:nth-child(3), td:nth-child(3) { width: 8%; white-space: nowrap; }
+    th:nth-child(4), td:nth-child(4) { width: 8%; white-space: nowrap; }
+    td:nth-child(5) { width: 37%; word-wrap: break-word; }
+
+    td {
+        text-align: left;
+    }
+    th {
+        text-align: center;
+    }
+    
+    /* สไตล์สำหรับส่วนหมายเหตุเมื่อพิมพ์ */
+    .notes {
+        display: block;
+        margin-top: 15px;
+        padding: 10px;
+        font-size: 0.8em;
+        border-left: 3px solid #6cb6eb;
+        box-shadow: none;
+        background-color: #fff;
+    }
+    .notes h2 {
+        font-size: 1.3em;
+        margin-bottom: 8px;
+        padding-bottom: 3px;
+        border-bottom: 1px dashed #a0d3f7;
+    }
+    .notes ol {
+        padding-left: 15px;
+    }
+    .notes li {
+        margin-bottom: 5px;
+        font-size: 0.85em;
+    }
+}
+
+
+/* Responsive adjustments สำหรับหน้าจอทั่วไป */
+@media (max-width: 992px) {
+    .container {
+        padding: 40px 40px;
+    }
+    .main-header h1 {
+        font-size: 3em;
+    }
+    .main-header h2 {
+        font-size: 1.7em;
+    }
+    .main-header h3 {
+        font-size: 1.4em;
+    }
+    h1.table-title {
+        font-size: 2.4em;
+    }
+    /* ปรับ padding สำหรับหน้าจอทั่วไป */
+    th, td {
+        padding: 8px 15px; /* ปรับลด padding สำหรับหน้าจอขนาดกลาง */
+    }
+    #print-button-fixed-container {
+        top: 15px;
+        right: 15px;
+    }
+    #printButton {
+        padding: 10px 20px;
+        font-size: 1em;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 25px 20px;
+        margin: 20px auto;
+    }
+    .main-header h1 {
+        font-size: 2.5em;
+    }
+    .main-header h2 {
+        font-size: 1.4em;
+    }
+    .main-header h3 {
+        font-size: 1.1em;
+    }
+    h1.table-title {
+        font-size: 2em;
+        margin-bottom: 30px;
+    }
+    th, td {
+        padding: 5px 12px; /* ปรับลด padding สำหรับหน้าจอเล็ก */
+        font-size: 0.9em;
+    }
+    .notes {
+        padding: 20px;
+    }
+    .notes h2 {
+        font-size: 1.8em;
+    }
+    .notes li {
+        font-size: 1em;
+    }
+    #print-button-fixed-container {
+        top: 10px;
+        right: 10px;
+    }
+    #printButton {
+        padding: 8px 18px;
+        font-size: 0.9em;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-header h1 {
+        font-size: 2em;
+    }
+    .main-header h2 {
+        font-size: 1.1em;
+    }
+    .main-header h3 {
+        font-size: 0.9em;
+    }
+    h1.table-title {
+        font-size: 1.6em;
+    }
+    th, td {
+        padding: 4px 8px; /* ปรับลด padding สำหรับหน้าจอเล็กสุด */
+    }
+}

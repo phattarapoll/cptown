@@ -1,0 +1,535 @@
+body {
+  font-family: 'Sarabun', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #666666; /* สีเทาเข้ม */
+  color: #fff; /* เปลี่ยนสีตัวอักษรเป็นสีขาวเพื่อให้ตัดกับพื้นหลังสีเข้ม */
+}
+
+.container {
+  max-width: 960px;
+  margin: auto;
+  padding: 1rem;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+  font-size: 2.5rem;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+h1::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background-color: #4CAF50;
+  border-radius: 5px;
+}
+
+h6 {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  margin-top: 2rem;
+}
+
+form label {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+button.submit-btn {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.2rem;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+}
+
+button.submit-btn:hover {
+  background-color: #45a049;
+}
+
+/* Style for disabled submit button */
+button.submit-btn:disabled {
+  background-color: #cccccc; /* Gray background */
+  cursor: not-allowed; /* No-entry cursor */
+  opacity: 0.7;
+}
+
+.section {
+  padding: 0.5rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  gap: 1rem;
+  width: 100%;
+  margin: auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease-in-out;
+}
+
+.section:hover {
+  transform: translateY(-3px);
+}
+
+.section h2 {
+  text-align: center;
+  color: #34495e;
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+  width: 100%;
+  grid-column: 1 / -1;
+}
+
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  width: 100%;
+  grid-column: 1 / -1;
+}
+
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 30px;
+  padding: 0.2rem;
+  font-size: 0.85rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease-in-out;
+  background-color: #f0f0f0;
+  color: #333;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.action-button.selected {
+  background-color: #4CAF50;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transform: translateY(1px);
+}
+
+.action-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, #a8e063 0%, #56ab2f 100%);
+  opacity: 0.7;
+  z-index: 1;
+  transition: background 0.3s ease, opacity 0.3s ease;
+}
+
+.action-button.selected::before {
+  background: linear-gradient(45deg, #ff6b6b 0%, #fa3a3a 100%);
+  opacity: 0.8;
+}
+
+.action-button span {
+  position: relative;
+  z-index: 2;
+  color: #333;
+}
+
+.action-button.selected span {
+  color: white;
+}
+
+/* Specific button sizes for SC and EX */
+.action-button.special {
+  width: 180px;
+  height: 40px;
+  font-size: 0.9rem;
+  margin: 0 5px;
+}
+
+/* จัดกึ่งกลางปุ่ม SC และ EX */
+.section.gray05 > .button-group {
+  justify-content: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Added to center the SC and EX buttons */
+.center-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* CSS สำหรับ tooth-treatment-grid เพื่อจัดเรียงปุ่มฟันในส่วน "ให้การรักษา" */
+.tooth-treatment-grid {
+  display: grid;
+  grid-template-columns: repeat(14, 1fr);
+  gap: 0.8rem;
+  justify-items: center;
+  align-items: center;
+  margin: auto;
+  max-width: 100%;
+  grid-column: 1 / -1;
+}
+
+/* **จุดที่ยืดความกว้างปุ่ม**: กำหนดให้ปุ่มภายใน .tooth-treatment-grid เท่านั้นที่ยืดเต็มความกว้างของ grid cell */
+.tooth-treatment-grid .action-button {
+  width: 100%;
+  height: 30px;
+}
+
+/* Style for disabled action buttons */
+.action-button:disabled {
+  background-color: #e0e0e0; /* Lighter gray */
+  cursor: not-allowed;
+  opacity: 0.5;
+  box-shadow: none;
+}
+
+.action-button:disabled::before {
+  background: none; /* Remove gradient overlay */
+  opacity: 0;
+}
+
+.action-button:disabled span {
+  color: #666; /* Darker text color */
+}
+
+.gray1 {
+  background-color: #e0e0e0;
+}
+
+.gray05 {
+  background-color: #f0f0f0;
+}
+
+.gray076 {
+  background-color: #dcdcdc;
+}
+
+.gray085 {
+  background-color: #cfcfcf;
+}
+
+/* --- Popup Styles --- */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0; /* Start hidden for fade-in */
+  visibility: hidden; /* Ensure it's not interactive when hidden */
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.popup-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.popup-modal {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  max-width: 90%;
+  width: 400px;
+  transform: translateY(-20px); /* Start slightly above for slide-down */
+  opacity: 0; /* Start hidden for fade-in */
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.popup-overlay.visible .popup-modal {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.popup-modal h2 {
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+}
+
+.password-input-container {
+  display: flex;
+  flex-direction: column; /* Stack input and button vertically */
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  align-items: center; /* Center items horizontally */
+}
+
+.password-input-container input {
+  padding: 0.75rem;
+  font-size: 1.2rem;
+  text-align: center;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  max-width: 150px; /* Limit input width */
+  margin: 0 auto; /* Center the input */
+}
+
+.password-input-container input:focus {
+  border-color: #4CAF50;
+  outline: none;
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+}
+
+.password-input-container button {
+  padding: 0.8rem 1.5rem;
+  font-size: 1.1rem;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+  width: 100%; /* Make button fill container */
+  max-width: 200px; /* Max width for button */
+}
+
+.password-input-container button:hover {
+  background-color: #45a049;
+  transform: translateY(-1px);
+}
+
+.popup-modal .message {
+  font-size: 1rem;
+  margin-top: 1rem;
+  font-weight: bold;
+  color: #333;
+  min-height: 20px; /* Reserve space for message */
+}
+
+#status-modal .submit-btn {
+  margin-top: 1.5rem;
+  padding: 0.8rem 1.5rem;
+  font-size: 1.1rem;
+  max-width: 250px; /* Limit button width in status popup */
+  display: block; /* Make button take full width and center */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Success Animation */
+#success-animation-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80px; /* Space for animation */
+  margin-top: 1rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+#success-animation-container.visible {
+  opacity: 1;
+}
+
+.checkmark-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #27ae60; /* Green background */
+  position: relative;
+  transform: scale(0); /* Start hidden */
+  animation: scaleIn 0.3s ease-out forwards;
+}
+
+.checkmark-stem {
+  position: absolute;
+  width: 3px;
+  height: 25px;
+  background-color: white;
+  left: 29px;
+  top: 15px;
+  transform: rotate(225deg);
+  animation: drawStem 0.3s ease-out 0.3s forwards;
+  transform-origin: bottom;
+}
+
+.checkmark-kick {
+  position: absolute;
+  width: 3px;
+  height: 15px;
+  background-color: white;
+  left: 20px;
+  top: 30px;
+  transform: rotate(315deg);
+  animation: drawKick 0.3s ease-out 0.6s forwards;
+  transform-origin: bottom;
+}
+
+/* Animation Keyframes */
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes drawStem {
+  from {
+    height: 0;
+  }
+  to {
+    height: 25px;
+  }
+}
+
+@keyframes drawKick {
+  from {
+    height: 0;
+  }
+  to {
+    height: 15px;
+  }
+}
+
+/* Admin Status Text */
+.admin-status {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #28a745; /* Green color for admin status */
+  margin-left: 10px;
+  display: none; /* Hidden by default */
+}
+
+/* Form disabled state */
+.form-disabled {
+  pointer-events: none; /* Disable all pointer events on the form */
+  opacity: 0.6; /* Make it slightly transparent to indicate disabled state */
+}
+
+.login-btn-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.login-btn {
+  padding: 10px 20px;
+  font-size: 1.1em;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.login-btn:hover {
+  background-color: #0056b3;
+}
+
+/* ส่วนนี้ไม่เกี่ยวข้องกับการเปลี่ยนแปลงที่ร้องขอแต่มีอยู่ในไฟล์เดิม */
+.footer-marquee {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: purple;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+.footer-marquee::before {
+  content: attr(data-text);
+  display: inline-block;
+  animation: scroll-text 15s linear infinite;
+}
+
+@keyframes scroll-text {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .section {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  }
+  .action-button {
+    width: 35px;
+    height: 28px;
+    font-size: 0.75rem;
+  }
+  .action-button.special {
+    width: 110px;
+    font-size: 0.7rem;
+  }
+  .tooth-treatment-grid .action-button {
+    width: 100%;
+    height: 28px;
+  }
+  /* Popup adjustments for mobile */
+  .popup-modal {
+    padding: 1.5rem;
+    width: 95%; /* Make it slightly wider on mobile */
+  }
+  .password-input-container input {
+    max-width: 120px;
+  }
+}

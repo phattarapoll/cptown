@@ -1,0 +1,138 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #0d0d0d; /* พื้นหลังดำเข้มมาก */
+    color: #e0e0e0; /* สีตัวอักษรเทาอ่อน */
+    font-family: 'Montserrat', sans-serif; /* ใช้ฟอนต์ที่ดูหรูหรา */
+    overflow: hidden; /* ป้องกัน scrollbar ที่ไม่จำเป็น */
+    position: relative; /* สำหรับ overlay */
+}
+
+/* เอฟเฟกต์ Overlay เพื่อความลึก */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(30, 30, 30, 0.8) 0%, rgba(10, 10, 10, 0.9) 100%);
+    z-index: -1; /* อยู่ด้านหลังเนื้อหา */
+}
+
+.container {
+    text-align: center;
+    padding: 30px; /* ลด padding ลงเล็กน้อย */
+    background-color: rgba(25, 25, 25, 0.8); /* พื้นหลังคอนเทนเนอร์โปร่งแสงเล็กน้อย */
+    border-radius: 15px;
+    box-shadow: 0 0 50px rgba(0, 255, 255, 0.2); /* เงาเรืองแสงสีฟ้าอ่อน */
+    border: 1px solid rgba(0, 255, 255, 0.1); /* ขอบบางๆ */
+    backdrop-filter: blur(5px); /* เอฟเฟกต์เบลอพื้นหลัง */
+    -webkit-backdrop-filter: blur(5px); /* สำหรับ Safari */
+    /* กำหนดความกว้างสูงสุดของ container เพื่อควบคุมการจัดวางโดยรวม */
+    max-width: 700px; /* ปรับลด max-width ของ container ให้เหมาะกับปฏิทินที่เล็กลง */
+    width: 90%; /* ให้มีความยืดหยุ่น */
+    display: flex; /* ใช้ Flexbox เพื่อจัดเรียงองค์ประกอบย่อย */
+    flex-direction: column; /* เรียงจากบนลงล่าง */
+    align-items: center; /* จัดให้อยู่กึ่งกลางในแนวนอน */
+    justify-content: center; /* จัดให้อยู่กึ่งกลางในแนวตั้ง */
+}
+
+.clock {
+    font-family: 'Orbitron', monospace; /* ฟอนต์สำหรับนาฬิกาดิจิทัลโดยเฉพาะ */
+    font-size: 7em; /* ลดขนาดนาฬิกาลงเล็กน้อย */
+    font-weight: 700; /* เน้นความหนา */
+    margin-bottom: 15px; /* ลด margin-bottom */
+    letter-spacing: 5px; /* ลดระยะห่างตัวอักษร */
+    color: #00ffff; /* สีฟ้าสดใส */
+    text-shadow: 0 0 20px rgba(0, 255, 255, 0.8),
+                 0 0 30px rgba(0, 255, 255, 0.5); /* เงาเรืองแสง */
+    animation: neonGlow 1.5s ease-in-out infinite alternate; /* เพิ่ม Animation */
+    width: 480px; /* *** ปรับความกว้างคงที่ให้นาฬิกา *** */
+    /* display: inline-block; ไม่จำเป็นต้องใช้เมื่อ container เป็น flexbox */
+    text-align: center; /* จัดให้อยู่ตรงกลางภายในความกว้างที่กำหนด */
+}
+
+@keyframes neonGlow {
+    from {
+        text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff;
+    }
+    to {
+        text-shadow: 0 0 15px #00ffff, 0 0 25px #00ffff, 0 0 40px #00ffff;
+    }
+}
+
+.date-display {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.5em; /* ลดขนาดวันที่ลงเล็กน้อย */
+    color: #999; /* สีเทาอ่อนสำหรับวันที่ */
+    margin-bottom: 30px; /* ลด margin-bottom */
+    letter-spacing: 1.5px;
+}
+
+.calendar {
+    width: 100%; /* ทำให้ calendar div เต็มความกว้างของ container */
+    max-width: 600px; /* *** ปรับลดความกว้างสูงสุดของปฏิทิน *** */
+    margin: 0 auto;
+    background-color: #1a1a1a; /* พื้นหลังปฏิทินให้กลืนกับธีม */
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.1); /* ลดขนาดเงา */
+    border: 1px solid rgba(0, 255, 255, 0.05); /* ขอบบางๆ */
+    
+    /* *** สำคัญ: กำหนดอัตราส่วนความกว้างต่อความสูงเพื่อให้ iframe คงที่และสั้นลง *** */
+    position: relative;
+    padding-top: 75%; /* (height / width) * 100 -> (450 / 600) * 100 = 75% */
+    /* ถ้าต้องการความสูง 400px และกว้าง 600px จะเป็น (400 / 600) * 100 = 66.66% */
+}
+
+.calendar iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    background-color: #1a1a1a;
+}
+
+/* ปรับ responsive สำหรับหน้าจอขนาดเล็ก */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+        width: 70%;
+        max-width: 500px; /* ปรับลด max-width ของ container */
+    }
+    .clock {
+        font-size: 4.5em; /* ลดขนาดนาฬิกา */
+        width: 300px; /* ปรับความกว้างนาฬิกา */
+        letter-spacing: 3px;
+    }
+    .date-display {
+        font-size: 1.2em;
+    }
+    .calendar {
+        max-width: 200px; /* ปรับ max-width ของปฏิทิน */
+        padding-top: 55%; /* (300 / 400) * 100 = 75% หากต้องการ 300px สูง */
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 15px;
+    }
+    .clock {
+        font-size: 3em;
+        width: 200px;
+        letter-spacing: 2px;
+    }
+    .date-display {
+        font-size: 1em;
+    }
+    .calendar {
+        max-width: 280px;
+        padding-top: 75%; /* (210 / 280) * 100 = 75% หากต้องการ 210px สูง */
+    }
+}

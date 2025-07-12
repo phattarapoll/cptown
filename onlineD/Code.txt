@@ -1,0 +1,119 @@
+// กำหนด ID ของ Google Sheet และ Google Calendar ของคุณ
+const SPREADSHEET_ID = '1H52HRx2loIpta5tLpLy7UWHQF2UDbvG-XTQ30mxJFoY';
+const CALENDAR_ID = 'c2bee30b6054d8af111069092575cab031a8647e9ebd3e222969a7cead63e4cd@group.calendar.google.com';
+
+function doGet(e) {
+  try {
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const configSheet = ss.getSheetByName('config');
+    const bookingSheet = ss.getSheetByName('Booking');
+
+    if (!configSheet || !bookingSheet) {
+      throw new Error('Sheets "config" or "Booking" not found.');
+    }
+
+    // --- ดึงข้อมูล Config ---
+    const unavailableDates = configSheet.getRange('A9:A').getValues()
+                              .flat().filter(String).map(d => Utilities.formatDate(new Date(d), Session.getScriptTimeZone(), 'yyyy-MM-dd'));
+
+    // ดึง unavailableWeekdays จาก B4 (สมมติว่าเป็น "0,6" หรือค่าอื่นๆ ในเซลล์เดียว)
+    const unavailableWeekdaysRaw = configSheet.getRange('B4').getValue();
+    const unavailableWeekdays = unavailableWeekdaysRaw ? String(unavailableWeekdaysRaw).split(',').map(Number) : [];
+
+    // *** แก้ไขตรงนี้: ดึง timeSlots จากช่วง C2:C8 และรวมเข้าด้วยกัน ***
+    const timeSlotsRawList = configSheet.getRange('C2:C8').getValues(); // ดึงข้อมูลทั้งหมดใน C2:C8
+    const timeSlots = [];
+    timeSlotsRawList.flat().filter(String).forEach(item => { // กรองค่าว่างและวนลูปแต่ละเซลล์
+      try {
+        // พยายาม parse เป็น JSON array ก่อน (ถ้าค่าในเซลล์เป็น ["slot1", "slot2"])
+        // ต้อง replace single quotes to double quotes to be valid JSON
+        const parsedSlots = JSON.parse(item.replace(/'/g, '"')); 
+        if (Array.isArray(parsedSlots)) {
+          parsedSlots.forEach(slot => timeSlots.push(slot.trim()));
+        }
+      } catch (e) {
+        // ถ้า parse ไม่ได้ (แสดงว่าเป็น string ธรรมดา เช่น "slot1,slot2") ให้ split ด้วย comma
+        item.split(',').map(s => s.trim()).forEach(slot => timeSlots.push(slot));
+      }
+    });
+    // ใช้ Set เพื่อกรองค่าซ้ำ (ถ้ามี) แล้วแปลงกลับเป็น Array
+    const uniqueTimeSlots = [...new Set(timeSlots)];
+
+
+    const holidayNames = configSheet.getRange('D9:D').getValues().flat().filter((_, i) => unavailableDates[i]); // Match with unavailableDates
+
+
+    const config = {
+      unavailableDates: unavailableDates,
+      unavailableWeekdays: unavailableWeekdays,
+      timeSlots: uniqueTimeSlots, // ใช้ uniqueTimeSlots ที่ประมวลผลแล้ว
+      holidayNames: holidayNames
+    };
+
+    // --- ดึงข้อมูลการจองทั้งหมด ---
+    const bookingDataRaw = bookingSheet.getRange('D2:E' + bookingSheet.getLastRow()).getValues(); 
+
+    const bookings = {};
+    bookingDataRaw.forEach(row => {
+      const bookingDate = Utilities.formatDate(new Date(row[0]), Session.getScriptTimeZone(), 'yyyy-MM-dd');
+      const timeSlot = row[1];
+
+      if (bookingDate && timeSlot) {
+        if (!bookings[bookingDate]) {
+          bookings[bookingDate] = {};
+        }
+        bookings[bookingDate][timeSlot] = (bookings[bookingDate][timeSlot] || 0) + 1;
+      }
+    });
+
+    // ส่งข้อมูล config และ bookings กลับไปในรูปแบบ JSON
+    return ContentService.createTextOutput(JSON.stringify({ config: config, bookings: bookings }))
+      .setMimeType(ContentService.MimeType.JSON);
+
+  } catch (error) {
+    Logger.log("Error in doGet: " + error.message);
+    return ContentService.createTextOutput(JSON.stringify({ error: error.message }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doPost(e) {
+  try {
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const bookingSheet = ss.getSheetByName('Booking');
+
+    if (!bookingSheet) {
+      throw new Error('Sheet "Booking" not found.');
+    }
+
+    if (!e || !e.parameters) {
+      throw new Error("Invalid request: Missing parameters.");
+    }
+
+    const fullName = e.parameters.fullName ? e.parameters.fullName[0] : '';
+    const telNumber = e.parameters.telNumber ? e.parameters.telNumber[0] : '';
+    const bookingDate = e.parameters.bookingDate ? e.parameters.bookingDate[0] : '';
+    const timeSlot = e.parameters.timeSlot ? e.parameters.timeSlot[0] : '';
+
+    if (!fullName || !telNumber || !bookingDate || !timeSlot) {
+      throw new Error('Missing required booking data.');
+    }
+
+    const dateParts = bookingDate.split('-');
+    const dateObject = new Date(parseInt(dateParts[0]), parseInt(dateParts[1]) - 1, parseInt(dateParts[2]));
+
+    bookingSheet.appendRow([
+      new Date(), 
+      fullName,
+      telNumber,
+      dateObject, 
+      timeSlot
+    ]);
+
+    return ContentService.createTextOutput('Booking successful!');
+
+  } catch (error) {
+    Logger.log("Error in doPost: " + error.message);
+    return ContentService.createTextOutput('Booking failed: ' + error.message);
+  }
+}

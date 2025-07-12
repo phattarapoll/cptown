@@ -1,0 +1,646 @@
+/* Fonts */
+body {
+    font-family: 'Sarabun', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #a8dadc, #457b9d); /* สีพื้นหลังไล่ระดับเดิม */
+    color: #333; /* เปลี่ยนสีข้อความหลักเป็นสีดำ */
+    display: flex;
+    flex-direction: column; /* เปลี่ยนเป็น column เพื่อให้ footer อยู่ด้านล่าง */
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    position: relative; /* สำคัญ: ตั้งค่า position relative ให้ body เพื่อให้ปุ่ม absolute วางอิงจาก body */
+}
+
+.container {
+    width: 100%;
+    max-width: 900px;
+    margin: 20px auto;
+    text-align: center;
+    flex-grow: 1; /* ทำให้ container ขยายเต็มพื้นที่ที่เหลือ */
+}
+
+/* Glass Effect */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.2); /* เพิ่มความเข้มขึ้นเล็กน้อย */
+    backdrop-filter: blur(12px); /* เพิ่มความเบลอ */
+    border: 1px solid rgba(255, 255, 255, 0.3); /* ขอบชัดขึ้น */
+    border-radius: 20px; /* ขอบโค้งมนขึ้น */
+    box-shadow: 0 10px 40px 0 rgba(31, 38, 135, .37); /* เงาเข้มขึ้น */
+}
+
+/* Header Enhancements */
+.header {
+    margin-bottom: 30px;
+    position: relative; /* เพื่อรองรับอนิเมชั่น */
+}
+
+/* Keyframes for fade-in animation */
+@keyframes fadeInSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.header-content {
+    animation: fadeInSlideUp 1s ease-out forwards; /* Apply animation to header content */
+    padding: 20px 0;
+}
+
+.title {
+    font-size: 3.5em;
+    font-weight: 700;
+    color: #1d3557; /* สีน้ำเงินเข้ม */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* เพิ่มเงาให้ข้อความ */
+    margin-bottom: 10px;
+    letter-spacing: 1px; /* เพิ่มระยะห่างตัวอักษรเล็กน้อย */
+}
+
+.subtitle {
+    font-size: 1.3em;
+    color: #457b9d; /* สีน้ำเงินกลาง */
+    line-height: 1.6;
+    margin-top: 0;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Navigation Button */
+.navigation-button {
+    position: absolute; /* กำหนดตำแหน่งแบบสัมบูรณ์ */
+    top: 20px; /* ระยะห่างจากขอบบน */
+    right: 20px; /* ระยะห่างจากขอบขวา */
+    background-color: #e63946; /* สีแดงสำหรับปุ่ม */
+    color: #fff;
+    padding: 15px 30px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 1.1em;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    z-index: 100; /* ให้ปุ่มอยู่ด้านบนสุด */
+}
+
+.navigation-button:hover {
+    background-color: #d12c3c; /* สีแดงเข้มขึ้นเมื่อ hover */
+    transform: translateY(-2px); /* ยกขึ้นเล็กน้อย */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Calendar Wrapper */
+.calendar-wrapper {
+    background: rgba(255, 255, 255, 0.9); /* พื้นหลังขาวขุ่น */
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 0 10px;
+}
+
+.nav-button {
+    background-color: #457b9d;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2em;
+    transition: background-color 0.3s ease;
+}
+
+.nav-button:hover {
+    background-color: #1d3557;
+}
+
+.month-year-display {
+    font-size: 2em;
+    color: #1d3557;
+    margin: 0 20px;
+}
+
+.calendar-grid-container {
+    background-color: #f1faee; /* สีพื้นหลังอ่อนๆ สำหรับกริด */
+    border-radius: 10px;
+    padding: 15px;
+}
+
+.day-names {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    font-weight: bold;
+    color: #1d3557;
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: 1.1em;
+}
+
+.day-names div {
+    padding: 8px 0;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px; /* ลด gap เพื่อให้ดูแน่นขึ้น */
+}
+
+.calendar-day {
+    background-color: #a8dadc; /* สีฟ้าอ่อน */
+    color: #1d3557;
+    padding: 10px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    min-height: 80px; /* เพิ่ม min-height */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* เปลี่ยนจาก center เป็น flex-start */
+    align-items: center;
+    text-align: center;
+    font-size: 0.9em; /* ลดขนาด font สำหรับ day-number และ slot-count */
+    position: relative; /* สำหรับ relative positioning ของ slot-count */
+    overflow: hidden; /* ซ่อนส่วนเกินเมื่อมีข้อความยาว */
+    padding-top: 10px; /* เพิ่ม padding ด้านบนเล็กน้อย */
+}
+
+.calendar-day:hover:not(.disabled):not(.unavailable) {
+    background-color: #457b9d; /* สีน้ำเงินเข้มขึ้นเมื่อ hover */
+    color: white;
+    transform: translateY(-3px); /* ยกขึ้นเล็กน้อย */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.calendar-day.empty {
+    background-color: #f1faee; /* สีขาวนวลสำหรับช่องว่าง */
+    cursor: default;
+}
+
+.calendar-day.disabled {
+    background-color: #e0e0e0; /* สีเทาสำหรับวันที่ไม่สามารถเลือกได้ */
+    color: #a0a0a0;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.calendar-day.unavailable {
+    background-color: #f7a8a8; /* สีแดงอ่อนสำหรับวันที่ไม่ว่าง */
+    color: #8c0000;
+    cursor: not-allowed;
+    opacity: 0.9;
+    font-weight: bold;
+}
+
+.calendar-day.current-day {
+    border: 3px solid #e63946; /* กรอบสีแดงสำหรับวันปัจจุบัน */
+    box-shadow: 0 0 10px rgba(230, 57, 70, 0.5);
+}
+
+.calendar-day .day-number {
+    font-size: 1.6em;
+    font-weight: bold;
+    margin-bottom: 5px;
+    margin-top: 0; /* ตรวจสอบให้แน่ใจว่าไม่มี margin ด้านบน */
+}
+
+.calendar-day small {
+    font-size: 0.8em; /* ขนาดข้อความ "ปิดทำการ", "ออกหน่วย" */
+    color: #8c0000;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.slot-count {
+    font-size: 0.9em;
+    font-weight: bold;
+    margin-top: 5px;
+    padding: 2px 5px;
+    border-radius: 5px;
+    white-space: nowrap; /* ไม่ให้ข้อความขึ้นบรรทัดใหม่ */
+}
+
+.slot-count.available {
+    background-color: #2a9d8f; /* สีเขียวสำหรับว่าง */
+    color: white;
+}
+
+.slot-count.full {
+    background-color: #e76f51; /* สีส้มสำหรับเต็ม */
+    color: white;
+}
+
+/* Time Slot Details */
+.time-slot-details {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+}
+
+.time-slot-details h3 {
+    font-size: 2em;
+    color: #1d3557;
+    margin-bottom: 20px;
+}
+
+.time-slots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.time-slot {
+    background-color: #a8dadc;
+    color: #1d3557;
+    padding: 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.time-slot:hover:not(.unavailable-slot) {
+    background-color: #457b9d;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.time-slot.unavailable-slot {
+    background-color: #e0e0e0;
+    color: #a0a0a0;
+    cursor: not-allowed;
+    opacity: 0.8;
+    text-decoration: line-through;
+    box-shadow: none;
+}
+
+.back-button {
+    background-color: #f4a261;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+}
+
+.back-button:hover {
+    background-color: #e76f51;
+}
+
+/* Blinking message style */
+.blinking-message {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #e63946; /* สีแดง */
+    margin-top: 10px; /* เพิ่มระยะห่างด้านบน */
+    margin-bottom: 15px; /* เพิ่มระยะห่างด้านล่าง */
+    animation: blinker 1s linear infinite;
+    text-shadow: 0 0 5px rgba(230, 57, 70, 0.5); /* เพิ่มเงาให้ข้อความกระพริบ */
+}
+
+@keyframes blinker {
+    50% {
+        opacity: 0;
+    }
+}
+
+/* Popup Overlay */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0; /* เริ่มต้นซ่อน */
+    visibility: hidden; /* เริ่มต้นซ่อน */
+    transition: opacity 0.3s ease, visibility 0.3s ease; /* อนิเมชั่นการแสดงผล */
+}
+
+.popup-overlay.is-active {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+.popup-content {
+    background: rgba(255, 255, 255, 0.95); /* ขาวขุ่น */
+    padding: 30px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 500px;
+    text-align: left;
+    position: relative;
+    transform: scale(0.9); /* เริ่มต้นเล็กกว่าปกติ */
+    transition: transform 0.3s ease; /* อนิเมชั่นการขยาย */
+}
+
+.popup-overlay.is-active .popup-content {
+    transform: scale(1); /* ขยายเมื่อแสดง */
+}
+
+.close-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 2em;
+    color: #e63946;
+    cursor: pointer;
+}
+
+.popup-title {
+    text-align: center;
+    color: #1d3557;
+    margin-bottom: 20px;
+    font-size: 2.2em;
+    font-weight: bold;
+}
+
+.booking-form .form-group {
+    margin-bottom: 15px;
+}
+
+.booking-form label {
+    display: block;
+    margin-bottom: 5px;
+    color: #457b9d;
+    font-weight: bold;
+}
+
+.booking-form input[type="text"],
+.booking-form input[type="tel"],
+.booking-form select {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid #a8dadc;
+    border-radius: 5px;
+    font-size: 1.1em;
+    box-sizing: border-box; /* รวม padding ใน width */
+}
+
+.booking-form input:focus,
+.booking-form select:focus {
+    border-color: #457b9d;
+    outline: none;
+    box-shadow: 0 0 5px rgba(69, 123, 157, 0.5);
+}
+
+.booking-form small {
+    display: block;
+    font-size: 0.8em;
+    color: #666;
+    margin-top: 5px;
+}
+
+.submit-button {
+    background-color: #e63946;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.3em;
+    font-weight: bold;
+    margin-top: 20px;
+    width: 100%;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.submit-button:hover {
+    background-color: #d12c3c;
+    transform: translateY(-2px);
+}
+
+.form-message {
+    text-align: center;
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.form-message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.form-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.form-message.loading {
+    background-color: #e0f7fa;
+    color: #007bff;
+    border: 1px solid #b2ebf2;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+    color: white;
+    font-size: 1.2em;
+}
+
+.spinner {
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid #fff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Back to previous button (new addition) */
+.back-to-previous-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: #457b9d;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+    z-index: 100; /* Make sure it's above other content */
+}
+
+.back-to-previous-button:hover {
+    background-color: #1d3557;
+}
+
+/* Footer Style */
+.footer {
+    width: 100%;
+    text-align: center;
+    padding: 20px;
+    margin-top: 30px; /* เพิ่มระยะห่างจากเนื้อหาด้านบน */
+    color: #1d3557; /* สีเดียวกับ title */
+    font-size: 0.9em;
+    background: rgba(255, 255, 255, 0.1); /* พื้นหลังโปร่งแสงเล็กน้อย */
+    border-top: 1px solid rgba(255, 255, 255, 0.2); /* เส้นแบ่งด้านบน */
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1); /* เงาด้านบน */
+}
+
+.footer p {
+    margin: 5px 0;
+    line-height: 1.5;
+}
+
+/* Utility Classes */
+.hidden {
+    display: none !important;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .title {
+        font-size: 2.5em;
+    }
+    .subtitle {
+        font-size: 1.1em; /* Adjusted for smaller screens */
+    }
+    .month-year-display {
+        font-size: 1.8em;
+    }
+    .calendar-day {
+        padding: 15px 0;
+        min-height: 70px;
+    }
+    .calendar-day .day-number {
+        font-size: 1.4em;
+    }
+    .slot-count {
+        font-size: 0.8em;
+    }
+    .time-slot {
+        padding: 15px;
+        font-size: 1em;
+    }
+    .popup-content {
+        padding: 25px;
+    }
+    .popup-title {
+        font-size: 2em;
+    }
+    .booking-form input {
+        font-size: 1em;
+        padding: 12px;
+    }
+    .submit-button {
+        font-size: 1.2em;
+        padding: 15px 25px;
+    }
+    /* Adjust button positions for smaller screens */
+    .back-to-previous-button {
+        top: 15px;
+        left: 15px;
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+    .navigation-button {
+        top: 15px;
+        right: 15px;
+        padding: 12px 25px;
+        font-size: 1em;
+    }
+    .footer {
+        padding: 15px;
+        font-size: 0.8em;
+    }
+}
+
+@media (max-width: 480px) {
+    .title {
+        font-size: 2em;
+    }
+    .subtitle {
+        font-size: 0.9em; /* Further adjusted for very small screens */
+    }
+    .navigation-button {
+        font-size: 0.9em;
+        padding: 10px 20px;
+        top: 10px;
+        right: 10px;
+    }
+    .month-year-display {
+        font-size: 1.5em;
+    }
+    .calendar-grid {
+        gap: 5px;
+    }
+    .calendar-day {
+        min-height: 60px;
+    }
+    .calendar-day .day-number {
+        font-size: 1.2em;
+    }
+    .slot-count {
+        font-size: 0.7em;
+    }
+    .time-slots-grid {
+        grid-template-columns: 1fr;
+    }
+    .time-slot {
+        padding: 12px;
+        font-size: 0.9em;
+    }
+    .back-to-previous-button {
+        top: 10px;
+        left: 10px;
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+    .footer {
+        padding: 10px;
+        font-size: 0.75em;
+    }
+}

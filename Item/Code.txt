@@ -1,0 +1,362 @@
+const SPREADSHEET_ID = '11675KquA_-qRq7azGYbve-I8DdquhPYuxe94AsdKfXg'; // **เปลี่ยนเป็น ID ของ Google Sheet ของคุณ**
+const PIN_CODE = '3946';
+
+// ฟังก์ชันหลักสำหรับรับ HTTP POST Request
+function doPost(e) {
+  // ตั้งค่า CORS headers เพื่ออนุญาตให้โดเมนอื่นเรียกใช้ได้
+  // **สำคัญ: เปลี่ยน 'YOUR_FRONTEND_DOMAIN' เป็นโดเมนจริงที่คุณโฮสต์ไฟล์ HTML/CSS/JS**
+  // เช่น 'https://www.yourwebsite.com' หรือ '*' ถ้าต้องการอนุญาตทุกโดเมน (ไม่แนะนำใน Production)
+  const allowedOrigin = 'YOUR_FRONTEND_DOMAIN'; // เช่น 'http://localhost:8000', 'https://your.dental.app'
+  
+  const headers = {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Content-Type': 'application/json'
+  };
+
+  if (e.postData.type === "application/json") {
+    try {
+      const requestData = JSON.parse(e.postData.contents);
+      const functionName = requestData.function;
+      const data = requestData.data;
+
+      let result;
+      switch (functionName) {
+        case 'getMaterials':
+          result = getMaterials();
+          break;
+        case 'getPastRequests':
+          result = getPastRequests();
+          break;
+        case 'saveRequest':
+          result = saveRequest(data, data.pinCode); // ส่ง pincode ไปด้วย
+          break;
+        case 'confirmReceive':
+          result = confirmReceive(data);
+          break;
+        case 'getStatistics':
+          result = getStatistics();
+          break;
+        default:
+          result = { success: false, message: 'Invalid function name.' };
+      }
+
+      return ContentService.createTextOutput(JSON.stringify(result))
+             .setMimeType(ContentService.MimeType.JSON)
+             .setHeaders(headers); // ส่ง headers กลับไป
+    } catch (error) {
+      Logger.log('Error in doPost: ' + error.message);
+      return ContentService.createTextOutput(JSON.stringify({ success: false, message: 'Server error: ' + error.message }))
+             .setMimeType(ContentService.MimeType.JSON)
+             .setHeaders(headers);
+    }
+  }
+
+  // สำหรับ preflight requests (OPTIONS) จากเบราว์เซอร์
+  if (e.parameter.method === 'OPTIONS') {
+    return ContentService.createTextOutput('')
+           .setHeaders(headers);
+  }
+
+  // หากไม่มี method ที่ถูกต้อง
+  return ContentService.createTextOutput(JSON.stringify({ success: false, message: 'Invalid request method.' }))
+         .setMimeType(ContentService.MimeType.JSON)
+         .setHeaders(headers);
+}
+
+// ฟังก์ชัน doGet (ยังคงไว้ เผื่อจะใช้ทดสอบ หรือเรียกดูโดยตรงได้)
+function doGet(e) {
+  // เพื่อให้ doGet ยังสามารถทำงานได้ถ้าต้องการเรียกจากเบราว์เซอร์โดยตรง (เช่นสำหรับทดสอบ)
+  // แต่สำหรับ Frontend ที่คุณจะใช้ มันจะเรียกผ่าน doPost เป็นหลัก
+  const headers = {
+    'Access-Control-Allow-Origin': '*', // อนุญาตทุกโดเมนสำหรับ GET request
+    'Access-Control-Allow-Methods': 'GET',
+    'Content-Type': 'application/json'
+  };
+  try {
+    const functionName = e.parameter.function;
+    let result;
+    if (functionName === 'getMaterials') {
+      result = getMaterials();
+    } else if (functionName === 'getPastRequests') {
+      result = getPastRequests();
+    } else if (functionName === 'getStatistics') {
+      result = getStatistics();
+    } else {
+      result = { success: false, message: 'Invalid function name for GET.' };
+    }
+    return ContentService.createTextOutput(JSON.stringify(result))
+           .setMimeType(ContentService.MimeType.JSON)
+           .setHeaders(headers);
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({ success: false, message: 'Server error: ' + error.message }))
+           .setMimeType(ContentService.MimeType.JSON)
+           .setHeaders(headers);
+  }
+}
+
+
+// --- ฟังก์ชัน API ที่เหลือ (เหมือนเดิม) ---
+// ส่วนนี้ยังคงเหมือนเดิมจาก Code.gs ที่ให้ไปก่อนหน้านี้
+// เพียงแค่ย้ายไปรวมอยู่ในไฟล์ Code.gs ของคุณ
+
+/**
+ * ดึงข้อมูลวัสดุทั้งหมดจาก Sheet 'วัสดุ'
+ * @returns {Array} Array ของวัตถุวัสดุ
+ */
+function getMaterials() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName('วัสดุ');
+  if (!sheet) return [];
+
+  const data = sheet.getDataRange().getValues();
+  if (data.length <= 1) return []; // ไม่มีข้อมูลหรือมีแค่ Header
+
+  const headers = data[0];
+  const materials = [];
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    const material = {};
+    headers.forEach((header, index) => {
+      material[header] = row[index];
+    });
+    materials.push(material);
+  }
+  return materials;
+}
+
+/**
+ * ดึงข้อมูลใบเบิกย้อนหลังทั้งหมดจาก Sheet 'ใบเบิก'
+ * @returns {Array} Array ของวัตถุใบเบิก
+ */
+function getPastRequests() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName('ใบเบิก');
+  if (!sheet) return [];
+
+  const data = sheet.getDataRange().getValues();
+  if (data.length <= 1) return [];
+
+  const headers = data[0];
+  const requests = [];
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    const request = {};
+    headers.forEach((header, index) => {
+      request[header] = row[index];
+    });
+    // แปลง JSON string กลับเป็น Object
+    try {
+      request['รายการวัสดุ'] = JSON.parse(request['รายการวัสดุ']);
+    } catch (e) {
+      Logger.log('Error parsing JSON for request: ' + request['เลขที่ใบเบิก'] + ' ' + e.message);
+      request['รายการวัสดุ'] = [];
+    }
+    requests.push(request);
+  }
+  return requests;
+}
+
+/**
+ * บันทึกใบเบิกใหม่
+ * @param {Object} requestData ข้อมูลใบเบิก
+ * @param {Array} requestData.items รายการวัสดุที่เบิก
+ * @param {string} requestData.requestDate วันที่เบิก
+ * @param {string} requestData.requester ผู้เบิก
+ * @param {string} requestData.payer ผู้จ่าย
+ * @param {string} pinCode รหัส PIN สำหรับยืนยัน
+ * @returns {Object} ผลลัพธ์การบันทึก (success/error, message, เลขที่ใบเบิก)
+ */
+function saveRequest(requestData, pinCode) {
+  if (pinCode !== PIN_CODE) {
+    return { success: false, message: 'รหัส PIN ไม่ถูกต้อง' };
+  }
+
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const requestSheet = ss.getSheetByName('ใบเบิก');
+  const materialSheet = ss.getSheetByName('วัสดุ');
+  const historySheet = ss.getSheetByName('ประวัติการเบิก');
+
+  if (!requestSheet || !materialSheet || !historySheet) {
+    return { success: false, message: 'ไม่พบ Sheet ที่จำเป็น (ใบเบิก, วัสดุ, ประวัติการเบิก)' };
+  }
+
+  // Generate Request ID
+  const lastRow = requestSheet.getLastRow();
+  // Ensure the date is correctly formatted for ID (yyyyMMdd)
+  const today = new Date();
+  const formattedDate = Utilities.formatDate(today, SpreadsheetApp.getActive().getSpreadsheetTimeZone(), 'yyyyMMdd');
+  const nextReqId = 'RQ' + formattedDate +
+                    String(lastRow + 1).padStart(4, '0'); // RQYYYYMMDDXXXX
+
+  const newRow = [
+    nextReqId,
+    new Date(requestData.requestDate),
+    requestData.requester,
+    requestData.payer,
+    'รอดำเนินการ', // สถานะเริ่มต้น
+    '', // วันที่รับวัสดุ
+    JSON.stringify(requestData.items) // เก็บเป็น JSON string
+  ];
+  requestSheet.appendRow(newRow);
+
+  // Update material inventory and history
+  const materialData = materialSheet.getDataRange().getValues();
+  const materialHeaders = materialData[0];
+  const materialMap = {}; // เพื่อการค้นหาวัสดุได้เร็วขึ้น
+  for (let i = 1; i < materialData.length; i++) {
+    materialMap[materialData[i][0]] = { row: i + 1, data: materialData[i] }; // รหัสวัสดุเป็น Key, เก็บ row number และ data
+  }
+
+  const historyData = [];
+
+  for (const item of requestData.items) {
+    if (materialMap[item.รหัส]) {
+      const materialRowIndex = materialMap[item.รหัส].row;
+      const currentRemaining = materialSheet.getRange(materialRowIndex, materialHeaders.indexOf('คงเหลือ') + 1).getValue();
+      const currentYearlyRequest = materialSheet.getRange(materialRowIndex, materialHeaders.indexOf('เบิกปีนี้') + 1).getValue();
+
+      // ลดจำนวนคงเหลือ
+      materialSheet.getRange(materialRowIndex, materialHeaders.indexOf('คงเหลือ') + 1).setValue(currentRemaining - item.จำนวน);
+      // เพิ่มจำนวนที่เบิกในปีนี้
+      materialSheet.getRange(materialRowIndex, materialHeaders.indexOf('เบิกปีนี้') + 1).setValue(currentYearlyRequest + item.จำนวน);
+
+      // เพิ่มเข้าประวัติการเบิก
+      historyData.push([
+        nextReqId,
+        item.รหัส,
+        item.ชื่อ,
+        item.จำนวน,
+        item.หน่วย,
+        new Date(requestData.requestDate)
+      ]);
+    }
+  }
+
+  if (historyData.length > 0) {
+    historySheet.getRange(historySheet.getLastRow() + 1, 1, historyData.length, historyData[0].length).setValues(historyData);
+  }
+
+  return { success: true, message: 'บันทึกใบเบิกเรียบร้อย!', requestNo: nextReqId };
+}
+
+/**
+ * อัปเดตสถานะใบเบิกและจำนวนที่ได้รับจริง
+ * @param {Object} updateData ข้อมูลการอัปเดต
+ * @param {string} updateData.requestNo เลขที่ใบเบิก
+ * @param {string} updateData.receiveDate วันที่รับวัสดุ
+ * @param {Array} updateData.receivedItems รายการวัสดุที่ได้รับจริง [{รหัส, ชื่อ, จำนวน, หน่วย}]
+ * @returns {Object} ผลลัพธ์ (success/error, message)
+ */
+function confirmReceive(updateData) {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const requestSheet = ss.getSheetByName('ใบเบิก');
+  const historySheet = ss.getSheetByName('ประวัติการเบิก');
+
+  if (!requestSheet || !historySheet) {
+    return { success: false, message: 'ไม่พบ Sheet ที่จำเป็น (ใบเบิก, ประวัติการเบิก)' };
+  }
+
+  const requestData = requestSheet.getDataRange().getValues();
+  const requestHeaders = requestData[0];
+  let rowIndex = -1;
+  for (let i = 1; i < requestData.length; i++) {
+    if (requestData[i][requestHeaders.indexOf('เลขที่ใบเบิก')] === updateData.requestNo) {
+      rowIndex = i + 1;
+      break;
+    }
+  }
+
+  if (rowIndex === -1) {
+    return { success: false, message: 'ไม่พบใบเบิกที่ต้องการอัปเดต' };
+  }
+
+  // อัปเดตสถานะและวันที่รับวัสดุใน Sheet 'ใบเบิก'
+  requestSheet.getRange(rowIndex, requestHeaders.indexOf('สถานะ') + 1).setValue('สมบูรณ์');
+  requestSheet.getRange(rowIndex, requestHeaders.indexOf('วันรับวัสดุ') + 1).setValue(new Date(updateData.receiveDate));
+
+  // อัปเดตจำนวนที่เบิกจริงใน Sheet 'ประวัติการเบิก'
+  const historyRawData = historySheet.getDataRange().getValues();
+  const historyHeaders = historyRawData[0];
+
+  for (const receivedItem of updateData.receivedItems) {
+    let found = false;
+    for (let i = 1; i < historyRawData.length; i++) {
+      const historyRow = historyRawData[i];
+      if (historyRow[historyHeaders.indexOf('เลขที่ใบเบิก')] === updateData.requestNo &&
+          historyRow[historyHeaders.indexOf('รหัสวัสดุ')] === receivedItem.รหัส) {
+        // อัปเดตจำนวนที่เบิกจริง
+        historySheet.getRange(i + 1, historyHeaders.indexOf('จำนวนที่เบิก') + 1).setValue(receivedItem.จำนวน);
+        found = true;
+        break; // เมื่อพบแล้วก็ออกจากการวนลูปภายใน
+      }
+    }
+    // หากไม่พบในประวัติ (อาจจะไม่น่าเกิดขึ้นถ้า logic ถูกต้อง)
+    if (!found) {
+        Logger.log(`Warning: Material ${receivedItem.รหัส} for request ${updateData.requestNo} not found in history for update.`);
+        // อาจจะต้องเพิ่มแถวใหม่ใน historySheet ถ้ามันไม่เคยถูกบันทึกไว้เลย (สถานการณ์นี้ไม่ควรเกิดขึ้นในการใช้งานปกติ)
+    }
+  }
+
+  return { success: true, message: 'ยืนยันการรับวัสดุเรียบร้อย' };
+}
+
+/**
+ * ดึงข้อมูลสถิติการเบิก
+ * @returns {Object} ข้อมูลสถิติ (Top 5 วัสดุที่เบิกบ่อย, จำนวนการเบิกรายเดือน)
+ */
+function getStatistics() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const historySheet = ss.getSheetByName('ประวัติการเบิก');
+  if (!historySheet) return { topMaterials: [], monthlyRequests: [] };
+
+  const data = historySheet.getDataRange().getValues();
+  if (data.length <= 1) return { topMaterials: [], monthlyRequests: [] };
+
+  const headers = data[0];
+  const materialCount = {}; // { materialId: totalQuantity }
+  const monthlyCount = {}; // {YYYY-MM: totalQuantity }
+
+  // Get current year for filtering monthly stats
+  const currentYear = new Date().getFullYear();
+
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    const materialId = row[headers.indexOf('รหัสวัสดุ')];
+    const quantity = row[headers.indexOf('จำนวนที่เบิก')];
+    const requestDate = new Date(row[headers.indexOf('วันที่เบิก')]);
+    
+    // Filter by current year for monthly requests
+    if (requestDate.getFullYear() === currentYear) {
+        const yearMonth = Utilities.formatDate(requestDate, SpreadsheetApp.getActive().getSpreadsheetTimeZone(), 'yyyy-MM');
+        monthlyCount[yearMonth] = (monthlyCount[yearMonth] || 0) + quantity;
+    }
+
+    // Count for top materials (all time or specific period if desired)
+    materialCount[materialId] = (materialCount[materialId] || 0) + quantity;
+  }
+
+  // เรียงลำดับวัสดุที่เบิกบ่อย
+  const sortedMaterials = Object.entries(materialCount).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const topMaterials = sortedMaterials.map(([id, quantity]) => {
+    // ดึงชื่อวัสดุจาก Sheet 'วัสดุ' เพื่อแสดงผล
+    const materialSheet = ss.getSheetByName('วัสดุ');
+    const materialData = materialSheet.getDataRange().getValues();
+    const materialHeaders = materialData[0];
+    let materialName = id; // Default to ID if not found
+    for (let i = 1; i < materialData.length; i++) {
+      if (materialData[i][materialHeaders.indexOf('รหัส')] === id) {
+        materialName = materialData[i][materialHeaders.indexOf('ชื่อ')];
+        break;
+      }
+    }
+    return { id: id, name: materialName, quantity: quantity };
+  });
+
+  // แปลง monthlyCount เป็น Array ของ Object สำหรับ Chart และเรียงตามเดือน
+  const monthlyRequests = Object.entries(monthlyCount).sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([month, quantity]) => ({ month: month, quantity: quantity }));
+
+  return { topMaterials: topMaterials, monthlyRequests: monthlyRequests };
+}
