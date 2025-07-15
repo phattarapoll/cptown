@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (password === ADMIN_PASSWORD) {
             alert('เข้าสู่ระบบ ADMIN สำเร็จ!');
             // Redirect to a private link or show admin-specific content
-            window.location.href = 'https://cptown.6te.net/shock.html'; // Placeholder link
+            window.location.href = 'https://cptown.6te.net/ADM.html'; // Placeholder link
         } else {
             alert('รหัสผ่านไม่ถูกต้อง!');
         }
