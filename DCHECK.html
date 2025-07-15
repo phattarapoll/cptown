@@ -6,225 +6,184 @@
   <title>งานทันตสาธารณสุข</title>
   <link rel="stylesheet" href="assets/css/styleDcheck.css">
   <link href="https://fonts.googleapis.com/css2?family=Sarabun&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* Updated styles for the submission history display */
+    #submission-history {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      color: #333; /* Dark gray text color */
+      padding: 10px 15px;
+      font-weight: bold;
+      z-index: 1000;
+      display: none; /* Hidden by default, will be shown if history exists */
+      line-height: 1.6; /* Spacing between lines */
+      text-align: right; /* Align text to the right */
+    }
+    #submission-history p {
+      margin: 0; /* Remove default paragraph margins */
+      padding: 3px 0;
+      border-bottom: 1px dotted #ccc; /* Subtle separator */
+    }
+    #submission-history p:last-child {
+      border-bottom: none; /* No border for the last item */
+    }
+    #submission-history p strong {
+      color: #0056b3; /* A bit more prominent color for the code */
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1><span id="programStatus">🔒</span> PROGRAM DENTCHECK V.4 <span id="adminStatus" class="admin-status">ผู้ดูแลระบบ</span></h1>
-    <div class="login-btn-container">
-      <button type="button" class="login-btn" id="loginButton">เข้าสู่ระบบ</button>
-    </div>
-    <form id="dataForm" class="form-disabled"> <div class="section gray1">
-        <label>วันที่
-          <input type="text" id="date" name="date" readonly disabled> </label>
-        <label>รหัส
-          <input type="number" id="code" name="id" disabled> </label>
-        <label>ชั้น
-          <input type="text" id="class" name="grade" list="gradeOptions" disabled> <datalist id="gradeOptions">
-            <option value="ป.1">
-            <option value="ป.2">
-            <option value="ป.3">
-            <option value="ป.4">
-            <option value="ป.5">
-            <option value="ป.6">
-            <option value="ม.1">
-          </datalist>
-        </label>
-        <label>โรงเรียน
-          <select id="school" name="school" disabled> 
-		    <option value="สหศึกษา">สหศึกษา</option>
-            <option value="ฝวาหมินกงลิ">ฝวาหมินกงลิ</option>
-            <option value="เทศบาล1ท่าตะเภา">เทศบาล1ท่าตะเภา</option>
-            <option value="อนุบาลเมืองชุมพร">อนุบาลเมืองชุมพร</option>			
-            <option value="สอาดเผดิมวิทยา">สอาดเผดิมวิทยา</option>
-            <option value="ศรียาภัย">ศรียาภัย</option>
-          </select>
-        </label>
-      </div>
+  <div id="submission-history"></div> <div class="container">
+    <h1> PROGRAM DENTCHECK V.4 </h1>
+    
+    <form id="dataForm">
+      <div class="main-content-grid">
+        <div class="left-column">
+          <div class="section gray1">
+            <label>วันที่
+              <input type="text" id="date" name="date" readonly> </label>
+            <label>รหัส
+              <input type="number" id="code" name="id"> </label>
+            <label>ชั้น
+              <input type="text" id="class" name="grade" list="gradeOptions"> <datalist id="gradeOptions">
+                <option value="ป.1">
+                <option value="ป.2">
+                <option value="ป.3">
+                <option value="ป.4">
+                <option value="ป.5">
+                <option value="ป.6">
+                <option value="ม.1">
+              </datalist>
+            </label>
+            <label>โรงเรียน
+              <select id="school" name="school">
+                <option value="สหศึกษา">สหศึกษา</option>
+                <option value="ฝวาหมินกงลิ">ฝวาหมินกงลิ</option>
+                <option value="เทศบาล1ท่าตะเภา">เทศบาล1ท่าตะเภา</option>
+                <option value="อนุบาลเมืองชุมพร">อนุบาลเมืองชุมพร</option>			
+                <option value="สอาดเผดิมวิทยา">สอาดเผดิมวิทยา</option>
+                <option value="ศรียาภัย">ศรียาภัย</option>
+              </select>
+            </label>
+          </div>
 
-      <div class="section gray05">
-        <label>จำนวนฟันแท้ <input type="number" min="0" max="32" id="np" name="NP" disabled></label> <label>จำนวนฟันแท้ผุ <input type="number" min="0" max="32" id="cp" name="CP" readonly disabled></label> <label>จำนวนฟันน้ำนม <input type="number" min="0" max="20" id="nm" name="NM" disabled></label> <label>ฟันน้ำนมต้องอุด <input type="number" min="0" max="20" id="cm" name="CM" disabled></label> </div>
+          <div class="section gray05">
+            <label>จำนวนฟันแท้ <input type="number" min="0" max="32" id="np" name="NP"></label>
+            <label>จำนวนฟันแท้ผุ <input type="number" min="0" max="32" id="cp" name="CP" readonly></label>
+            <label>จำนวนฟันน้ำนม <input type="number" min="0" max="20" id="nm" name="NM"></label>
+            <label>ฟันน้ำนมต้องอุด <input type="number" min="0" max="20" id="cm" name="CM"></label>
+          </div>
+        </div> <div class="right-column">
+          <div class="section gray05 center-buttons">
+            <button type="button" class="action-button special" id="scButton" data-name="sc"><span>แนะนำขูดหินปูน</span></button>
+            <button type="button" class="action-button special" id="exButton" data-name="ex"><span>แนะนำถอน</span></button>
+          </div>
 
-      <div class="section gray05 center-buttons">
-        <button type="button" class="action-button special" id="scButton" data-name="SC" disabled><span>แนะนำขูดหินปูน</span></button> <button type="button" class="action-button special" id="exButton" data-name="EX" disabled><span>แนะนำถอน</span></button> </div>
+          <div class="section gray076">
+            <h2>เคลือบหลุมร่องฟัน (Sealants)</h2>
+            <div class="button-group" id="slButtonGroup">
+              <button type="button" class="action-button" data-name="sl27"><span>27</span></button>
+              <button type="button" class="action-button" data-name="sl26"><span>26</span></button>
+              <button type="button" class="action-button" data-name="sl17"><span>17</span></button>
+              <button type="button" class="action-button" data-name="sl16"><span>16</span></button>
+            </div>
+            <div class="button-group">	  
+              <button type="button" class="action-button" data-name="sl37"><span>37</span></button>
+              <button type="button" class="action-button" data-name="sl36"><span>36</span></button>
+              <button type="button" class="action-button" data-name="sl46"><span>46</span></button>
+              <button type="button" class="action-button" data-name="sl47"><span>47</span></button>
+            </div>
+          </div>
 
-      <div class="section gray076">
-        <h2>เคลือบหลุมร่องฟัน (Sealants)</h2>
-        <div class="button-group" id="slButtonGroup">
-          <button type="button" class="action-button" data-name="sl27" disabled><span>27</span></button> <button type="button" class="action-button" data-name="sl26" disabled><span>26</span></button> <button type="button" class="action-button" data-name="sl17" disabled><span>17</span></button> <button type="button" class="action-button" data-name="sl16" disabled><span>16</span></button> </div>
-        <div class="button-group">	  
-          <button type="button" class="action-button" data-name="sl37" disabled><span>37</span></button> <button type="button" class="action-button" data-name="sl36" disabled><span>36</span></button> <button type="button" class="action-button" data-name="sl46" disabled><span>46</span></button> <button type="button" class="action-button" data-name="sl47" disabled><span>47</span></button> </div>
-      </div>
-
-      <div class="section gray05">
-        <h2>ให้การรักษา (Treatment)</h2>
-        <div class="tooth-treatment-grid">
-          <button type="button" class="action-button" data-name="t27" disabled><span>27</span></button> <button type="button" class="action-button" data-name="t26" disabled><span>26</span></button> <button type="button" class="action-button" data-name="t25" disabled><span>25</span></button> <button type="button" class="action-button" data-name="t24" disabled><span>24</span></button> <button type="button" class="action-button" data-name="t23" disabled><span>23</span></button> <button type="button" class="action-button" data-name="t22" disabled><span>22</span></button> <button type="button" class="action-button" data-name="t21" disabled><span>21</span></button> <button type="button" class="action-button" data-name="t11" disabled><span>11</span></button> <button type="button" class="action-button" data-name="t12" disabled><span>12</span></button> <button type="button" class="action-button" data-name="t13" disabled><span>13</span></button> <button type="button" class="action-button" data-name="t14" disabled><span>14</span></button> <button type="button" class="action-button" data-name="t15" disabled><span>15</span></button> <button type="button" class="action-button" data-name="t16" disabled><span>16</span></button> <button type="button" class="action-button" data-name="t17" disabled><span>17</span></button> <button type="button" class="action-button" data-name="t37" disabled><span>37</span></button> <button type="button" class="action-button" data-name="t36" disabled><span>36</span></button> <button type="button" class="action-button" data-name="t35" disabled><span>35</span></button> <button type="button" class="action-button" data-name="t34" disabled><span>34</span></button> <button type="button" class="action-button" data-name="t33" disabled><span>33</span></button> <button type="button" class="action-button" data-name="t32" disabled><span>32</span></button> <button type="button" class="action-button" data-name="t31" disabled><span>31</span></button> <button type="button" class="action-button" data-name="t41" disabled><span>41</span></button> <button type="button" class="action-button" data-name="t42" disabled><span>42</span></button> <button type="button" class="action-button" data-name="t43" disabled><span>43</span></button> <button type="button" class="action-button" data-name="t44" disabled><span>44</span></button> <button type="button" class="action-button" data-name="t45" disabled><span>45</span></button> <button type="button" class="action-button" data-name="t46" disabled><span>46</span></button> <button type="button" class="action-button" data-name="t47" disabled><span>47</span></button> </div>
-      </div>
-
-      <button type="submit" class="submit-btn" disabled>ส่งข้อมูล</button> </form>
+          <div class="section gray05">
+            <h2>ให้การรักษา (Treatment)</h2>
+            <div class="tooth-treatment-grid">
+              <button type="button" class="action-button" data-name="t27"><span>27</span></button> <button type="button" class="action-button" data-name="t26"><span>26</span></button> <button type="button" class="action-button" data-name="t25"><span>25</span></button> <button type="button" class="action-button" data-name="t24"><span>24</span></button> <button type="button" class="action-button" data-name="t23"><span>23</span></button> <button type="button" class="action-button" data-name="t22"><span>22</span></button> <button type="button" class="action-button" data-name="t21"><span>21</span></button> <button type="button" class="action-button" data-name="t11"><span>11</span></button> <button type="button" class="action-button" data-name="t12"><span>12</span></button> <button type="button" class="action-button" data-name="t13"><span>13</span></button> <button type="button" class="action-button" data-name="t14"><span>14</span></button> <button type="button" class="action-button" data-name="t15"><span>15</span></button> <button type="button" class="action-button" data-name="t16"><span>16</span></button> <button type="button" class="action-button" data-name="t17"><span>17</span></button>
+              <div class="grid-row-break"></div> <button type="button" class="action-button" data-name="t37"><span>37</span></button> <button type="button" class="action-button" data-name="t36"><span>36</span></button> <button type="button" class="action-button" data-name="t35"><span>35</span></button> <button type="button" class="action-button" data-name="t34"><span>34</span></button> <button type="button" class="action-button" data-name="t33"><span>33</span></button> <button type="button" class="action-button" data-name="t32"><span>32</span></button> <button type="button" class="action-button" data-name="t31"><span>31</span></button> <button type="button" class="action-button" data-name="t41"><span>41</span></button> <button type="button" class="action-button" data-name="t42"><span>42</span></button> <button type="button" class="action-button" data-name="t43"><span>43</span></button> <button type="button" class="action-button" data-name="t44"><span>44</span></button> <button type="button" class="action-button" data-name="t45"><span>45</span></button> <button type="button" class="action-button" data-name="t46"><span>46</span></button> <button type="button" class="action-button" data-name="t47"><span>47</span></button>
+            </div>
+          </div>
+          <div class="submit-button-container">
+            <button type="submit" class="submit-btn">ส่งข้อมูล</button>
+          </div>
+        </div> </div> </form>
 	<br><br><br><br><br><br>
-	<h6>ผู้สร้างและพัฒนา...นายภัทรพล ไพศาลวัชรเมธี เจ้าพนักงานทันตสาธารณสุขอาวุโส </h6>
-  </div>
-
-  <div id="password-overlay" class="popup-overlay">
-    <div id="password-modal" class="popup-modal">
-      <h2 id="password-modal-title">กรุณากรอกรหัสผ่าน</h2>
-      <div class="password-input-container">
-        <input type="password" id="password-input" maxlength="4" pattern="[0-9]{4}" inputmode="numeric" placeholder="ตัวเลข 4 หลัก">
-        <button id="password-submit-btn">เข้าสู่ระบบ</button>
-      </div>
-      <p id="password-message" class="message"></p>
-      <div id="success-animation-container">
-        <div class="checkmark-circle">
-          <div class="checkmark-stem"></div>
-          <div class="checkmark-kick"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="status-overlay" class="popup-overlay">
-    <div id="status-modal" class="popup-modal">
-      <p id="status-message"></p>
-      <button id="status-close-btn" class="submit-btn">ปิดและกรอกข้อมูลใหม่</button>
-    </div>
+	<h6>ผู้สร้างและพัฒนา...นายภัทรพล ไพศรพล ไพศาลวัชรเมธี เจ้าพนักงานทันตสาธารณสุขอาวุโส </h6>
   </div>
 
   <script>
-    const correctPassword = "3946"; // รหัสผ่านที่ถูกต้อง
-    const passwordOverlay = document.getElementById('password-overlay');
-    const passwordModal = document.getElementById('password-modal');
-    const passwordInput = document.getElementById('password-input');
-    const passwordSubmitBtn = document.getElementById('password-submit-btn');
-    const passwordMessage = document.getElementById('password-message');
-    const successAnimationContainer = document.getElementById('success-animation-container');
-    const passwordModalTitle = document.getElementById('password-modal-title');
-    const loginButton = document.getElementById('loginButton'); // New login button
-    const adminStatus = document.getElementById('adminStatus'); // Admin status display
-    const programStatusSymbol = document.getElementById('programStatus'); // Program status symbol
-
-    const statusOverlay = document.getElementById('status-overlay');
-    const statusModal = document.getElementById('status-modal');
-    const statusMessage = document.getElementById('status-message');
-    const statusCloseBtn = document.getElementById('status-close-btn');
-
-    const scriptURL = "https://script.google.com/macros/s/AKfycbwgNSARmEVj9bZU9euDyAkkuOb8PeJOtsHKHVjFcUR0AhP1ZQcOKcs4f4JmKk3H_fv-xg/exec"; // อาจต้องเปลี่ยน URL ถ้ามีการ Deploy ใหม่
+    const scriptURL = "https://script.google.com/macros/s/AKfycbwgNSARmEVj9bZU9euDyAkkuOb8PeJOtsHKHVjFcUR0AhP1ZQcOKcs4f4JmKk3H_fv-xg/exec";
     const form = document.getElementById("dataForm");
     const classInput = document.getElementById("class");
     const npInput = document.getElementById("np");
     const nmInput = document.getElementById("nm");
     const cpInput = document.getElementById("cp");
+    const submitButton = document.querySelector('.submit-button-container .submit-btn');
+    const codeInput = document.getElementById("code");
+    const submissionHistoryContainer = document.getElementById('submission-history'); // Changed ID
 
     const fieldsToRemember = ["date", "grade", "school", "NP", "NM", "CM"];
 
-    // Function to show a popup
-    function showPopup(overlay) {
-      overlay.style.display = 'flex';
-      setTimeout(() => overlay.classList.add('visible'), 10); // Add for fade-in effect
+    let submissionHistory = []; // Array to hold history objects {code: '...', time: '...'}
+    const MAX_HISTORY_ITEMS = 2;
+    const HISTORY_STORAGE_KEY = 'dentalSubmissionHistory'; // Key for localStorage
+
+    // Function to load history from localStorage
+    function loadSubmissionHistory() {
+      const saved = localStorage.getItem(HISTORY_STORAGE_KEY);
+      if (saved) {
+        try {
+          submissionHistory = JSON.parse(saved);
+          // Ensure it's an array and trim if somehow it got too big
+          if (!Array.isArray(submissionHistory)) {
+            submissionHistory = [];
+          } else if (submissionHistory.length > MAX_HISTORY_ITEMS) {
+            submissionHistory = submissionHistory.slice(-MAX_HISTORY_ITEMS); // Take last MAX_HISTORY_ITEMS
+          }
+        } catch (e) {
+          console.error("Error parsing submission history from localStorage:", e);
+          submissionHistory = []; // Reset on error
+        }
+      }
     }
 
-    // Function to hide a popup
-    function hidePopup(overlay) {
-      overlay.classList.remove('visible');
-      setTimeout(() => overlay.style.display = 'none', 300); // Wait for fade-out
+    // Function to save history to localStorage
+    function saveSubmissionHistory() {
+      localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(submissionHistory));
     }
 
-    // Function to enable all form fields and submit button
-    function enableForm() {
-      form.classList.remove('form-disabled');
-      const formElements = form.querySelectorAll('input, select, button');
-      formElements.forEach(element => {
-        element.disabled = false;
-      });
-      // date input should remain readonly, but still enabled
-      document.getElementById("date").readOnly = true; 
-    }
-
-    // Function to disable all form fields and submit button
-    function disableForm() {
-      form.classList.add('form-disabled');
-      const formElements = form.querySelectorAll('input, select, button');
-      formElements.forEach(element => {
-        element.disabled = true;
-      });
-    }
-
-    // Initial state: form is disabled, admin status is hidden
-    disableForm();
-    adminStatus.style.display = 'none';
-
-    // --- Password Popup Logic ---
-    function checkPassword() {
-      const enteredPassword = passwordInput.value;
-      passwordMessage.textContent = ''; // Clear previous messages
-
-      if (enteredPassword.length !== 4 || isNaN(enteredPassword)) {
-        passwordMessage.textContent = 'กรุณากรอกรหัสผ่าน 4 หลักที่เป็นตัวเลขเท่านั้น';
-        passwordMessage.style.color = '#e74c3c'; // Red for error
+    // Function to update the display of history on the page
+    function updateSubmissionHistoryDisplay() {
+      submissionHistoryContainer.innerHTML = ''; // Clear current display
+      if (submissionHistory.length === 0) {
+        submissionHistoryContainer.style.display = 'none'; // Hide if no history
         return;
       }
+      submissionHistoryContainer.style.display = 'block'; // Show if there is history
 
-      if (enteredPassword === correctPassword) {
-        passwordMessage.textContent = 'รหัสผ่านถูกต้อง!';
-        passwordMessage.style.color = '#27ae60'; // Green for success
-        passwordModalTitle.textContent = 'ยินดีต้อนรับ!';
-        
-        // Show success animation
-        successAnimationContainer.classList.add('visible');
-        
-        // Hide password input and button
-        document.querySelector('.password-input-container').style.display = 'none';
-
-        setTimeout(() => {
-          passwordMessage.textContent = 'เชิญท่านเข้าใช้งานโปรแกรม DenT-Check V.4';
-          adminStatus.style.display = 'inline'; // Show Admin status
-          programStatusSymbol.textContent = '🔓'; // Change symbol to unlocked
-          enableForm(); // Enable the form and submit button
-          loginButton.style.display = 'none'; // Hide the login button
-
-          // Auto-hide popup after animation and message
-          setTimeout(() => {
-            hidePopup(passwordOverlay);
-            // Initialize form after successful login
-            document.getElementById("date").value = new Date().toLocaleDateString("th-TH");
-            fieldsToRemember.forEach(field => {
-              const savedValue = localStorage.getItem(field);
-              if (savedValue) {
-                document.querySelector(`[name="${field}"]`).value = savedValue;
-              }
-            });
-          }, 1500); // Delay before hiding popup
-        }, 1000); // Delay before showing welcome message
-      } else {
-        passwordMessage.textContent = 'รหัสผ่านไม่ถูกต้อง';
-        passwordMessage.style.color = '#e74c3c';
-        passwordInput.value = ''; // Clear input on incorrect password
+      // Iterate from most recent to oldest for display order (newest at top)
+      for (let i = submissionHistory.length - 1; i >= 0; i--) {
+        const entry = submissionHistory[i];
+        const p = document.createElement('p');
+        p.innerHTML = `ข้อมูลล่าสุด : <strong>${entry.code}</strong><br>ส่งสำเร็จเมื่อ: ${entry.time}`;
+        submissionHistoryContainer.appendChild(p);
       }
     }
 
-    // Event listeners for password popup
-    passwordSubmitBtn.addEventListener('click', checkPassword);
-    passwordInput.addEventListener('keypress', function(event) {
-      if (event.key === 'Enter') {
-        checkPassword();
+    // Function to add a new entry to history and manage array size
+    function addSubmissionToHistory(code, timestamp) {
+      submissionHistory.push({ code: code, time: timestamp });
+      if (submissionHistory.length > MAX_HISTORY_ITEMS) {
+        submissionHistory.shift(); // Remove the oldest entry
       }
-    });
+      saveSubmissionHistory(); // Save updated history to localStorage
+      updateSubmissionHistoryDisplay(); // Update the UI
+    }
 
-    // Event listener for the new Login button
-    loginButton.addEventListener('click', () => {
-      passwordInput.value = ''; // Clear input when showing popup
-      passwordMessage.textContent = ''; // Clear message
-      passwordModalTitle.textContent = 'กรุณากรอกรหัสผ่าน';
-      document.querySelector('.password-input-container').style.display = 'flex'; // Ensure input/button are visible
-      successAnimationContainer.classList.remove('visible'); // Hide animation
-      showPopup(passwordOverlay);
-      passwordInput.focus(); // Focus on input field
-    });
-
-    // --- Submission Status Popup Logic ---
-    statusCloseBtn.addEventListener('click', () => {
-      hidePopup(statusOverlay);
-      form.reset(); // Reset form
+    // Function to reset the form inputs (not the history display)
+    function resetFormForNewEntry() {
+      form.reset(); // Reset form fields
       // Clear selected buttons
       actionButtons.forEach(button => {
         button.classList.remove('selected');
@@ -239,10 +198,9 @@
           document.querySelector(`[name="${field}"]`).value = savedValue;
         }
       });
-    });
+    }
 
-    // --- Existing Form Logic (Modified for Popups) ---
-    // Event Listener สำหรับช่อง 'ชั้น' เพื่อสุ่มค่า NP และ NM
+    // --- Existing Form Logic (mostly unchanged) ---
     classInput.addEventListener('change', function() {
       const grade = this.value;
       let npValue, nmValue;
@@ -256,12 +214,12 @@
       } else if (grade === "ป.6") {
         npValue = getRandomInt(24, 26);
         nmValue = getRandomInt(2, 6);
-      } else if (grade === "ม.1") { // Add this new condition
-        npValue = 28; // Set NP to 28 for ม.1
-        nmValue = 0;  // Set NM to 0 for ม.1
+      } else if (grade === "ม.1") {
+        npValue = 28;
+        nmValue = 0;
       }
       else {
-        npValue = ''; // ล้างค่าถ้าไม่ใช่ชั้นที่กำหนด
+        npValue = '';
         nmValue = '';
       }
 
@@ -269,16 +227,14 @@
       nmInput.value = nmValue;
     });
 
-    // ฟังก์ชันสุ่มตัวเลข
     function getRandomInt(min, max) {
       min = Math.ceil(min);
       max = Math.floor(max);
       return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    // จัดการการคลิกปุ่มสำหรับ sl, t, SC, EX
     const actionButtons = document.querySelectorAll('.action-button');
-    const selectedButtons = new Set(); // เก็บปุ่มที่ถูกเลือก
+    const selectedButtons = new Set();
 
     function updateCpCount() {
       let cpCount = 0;
@@ -308,20 +264,20 @@
     // เมื่อผู้ใช้ส่งฟอร์ม
     form.addEventListener("submit", e => {
       e.preventDefault();
-      statusMessage.innerHTML = "กำลังส่งข้อมูล..."; // แสดงสถานะใน popup
-      showPopup(statusOverlay); // Show submission status popup
+      
+      submitButton.classList.add('blinking');
+      submitButton.disabled = true;
 
       const formData = new FormData(form);
       formData.append('CP', cpInput.value);
 
-      selectedButtons.forEach(name => {
+		selectedButtons.forEach(name => {
         formData.append(name, 'on');
       });
 
-      const submittedData = {};
-      for (let [key, value] of formData.entries()) {
-        submittedData[key] = value;
-      }
+      const submittedCode = codeInput.value;
+      // Get current time with full date and time for better history
+      const submissionDateTime = new Date().toLocaleDateString("th-TH") + " " + new Date().toLocaleTimeString("th-TH", { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
       fetch(scriptURL, {
         method: "POST",
@@ -333,22 +289,34 @@
           localStorage.setItem(field, document.querySelector(`[name="${field}"]`).value);
         });
 
-        let displayMessage = "✅ ส่งข้อมูลเรียบร้อยแล้ว!<br><br>";
-        displayMessage += "<strong>ข้อมูลที่ส่ง:</strong><br>";
+        // Add to history and update display
+        addSubmissionToHistory(submittedCode, submissionDateTime);
+        
+        // Reset form fields for the next entry AFTER successful submission
+        resetFormForNewEntry(); 
 
-        for (const key in submittedData) {
-            if (submittedData[key] !== "" && submittedData[key] !== "on") {
-                displayMessage += `<strong>${key}:</strong> ${submittedData[key]}<br>`;
-            } else if (submittedData[key] === "on") {
-                displayMessage += `<strong>${key}:</strong> เลือก<br>`;
-            }
-        }
-        statusMessage.innerHTML = displayMessage; // Update message in popup
       })
       .catch(() => {
-        statusMessage.innerHTML = "❌ เกิดข้อผิดพลาดในการส่งข้อมูล"; // Update message in popup
+        alert("❌ เกิดข้อผิดพลาดในการส่งข้อมูล");
+      })
+      .finally(() => {
+        submitButton.classList.remove('blinking');
+        submitButton.disabled = false;
       });
     });
+
+    // Initial setup on page load:
+    loadSubmissionHistory(); // Load any saved history
+    updateSubmissionHistoryDisplay(); // Display it
+
+    document.getElementById("date").value = new Date().toLocaleDateString("th-TH");
+    fieldsToRemember.forEach(field => {
+      const savedValue = localStorage.getItem(field);
+      if (savedValue) {
+        document.querySelector(`[name="${field}"]`).value = savedValue;
+      }
+    });
+
   </script>
 </body>
 </html>

@@ -1,3 +1,8 @@
+/* Add this at the very top of your styleDcheck.css */
+* {
+  box-sizing: border-box;
+}
+
 body {
   font-family: 'Sarabun', sans-serif;
   margin: 0;
@@ -48,6 +53,8 @@ form label {
   display: flex;
   flex-direction: column;
   margin-bottom: 1rem;
+  font-weight: bold;
+  color: #555;
 }
 
 input[type="text"],
@@ -58,7 +65,6 @@ select {
   border-radius: 4px;
   border: 1px solid #ccc;
   width: 100%;
-  box-sizing: border-box;
 }
 
 input[type="text"]:focus,
@@ -69,42 +75,57 @@ select:focus {
   box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
 }
 
+/* Specific styling for the submit button */
 button.submit-btn {
-  width: 100%;
-  padding: 1rem;
-  font-size: 1.2rem;
-  background-color: #4CAF50;
+  width: 180px;
+  height: 40px;
+  padding: 0;
+  font-size: 0.9rem;
+  background-color: red;
   color: white;
   border: none;
   border-radius: 40px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-top: 1rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 button.submit-btn:hover {
-  background-color: #45a049;
+  background-color: #cc0000;
+  transform: translateY(-2px);
 }
 
 /* Style for disabled submit button */
 button.submit-btn:disabled {
-    background-color: #cccccc; /* Gray background */
-    cursor: not-allowed; /* No-entry cursor */
-    opacity: 0.7;
+  background-color: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+  box-shadow: none;
 }
 
+/* Animation for blinking submit button */
+@keyframes blink-red-green {
+  0% { background-color: red; }
+  50% { background-color: #4CAF50; } /* เขียว */
+  100% { background-color: red; }
+}
+
+button.submit-btn.blinking {
+  animation: blink-red-green 1s infinite alternate; /* กระพริบ 1 วินาที, สลับไปมา */
+}
+
+
 .section {
-  padding: 0.5rem;
+  padding: 1.5rem;
   border-radius: 8px;
-  text-align: center;
-  margin-bottom: 1rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
-  gap: 1rem;
-  width: 100%;
-  margin: auto;
+  margin-bottom: 1.5rem;
+  gap: 1.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease-in-out;
+  /* Removed width: 100%; to allow it to fit within grid columns naturally */
 }
 
 .section:hover {
@@ -117,7 +138,6 @@ button.submit-btn:disabled {
   margin-bottom: 1rem;
   font-size: 1.3rem;
   width: 100%;
-  grid-column: 1 / -1;
 }
 
 .button-group {
@@ -127,15 +147,11 @@ button.submit-btn:disabled {
   gap: 0.5rem;
   margin-bottom: 0.5rem;
   width: 100%;
-  grid-column: 1 / -1;
 }
 
 .action-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px; 
-  height: 30px; 
+  width: 40px;
+  height: 30px;
   padding: 0.2rem;
   font-size: 0.85rem;
   border: none;
@@ -143,14 +159,15 @@ button.submit-btn:disabled {
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  color: white;
   font-weight: bold;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
   transition: all 0.2s ease-in-out;
   background-color: #f0f0f0;
   color: #333;
   flex-shrink: 0;
-  box-sizing: border-box; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .action-button.selected {
@@ -181,6 +198,11 @@ button.submit-btn:disabled {
   position: relative;
   z-index: 2;
   color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
 .action-button.selected span {
@@ -203,47 +225,59 @@ button.submit-btn:disabled {
     gap: 1rem;
 }
 
-/* Added to center the SC and EX buttons */
+/* Added to center the SC, EX and Submit buttons */
 .center-buttons {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 1rem;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 /* CSS สำหรับ tooth-treatment-grid เพื่อจัดเรียงปุ่มฟันในส่วน "ให้การรักษา" */
 .tooth-treatment-grid {
     display: grid;
-    grid-template-columns: repeat(14, 1fr); 
-    gap: 0.8rem;
-    justify-items: center;
-    align-items: center;
-    margin: auto;
+    /* Use auto-fit with minmax to allow flexible columns */
+    grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+    gap: 0.1rem;
+    justify-items: center; /* จัดปุ่มแต่ละปุ่มให้อยู่กึ่งกลางในแนวนอนภายในช่อง Grid ของตัวเอง */
+    align-items: center; /* จัดปุ่มแต่ละปุ่มให้อยู่กึ่งกลางในแนวตั้งภายในช่อง Grid ของตัวเอง */
+    justify-content: center; /* NEW: จัด Grid tracks ทั้งหมดให้อยู่กึ่งกลางในแนวนอนภายใน Container ของมัน */
+    margin: auto; /* จัด Grid ทั้งหมดให้อยู่กึ่งกลางในแนวนอนภายใน Container ของมัน */
     max-width: 100%;
-    grid-column: 1 / -1; 
 }
+
+/* New style for the grid-row-break element */
+.grid-row-break {
+    grid-column: 1 / -1; /* Make this element span all columns */
+    height: 0; /* No visual height */
+    visibility: hidden; /* Ensure it's not visible */
+    width: 100%; /* Ensure it takes full width to force break */
+}
+
 
 /* **จุดที่ยืดความกว้างปุ่ม**: กำหนดให้ปุ่มภายใน .tooth-treatment-grid เท่านั้นที่ยืดเต็มความกว้างของ grid cell */
 .tooth-treatment-grid .action-button {
-    width: 100%; 
-    height: 30px; 
+    width: 40px; /* Fixed width for these buttons */
+    height: 30px;
 }
 
 /* Style for disabled action buttons */
 .action-button:disabled {
-    background-color: #e0e0e0; /* Lighter gray */
+    background-color: #e0e0e0;
     cursor: not-allowed;
     opacity: 0.5;
     box-shadow: none;
 }
 
 .action-button:disabled::before {
-    background: none; /* Remove gradient overlay */
+    background: none;
     opacity: 0;
 }
 
 .action-button:disabled span {
-    color: #666; /* Darker text color */
+    color: #666;
 }
 
 
@@ -259,7 +293,7 @@ button.submit-btn:disabled {
   background-color: #dcdcdc;
 }
 
-.gray085 { 
+.gray085 {	
   background-color: #cfcfcf;
 }
 
@@ -275,8 +309,8 @@ button.submit-btn:disabled {
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  opacity: 0; /* Start hidden for fade-in */
-  visibility: hidden; /* Ensure it's not interactive when hidden */
+  opacity: 0;
+  visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
@@ -293,8 +327,8 @@ button.submit-btn:disabled {
   text-align: center;
   max-width: 90%;
   width: 400px;
-  transform: translateY(-20px); /* Start slightly above for slide-down */
-  opacity: 0; /* Start hidden for fade-in */
+  transform: translateY(-20px);
+  opacity: 0;
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
@@ -311,10 +345,10 @@ button.submit-btn:disabled {
 
 .password-input-container {
     display: flex;
-    flex-direction: column; /* Stack input and button vertically */
+    flex-direction: column;
     gap: 1rem;
     margin-bottom: 1.5rem;
-    align-items: center; /* Center items horizontally */
+    align-items: center;
 }
 
 .password-input-container input {
@@ -323,8 +357,8 @@ button.submit-btn:disabled {
   text-align: center;
   border: 2px solid #ccc;
   border-radius: 5px;
-  max-width: 150px; /* Limit input width */
-  margin: 0 auto; /* Center the input */
+  max-width: 150px;
+  margin: 0 auto;
 }
 
 .password-input-container input:focus {
@@ -342,8 +376,8 @@ button.submit-btn:disabled {
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.1s ease;
-  width: 100%; /* Make button fill container */
-  max-width: 200px; /* Max width for button */
+  width: 100%;
+  max-width: 200px;
 }
 
 .password-input-container button:hover {
@@ -356,15 +390,15 @@ button.submit-btn:disabled {
   margin-top: 1rem;
   font-weight: bold;
   color: #333;
-  min-height: 20px; /* Reserve space for message */
+  min-height: 20px;
 }
 
 #status-modal .submit-btn {
   margin-top: 1.5rem;
   padding: 0.8rem 1.5rem;
   font-size: 1.1rem;
-  max-width: 250px; /* Limit button width in status popup */
-  display: block; /* Make button take full width and center */
+  max-width: 250px;
+  display: block;
   margin-left: auto;
   margin-right: auto;
 }
@@ -374,7 +408,7 @@ button.submit-btn:disabled {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 80px; /* Space for animation */
+  height: 80px;
   margin-top: 1rem;
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -388,9 +422,9 @@ button.submit-btn:disabled {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background-color: #27ae60; /* Green background */
+  background-color: #27ae60;
   position: relative;
-  transform: scale(0); /* Start hidden */
+  transform: scale(0);
   animation: scaleIn 0.3s ease-out forwards;
 }
 
@@ -438,15 +472,15 @@ button.submit-btn:disabled {
 .admin-status {
     font-size: 1.2em;
     font-weight: bold;
-    color: #28a745; /* Green color for admin status */
+    color: #28a745;
     margin-left: 10px;
-    display: none; /* Hidden by default */
+    display: none;
 }
 
 /* Form disabled state */
 .form-disabled {
-    pointer-events: none; /* Disable all pointer events on the form */
-    opacity: 0.6; /* Make it slightly transparent to indicate disabled state */
+    pointer-events: none;
+    opacity: 0.6;
 }
 
 .login-btn-container {
@@ -493,27 +527,90 @@ button.submit-btn:disabled {
 
 @media screen and (max-width: 600px) {
   .section {
-    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
   }
   .action-button {
-      width: 35px; 
+      width: 35px;
       height: 28px;
       font-size: 0.75rem;
   }
   .action-button.special {
       width: 110px;
+      height: 40px;
+      font-size: 0.7rem;
+  }
+  .submit-btn {
+      width: 110px;
+      height: 40px;
       font-size: 0.7rem;
   }
   .tooth-treatment-grid .action-button {
       width: 100%;
-      height: 28px; 
+      height: 28px;
   }
   /* Popup adjustments for mobile */
   .popup-modal {
     padding: 1.5rem;
-    width: 95%; /* Make it slightly wider on mobile */
+    width: 95%;
   }
   .password-input-container input {
     max-width: 120px;
+  }
+}
+
+/* New styles for the two-column layout */
+.main-content-grid {
+  display: grid;
+  grid-template-columns: 3fr 7fr; /* Desktop: 30% left, 70% right */
+  gap: 1.5rem; /* Space between columns */
+  margin-bottom: 1.5rem; /* Add margin below the grid */
+}
+
+.left-column {
+  /* No specific styles needed here other than default flow */
+}
+
+.right-column {
+  /* No specific styles needed here other than default flow */
+}
+
+/* Adjust section padding within columns if needed, or let them inherit */
+.left-column .section,
+.right-column .section {
+    padding: 1rem; /* Adjust padding for sections inside columns */
+    margin-bottom: 1rem; /* Adjust margin between sections inside columns */
+}
+
+/* Ensure form labels and inputs within left column are well-aligned */
+.left-column .section label {
+    margin-bottom: 0.8rem; /* Tighter spacing for labels in left column */
+}
+.left-column .section input,
+.left-column .section select {
+    margin-top: 0.3rem; /* Small margin below label text */
+}
+
+/* Container for the submit button at the bottom, centered */
+.submit-button-container {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    width: 100%; /* Take full width of its parent (form) */
+    margin-top: 2rem; /* Add some space above */
+    margin-bottom: 2rem; /* Add some space below */
+}
+
+
+/* Responsive adjustments for screens smaller than 768px (e.g., tablets and mobile) */
+@media screen and (max-width: 768px) {
+  .main-content-grid {
+    grid-template-columns: 1fr; /* Stack columns on top of each other */
+    gap: 1rem; /* Reduce gap when stacked */
+  }
+
+  .left-column .section,
+  .right-column .section {
+      padding: 1rem; /* Consistent padding for sections */
+      margin-bottom: 1rem; /* Consistent margin for sections */
   }
 }
