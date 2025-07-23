@@ -1,340 +1,585 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <base target="_top">
-  <title>ระบบสอบถามคิวบริการวันนี้ | คลินิกทันตกรรม</title>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    /* Global Styles */
-    body {
-      font-family: 'Kanit', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #e0f2f7; /* Light blue background */
-      color: #333;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start; /* Align to top */
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-    .container {
-      max-width: 900px;
-      width: 95%;
-      margin: 40px auto; /* More margin on top/bottom */
-      background: linear-gradient(135deg, #ffffff, #f0f8ff); /* Gradient white */
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* Stronger shadow */
-      animation: fadeIn 1s ease-out; /* Fade in animation for container */
-    }
+    <base target="_top">
+    <title>ระบบสอบถามคิวบริการวันนี้ | คลินิกทันตกรรม</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+          integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Kanit', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #e0f2f7; /* Light blue background */
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top */
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative; /* For button positioning */
+        }
 
-    /* Headers */
-    h1 {
-      color: #007bff; /* Bright blue */
-      text-align: center;
-      margin-bottom: 30px;
-      font-size: 2.5em;
-      font-weight: 700;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-    }
-    h2 {
-      color: #0056b3;
-      text-align: center;
-      margin-top: 30px;
-      margin-bottom: 20px;
-      font-size: 1.8em;
-      font-weight: 600;
-      border-bottom: 2px solid #e0f2f7;
-      padding-bottom: 10px;
-    }
-
-    /* Loading Animation */
-    #loading {
-      text-align: center;
-      padding: 30px;
-      font-size: 1.4em;
-      color: #007bff;
-      animation: pulse 1.5s infinite ease-in-out; /* Pulse animation */
-      font-weight: 600;
-    }
-
-    /* Error Message */
-    .error-message {
-      color: #dc3545; /* Red */
-      background-color: #f8d7da; /* Light red background */
-      border: 1px solid #f5c6cb;
-      padding: 15px;
-      border-radius: 8px;
-      text-align: center;
-      margin-top: 20px;
-      font-weight: 500;
-    }
-
-    /* Today Status Section */
-    #todayStatus {
-      text-align: center;
-      padding: 20px;
-      margin-bottom: 25px;
-      border-radius: 12px;
-      font-size: 1.5em;
-      font-weight: 700;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s ease-in-out; /* Smooth transition */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .status-holiday {
-      background: linear-gradient(45deg, #ffb300, #ff8f00); /* Orange gradient */
-      color: #fff;
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
-    }
-    .status-working-day {
-      background: linear-gradient(45deg, #4caf50, #2e7d32); /* Green gradient */
-      color: #fff;
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
-    }
-    #todayStatus:hover {
-        transform: translateY(-5px); /* Slight lift on hover */
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-    }
-
-    /* Booking List */
-    #todayBookings {
-      margin-top: 30px;
-      border-top: 1px solid #e0e0e0;
-      padding-top: 25px;
-    }
-    ul {
-      list-style-type: none;
-      padding: 0;
-    }
-    li {
-      background: #ffffff; /* White background for list items */
-      margin-bottom: 12px;
-      padding: 15px 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); /* Soft shadow */
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-      border-left: 5px solid #007bff; /* Blue accent border */
-    }
-    li:hover {
-      transform: translateY(-3px); /* Slight lift on hover */
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
-    }
-    li.booking strong {
-      color: #0056b3; /* Darker blue for name */
-      font-size: 1.1em;
-    }
-    .time-slot {
-      font-weight: 700;
-      color: #007bff; /* Bright blue */
-      font-size: 1.2em;
-      background-color: #e3f2fd; /* Light blue background for time */
-      padding: 5px 10px;
-      border-radius: 5px;
-    }
-    .empty-message {
-      text-align: center;
-      color: #888;
-      padding: 20px;
-      border: 2px dashed #b3e0ff; /* Light blue dashed border */
-      border-radius: 10px;
-      margin-top: 20px;
-      font-size: 1.1em;
-      font-style: italic;
-      background-color: #f0faff; /* Very light blue background */
-    }
-
-    /* Keyframe Animations */
-    @keyframes pulse {
-      0% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.05); opacity: 0.8; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Optional: Responsive adjustments */
-    @media (max-width: 600px) {
         .container {
-            margin: 20px auto;
-            padding: 20px;
+            max-width: 900px;
+            width: 95%;
+            margin: 40px auto; /* More margin on top/bottom */
+            background: linear-gradient(135deg, #ffffff, #f0f8ff); /* Gradient white */
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* Stronger shadow */
+            animation: fadeIn 1s ease-out; /* Fade in animation for container */
+            position: relative; /* For saber effect */
+            overflow: hidden; /* Hide saber overflow */
+            z-index: 1; /* Ensure container is above saber lines */
         }
-        h1 {
-            font-size: 2em;
-        }
-        h2 {
-            font-size: 1.5em;
-        }
-        #todayStatus {
-            font-size: 1.2em;
-        }
-        li {
-            flex-direction: column;
-            align-items: flex-start;
-            padding: 12px 15px;
-        }
-        .time-slot {
-            margin-top: 8px;
-            align-self: flex-end; /* Align time slot to right on small screens */
-        }
-    }
 
-  </style>
+        /* Saber Effect */
+        .saber-line {
+            position: absolute;
+            background: linear-gradient(to right, rgba(0, 255, 255, 0), #00ffff, rgba(0, 255, 255, 0)); /* Cyan glow */
+            box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+            animation: saberMove 4s infinite linear;
+            z-index: 0; /* Below container content */
+        }
+
+        .saber-line:nth-child(1) {
+            top: -20px;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            animation-delay: 0s;
+        } /* Top */
+
+        .saber-line:nth-child(2) {
+            right: -20px;
+            top: 0;
+            height: 100%;
+            width: 5px;
+            animation-delay: 1s;
+            transform-origin: top;
+            animation-name: saberMoveY;
+        } /* Right */
+
+        .saber-line:nth-child(3) {
+            bottom: -20px;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            animation-delay: 2s;
+        } /* Bottom */
+
+        .saber-line:nth-child(4) {
+            left: -20px;
+            top: 0;
+            height: 100%;
+            width: 5px;
+            animation-delay: 3s;
+            transform-origin: top;
+            animation-name: saberMoveY;
+        } /* Left */
+
+        /* Headers */
+        h1 {
+            color: #007bff; /* Bright blue */
+            text-align: center;
+            margin-bottom: 20px; /* Reduced margin to fit image */
+            font-size: 2.5em;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            display: flex; /* Use flex to align image and text */
+            flex-direction: column; /* Stack image and text vertically */
+            align-items: center;
+            gap: 10px; /* Space between image and text */
+        }
+
+        h1 img {
+            max-width: 120px; /* Adjust size as needed */
+            height: auto;
+            border-radius: 50%; /* Make image round if desired */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 .main-title-text { /* New class for the text part of H1 */
+            white-space: nowrap; /* Keep text on one line */
+        }
+
+        h2 {
+            color: #0056b3;
+            text-align: center;
+            margin-top: 10px; /* Adjusted margin */
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            font-weight: 600;
+            border-bottom: 2px solid #e0f2f7;
+            padding-bottom: 10px;
+        }
+
+        /* Loading Animation */
+        #loading {
+            text-align: center;
+            padding: 30px;
+            font-size: 1.4em;
+            color: #007bff;
+            animation: pulse 1.5s infinite ease-in-out; /* Pulse animation */
+            font-weight: 600;
+        }
+
+        /* Error Message */
+        .error-message {
+            color: #dc3545; /* Red */
+            background-color: #f8d7da; /* Light red background */
+            border: 1px solid #f5c6cb;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 20px;
+            font-weight: 500;
+        }
+
+        /* Today Status Section */
+        #todayStatus {
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            font-size: 1.5em;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out; /* Smooth transition */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px; /* Space between icon and text */
+        }
+
+        .status-holiday {
+            background: linear-gradient(45deg, #ffb300, #ff8f00); /* Orange gradient */
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .status-working-day {
+            background: linear-gradient(45deg, #4caf50, #2e7d32); /* Green gradient */
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        #todayStatus:hover {
+            transform: translateY(-5px); /* Slight lift on hover */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Booking List */
+        #todayBookings {
+            margin-top: 30px;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 25px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background: #ffffff; /* White background for list items */
+            margin-bottom: 12px;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); /* Soft shadow */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            border-left: 5px solid #007bff; /* Blue accent border */
+        }
+
+        li:hover {
+            transform: translateY(-3px); /* Slight lift on hover */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+        }
+
+        li.booking strong {
+            color: #0056b3; /* Darker blue for name */
+            font-size: 1.1em;
+        }
+
+        .time-slot {
+            font-weight: 700;
+            color: #007bff; /* Bright blue */
+            font-size: 1.2em;
+            background-color: #e3f2fd; /* Light blue background for time */
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #888;
+            padding: 20px;
+            border: 2px dashed #b3e0ff; /* Light blue dashed border */
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 1.1em;
+            font-style: italic;
+            background-color: #f0faff; /* Very light blue background */
+        }
+
+        /* Website Button */
+        .website-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 12px 25px;
+            background-color: #dc3545; /* Red background */
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.1em;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+            animation: blink 1.5s infinite alternate; /* Blinking animation */
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            z-index: 10; /* Ensure it's on top */
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .website-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.6);
+            filter: brightness(1.1);
+        }
+
+        @keyframes blink {
+            0% {
+                background-color: #dc3545;
+            }
+            100% {
+                background-color: #ff6347;
+            } /* Lighter red when blinking */
+        }
+
+        /* Keyframe Animations */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Saber Animation (for each side) */
+        @keyframes saberMove {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        @keyframes saberMoveY {
+            0% {
+                transform: translateY(-100%);
+            }
+            100% {
+                transform: translateY(100%);
+            }
+        }
+
+        /* Footer Section */
+        #providerInfo {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            animation: slideUp 1s ease-out; /* Slide up animation */
+        }
+
+        #providerInfo img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .provider-text {
+            flex-grow: 1;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .provider-text strong {
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Slide Up Animation */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .container {
+                margin: 20px auto;
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            h1 img {
+                max-width: 100px;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            #todayStatus {
+                font-size: 1.2em;
+                flex-direction: column;
+            }
+
+            .website-button {
+                top: 15px;
+                right: 15px;
+                padding: 10px 18px;
+                font-size: 0.9em;
+            }
+
+            li {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 12px 15px;
+            }
+
+            .time-slot {
+                margin-top: 8px;
+                align-self: flex-end; /* Align time slot to right on small screens */
+            }
+
+            #providerInfo {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            #providerInfo img {
+                width: 60px;
+                height: 60px;
+            }
+
+            .provider-text {
+                font-size: 0.9em;
+            }
+        }
+
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1><span style="color:#007bff;">Dental</span> <span style="color:#2e7d32;">Public</span>Health</h1>
+<a href="https://phattarapoll.github.io/cptown/" class="website-button" target="_blank">
+    <i class="fas fa-external-link-alt"></i> เข้าสู่เว็บไซต์
+</a>
+
+<div class="container">
+    <div class="saber-line"></div>
+    <div class="saber-line"></div>
+    <div class="saber-line"></div>
+    <div class="saber-line"></div>
+
+    <h1>
+        <img src="assets/images/tm.png" alt="โลโก้ Dental Public Health">
+        <span class="main-title-text"><span style="color:#007bff;">Dental</span> <span
+                style="color:#2e7d32;">Public Health</span></span>
+    </h1>
     <h2><span style="color:#007bff;">งานทันตสาธารณสุข ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร</span></h2>
+
     <div id="loading">กำลังโหลดข้อมูล... โปรดรอสักครู่</div>
     <div id="error" class="error-message" style="display: none;"></div>
 
     <div id="todayStatus" style="display: none;">
-      </div>
+    </div>
 
     <div id="todayBookings" style="display: none;">
-      <h2>คิวบริการวันนี้ (<span id="currentDate"></span>)</h2>
-      <ul id="bookingsList">
+        <h2>คิวบริการวันนี้ (<span id="currentDate"></span>)</h2>
+        <ul id="bookingsList">
         </ul>
     </div>
 
-  </div>
+    <div id="providerInfo">
+        <img src="assets/images/admin.jpg" alt="รูปผู้ให้บริการ">
+        <div class="provider-text">
+            <strong>ผู้ให้บริการ :</strong> นายภัทรพล ไพศาลวัชรเมธี<br>
+            <strong>ตำแหน่ง :</strong> ทันตสาธารณสุขชำนาญงาน รักษาการอาวุโส<br>
+            (สร้างและพัฒนา)
+        </div>
+    </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const loadingDiv = document.getElementById('loading');
-      const errorDiv = document.getElementById('error');
-      const todayStatusDiv = document.getElementById('todayStatus');
-      const todayBookingsDiv = document.getElementById('todayBookings');
-      const bookingsList = document.getElementById('bookingsList');
-      const currentDateSpan = document.getElementById('currentDate');
+</div>
 
-      // ** Web App URL ของคุณที่ได้จากการ Deploy Apps Script **
-      const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw7wH8r9lCEgMTlIiySJfZ_vsniBCeyiaBlYtXZhIOHe34CLUfXQpT8rt36av32ZqIPOQ/exec';
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const loadingDiv = document.getElementById('loading');
+        const errorDiv = document.getElementById('error');
+        const todayStatusDiv = document.getElementById('todayStatus');
+        const todayBookingsDiv = document.getElementById('todayBookings');
+        const bookingsList = document.getElementById('bookingsList');
+        const currentDateSpan = document.getElementById('currentDate');
 
-      // Helper function to format date to YYYY-MM-DD
-      function formatDate(date) {
-        const d = new Date(date);
-        const year = d.getFullYear();
-        const month = (d.getMonth() + 1).toString().padStart(2, '0');
-        const day = d.getDate().toString().padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      }
+        // ** Web App URL ของคุณที่ได้จากการ Deploy Apps Script **
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw7wH8r9lCEgMTlIiySJfZ_vsniBCeyiaBlYtXZhIOHe34CLUfXQpT8rt36av32ZqIPOQ/exec';
 
-      // Helper function to format date to DD/MM/YYYY
-      function formatDisplayDate(date) {
-        const d = new Date(date);
-        const day = d.getDate().toString().padStart(2, '0');
-        const month = (d.getMonth() + 1).toString().padStart(2, '0');
-        const year = d.getFullYear();
-        return `${day}/${month}/${year}`;
-      }
+        // Helper function to format date to YYYY-MM-DD
+        function formatDate(date) {
+            const d = new Date(date);
+            const year = d.getFullYear();
+            const month = (d.getMonth() + 1).toString().padStart(2, '0');
+            const day = d.getDate().toString().padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
 
-      // Helper function to format date for holiday check (MM/DD/YYYY)
-      function formatHolidayDate(date) {
-        const d = new Date(date);
-        const month = (d.getMonth() + 1).toString().padStart(2, '0');
-        const day = d.getDate().toString().padStart(2, '0');
-        const year = d.getFullYear();
-        return `${month}/${day}/${year}`;
-      }
+        // Helper function to format date to DD/MM/YYYY
+        function formatDisplayDate(date) {
+            const d = new Date(date);
+            const day = d.getDate().toString().padStart(2, '0');
+            const month = (d.getMonth() + 1).toString().padStart(2, '0');
+            const year = d.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
 
-      fetch(WEB_APP_URL)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          return response.json();
-        })
-        .then(data => {
-          loadingDiv.style.display = 'none';
+        // Helper function to format date for holiday check (MM/DD/YYYY)
+        function formatHolidayDate(date) {
+            const d = new Date(date);
+            const month = (d.getMonth() + 1).toString().padStart(2, '0');
+            const day = d.getDate().toString().padStart(2, '0');
+            const year = d.getFullYear();
+            return `${month}/${day}/${year}`;
+        }
 
-          if (data.error) {
-            errorDiv.innerText = `เกิดข้อผิดพลาด: ${data.error}`;
-            errorDiv.style.display = 'block';
-            return;
-          }
+        fetch(WEB_APP_URL)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                loadingDiv.style.display = 'none';
 
-          const { config, bookings, holidays } = data;
-          const today = new Date();
-          const todayFormatted = formatDate(today);
-          const todayHolidayFormat = formatHolidayDate(today);
-          const todayWeekday = today.getDay(); // 0 for Sunday, 6 for Saturday
-          
-          currentDateSpan.innerText = formatDisplayDate(today);
+                if (data.error) {
+                    errorDiv.innerText = `เกิดข้อผิดพลาด: ${data.error}`;
+                    errorDiv.style.display = 'block';
+                    return;
+                }
 
-          // --- แสดงสถานะวันนี้เป็นวันหยุดหรือไม่ ---
-          let isTodayHoliday = false;
-          let holidayName = '';
+                const {config, bookings, holidays} = data;
+                const today = new Date();
+                const todayFormatted = formatDate(today);
+                const todayHolidayFormat = formatHolidayDate(today);
+                const todayWeekday = today.getDay(); // 0 for Sunday, 6 for Saturday
 
-          // ตรวจสอบจาก unavailableDates
-          if (config.unavailableDates.includes(todayFormatted)) {
-            isTodayHoliday = true;
-            // พยายามหาชื่อวันหยุดจาก holidays object
-            if (holidays[todayHolidayFormat]) {
-              holidayName = ` (${holidays[todayHolidayFormat]})`;
-            } else {
-              holidayName = ' (กำหนดเป็นวันหยุดพิเศษ)';
-            }
-          } 
-          // ตรวจสอบจาก unavailableWeekdays หากยังไม่เป็นวันหยุด
-          else if (config.unavailableWeekdays.includes(todayWeekday)) {
-            isTodayHoliday = true;
-            holidayName = ' (วันหยุดประจำสัปดาห์)';
-          }
+                currentDateSpan.innerText = formatDisplayDate(today);
 
-          if (isTodayHoliday) {
-            todayStatusDiv.classList.add('status-holiday');
-            todayStatusDiv.innerHTML = `<i class="fas fa-calendar-times"></i> วันนี้ (<span class="date-highlight">${formatDisplayDate(today)}</span>) เป็น**วันหยุด**${holidayName}`;
-          } else {
-            todayStatusDiv.classList.add('status-working-day');
-            todayStatusDiv.innerHTML = `<i class="fas fa-calendar-check"></i> วันนี้ (<span class="date-highlight">${formatDisplayDate(today)}</span>) เป็น**วันทำการปกติ**`;
-          }
-          todayStatusDiv.style.display = 'flex'; // Use flex for centering icon and text
+                // --- แสดงสถานะวันนี้เป็นวันหยุดหรือไม่ ---
+                let isTodayHoliday = false;
+                let holidayName = '';
+
+                // ตรวจสอบจาก unavailableDates
+                if (config.unavailableDates.includes(todayFormatted)) {
+                    isTodayHoliday = true;
+                    // พยายามหาชื่อวันหยุดจาก holidays object
+                    if (holidays?.[todayHolidayFormat]) {
+                        holidayName = ` (${holidays?.[todayHolidayFormat]})`;
+                    } else {
+                        holidayName = ' (กำหนดเป็นวันหยุดพิเศษ)';
+                    }
+                }
+                // ตรวจสอบจาก unavailableWeekdays หากยังไม่เป็นวันหยุด
+                else if (config.unavailableWeekdays.includes(todayWeekday)) {
+                    isTodayHoliday = true;
+                    holidayName = ' (วันหยุดประจำสัปดาห์)';
+                }
+
+                if (isTodayHoliday) {
+                    todayStatusDiv.classList.add('status-holiday');
+                    todayStatusDiv.innerHTML = `<i class="fas fa-calendar-times"></i> วันนี้ (<span class="date-highlight">${formatDisplayDate(today)}</span>) เป็น**วันหยุด**${holidayName}`;
+                } else {
+                    todayStatusDiv.classList.add('status-working-day');
+                    todayStatusDiv.innerHTML = `<i class="fas fa-calendar-check"></i> วันนี้ (<span class="date-highlight">${formatDisplayDate(today)}</span>) เป็น**วันทำการปกติ**`;
+                }
+                todayStatusDiv.style.display = 'flex'; // Use flex for centering icon and text
 
 
-          // --- แสดงคิวบริการวันนี้ ---
-          const todayFilteredBookings = bookings.filter(booking => booking.date === todayFormatted);
+                // --- แสดงคิวบริการวันนี้ ---
+                const todayFilteredBookings = bookings.filter(booking => booking.date === todayFormatted);
 
-          if (todayFilteredBookings.length > 0) {
-            todayFilteredBookings.sort((a, b) => {
-              const [hA, mA] = a.timeSlot.split('-')[0].split(':').map(Number);
-              const [hB, mB] = b.timeSlot.split('-')[0].split(':').map(Number);
-              if (hA !== hB) return hA - hB;
-              return mA - mB;
-            });
-            todayFilteredBookings.forEach(booking => {
-              const listItem = document.createElement('li');
-              listItem.classList.add('booking');
-              // แสดงเฉพาะชื่อผู้ที่ต้องการคิวบริการ
-              listItem.innerHTML = `
+                if (todayFilteredBookings.length > 0) {
+                    todayFilteredBookings.sort((a, b) => {
+                        const [hA, mA] = a.timeSlot.split('-')[0].split(':').map(Number);
+                        const [hB, mB] = b.timeSlot.split('-')[0].split(':').map(Number);
+                        if (hA !== hB) return hA - hB;
+                        return mA - mB;
+                    });
+                    todayFilteredBookings.forEach(booking => {
+                        const listItem = document.createElement('li');
+                        listItem.classList.add('booking');
+                        // แสดงเฉพาะชื่อผู้ที่ต้องการคิวบริการ
+                        listItem.innerHTML = `
                 <div>
                   <strong>${booking.patientName}</strong>
                 </div>
                 <div class="time-slot">${booking.timeSlot}</div>
               `;
-              bookingsList.appendChild(listItem);
-            });
-          } else {
-            bookingsList.innerHTML = '<li class="empty-message">วันนี้ยังไม่มีคิวบริการ</li>';
-          }
-          todayBookingsDiv.style.display = 'block';
+                        bookingsList.appendChild(listItem);
+                    });
+                } else {
+                    bookingsList.innerHTML = '<li class="empty-message">วันนี้ยังไม่มีคิวบริการ</li>';
+                }
+                todayBookingsDiv.style.display = 'block';
 
-        })
-        .catch(error => {
-          loadingDiv.style.display = 'none';
-          errorDiv.innerText = `เกิดข้อผิดพลาดในการโหลดข้อมูล: ${error.message || error}`;
-          errorDiv.style.display = 'block';
-        });
+            })
+            .catch(error => {
+                loadingDiv.style.display = 'none';
+                errorDiv.innerText = `เกิดข้อผิดพลาดในการโหลดข้อมูล: ${error.message || error}`;
+                errorDiv.style.display = 'block';
+            });
     });
-  </script>
+</script>
 </body>
 </html>
