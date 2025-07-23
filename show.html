@@ -1,392 +1,340 @@
 <!DOCTYPE html>
-<html lang="th">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบคิวบริการ</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/style.css">
+  <base target="_top">
+  <title>ระบบสอบถามคิวบริการวันนี้ | คลินิกทันตกรรม</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Global Styles */
+    body {
+      font-family: 'Kanit', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #e0f2f7; /* Light blue background */
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start; /* Align to top */
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .container {
+      max-width: 900px;
+      width: 95%;
+      margin: 40px auto; /* More margin on top/bottom */
+      background: linear-gradient(135deg, #ffffff, #f0f8ff); /* Gradient white */
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* Stronger shadow */
+      animation: fadeIn 1s ease-out; /* Fade in animation for container */
+    }
+
+    /* Headers */
+    h1 {
+      color: #007bff; /* Bright blue */
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5em;
+      font-weight: 700;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #0056b3;
+      text-align: center;
+      margin-top: 30px;
+      margin-bottom: 20px;
+      font-size: 1.8em;
+      font-weight: 600;
+      border-bottom: 2px solid #e0f2f7;
+      padding-bottom: 10px;
+    }
+
+    /* Loading Animation */
+    #loading {
+      text-align: center;
+      padding: 30px;
+      font-size: 1.4em;
+      color: #007bff;
+      animation: pulse 1.5s infinite ease-in-out; /* Pulse animation */
+      font-weight: 600;
+    }
+
+    /* Error Message */
+    .error-message {
+      color: #dc3545; /* Red */
+      background-color: #f8d7da; /* Light red background */
+      border: 1px solid #f5c6cb;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      margin-top: 20px;
+      font-weight: 500;
+    }
+
+    /* Today Status Section */
+    #todayStatus {
+      text-align: center;
+      padding: 20px;
+      margin-bottom: 25px;
+      border-radius: 12px;
+      font-size: 1.5em;
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease-in-out; /* Smooth transition */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .status-holiday {
+      background: linear-gradient(45deg, #ffb300, #ff8f00); /* Orange gradient */
+      color: #fff;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+    }
+    .status-working-day {
+      background: linear-gradient(45deg, #4caf50, #2e7d32); /* Green gradient */
+      color: #fff;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+    }
+    #todayStatus:hover {
+        transform: translateY(-5px); /* Slight lift on hover */
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Booking List */
+    #todayBookings {
+      margin-top: 30px;
+      border-top: 1px solid #e0e0e0;
+      padding-top: 25px;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    li {
+      background: #ffffff; /* White background for list items */
+      margin-bottom: 12px;
+      padding: 15px 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); /* Soft shadow */
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+      border-left: 5px solid #007bff; /* Blue accent border */
+    }
+    li:hover {
+      transform: translateY(-3px); /* Slight lift on hover */
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+    }
+    li.booking strong {
+      color: #0056b3; /* Darker blue for name */
+      font-size: 1.1em;
+    }
+    .time-slot {
+      font-weight: 700;
+      color: #007bff; /* Bright blue */
+      font-size: 1.2em;
+      background-color: #e3f2fd; /* Light blue background for time */
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+    .empty-message {
+      text-align: center;
+      color: #888;
+      padding: 20px;
+      border: 2px dashed #b3e0ff; /* Light blue dashed border */
+      border-radius: 10px;
+      margin-top: 20px;
+      font-size: 1.1em;
+      font-style: italic;
+      background-color: #f0faff; /* Very light blue background */
+    }
+
+    /* Keyframe Animations */
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.8; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Optional: Responsive adjustments */
+    @media (max-width: 600px) {
+        .container {
+            margin: 20px auto;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 2em;
+        }
+        h2 {
+            font-size: 1.5em;
+        }
+        #todayStatus {
+            font-size: 1.2em;
+        }
+        li {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 12px 15px;
+        }
+        .time-slot {
+            margin-top: 8px;
+            align-self: flex-end; /* Align time slot to right on small screens */
+        }
+    }
+
+  </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
+<body>
+  <div class="container">
+    <h1><span style="color:#007bff;">Dental</span> <span style="color:#2e7d32;">Public</span>Health</h1>
+    <h2><span style="color:#007bff;">งานทันตสาธารณสุข ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร</span></h2>
+    <div id="loading">กำลังโหลดข้อมูล... โปรดรอสักครู่</div>
+    <div id="error" class="error-message" style="display: none;"></div>
 
-    <div class="container mx-auto bg-white rounded-xl shadow-2xl p-6 md:p-8 relative max-w-2xl w-full">
+    <div id="todayStatus" style="display: none;">
+      </div>
 
-        <div class="text-center mb-6">
-            <h1 class="text-4xl font-extrabold text-purple-800 mb-2">ระบบคิวบริการ</h1>
-            <p class="text-xl text-gray-600 mb-4">สถานะการให้บริการและคิวประจำวัน</p>
-            <div id="currentDate" class="text-lg font-semibold text-gray-700"></div>
-        </div>
-
-        <div id="serviceStatus" class="p-4 rounded-lg text-center font-bold text-lg mb-6 shadow-md transition-all duration-300">
-            <span id="statusText">กำลังตรวจสอบสถานะ...</span>
-        </div>
-
-        <div class="bg-blue-50 p-6 rounded-lg shadow-lg relative h-96 flex flex-col">
-            <h2 class="text-2xl font-bold text-blue-700 mb-4 text-center">คิวบริการที่จะถึง</h2>
-            <div id="queueLoading" class="text-center text-blue-500 my-auto">
-                <i class="fas fa-spinner fa-spin text-4xl"></i>
-                <p class="mt-2">กำลังโหลดคิว...</p>
-            </div>
-            <div id="queueError" class="text-center text-red-500 my-auto hidden">
-                <i class="fas fa-exclamation-triangle text-4xl"></i>
-                <p class="mt-2">เกิดข้อผิดพลาดในการดึงข้อมูลคิว กรุณาลองใหม่</p>
-            </div>
-            <div id="queueDisplay" class="flex-grow min-h-0 overflow-y-auto pr-2">
-                </div>
-        </div>
-
+    <div id="todayBookings" style="display: none;">
+      <h2>คิวบริการวันนี้ (<span id="currentDate"></span>)</h2>
+      <ul id="bookingsList">
+        </ul>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Global API URL
-            // *** สำคัญ: ต้องเปลี่ยน URL นี้เป็น URL ของ Web App ที่คุณ Deploy จาก Code.gs ***
-            const BOOKING_CONFIG_API_URL = 'https://script.google.com/macros/s/AKfycbxzZQKx25Qpb6WONZZ3oQ3ggY85HE8UgTszkrHj8XATPnS-0cVbQyg1I9eW2C6Lq0pbWw/exec';
+  </div>
 
-            // Queue Display Functionality (ระบบแสดงคิวบริการ)
-            const queueDisplay = document.getElementById('queueDisplay');
-            const queueLoading = document.getElementById('queueLoading');
-            const queueError = document.getElementById('queueError');
-            // const scrollingQueueContainer = document.querySelector('.scrolling-queue-container'); // Removed
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const loadingDiv = document.getElementById('loading');
+      const errorDiv = document.getElementById('error');
+      const todayStatusDiv = document.getElementById('todayStatus');
+      const todayBookingsDiv = document.getElementById('todayBookings');
+      const bookingsList = document.getElementById('bookingsList');
+      const currentDateSpan = document.getElementById('currentDate');
 
-            // Service Status Display
-            const serviceStatusDiv = document.getElementById('serviceStatus');
-            const statusText = document.getElementById('statusText');
-            const currentDateElement = document.getElementById('currentDate');
+      // ** Web App URL ของคุณที่ได้จากการ Deploy Apps Script **
+      const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw7wH8r9lCEgMTlIiySJfZ_vsniBCeyiaBlYtXZhIOHe34CLUfXQpT8rt36av32ZqIPOQ/exec';
 
-            // กำหนดเวลาเปิด-ปิดและสถานะบริการปกติ
-            const TIME_STATUS_SLOTS = [
-                { start: '00:00', end: '08:29', type: 'closed', label: 'ปิดทำการ' },
-                { start: '08:30', end: '08:59', type: 'preparing', label: 'เตรียมเปิดบริการ' },
-                { start: '09:00', end: '11:59', type: 'operational', label: 'เปิดให้บริการ' },
-                { start: '12:00', end: '12:59', type: 'closed', label: 'พักเที่ยง' },
-                { start: '13:00', end: '15:59', type: 'operational', label: 'เปิดให้บริการ' },
-                { start: '16:00', end: '23:59', type: 'closed', label: 'ปิดทำการ' }
-            ];
+      // Helper function to format date to YYYY-MM-DD
+      function formatDate(date) {
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = (d.getMonth() + 1).toString().padStart(2, '0');
+        const day = d.getDate().toString().padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
 
-            let bookingData = {}; // เก็บข้อมูลการจองทั้งหมดที่ดึงมา
-            let holidayConfig = { // เก็บข้อมูลวันหยุดและวันที่ไม่พร้อมให้บริการ
-                unavailableDates: [],
-                unavailableWeekdays: [],
-                holidayNames: []
-            };
-            let timeSlotsFromConfig = []; // เก็บ timeSlots ที่ดึงมาจาก config sheet
+      // Helper function to format date to DD/MM/YYYY
+      function formatDisplayDate(date) {
+        const d = new Date(date);
+        const day = d.getDate().toString().padStart(2, '0');
+        const month = (d.getMonth() + 1).toString().padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day}/${month}/${year}`;
+      }
 
-            // Helper function to format date
-            const formatDate = (dateString) => {
-                const options = { year: 'numeric', month: 'long', day: 'numeric' };
-                return new Date(dateString).toLocaleDateString('th-TH', options);
-            };
+      // Helper function to format date for holiday check (MM/DD/YYYY)
+      function formatHolidayDate(date) {
+        const d = new Date(date);
+        const month = (d.getMonth() + 1).toString().padStart(2, '0');
+        const day = d.getDate().toString().padStart(2, '0');
+        const year = d.getFullYear();
+        return `${month}/${day}/${year}`;
+      }
 
-            // Function to set up scrolling animation (Removed as per request)
-            // const setupScrolling = (container, content) => {
-            //     // Logic removed
-            // };
+      fetch(WEB_APP_URL)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          loadingDiv.style.display = 'none';
 
+          if (data.error) {
+            errorDiv.innerText = `เกิดข้อผิดพลาด: ${data.error}`;
+            errorDiv.style.display = 'block';
+            return;
+          }
 
-            // ฟังก์ชันดึงข้อมูลทั้งหมด (Booking, Config)
-            async function fetchAllData() {
-                queueLoading.classList.remove('hidden');
-                queueError.classList.add('hidden');
-                
-                try {
-                    const response = await fetch(BOOKING_CONFIG_API_URL);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const data = await response.json();
-                    if (data.error) {
-                        console.error('Error fetching all data:', data.error);
-                        queueError.classList.remove('hidden');
-                        return;
-                    }
+          const { config, bookings, holidays } = data;
+          const today = new Date();
+          const todayFormatted = formatDate(today);
+          const todayHolidayFormat = formatHolidayDate(today);
+          const todayWeekday = today.getDay(); // 0 for Sunday, 6 for Saturday
+          
+          currentDateSpan.innerText = formatDisplayDate(today);
 
-                    bookingData = data.bookings || {}; // อัปเดตข้อมูลการจอง
-                    holidayConfig = data.config || { unavailableDates: [], unavailableWeekdays: [], holidayNames: [] }; // อัปเดตข้อมูล Config
-                    timeSlotsFromConfig = holidayConfig.slots || []; // อัปเดต timeSlots จาก config (ใช้ 'slots' แทน 'timeSlots')
+          // --- แสดงสถานะวันนี้เป็นวันหยุดหรือไม่ ---
+          let isTodayHoliday = false;
+          let holidayName = '';
 
-                    console.log("All data fetched (bookings, config):", { bookingData, holidayConfig, timeSlotsFromConfig });
-
-                    // Display Current Date
-                    currentDateElement.textContent = `วันที่ปัจจุบัน: ${formatDate(new Date())}`;
-
-                    updateQueueDisplay(bookingData); // อัปเดตการแสดงผลคิว
-
-                } catch (error) {
-                    console.error('Error fetching all data:', error);
-                    queueError.classList.remove('hidden');
-                    statusText.textContent = 'ไม่สามารถดึงข้อมูลสถานะได้';
-                    serviceStatusDiv.className = 'p-4 rounded-lg text-center font-bold text-lg mb-6 shadow-md service-status-closed';
-                } finally {
-                    queueLoading.classList.add('hidden');
-                }
+          // ตรวจสอบจาก unavailableDates
+          if (config.unavailableDates.includes(todayFormatted)) {
+            isTodayHoliday = true;
+            // พยายามหาชื่อวันหยุดจาก holidays object
+            if (holidays[todayHolidayFormat]) {
+              holidayName = ` (${holidays[todayHolidayFormat]})`;
+            } else {
+              holidayName = ' (กำหนดเป็นวันหยุดพิเศษ)';
             }
+          } 
+          // ตรวจสอบจาก unavailableWeekdays หากยังไม่เป็นวันหยุด
+          else if (config.unavailableWeekdays.includes(todayWeekday)) {
+            isTodayHoliday = true;
+            holidayName = ' (วันหยุดประจำสัปดาห์)';
+          }
 
-            // ฟังก์ชันตรวจสอบสถานะบริการปัจจุบัน (รวมการเช็ควันหยุด/วันออกหน่วย)
-            function getCurrentServiceStatus(checkTime) {
-                const dayOfWeek = checkTime.getDay(); // 0 = อาทิตย์, 1 = จันทร์, ..., 6 = เสาร์
-                const checkHours = checkTime.getHours();
-                const checkMinutes = checkTime.getMinutes();
-
-                // 1. ตรวจสอบวันหยุด / วันที่ไม่พร้อมให้บริการจาก Config
-                const checkDateString = checkTime.toLocaleDateString('en-CA'); // รูปแบบYYYY-MM-DD เพื่อเปรียบเทียบ
-                
-                // Ensure holidayConfig.unavailableDates is an array
-                const unavailableDates = Array.isArray(holidayConfig.unavailableDates) ? holidayConfig.unavailableDates : [];
-                const holidayNames = Array.isArray(holidayConfig.holidayNames) ? holidayConfig.holidayNames : [];
-
-                const holidayIndex = unavailableDates.indexOf(checkDateString);
-
-                if (holidayIndex !== -1) {
-                    const holidayName = holidayNames[holidayIndex] || 'วันหยุดพิเศษ';
-                    return { type: 'closed', label: holidayName, isHoliday: true };
-                }
-
-                // 2. ตรวจสอบวันในสัปดาห์ที่ไม่พร้อมให้บริการ (เช่น เสาร์-อาทิตย์)
-                const unavailableWeekdays = Array.isArray(holidayConfig.unavailableWeekdays) ? holidayConfig.unavailableWeekdays : [];
-                if (unavailableWeekdays.includes(dayOfWeek)) {
-                    return { type: 'closed', label: 'ปิดทำการวันหยุดสุดสัปดาห์', isWeekend: true };
-                }
-
-                // 3. ตรวจสอบตามช่วงเวลาปกติ
-                for (const slot of TIME_STATUS_SLOTS) {
-                    const [startHours, startMinutes] = slot.start.split(':').map(Number);
-                    const [endHours, endMinutes] = slot.end.split(':').map(Number);
-
-                    const slotStartTime = new Date(checkTime);
-                    slotStartTime.setHours(startHours, startMinutes, 0, 0);
-
-                    const slotEndTime = new Date(checkTime);
-                    slotEndTime.setHours(endHours, endMinutes, 0, 0);
-
-                    // กรณีข้ามวัน (เช่น 23:00 - 01:00) - ต้องระวังเรื่องวันที่
-                    if (slot.type === 'closed' && startHours > endHours) {
-                        // Logic for overnight closed periods
-                        const currentMinutesOfDay = checkHours * 60 + checkMinutes;
-                        const startMinutesOfDay = startHours * 60 + startMinutes;
-                        const endMinutesOfDay = endMinutes * 60; // End minute could be next day
-
-                        if (currentMinutesOfDay >= startMinutesOfDay || currentMinutesOfDay < endMinutesOfDay) {
-                            return slot;
-                        }
-                    } else { // กรณีปกติ (อยู่ในวันเดียวกัน)
-                        if (checkTime >= slotStartTime && checkTime < slotEndTime) {
-                            return slot;
-                        }
-                    }
-                }
-                return { type: 'out_of_defined_hours', label: 'นอกเวลาทำการที่กำหนด' };
-            }
-
-            // ฟังก์ชันแสดงผลคิวและสถานะ
-            function updateQueueDisplay(bookings) {
-                queueDisplay.innerHTML = ''; // ล้างเนื้อหาเดิม
-
-                const now = new Date();
-                const currentServiceStatus = getCurrentServiceStatus(now);
-                const todayDateString = now.toLocaleDateString('en-CA'); //YYYY-MM-DD
-
-                let displayedQueueItems = []; // Array to store HTML elements of queue items for updating time
-                let hasUpcomingQueuesOverall = false; // Flag to check if there are any queues from today onwards
-
-                // Update Service Status Card (ยังคงเป็นสถานะ ณ ปัจจุบัน)
-                let statusTextContent = '';
-                let statusIcon = '';
-                let bgColor = '';
-                let borderColor = '';
-                let textColor = '';
-
-                if (currentServiceStatus.isHoliday || currentServiceStatus.isWeekend || currentServiceStatus.type === 'closed' || currentServiceStatus.type === 'out_of_defined_hours') {
-                    statusTextContent = `สถานะปัจจุบัน: <span class="font-semibold ${currentServiceStatus.isHoliday || currentServiceStatus.isWeekend ? 'blinking-text' : ''}">${currentServiceStatus.label}</span>`;
-                    statusIcon = '<i class="fas fa-door-closed text-red-600 text-xl mr-2"></i>';
-                    bgColor = 'bg-red-100';
-                    borderColor = 'border-red-400';
-                    textColor = 'text-red-700';
-                } else if (currentServiceStatus.type === 'preparing') {
-                    statusTextContent = `สถานะปัจจุบัน: <span class="font-semibold">${currentServiceStatus.label}</span>`;
-                    statusIcon = '<i class="fas fa-hourglass-start text-yellow-600 text-xl mr-2"></i>';
-                    bgColor = 'bg-yellow-100';
-                    borderColor = 'border-yellow-400';
-                    textColor = 'text-yellow-700';
-                } else if (currentServiceStatus.type === 'operational') {
-                    statusTextContent = `สถานะปัจจุบัน: <span class="font-semibold">เปิดให้บริการ</span>`;
-                    statusIcon = '<i class="fas fa-check-circle text-green-600 text-xl mr-2"></i>';
-                    bgColor = 'bg-green-100';
-                    borderColor = 'border-green-400';
-                    textColor = 'text-green-700';
-                }
-                serviceStatusDiv.className = `p-4 rounded-lg text-center font-bold text-lg mb-6 shadow-md ${bgColor} ${borderColor} ${textColor}`;
-                serviceStatusDiv.innerHTML = `
-                    <div class="flex items-center justify-center mb-2">
-                        ${statusIcon}
-                        <p class="font-bold text-lg">${statusTextContent}</p>
-                    </div>
-                `;
-
-                // Display all upcoming queues from today onwards
-                const sortedDates = Object.keys(bookings).sort();
-                let queueContentFound = false;
-
-                sortedDates.forEach(dateString => {
-                    // Create Date objects for comparison to ignore time for date comparison
-                    const dateObj = new Date(dateString);
-                    const todayObj = new Date(todayDateString);
-                    
-                    // Set hours to 00:00:00 for fair date comparison
-                    dateObj.setHours(0,0,0,0);
-                    todayObj.setHours(0,0,0,0);
-
-                    if (dateObj < todayObj) {
-                        return; // Skip past dates
-                    }
-
-                    const currentBookingsOnDate = bookings[dateString] || {};
-                    const isToday = (dateString === todayDateString);
-
-                    // Ensure timeSlotsFromConfig is not empty and is an array
-                    const sortedTimeSlots = Array.isArray(timeSlotsFromConfig) && timeSlotsFromConfig.length > 0
-                        ? timeSlotsFromConfig.sort((a, b) => {
-                            const [ah, am] = a.split('-')[0].split(':').map(Number);
-                            const [bh, bm] = b.split('-')[0].split(':').map(Number);
-                            if (ah !== bh) return ah - bh;
-                            return am - bm;
-                        })
-                        : []; // Use an empty array if invalid
-
-                    let dateHasQueues = false;
-                    const dateSection = document.createElement('div');
-                    dateSection.classList.add('mb-4', 'p-2', 'bg-blue-100', 'rounded-lg', 'shadow-md');
-                    let dateSectionContent = `
-                        <h3 class="text-xl font-bold text-blue-800 mb-3 text-center">
-                            ${isToday ? 'คิววันนี้' : `คิววันที่ ${formatDate(dateString)}`}
-                        </h3>
-                        <div class="grid grid-cols-1 gap-3">
-                    `;
-
-                    if (sortedTimeSlots.length === 0) {
-                        // Handle case where config.slots is empty or not found
-                        dateSectionContent += `
-                            <p class="text-center text-gray-500">ไม่มีช่วงเวลาให้บริการสำหรับวันนี้</p>
-                        `;
-                    } else {
-                        sortedTimeSlots.forEach(slot => {
-                            const [startStr] = slot.split('-').map(t => t.trim());
-                            const [startHour, startMinute] = startStr.split(':').map(Number);
-
-                            const slotDateTime = new Date(dateString);
-                            slotDateTime.setHours(startHour, startMinute, 0, 0);
-
-                            const bookedCount = currentBookingsOnDate[slot] || 0;
-
-                            // Only show if there are bookings and it's either today (and not passed the slot) or a future date
-                            // Assuming a slot lasts 1 hour for 'current queue' check
-                            const slotEndTime = new Date(slotDateTime.getTime() + 60 * 60 * 1000); // 1 hour after start
-
-                            if (bookedCount > 0 && slotEndTime > now) { // Only show if slot is still active or in the future
-                                hasUpcomingQueuesOverall = true;
-                                queueContentFound = true;
-                                dateHasQueues = true;
-
-                                const timeId = `time-remaining-${dateString.replace(/-/g, '')}-${slot.replace(/[^a-zA-Z0-9]/g, '')}`; // Unique ID
-
-                                let queueCardClass = '';
-                                let statusTextForCard = '';
-                                let currentServiceHighlight = '';
+          if (isTodayHoliday) {
+            todayStatusDiv.classList.add('status-holiday');
+            todayStatusDiv.innerHTML = `<i class="fas fa-calendar-times"></i> วันนี้ (<span class="date-highlight">${formatDisplayDate(today)}</span>) เป็น**วันหยุด**${holidayName}`;
+          } else {
+            todayStatusDiv.classList.add('status-working-day');
+            todayStatusDiv.innerHTML = `<i class="fas fa-calendar-check"></i> วันนี้ (<span class="date-highlight">${formatDisplayDate(today)}</span>) เป็น**วันทำการปกติ**`;
+          }
+          todayStatusDiv.style.display = 'flex'; // Use flex for centering icon and text
 
 
-                                if (isToday && now >= slotDateTime && now < slotEndTime) { 
-                                    // For today, if it's the current active slot
-                                    queueCardClass = 'bg-blue-100 border-blue-500 text-blue-800 current-queue'; 
-                                    statusTextForCard = `<p class="text-sm text-gray-500 mt-1" id="${timeId}">กำลังให้บริการ</p>`;
-                                    currentServiceHighlight = `<p class="text-md font-bold text-blue-600 mt-2">กำลังให้บริการคิวเวลา ${slot} (มี ${bookedCount} คิว)</p>`;
-                                } else {
-                                    // Future queues (today or future dates)
-                                    queueCardClass = 'bg-white border-gray-300 text-gray-700';
-                                    statusTextForCard = `<p class="text-sm text-gray-500 mt-1">เวลาที่เหลือ: <span id="${timeId}">คำนวณ...</span></p>`;
-                                }
-                                
-                                dateSectionContent += `
-                                    <div class="queue-card p-3 rounded-lg shadow-sm border ${queueCardClass}">
-                                        <p class="font-semibold text-lg"><i class="fas fa-clock mr-2"></i> เวลา: <span class="text-xl">${slot}</span></p>
-                                        <p class="text-md text-gray-700">จำนวน: <span class="font-bold">${bookedCount}</span> คิว</p>
-                                        ${statusTextForCard}
-                                    </div>
-                                `;
-                                displayedQueueItems.push({ elementId: timeId, startTime: slotDateTime });
-                            }
-                        });
-                    }
-                    
-                    dateSectionContent += `</div>`; // Close grid div
+          // --- แสดงคิวบริการวันนี้ ---
+          const todayFilteredBookings = bookings.filter(booking => booking.date === todayFormatted);
 
-                    if (dateHasQueues) { 
-                        dateSection.innerHTML = dateSectionContent;
-                        queueDisplay.appendChild(dateSection);
-                    }
-                });
+          if (todayFilteredBookings.length > 0) {
+            todayFilteredBookings.sort((a, b) => {
+              const [hA, mA] = a.timeSlot.split('-')[0].split(':').map(Number);
+              const [hB, mB] = b.timeSlot.split('-')[0].split(':').map(Number);
+              if (hA !== hB) return hA - hB;
+              return mA - mB;
+            });
+            todayFilteredBookings.forEach(booking => {
+              const listItem = document.createElement('li');
+              listItem.classList.add('booking');
+              // แสดงเฉพาะชื่อผู้ที่ต้องการคิวบริการ
+              listItem.innerHTML = `
+                <div>
+                  <strong>${booking.patientName}</strong>
+                </div>
+                <div class="time-slot">${booking.timeSlot}</div>
+              `;
+              bookingsList.appendChild(listItem);
+            });
+          } else {
+            bookingsList.innerHTML = '<li class="empty-message">วันนี้ยังไม่มีคิวบริการ</li>';
+          }
+          todayBookingsDiv.style.display = 'block';
 
-                if (!queueContentFound) {
-                    const noQueueCard = document.createElement('div');
-                    noQueueCard.classList.add('queue-card', 'bg-gray-100', 'border-gray-400', 'text-gray-700', 'p-4', 'rounded-lg', 'shadow-md', 'text-center', 'mt-4');
-                    noQueueCard.innerHTML = `
-                        <p class="font-bold text-lg"><i class="fas fa-info-circle mr-2"></i> ไม่มีคิวที่กำลังจะถึงในขณะนี้</p>
-                        <p class="text-sm mt-1">สามารถติดต่อสอบถามได้</p>
-                    `;
-                    queueDisplay.appendChild(noQueueCard);
-                }
-
-                // Start/Update time remaining countdowns
-                updateTimeRemainingCountdowns(displayedQueueItems);
-            }
-
-            // Function to format time remaining
-            function formatTimeRemaining(milliseconds) {
-                if (milliseconds < 0) {
-                    return 'เลยเวลาแล้ว';
-                }
-                const totalSeconds = Math.floor(milliseconds / 1000);
-                const days = Math.floor(totalSeconds / (3600 * 24));
-                const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
-                const minutes = Math.floor((totalSeconds % 3600) / 60);
-                const seconds = totalSeconds % 60;
-
-                let parts = [];
-                if (days > 0) parts.push(`${days} วัน`);
-                if (hours > 0) parts.push(`${hours} ชม.`);
-                if (minutes > 0) parts.push(`${minutes} น.`);
-                if (seconds > 0 || parts.length === 0) parts.push(`${seconds} วินาที`); // Always show seconds if nothing else, or if it's 0 seconds
-
-                return parts.join(' ');
-            }
-
-            // Interval for updating countdowns
-            let countdownInterval = null;
-            function updateTimeRemainingCountdowns(items) {
-                if (countdownInterval) {
-                    clearInterval(countdownInterval); // Clear previous interval
-                }
-
-                countdownInterval = setInterval(() => {
-                    const now = new Date();
-                    items.forEach(item => {
-                        const element = document.getElementById(item.elementId);
-                        if (element) {
-                            const timeDiff = item.startTime.getTime() - now.getTime();
-                            element.textContent = formatTimeRemaining(timeDiff);
-                        }
-                    });
-                }, 1000); // Update every second
-            }
-
-
-            // เรียกใช้ฟังก์ชันดึงข้อมูลและอัปเดตครั้งแรกเมื่อโหลดหน้า
-            fetchAllData();
-
-            // ตั้งเวลาในการดึงข้อมูลและอัปเดตทุกๆ 60 วินาที
-            setInterval(fetchAllData, 60000);
+        })
+        .catch(error => {
+          loadingDiv.style.display = 'none';
+          errorDiv.innerText = `เกิดข้อผิดพลาดในการโหลดข้อมูล: ${error.message || error}`;
+          errorDiv.style.display = 'block';
         });
-    </script>
+    });
+  </script>
 </body>
 </html>
