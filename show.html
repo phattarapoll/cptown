@@ -15,8 +15,9 @@
             background-color: #e0f2f7; /* Light blue background */
             color: #333;
             display: flex;
-            justify-content: center;
-            align-items: flex-start; /* Align to top */
+            flex-direction: column; /* Changed to column to allow footer to stick to bottom */
+            justify-content: space-between; /* Distribute space */
+            align-items: center; /* Center horizontally */
             min-height: 100vh;
             overflow-x: hidden;
             position: relative; /* For button positioning */
@@ -34,6 +35,7 @@
             position: relative; /* For saber effect */
             overflow: hidden; /* Hide saber overflow */
             z-index: 1; /* Ensure container is above saber lines */
+            flex-grow: 1; /* Allow container to grow and push footer down */
         }
 
         /* Saber Effect */
@@ -338,13 +340,20 @@
 
         /* Footer Section */
         #providerInfo {
-            margin-top: 40px;
-            padding-top: 20px;
+            width: 95%; /* Take full width of its parent */
+            max-width: 700px; /* Limit max-width for better readability */
+            margin: 20px auto; /* Center horizontally and add margin */
+            padding: 25px 30px; /* Symmetrical padding */
+            background-color: #f0f8ff; /* Light background for footer */
             border-top: 1px solid #e0e0e0;
+            border-radius: 12px; /* Rounded corners for the block */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Soft shadow */
             display: flex;
             align-items: center;
             gap: 20px;
             animation: slideUp 1s ease-out; /* Slide up animation */
+            margin-top: auto; /* Push to the bottom */
+            text-align: center; /* Center content horizontally within the block initially */
         }
 
         #providerInfo img {
@@ -353,12 +362,16 @@
             border-radius: 50%;
             object-fit: cover;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0; /* Prevent image from shrinking */
         }
 
         .provider-text {
             flex-grow: 1;
             font-size: 0.95em;
-            line-height: 1.6;
+            line-height: 1.8; /* Increased line height for better readability */
+            text-align: left; /* Default text alignment */
+            max-width: 90%; /* Limit text width for better line breaks */
+            margin: 0 auto; /* Center the text block */
         }
 
         .provider-text strong {
@@ -428,18 +441,22 @@
             }
 
             #providerInfo {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
+                flex-direction: column; /* Stack image and text vertically */
+                align-items: center; /* Center items when stacked */
+                gap: 15px; /* Adjusted gap */
+                padding: 15px 20px; /* Adjust padding for smaller screens */
+                text-align: center; /* Center overall block text */
             }
 
             #providerInfo img {
-                width: 60px;
-                height: 60px;
+                width: 70px; /* Slightly larger on mobile for emphasis */
+                height: 70px;
             }
 
             .provider-text {
                 font-size: 0.9em;
+                text-align: center; /* Center text on mobile */
+                max-width: 100%; /* Allow text to take full width */
             }
         }
 
@@ -479,16 +496,15 @@
         <ul id="bookingsList">
         </ul>
     </div>
+</div>
 
-    <div id="providerInfo">
-        <img src="assets/images/admin.jpg" alt="รูปผู้ให้บริการ">
-        <div class="provider-text">
-            <strong>ผู้ให้บริการ :</strong> นายภัทรพล ไพศาลวัชรเมธี<br>
-            <strong>ตำแหน่ง :</strong> ทันตสาธารณสุขชำนาญงาน รักษาการอาวุโส(สร้างและพัฒนา)<br>
-            <strong>สถานที่ปฏิบัติงาน :</strong>ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร(ตึกเก่า) หลังสถานีดับเพลิง<br>
-        </div>
+<div id="providerInfo">
+    <img src="assets/images/admin.jpg" alt="รูปผู้ให้บริการ">
+    <div class="provider-text">
+        <strong>ผู้ให้บริการ :</strong> นายภัทรพล ไพศาลวัชรเมธี<br>
+        <strong>ตำแหน่ง :</strong> ทันตสาธารณสุขชำนาญงาน รักษาการอาวุโส(สร้างและพัฒนา)<br>
+        <strong>สถานที่ปฏิบัติงาน :</strong>ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร(ตึกเก่า) หลังสถานีดับเพลิง<br>
     </div>
-
 </div>
 
 <script>
