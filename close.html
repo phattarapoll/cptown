@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ประกาศปิดให้บริการ - ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร</title>
+    <style>
+        body {
+            font-family: 'Sukhumvit Set', 'Kanit', sans-serif; /* เพิ่ม font ที่นิยมใช้ในไทย */
+            background-color: #f0f8ff; /* สีฟ้าอ่อนสบายตา */
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
+            width: 100%;
+            border-left: 8px solid #4CAF50; /* แถบสีเขียวด้านซ้าย */
+        }
+
+        h1 {
+            color: #d9534f; /* สีแดงเข้มสำหรับข้อความสำคัญ */
+            font-size: 2.2em;
+            margin-bottom: 25px;
+            animation: fadeInDown 1s ease-out; /* แอนิเมชันตอนโหลด */
+        }
+
+        p {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: #007bff; /* สีน้ำเงินสำหรับข้อความเน้น */
+        }
+
+        .notice-box {
+            background-color: #ffe0b2; /* สีส้มอ่อนสำหรับกล่องประกาศ */
+            border: 1px solid #ffcc80;
+            padding: 15px;
+            margin-top: 25px;
+            border-radius: 8px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #e65100; /* สีส้มเข้ม */
+            animation: pulse 1.5s infinite; /* แอนิเมชันกระพริบเบาๆ */
+        }
+
+        .location-info {
+            margin-top: 30px;
+            background-color: #e6ffe6; /* สีเขียวอ่อนสำหรับข้อมูลสถานที่ใหม่ */
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #28a745; /* แถบสีเขียวด้านซ้าย */
+        }
+
+        .location-info p {
+            margin: 10px 0;
+            font-size: 1.15em;
+        }
+
+        .map-button {
+            display: inline-block;
+            background-color: #007bff; /* สีน้ำเงินสำหรับปุ่ม */
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-top: 20px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        }
+
+        .map-button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .map-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 123, 255, 0.5);
+        }
+
+        .apology {
+            margin-top: 35px;
+            font-style: italic;
+            color: #777;
+            font-size: 1em;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            p {
+                font-size: 1em;
+            }
+            .notice-box {
+                font-size: 1em;
+            }
+            .container {
+                padding: 25px 15px;
+            }
+            .map-button {
+                padding: 10px 20px;
+                font-size: 1em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700&family=Sukhumvit+Set:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>เรียนผู้รับบริการทุกท่าน</h1>
+        <hr>
+        <div class="notice-box">
+            <p><span class="highlight">ประกาศ!</span></p>
+            <p>ขณะนี้ <strong class="highlight">งานทันตสาธารณสุข  (ตึกเก่า หลังดับเพลิง)</strong></p>
+            <p><strong class="highlight">ปิดการให้บริการ</strong></p>
+        </div>
+
+        <div class="location-info">
+            <p>และยังคงเปิดให้บริการตามปกติ ณ</p>
+            <p><strong class="highlight">ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร</strong></p>
+            <p>โปรดใช้ปุ่มด้านล่างเพื่อนำทาง:</p>
+            <a href="https://www.google.com/maps/dir/?api=1&destination=10.505444,99.179270" target="_blank" rel="noopener noreferrer" class="map-button">
+                คลิกเพื่อนำทาง 
+            </a>
+        </div>
+
+        <p class="apology">
+            <hr>
+            ขออภัยในความไม่สะดวกที่เกิดขึ้นเป็นอย่างสูงมา ณ โอกาสนี้
+        </p>
+    </div>
+</body>
+</html>
