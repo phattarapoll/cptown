@@ -485,7 +485,7 @@
         <div class="provider-text">
             <strong>ผู้ให้บริการ :</strong> นายภัทรพล ไพศาลวัชรเมธี<br>
             <strong>ตำแหน่ง :</strong> ทันตสาธารณสุขชำนาญงาน รักษาการอาวุโส(สร้างและพัฒนา)<br>
-            <strong>สถานที่ปฏิบัติงาน :</strong>10.494504649620781, 99.18015229970572<br>
+            <strong>สถานที่ปฏิบัติงาน :</strong>ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร(ตึกเก่า) หลังสถานีดับเพลิง<br>
         </div>
     </div>
 
@@ -576,7 +576,7 @@
 
                 if (isTodayHoliday) {
                     todayStatusDiv.classList.add('status-holiday');
-                    todayStatusDiv.innerHTML = `<i class="fas fa-calendar-times"></i> วันนี้ (<span class="date-highlight">${formatDisplayDate(today)}</span>) เป็น**วันหยุด**${holidayName}`;
+                    todayStatusDiv.innerHTML = `<i class="fas fa-calendar-times"></i>วันนี้ <span class="date-highlight">${formatDisplayDate(today)}</span>  ${holidayName}`;
                 } else {
                     todayStatusDiv.classList.add('status-working-day');
                     todayStatusDiv.innerHTML = `<i class="fas fa-calendar-check"></i> วันนี้ (<span class="date-highlight">${formatDisplayDate(today)}</span>) เป็น**วันทำการปกติ**`;
