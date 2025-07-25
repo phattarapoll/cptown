@@ -8,6 +8,42 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+        main {
+            flex: 1;
+        }
+        .footer-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: left;
+            gap: 1rem;
+        }
+        .footer-image {
+            width: 50px; /* Adjust size as needed */
+            height: 50px; /* Adjust size as needed */
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+        }
+        .footer-text {
+            font-size: 9pt; /* 9pt font size */
+            display: flex;
+            flex-direction: column;
+        }
+        .footer-text p {
+            margin: 0; /* Remove default paragraph margin */
+            line-height: 1.3; /* Adjust line height for better spacing */
+        }
+    </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
 
@@ -123,48 +159,50 @@
 
     </main>
 
-    <footer class="bg-blue-800 text-white p-6 text-center rounded-t-xl shadow-inner">
-        <p class="text-sm">Build & Develop : Phattarapoll PSVMT.</p>
-        <p class="text-sm">1 ตุลาคม 2562 เวลา 19:09 นาที
-            <button id="adminLoginBtn" class="ml-2 text-white text-opacity-75 hover:text-opacity-100 focus:outline-none">
-                <i class="fas fa-user-shield text-base"></i>
-            </button>
-        </p>
+    <footer class="bg-blue-800 text-white p-6 text-center rounded-t-xl shadow-inner mt-auto">
+        <div class="footer-content">
+            <img src="assets/images/admin.jpg" alt="รูปโปรไฟล์ผู้ให้บริการ" class="footer-image">
+            <div class="footer-text">
+                <p><strong>ผู้ให้บริการ:</strong> นายภัทรพล ไพศาลวัชรเมธี</p>
+                <p><strong>ตำแหน่ง:</strong> ทันตสาธารณสุขชำนาญงาน รักษาการอาวุโส</p>
+                <p><strong>สถานที่ปฏิบัติงาน:</strong> ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร (ตึกเก่า)
+                    <button id="adminLoginBtn" class="ml-2 text-white text-opacity-75 hover:text-opacity-100 focus:outline-none">
+                        <i class="fas fa-user-shield text-base"></i>
+                    </button>
+                </p>
+            </div>
+        </div>
     </footer>
 
     <script>
         function toggleServicePanel() {
             const panel = document.getElementById('serviceStatusFloating');
-            const icon = document.getElementById('toggleServiceIcon'); // Changed ID
+            const icon = document.getElementById('toggleServiceIcon');
             if (panel.classList.contains('translate-x-0')) {
-                // Panel is visible, hide it by sliding left
                 panel.classList.remove('translate-x-0');
                 panel.classList.add('-translate-x-full');
                 icon.classList.remove('fa-chevron-left');
-                icon.classList.add('fa-chevron-right');
+                icon.classList.add('fa-stethoscope');
             } else {
-                // Panel is hidden, show it by sliding right
                 panel.classList.remove('-translate-x-full');
                 panel.classList.add('translate-x-0');
-                icon.classList.remove('fa-chevron-right');
+                icon.classList.remove('fa-stethoscope');
                 icon.classList.add('fa-chevron-left');
             }
         }
 
         function toggleNewsPanel() {
             const panel = document.getElementById('newsFloatingPanel');
-            const icon = document.getElementById('toggleNewsIcon'); // New ID
+            const icon = document.getElementById('toggleNewsIcon');
             if (panel.classList.contains('translate-x-0')) {
-                // Panel is visible, hide it by sliding right
                 panel.classList.remove('translate-x-0');
                 panel.classList.add('translate-x-full');
                 icon.classList.remove('fa-chevron-left');
-                icon.classList.add('fa-chevron-right');
+                icon.classList.add('fa-newspaper');
             } else {
-                // Panel is hidden, show it by sliding left
                 panel.classList.remove('translate-x-full');
                 panel.classList.add('translate-x-0');
-                icon.classList.remove('fa-chevron-right');
+                icon.classList.remove('fa-newspaper');
                 icon.classList.add('fa-chevron-left');
             }
         }
