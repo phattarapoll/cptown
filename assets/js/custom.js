@@ -474,6 +474,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { colA: "21/7/2025, 9:55:35", colK: "ดีๆๆ เยี่ยมๆๆ" },
         { colA: "23/7/2025, 20:44:30", colK: "สะดวกคับ" },
         { colA: "25/7/2025, 13:52:59", colK: "ให้คำแนะนำดีมากๆคะ" },
+    // { colA: "", colK: "" },
     ];
 	
 	
