@@ -58,14 +58,31 @@
         </div>
     </div>
 
+    <div id="newsFloatingPanel" class="fixed top-1/2 right-0 -translate-y-1/2 w-72 bg-white bg-opacity-75 p-6 rounded-l-xl shadow-lg z-40 transition-transform duration-300 ease-in-out transform translate-x-full">
+        <h2 class="text-3xl font-bold text-blue-800 mb-6 border-b-2 border-blue-300 pb-2">กระดานข่าว</h2>
+        <div id="newsBoard" class="space-y-4 text-gray-700">
+            <div id="newsLoading" class="text-center py-4">
+                <i class="fas fa-spinner fa-spin text-blue-500 text-3xl"></i>
+                <p class="mt-2 text-gray-600">กำลังโหลดข่าวสาร...</p>
+            </div>
+            <div id="newsError" class="text-center py-4 text-red-600 hidden">
+                <i class="fas fa-exclamation-triangle text-3xl mb-2"></i>
+                <p>ไม่สามารถโหลดข่าวสารได้ กรุณาลองใหม่อีกครั้ง หรือตรวจสอบการตั้งค่า Apps Script</p>
+            </div>
+        </div>
+    </div>
+
     <button id="toggleServicePanel" onclick="toggleServicePanel()" class="fixed top-1/2 -translate-y-1/2 left-0 p-2 rounded-r-lg bg-blue-500 hover:bg-blue-600 text-white shadow-lg z-50 cursor-pointer transition-colors duration-300">
-        <i id="toggleIcon" class="fas fa-chevron-right text-lg"></i>
+        <i id="toggleServiceIcon" class="fas fa-stethoscope text-lg"></i>
     </button>
 
-    <main class="container mx-auto p-6 mt-28 lg:mt-32 lg:pl-80">
-        <section class="glassy-section p-8 rounded-xl shadow-lg mb-8 flex flex-col lg:flex-row gap-8">
-            <div class="lg:w-1/2">
-                <div class="bg-gray-50 p-6 rounded-xl shadow-inner flex flex-col">
+    <button id="toggleNewsPanel" onclick="toggleNewsPanel()" class="fixed top-1/2 -translate-y-1/2 right-0 p-2 rounded-l-lg bg-blue-500 hover:bg-blue-600 text-white shadow-lg z-50 cursor-pointer transition-colors duration-300">
+        <i id="toggleNewsIcon" class="fas fa-newspaper text-lg"></i>
+    </button>
+
+    <main class="container mx-auto p-6 mt-28 lg:mt-32 lg:pl-80 lg:pr-80">
+        <section class="glassy-section p-8 rounded-xl shadow-lg mb-8 flex flex-col">
+            <div class="lg:w-full"> <div class="bg-gray-50 p-6 rounded-xl shadow-inner flex flex-col">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-2xl font-bold text-blue-800 pb-2">ระบบแสดงคิวบริการ</h2>
                         <button id="queueFullscreenToggle" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-3 rounded-full shadow-md transition duration-300 ease-in-out text-sm">
@@ -102,22 +119,7 @@
                 </div>
             </div>
 
-            <div class="lg:w-1/2">
-                <div>
-                    <h2 class="text-3xl font-bold text-blue-800 mb-6 border-b-2 border-blue-300 pb-2">กระดานข่าว</h2>
-                    <div id="newsBoard" class="space-y-4 text-gray-700">
-                        <div id="newsLoading" class="text-center py-4">
-                            <i class="fas fa-spinner fa-spin text-blue-500 text-3xl"></i>
-                            <p class="mt-2 text-gray-600">กำลังโหลดข่าวสาร...</p>
-                        </div>
-                        <div id="newsError" class="text-center py-4 text-red-600 hidden">
-                            <i class="fas fa-exclamation-triangle text-3xl mb-2"></i>
-                            <p>ไม่สามารถโหลดข่าวสารได้ กรุณาลองใหม่อีกครั้ง หรือตรวจสอบการตั้งค่า Apps Script</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+            </section>
 
     </main>
 
@@ -133,7 +135,7 @@
     <script>
         function toggleServicePanel() {
             const panel = document.getElementById('serviceStatusFloating');
-            const icon = document.getElementById('toggleIcon');
+            const icon = document.getElementById('toggleServiceIcon'); // Changed ID
             if (panel.classList.contains('translate-x-0')) {
                 // Panel is visible, hide it by sliding left
                 panel.classList.remove('translate-x-0');
@@ -143,6 +145,24 @@
             } else {
                 // Panel is hidden, show it by sliding right
                 panel.classList.remove('-translate-x-full');
+                panel.classList.add('translate-x-0');
+                icon.classList.remove('fa-chevron-right');
+                icon.classList.add('fa-chevron-left');
+            }
+        }
+
+        function toggleNewsPanel() {
+            const panel = document.getElementById('newsFloatingPanel');
+            const icon = document.getElementById('toggleNewsIcon'); // New ID
+            if (panel.classList.contains('translate-x-0')) {
+                // Panel is visible, hide it by sliding right
+                panel.classList.remove('translate-x-0');
+                panel.classList.add('translate-x-full');
+                icon.classList.remove('fa-chevron-left');
+                icon.classList.add('fa-chevron-right');
+            } else {
+                // Panel is hidden, show it by sliding left
+                panel.classList.remove('translate-x-full');
                 panel.classList.add('translate-x-0');
                 icon.classList.remove('fa-chevron-right');
                 icon.classList.add('fa-chevron-left');
