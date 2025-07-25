@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>งานทันตสาธารณสุข ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <header id="mainHeader" >
+        <div class="text-center mb-2"> <h1 class="font-bold text-lg text-shadow">งานทันตสาธารณสุข ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร 333 ตำบลท่าตะเภา อำเภอเมืองชุมพร จังหวัดชุมพร 86000</h1><br>
+        </div>
+        <nav class="flex items-center space-x-4 justify-center">
+            <a href="onlineD/index.html" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out">
+                เข้าสู่เว็ปไซต์
+            </a>
+            <a href="https://fctmc.6te.net/recive/index.html" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out">
+                แนะนำบริการ
+            </a>
+        </nav>
+    </header>
+
+    <div id="serviceStatusFloating" class="fixed top-1/2 left-0 -translate-y-1/2 w-72 bg-white bg-opacity-75 p-6 rounded-r-xl shadow-lg z-40 transition-transform duration-300 ease-in-out transform -translate-x-full">
+        <h2 class="text-3xl font-bold text-blue-800 mb-6 border-b-2 border-blue-300 pb-2">บริการผู้ป่วยที่เปิด</h2>
+        <div class="grid grid-cols-1 gap-4">
+            <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="open">
+                <span class="text-lg font-semibold text-gray-800">ตรวจสุขภาพช่องปาก</span>
+                <span class="service-status px-3 py-1 rounded-full font-bold text-sm service-status-open">open</span>
+            </div>
+            <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="open">
+                <span class="text-lg font-semibold text-gray-800">อุดฟัน</span>
+                <span class="service-status px-3 py-1 rounded-full font-bold text-sm service-status-open">open</span>
+            </div>
+            <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="open">
+                <span class="text-lg font-semibold text-gray-800">ขูดหินน้ำลาย</span>
+                <span class="service-status px-3 py-1 rounded-full font-bold text-sm service-status-open">open</span>
+            </div>
+            <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="open">
+                <span class="text-lg font-semibold text-gray-800">ถอนฟัน</span>
+                <span class="service-status px-3 py-1 rounded-full font-bold text-sm service-status-open">open</span>
+            </div>
+            <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="open">
+                <span class="text-lg font-semibold text-gray-800">เคลือบหลุมร่องฟัน</span>
+                <span class="service-status px-3 py-1 rounded-full font-bold text-sm service-status-open">open</span>
+            </div>
+            <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="closed">
+                <span class="text-lg font-semibold text-gray-800">รักษารากฟัน</span>
+                <span class="service-status px-3 py-1 rounded-full font-bold text-sm service-status-closed">closed</span>
+            </div>
+            <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="closed">
+                <span class="text-lg font-semibold text-gray-800">ทำฟันปลอม</span>
+                <span class="service-status px-3 py-1 rounded-full font-bold text-sm service-status-closed">closed</span>
+            </div>
+        </div>
+    </div>
+
+    <button id="toggleServicePanel" onclick="toggleServicePanel()" class="fixed top-1/2 -translate-y-1/2 left-0 p-2 rounded-r-lg bg-blue-500 hover:bg-blue-600 text-white shadow-lg z-50 cursor-pointer transition-colors duration-300">
+        <i id="toggleIcon" class="fas fa-chevron-right text-lg"></i>
+    </button>
+
+    <main class="container mx-auto p-6 mt-28 lg:mt-32 lg:pl-80">
+        <section class="glassy-section p-8 rounded-xl shadow-lg mb-8 flex flex-col lg:flex-row gap-8">
+            <div class="lg:w-1/2">
+                <div class="bg-gray-50 p-6 rounded-xl shadow-inner flex flex-col">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-2xl font-bold text-blue-800 pb-2">ระบบแสดงคิวบริการ</h2>
+                        <button id="queueFullscreenToggle" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-3 rounded-full shadow-md transition duration-300 ease-in-out text-sm">
+                            <i class="fas fa-expand-alt mr-1"></i>
+                        </button>
+                    </div>
+
+                    <div id="scrollingQueueContainer" class="scrolling-queue-container flex-grow relative">
+                        <div id="queueDisplay" class="flex-grow overflow-y-auto bg-white p-4 rounded-lg border border-gray-200 mb-4 h-96 relative" tabindex="0">
+                            <div id="queueLoading" class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 z-10">
+                                <i class="fas fa-spinner fa-spin text-blue-500 text-3xl"></i>
+                                <p class="ml-2 text-gray-600">กำลังโหลดคิว...</p>
+                            </div>
+                            <div id="queueError" class="absolute inset-0 flex flex-col items-center justify-center bg-white bg-opacity-80 z-10 hidden text-red-600 text-center p-4">
+                                <i class="fas fa-exclamation-triangle text-3xl mb-2"></i>
+                                <p>ไม่สามารถโหลดคิวได้ กรุณาตรวจสอบ URL หรือการตั้งค่า Apps Script</p>
+                            </div>
+                        </div>
+                        <div class="fullscreen-info-right hidden">
+                            <img src="assets/images/tm.png" alt="ตราเทศบาลเมืองชุมพร">
+                            <p>งานทันตสาธารณสุข</p>
+                            <p>ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร(ตึกเก่า)</p>
+
+                            <p class="mt-8 mb-4 text-xl font-bold">ผู้ให้บริการ</p>
+                            <div class="flex items-center admin-info-wrapper">
+                                <img src="assets/images/admin.jpg" alt="เจ้าหน้าที่ปฏิบัติงาน" class="admin-profile-img">
+                                <div class="admin-text-content">
+                                    <p class="admin-name">นายภัทรพล ไพศาลวัชรเมธี</p>
+                                    <p class="admin-position">จพง.ทันตสาธารณสุขชำนาญงาน รก.อาวุโส</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:w-1/2">
+                <div>
+                    <h2 class="text-3xl font-bold text-blue-800 mb-6 border-b-2 border-blue-300 pb-2">กระดานข่าว</h2>
+                    <div id="newsBoard" class="space-y-4 text-gray-700">
+                        <div id="newsLoading" class="text-center py-4">
+                            <i class="fas fa-spinner fa-spin text-blue-500 text-3xl"></i>
+                            <p class="mt-2 text-gray-600">กำลังโหลดข่าวสาร...</p>
+                        </div>
+                        <div id="newsError" class="text-center py-4 text-red-600 hidden">
+                            <i class="fas fa-exclamation-triangle text-3xl mb-2"></i>
+                            <p>ไม่สามารถโหลดข่าวสารได้ กรุณาลองใหม่อีกครั้ง หรือตรวจสอบการตั้งค่า Apps Script</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-blue-800 text-white p-6 text-center rounded-t-xl shadow-inner">
+        <p class="text-sm">Build & Develop : Phattarapoll PSVMT.</p>
+        <p class="text-sm">1 ตุลาคม 2562 เวลา 19:09 นาที
+            <button id="adminLoginBtn" class="ml-2 text-white text-opacity-75 hover:text-opacity-100 focus:outline-none">
+                <i class="fas fa-user-shield text-base"></i>
+            </button>
+        </p>
+    </footer>
+
+    <script>
+        function toggleServicePanel() {
+            const panel = document.getElementById('serviceStatusFloating');
+            const icon = document.getElementById('toggleIcon');
+            if (panel.classList.contains('translate-x-0')) {
+                // Panel is visible, hide it by sliding left
+                panel.classList.remove('translate-x-0');
+                panel.classList.add('-translate-x-full');
+                icon.classList.remove('fa-chevron-left');
+                icon.classList.add('fa-chevron-right');
+            } else {
+                // Panel is hidden, show it by sliding right
+                panel.classList.remove('-translate-x-full');
+                panel.classList.add('translate-x-0');
+                icon.classList.remove('fa-chevron-right');
+                icon.classList.add('fa-chevron-left');
+            }
+        }
+    </script>
+    <script src="assets/js/custom.js"></script>
+</body>
+</html>
