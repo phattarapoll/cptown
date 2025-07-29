@@ -319,7 +319,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p class="text-gray-600 text-sm">
                         ${apptDateTime.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })} เวลา ${appt.timeSlot}
                     </p>
-                    <p class="text-green-600 text-xs mt-1">ในอีก: <span class="time-remaining" data-timestamp="${apptDateTime.getTime()}">${formatTimeRemaining(timeDiff)}</span></p>
+                    <p class="text-green-600 text-xs mt-1">ในอีก: <span class="time-remaining pulse-red-background" data-timestamp="${apptDateTime.getTime()}">${formatTimeRemaining(timeDiff)}</span></p>
                 `;
                 queueDisplay.appendChild(futureCard);
             });

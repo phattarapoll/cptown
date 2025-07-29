@@ -168,6 +168,20 @@ main.container {
     100% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
 }
 
+/* New: Style for pulsing red background for time remaining */
+.time-remaining.pulse-red-background {
+    display: inline-block; /* Essential for background to show correctly */
+    padding: 2px 5px; /* Add some padding around the text */
+    border-radius: 4px; /* Slightly rounded corners */
+    animation: pulse-red-bg 2s infinite alternate;
+}
+
+@keyframes pulse-red-bg {
+    0% { background-color: rgba(255, 99, 71, 0.3); } /* Tomato red, semi-transparent */
+    100% { background-color: rgba(144, 238, 144, 0.3); } /* More opaque */
+}
+
+
 /* Scroll to Top Button */
 #scrollToTopBtn {
     display: none;
