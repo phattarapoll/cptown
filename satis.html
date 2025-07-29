@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>สรุปผลความพึงพอใจบริการทันตสาธารณสุข</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN for charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Custom styles for scrolling text */
+    .scroll-container {
+      height: 350px; /* Adjusted: Increased height to make text scroll slower and cover more area */
+      overflow: hidden;
+      position: relative;
+      background-color: #f7fafc; /* Tailwind gray-50 */
+      border-radius: 0.5rem; /* Tailwind rounded-lg */
+      padding: 1rem 1rem 0 1rem; /* Adjusted: Removed bottom padding to allow text to reach the bottom edge */
+    }
+
+    .scroll-content {
+      position: absolute;
+      width: 100%;
+      animation: scrollUp linear infinite;
+      padding-right: 1rem; /* Space for scrollbar if present */
+    }
+
+    @keyframes scrollUp {
+      0% { transform: translateY(100%); }
+      100% { transform: translateY(-100%); }
+    }
+
+    /* Pause animation on hover */
+    .scroll-container:hover .scroll-content {
+      animation-play-state: paused;
+    }
+
+    /* Custom styles for radio buttons (kept for general form-radio class, though not used for ratings anymore) */
+    input[type="radio"] {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        display: inline-block;
+        width: 1.5rem;
+        height: 1.5rem;
+        border-radius: 50%;
+        border: 2px solid #cbd5e0; /* gray-300 */
+        background-color: #fff;
+        position: relative;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+    }
+
+    input[type="radio"]:checked {
+        background-color: #3b82f6; /* blue-500 */
+        border-color: #3b82f6; /* blue-500 */
+    }
+
+    input[type="radio"]:checked::after {
+        content: '';
+        display: block;
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 50%;
+        background-color: #fff;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    input[type="radio"]:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); /* blue-300 with opacity */
+    }
+
+    /* Font styling */
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* Modal styles (kept for completeness, though success modal won't be triggered from this page now) */
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 1000; /* Sit on top */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: auto;
+      padding: 2.5rem;
+      border-radius: 0.75rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+      position: relative;
+      transform: translateY(-50px); /* Initial position for animation */
+      opacity: 0; /* Initial opacity for animation */
+      animation: fadeInSlideUp 0.3s ease-out forwards;
+    }
+
+    @keyframes fadeInSlideUp {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .close-button {
+      color: #aaa;
+      position: absolute;
+      top: 1rem;
+      right: 1.5rem;
+      font-size: 2rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+
+    .close-button:hover,
+    .close-button:focus {
+      color: #333;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    /* Styles for the range input and star display (not used in this version but kept for consistency) */
+    .rating-control {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      background-color: #f9fafb; /* Tailwind gray-50 */
+      border-radius: 0.5rem;
+      border: 1px solid #e5e7eb; /* Tailwind gray-200 */
+    }
+
+    .rating-control input[type="range"] {
+      width: 100%;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 8px;
+      background: #d1d5db; /* Tailwind gray-300 */
+      outline: none;
+      opacity: 0.7;
+      transition: opacity .2s;
+      border-radius: 4px;
+    }
+
+    .rating-control input[type="range"]:hover {
+      opacity: 1;
+    }
+
+    .rating-control input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #3b82f6; /* Tailwind blue-500 */
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .rating-control input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #3b82f6; /* Tailwind blue-500 */
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .star-display {
+      font-size: 1.5rem;
+      color: #fbbf24; /* Tailwind amber-400 for stars */
+      display: flex;
+      gap: 0.25rem;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 p-4 min-h-screen flex flex-col items-center">
+  <div class="max-w-4xl w-full bg-white p-8 rounded-lg shadow-lg mb-8">
+    <h1 class="text-3xl font-bold text-center text-blue-700 mb-8 flex items-center justify-center">
+      <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tooth mr-3 text-blue-500">
+        <path d="M10 16a4 4 0 0 0 4 4h2a4 4 0 0 0 4-4V7a2 2 0 0 0-2-2h-2a2 2 0 0 1-2-2 2 2 0 0 0-2-2 2 2 0 0 0-2 2 2 2 0 0 1-2 2H4a2 2 0 0 0-2 2v9a4 4 0 0 0 4 4h2a4 4 0 0 0 4-4Z"/>
+      </svg>
+      สรุปผลความพึงพอใจบริการทันตสาธารณสุข
+    </h1>
+
+    <!-- Analysis Dashboard Section -->
+    <section>
+      <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bar-chart-2 mr-2 text-gray-600">
+          <line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/>
+        </svg>
+        ภาพรวมความพึงพอใจ
+      </h2>
+
+      <!-- Year Filter -->
+      <div class="mb-6 flex items-center gap-4">
+        <label for="yearFilter" class="text-gray-700 font-medium">เลือกปีที่ต้องการดูข้อมูล:</label>
+        <select id="yearFilter" class="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          <!-- Years will be populated by JavaScript -->
+        </select>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <!-- Overall Satisfaction Card -->
+        <div class="bg-blue-500 text-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center text-center">
+          <p class="text-xl font-medium flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-smile mr-2">
+              <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/>
+            </svg>
+            ระดับความพึงพอใจโดยรวมเฉลี่ย
+          </p>
+          <p id="overallSatisfactionDisplay" class="text-5xl font-bold mt-2">N/A</p>
+        </div>
+        <!-- Total Responses Card -->
+        <div class="bg-green-500 text-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center text-center">
+          <p class="text-xl font-medium flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users mr-2">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            จำนวนผู้ตอบแบบสำรวจ
+          </p>
+          <p id="totalResponsesDisplay" class="text-5xl font-bold mt-2">0</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Gender Distribution Chart -->
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+          <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pie-chart mr-2 text-indigo-500">
+              <path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10Z"/>
+            </svg>
+            สัดส่วนเพศ
+          </h3>
+          <canvas id="genderChart"></canvas>
+        </div>
+        <!-- Praised Comments (SWAPPED POSITION) -->
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+          <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-square mr-2 text-yellow-500">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V3a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+            เรื่องที่ประทับใจ
+          </h3>
+          <div id="praisedContainer" class="scroll-container">
+            <div id="praisedContent" class="scroll-content text-gray-700 space-y-2">
+              <p class="text-center text-gray-500">ไม่มีข้อมูลเรื่องที่ประทับใจ</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed Ratings Chart -->
+      <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star mr-2 text-amber-500">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+          คะแนนความพึงพอใจแต่ละข้อ (เป็นเปอร์เซ็นต์)
+        </h3>
+        <canvas id="detailedRatingsChart"></canvas>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Service Type Distribution Chart (SWAPPED POSITION) -->
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+          <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-list mr-2 text-teal-500">
+              <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/>
+            </svg>
+            สัดส่วนประเภทบริการ
+          </h3>
+          <canvas id="serviceTypeChart"></canvas>
+        </div>
+
+        <!-- Suggestions -->
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+          <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-lightbulb mr-2 text-orange-500">
+              <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 6c0 1.3.5 2.6 1.5 3.5.8.8 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 22v-4"/>
+            </svg>
+            ข้อเสนอแนะเพื่อปรับปรุง
+          </h3>
+          <div id="suggestionsContainer" class="scroll-container">
+            <div id="suggestionsContent" class="scroll-content text-gray-700 space-y-2">
+              <p class="text-center text-gray-500">ไม่มีข้อมูลข้อเสนอแนะ</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Success Modal (kept for completeness, though won't be triggered from this page now) -->
+  <div id="successModal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close-button" onclick="closeModal()">&times;</span>
+      <h2 class="text-3xl font-bold text-green-600 mb-4 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-circle mr-3">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/>
+        </svg>
+        สำเร็จ!
+      </h2>
+      <p class="text-lg text-gray-700 mb-6">ขอบคุณสำหรับข้อมูลและข้อเสนอแนะอันมีค่าของคุณ!</p>
+      <button onclick="closeModal()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out">
+        ปิด
+      </button>
+    </div>
+  </div>
+
+  <footer class="w-full text-center text-gray-600 text-sm mt-8 py-4">
+    <p>สร้างและพัฒนาโดย นายภัทรพล ไพศาลวัชรเมธี</p>
+    <p>งานทันตสาธารณสุข ศูนย์บริการสาธารณสุข เทศบาลเมืองจังหวัดชุมพร</p>
+  </footer>
+  
+  <script>
+    // Global Chart instances
+    let genderChart;
+    let serviceTypeChart;
+    let detailedRatingsChart;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      populateYearFilter();
+      initCharts();
+      fetchAndDisplayAnalysis(); // Initial load of analysis data
+
+      // Year filter change handler
+      document.getElementById('yearFilter').addEventListener('change', fetchAndDisplayAnalysis);
+    });
+
+    /**
+     * Updates the star display for a given rating.
+     * @param {HTMLElement} container - The div element to display stars.
+     * @param {number} rating - The current rating (1-5).
+     */
+    function updateStars(container, rating) {
+      container.innerHTML = ''; // Clear existing stars
+      for (let i = 0; i < 5; i++) {
+        const star = document.createElement('span');
+        star.textContent = (i < rating) ? '★' : '☆'; // Filled star or empty star
+        container.appendChild(star);
+      }
+    }
+
+    /**
+     * Populates the year filter dropdown with current year and previous 4 years.
+     */
+    function populateYearFilter() {
+      const yearFilter = document.getElementById('yearFilter');
+      const currentYear = new Date().getFullYear();
+      yearFilter.innerHTML = '<option value="">ทุกปี</option>'; // Option for all years
+      for (let i = 0; i < 5; i++) { // Current year and 4 previous years
+        const year = currentYear - i;
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        yearFilter.appendChild(option);
+      }
+      yearFilter.value = currentYear; // Select current year by default
+    }
+
+    /**
+     * Initializes empty Chart.js instances.
+     */
+    function initCharts() {
+      const genderCtx = document.getElementById('genderChart').getContext('2d');
+      genderChart = new Chart(genderCtx, {
+        type: 'pie',
+        data: {
+          labels: [],
+          datasets: [{
+            data: [],
+            backgroundColor: ['#3b82f6', '#ef4444', '#6b7280'], // blue, red, gray
+            hoverOffset: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'top',
+            },
+            title: {
+              display: false,
+              text: 'สัดส่วนเพศ'
+            }
+          }
+        }
+      });
+
+      const serviceTypeCtx = document.getElementById('serviceTypeChart').getContext('2d');
+      serviceTypeChart = new Chart(serviceTypeCtx, {
+        type: 'bar', // Keep 'bar' type
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'จำนวน',
+            data: [],
+            backgroundColor: '#10b981', // emerald-500
+            borderColor: '#059669', // emerald-600
+            borderWidth: 1
+          }]
+        },
+        options: {
+          indexAxis: 'y', // This makes it a horizontal bar chart
+          responsive: true,
+          scales: {
+            x: { // x-axis will now be the value axis
+              beginAtZero: true,
+              ticks: {
+                precision: 0
+              },
+              title: {
+                display: true,
+                text: 'จำนวน' // Label for the x-axis
+              }
+            },
+            y: { // y-axis will now be the category axis
+              title: {
+                display: true,
+                text: 'ประเภทบริการ' // Label for the y-axis
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            title: {
+              display: false,
+              text: 'สัดส่วนประเภทบริการ'
+            }
+          }
+        }
+      });
+
+      const detailedRatingsCtx = document.getElementById('detailedRatingsChart').getContext('2d');
+      detailedRatingsChart = new Chart(detailedRatingsCtx, {
+        type: 'bar',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'เปอร์เซ็นต์ความพึงพอใจ',
+            data: [],
+            backgroundColor: '#8b5cf6', // violet-500
+            borderColor: '#7c3aed', // violet-600
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          animation: {
+            duration: 6500, // Slow animation (1.5 seconds)
+            easing: 'easeInOutQuart', // Smooth easing function
+            onComplete: function(animation) {
+              // Optional: You could add a subtle effect here when animation completes
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 100,
+              title: {
+                display: true,
+                text: 'เปอร์เซ็นต์ (%)'
+              }
+            },
+            x: { // Add x-axis title for clarity
+              title: {
+                display: true,
+                text: 'ข้อประเมิน'
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            title: {
+              display: false,
+              text: 'คะแนนความพึงพอใจแต่ละข้อ'
+            },
+            tooltip: { // Enhance tooltip to clearly show percentage
+              callbacks: {
+                label: function(context) {
+                  let label = context.dataset.label || '';
+                  if (label) {
+                    label += ': ';
+                  }
+                  if (context.parsed.y !== null) {
+                    label += context.parsed.y + '%';
+                  }
+                  return label;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    /**
+     * Fetches analysis data from Google Apps Script and updates the UI.
+     * ดึงข้อมูลการวิเคราะห์จาก Google Apps Script และอัปเดต UI
+     */
+    function fetchAndDisplayAnalysis() {
+      const yearFilter = document.getElementById('yearFilter');
+      const selectedYear = yearFilter.value === "" ? null : parseInt(yearFilter.value); // Pass null for "ทุกปี"
+
+      // Show loading state
+      document.getElementById('overallSatisfactionDisplay').textContent = 'กำลังโหลด...';
+      document.getElementById('totalResponsesDisplay').textContent = 'กำลังโหลด...';
+      document.getElementById('praisedContent').innerHTML = '<p class="text-center text-gray-500">กำลังโหลด...</p>';
+      document.getElementById('suggestionsContent').innerHTML = '<p class="text-center text-gray-500">กำลังโหลด...</p>';
+
+      google.script.run
+        .withSuccessHandler(function(data) {
+          console.log('Analysis Data:', data);
+          if (data.message) {
+            document.getElementById('overallSatisfactionDisplay').textContent = 'N/A';
+            document.getElementById('totalResponsesDisplay').textContent = '0';
+            document.getElementById('praisedContent').innerHTML = '<p class="text-center text-gray-500">' + data.message + '</p>';
+            document.getElementById('suggestionsContent').innerHTML = '<p class="text-center text-gray-500">' + data.message + '</p>';
+            genderChart.data.labels = [];
+            genderChart.data.datasets[0].data = [];
+            genderChart.update();
+            serviceTypeChart.data.labels = [];
+            serviceTypeChart.data.datasets[0].data = [];
+            serviceTypeChart.update();
+            detailedRatingsChart.data.labels = [];
+            detailedRatingsChart.data.datasets[0].data = [];
+            detailedRatingsChart.update();
+            return;
+          }
+
+          // Update overall satisfaction and total responses
+          document.getElementById('overallSatisfactionDisplay').textContent = data.overallSatisfaction + '/5';
+          document.getElementById('totalResponsesDisplay').textContent = data.totalResponses;
+
+          // Update Charts
+          updateCharts(data);
+
+          // Update(ความเร็ว) scrolling text
+          startScrollingText('praisedContent', data.praised, 25000); // Set duration to 25 seconds for slower scroll
+          startScrollingText('suggestionsContent', data.suggestions, 25000); // Set duration to 25 seconds for slower scroll
+        })
+        .withFailureHandler(function(error) {
+          console.error('Error fetching analysis data:', error);
+          document.getElementById('overallSatisfactionDisplay').textContent = 'ข้อผิดพลาด';
+          document.getElementById('totalResponsesDisplay').textContent = 'ข้อผิดพลาด';
+          document.getElementById('praisedContent').innerHTML = '<p class="text-center text-red-500">เกิดข้อผิดพลาดในการโหลดข้อมูล: ' + error.message + '</p>';
+          document.getElementById('suggestionsContent').innerHTML = '<p class="text-center text-red-500">เกิดข้อผิดพลาดในการโหลดข้อมูล: ' + error.message + '</p>';
+        })
+        .getAnalysisData(selectedYear);
+    }
+
+    /**
+     * Updates the Chart.js instances with new data.
+     * อัปเดตอินสแตนซ์ Chart.js ด้วยข้อมูลใหม่
+     * @param {Object} data - The analysis data from Apps Script.
+     */
+    function updateCharts(data) {
+      // Gender Chart
+      const genderLabels = Object.keys(data.genderDistribution);
+      const genderData = Object.values(data.genderDistribution);
+      genderChart.data.labels = genderLabels;
+      genderChart.data.datasets[0].data = genderData;
+      genderChart.update();
+
+      // Service Type Chart
+      const serviceTypeLabels = Object.keys(data.serviceTypeDistribution);
+      const serviceTypeData = Object.values(data.serviceTypeDistribution);
+      serviceTypeChart.data.labels = serviceTypeLabels;
+      serviceTypeChart.data.datasets[0].data = serviceTypeData;
+      serviceTypeChart.update();
+
+      // Detailed Ratings Chart
+      const ratingLabels = Object.keys(data.detailedRatings).map(label => {
+        // Shorten long labels for better chart display
+        if (label.includes('ความสุภาพอ่อนโยน')) return 'ความสุภาพ';
+        if (label.includes('ความสนใจเอาใจใส่')) return 'ความสนใจ';
+        if (label.includes('การตอบข้อสงสัย')) return 'การตอบข้อสงสัย';
+        if (label.includes('ความรู้ความสามารถ')) return 'ความรู้ความสามารถ';
+        if (label.includes('กริยามารยาทและการแต่งกาย')) return 'กริยามารยาท';
+        if (label.includes('ความรวดเร็วและความพร้อม')) return 'ความรวดเร็ว';
+        return label;
+      });
+      const ratingPercentages = Object.values(data.detailedRatings).map(item => parseFloat(item.percentage));
+      detailedRatingsChart.data.labels = ratingLabels;
+      detailedRatingsChart.data.datasets[0].data = ratingPercentages;
+      detailedRatingsChart.update();
+    }
+
+    /**
+     * Starts the scrolling text animation for a given container.
+     * เริ่มต้นแอนิเมชันข้อความเลื่อนสำหรับคอนเทนเนอร์ที่กำหนด
+     * @param {string} containerId - The ID of the content div (e.g., 'praisedContent').
+     * @param {Array<string>} messages - An array of text messages to scroll.
+     * @param {number} duration - Duration of one scroll cycle in milliseconds.
+     */
+    function startScrollingText(containerId, messages, duration) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = ''; // Clear existing content
+
+      if (!messages || messages.length === 0) {
+        container.innerHTML = '<p class="text-center text-gray-500">ไม่มีข้อมูล</p>';
+        container.style.animation = 'none'; // Stop any previous animation
+        container.style.transform = 'translateY(0)'; // Reset position
+        return;
+      }
+
+      // Create message elements
+      messages.forEach(msg => {
+        const p = document.createElement('p');
+        p.textContent = msg;
+        p.className = 'py-1 border-b border-gray-200 last:border-b-0';
+        container.appendChild(p);
+      });
+
+      // Duplicate content to ensure continuous scroll without jump
+      const originalHeight = container.scrollHeight;
+      const parentContainer = container.parentElement;
+      const parentHeight = parentContainer.clientHeight;
+
+      // If content is shorter than container, no need to scroll
+      if (originalHeight <= parentHeight) {
+          container.style.animation = 'none';
+          container.style.transform = 'translateY(0)';
+          return;
+      }
+
+      // Calculate animation duration dynamically based on content height
+      // The speed is now inversely proportional to the duration.
+      // A larger duration means slower scroll.
+      // We use the 'duration' parameter directly for the animation.
+      const totalScrollDistance = originalHeight + parentHeight; // Distance from bottom of container to top of last message
+      const calculatedDurationSeconds = totalScrollDistance / (parentHeight / (duration / 1000)); // Adjust speed based on new height and desired duration
+
+      container.style.animation = `scrollUp ${duration / 1000}s linear infinite`; // Use provided duration in seconds
+
+      // Set initial position to start from bottom
+      container.style.transform = `translateY(${parentHeight}px)`;
+
+      // Set the animation to restart when it finishes
+      container.addEventListener('animationiteration', function() {
+        container.style.animation = 'none';
+        void container.offsetWidth; // Trigger reflow
+        container.style.animation = `scrollUp ${duration / 1000}s linear infinite`;
+      });
+    }
+
+    /**
+     * Shows the success modal.
+     * แสดงป๊อปอัปสำเร็จ
+     */
+    function showModal() {
+      const modal = document.getElementById('successModal');
+      modal.classList.remove('hidden');
+    }
+
+    /**
+     * Hides the success modal.
+     * ซ่อนป๊อปอัปสำเร็จ
+     */
+    function closeModal() {
+      const modal = document.getElementById('successModal');
+      modal.classList.add('hidden');
+    }
+  </script>
+</body>
+</html>

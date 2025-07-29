@@ -341,11 +341,11 @@ main.container {
     margin-bottom: 15px;
     /* Glassy effect with inset shadows and subtle outer shadow */
     box-shadow:
-        inset 0 0 10px rgba(255, 255, 255, 0.8),   /* Inner white highlight for glassy feel */
-        inset 0 0 20px rgba(0, 150, 255, 0.3),    /* Inner blue glow */
-        0 0 10px rgba(0, 0, 0, 0.3),              /* Soft outer shadow for depth */
-        0 0 20px 5px rgba(144, 238, 144, 0.6),    /* LightGreen outer glow 1 */
-        0 0 30px 10px rgba(144, 238, 144, 0.4);   /* LightGreen outer glow 2 */
+        inset 0 0 10px rgba(255, 255, 255, 0.8),    /* Inner white highlight for glassy feel */
+        inset 0 0 20px rgba(0, 150, 255, 0.3),     /* Inner blue glow */
+        0 0 10px rgba(0, 0, 0, 0.3),               /* Soft outer shadow for depth */
+        0 0 20px 5px rgba(144, 238, 144, 0.6),     /* LightGreen outer glow 1 */
+        0 0 30px 10px rgba(144, 238, 144, 0.4);    /* LightGreen outer glow 2 */
     transition: transform 0.3s ease-in-out;
     animation: glowing-logo 4s infinite alternate ease-in-out; /* Apply glowing animation */
     position: relative; /* Ensure it stacks correctly with ::before/::after */
@@ -520,4 +520,67 @@ main.container {
 @keyframes pulse-green {
     0% { background-color: rgba(144, 238, 144, 0.2); }
     100% { background-color: rgba(144, 238, 144, 0.5); }
+}
+
+/* --- Custom styles for Image Rotator Section (ประมวลภาพ) --- */
+
+/* กำหนดความสูงสำหรับคอลัมน์ 'ประมวลภาพ' โดยเฉพาะ */
+/* ใช้ class ที่เจาะจงมากขึ้น หรือ id ถ้ามี */
+/* ในกรณีนี้ เราจะใช้ .lg\:w-1\/2 ที่เป็นคอลัมน์ด้านขวาของ section นั้น */
+/* โดยการเพิ่ม class เฉพาะหรือปรับแก้ div ให้มี class/id ที่ระบุได้ง่ายขึ้น */
+/* ถ้าไม่ได้เพิ่ม id ให้กับ div ประมวลภาพ เราจะใช้การเลือกที่เจาะจงมากขึ้น */
+section.glassy-section > div.lg\:w-1\/2.bg-gray-50.p-6.rounded-xl.shadow-inner.relative.scrolling-text-container {
+    height: 450px; /* กำหนดความสูงคงที่สำหรับคอลัมน์ประมวลภาพ */
+    display: flex; /* ทำให้เป็น flex container */
+    flex-direction: column; /* จัดเนื้อหาในแนวตั้ง */
+    /* ไม่ต้องใส่ flex-basis หรือ max-width ที่นี่ เพราะเป็นการควบคุมภายในคอลัมน์เดียว */
+}
+
+
+.scrolling-text-container {
+    position: relative;
+    padding-top: 80px; /* เพิ่ม padding เพื่อดันเนื้อหาลงมาจากส่วนหัว H3 */
+    height: 100%; /* ให้ส่วนนี้มีความสูงเต็มเท่ากับพาเรนต์ */
+    display: flex; /* ใช้ flex เพื่อให้เนื้อหาเติมเต็มพื้นที่ที่เหลือ */
+    flex-direction: column; /* จัดเรียงส่วนประกอบในแนวตั้ง */
+}
+
+.scrolling-text-container h3 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background-color: inherit; /* สืบทอดสีพื้นหลังจากพาเรนต์เพื่อให้เข้ากัน */
+    /* ตรวจสอบให้แน่ใจว่า padding-left และ padding-right สอดคล้องกับพาเรนต์เพื่อการจัดแนวที่เหมาะสม */
+    padding-left: 24px; /* ตรงกับ p-6 (padding-x: 1.5rem = 24px) จากพาเรนต์ */
+    padding-right: 24px; /* ตรงกับ p-6 (padding-x: 1.5rem = 24px) จากพาเรนต์ */
+}
+
+/* ปรับแต่งเนื้อหาส่วนภาพหมุนเพื่อควบคุมขนาดภาพ */
+.image-rotator-content {
+    flex-grow: 1; /* ให้ส่วนนี้ขยายเต็มพื้นที่ที่เหลือ */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* ซ่อนส่วนที่เกินขอบหากภาพใหญ่เกินไป */
+    width: 100%; /* ให้มีความกว้างเต็ม */
+    padding: 10px; /* เพิ่ม padding รอบๆ คอนเทนเนอร์ภาพ */
+    box-sizing: border-box; /* รวม padding เข้าไปในการคำนวณความกว้างและสูงทั้งหมดขององค์ประกอบ */
+}
+
+.image-rotator-content img {
+    max-width: 90%; /* ลดขนาดความกว้างสูงสุดของภาพ */
+    max-height: 90%; /* ลดขนาดความสูงสูงสุดของภาพ */
+    object-fit: contain; /* ปรับขนาดภาพให้พอดีกับคอนเทนเนอร์ โดยรักษาสัดส่วน */
+    opacity: 0; /* ซ่อนภาพเริ่มต้นเพื่อใช้เอฟเฟกต์เฟด */
+    transition: opacity 1s ease-in-out; /* เพิ่มการเปลี่ยนผ่านแบบเฟดที่ราบรื่น */
+}
+
+.image-rotator-content img.fading {
+    opacity: 0;
+}
+
+.image-rotator-content img.visible {
+    opacity: 1;
 }
