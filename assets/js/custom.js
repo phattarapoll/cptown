@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (password === ADMIN_PASSWORD) {
             alert('เข้าสู่ระบบ ADMIN สำเร็จ!');
             // Redirect to a private link or show admin-specific content
-            window.location.href = 'https://cptown.6te.net/ADM.html'; // Placeholder link
+            window.location.href = 'https://phattarapoll.github.io/cptown/ADM.html'; // Placeholder link
         } else {
             alert('รหัสผ่านไม่ถูกต้อง!');
         }
@@ -67,8 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fullscreenInfoRight.classList.add('hidden'); // ซ่อนข้อมูลด้านขวา
     }
 });
-	
-	
+
 
     // สำคัญ: แทนที่ 'กรุณาใส่ URL Web App ของ Google Apps Script สำหรับฟังก์ชันคิวบริการที่นี่' ด้วย URL ที่ Deploy แล้วของคุณ
     const BOOKING_API_URL = 'https://script.google.com/macros/s/AKfycbw8wDGyZWTmG3DLWRwt8_k9x3iYKSxkTl3Rulyll5ObGxOTkJrw3xwB-xBSwBBeOhVE/exec'; // ตรวจสอบให้แน่ใจว่าเป็น URL ที่ Deploy แล้วของคุณ
@@ -167,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 queueError.querySelector('p').textContent = 'ไม่สามารถโหลดคิวได้: ' + data.error;
                 return;
             }
-            
+
             // Log ข้อมูลที่ได้รับจาก Apps Script เพื่อตรวจสอบ
             console.log("Data fetched from Apps Script:", data);
 
@@ -236,7 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         for (const booking of bookings) {
             const bookingStartDateTime = new Date(booking.date);
-            
+
             const timeParts = booking.timeSlot.split('-');
             let bookingEndDateTime;
             if (timeParts.length === 2) {
@@ -291,7 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
             noCurrentCard.innerHTML = `
                 <div class="flex items-center mb-2">
                     <i class="fas fa-info-circle text-gray-500 text-xl mr-2"></i>
-                    <p class="font-bold text-gray-700 text-lg">ไม่มีคิวปัจจุบัน</p>
+                    <p class="font-bold text-gray-700 text-lg">ให้บริการนอกพื้นที่  / ไม่มีคิวปัจจุบัน </p>
                 </div>
                 <p class="text-gray-600 text-sm">รอคิวถัดไป</p>
             `;
@@ -302,7 +301,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (upcomingAppointments.length > 0) {
             const upcomingHeader = document.createElement('div');
             upcomingHeader.classList.add('text-lg', 'font-bold', 'text-blue-700', 'mt-4', 'mb-2', 'border-b', 'border-blue-200', 'pb-1', 'px-3');
-            upcomingHeader.textContent = 'คิวที่กำลังจะมาถึง:';
+            // ** เพิ่มข้อความระบุจำนวนคิวที่เหลือตรงนี้ **
+            upcomingHeader.innerHTML = `
+                คิวที่กำลังจะมาถึง:
+                <span class="text-sm font-normal text-gray-600">(${upcomingAppointments.length} คิวรอ)</span>
+            `;
             queueDisplay.appendChild(upcomingHeader);
 
             upcomingAppointments.forEach(appt => {
@@ -367,7 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ดึงข้อมูลและอัปเดตครั้งแรก
     fetchBookingData();
     setInterval(fetchBookingData, 60000); // รีเฟรชข้อมูลทุกๆ 60 วินาที (1 นาที)
-    setInterval(updateAllTimeRemaining, 1000); // อัปเดตเวลาที่เหลือทุกๆ วินาที
+    setInterval(updateAllTimeRemaining, 8000); // อัปเดตเวลาที่เหลือทุกๆ วินาที
 
 
     // 3. Service Open/Closed Toggle
@@ -476,8 +479,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { colA: "25/7/2025, 13:52:59", colK: "ให้คำแนะนำดีมากๆคะ" },
     // { colA: "", colK: "" },
     ];
-	
-	
+
 
     // Function to populate and animate comments for the LINE-like display
     function populateAndAnimateComments() {
@@ -548,7 +550,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const newsError = document.getElementById('newsError');
 
     // Replace with your deployed Google Apps Script Web App URL
-    const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbzHy1NyAVT3fOQzQpgeKf0L4duDNr94evxd-h-AUkYPKJYhfkQMN7T_iFwjJVtlQlLN/exec'; 
+    const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbzHy1NyAVT3fOQzQpgeKf0L4duDNr94evxd-h-AUkYPKJYhfkQMN7T_iFwjJVtlQlLN/exec';
 
     async function fetchNewsFromGoogleSheet() {
         newsLoading.classList.remove('hidden');
