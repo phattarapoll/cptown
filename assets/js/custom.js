@@ -221,8 +221,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <i class="fas fa-clock text-gray-500 text-xl mr-2"></i>
                     <p class="font-bold text-gray-700 text-lg">สถานะปัจจุบัน:</p>
                 </div>
-                <p class="text-gray-600 text-xl font-semibold">นอกเวลาทำการ</p>
-                <p class="text-gray-500 text-sm mt-1">โปรดตรวจสอบเวลาให้บริการ</p>
+                <p class="text-gray-600 text-xl font-semibold">นอกช่วงเวลาให้บริการ</p>
+                <p class="text-gray-500 text-sm mt-1">โปรดตรวจสอบเวลาให้บริการ </p>
             `;
             queueDisplay.appendChild(outOfHoursCard);
             // ไม่มี 'return;' ที่นี่
