@@ -263,7 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
             currentCard.innerHTML = `
                 <div class="flex items-center mb-2">
                     <i class="fas fa-play-circle text-blue-600 text-xl mr-2"></i>
-                    <p class="font-bold text-blue-800 text-lg">คิวปัจจุบัน:</p>
+                    <p class="font-bold text-blue-800 text-lg">คิวปัจจุบัน:ห้องตรวจ2</p>
                 </div>
                 <p class="text-gray-900 text-xl font-semibold">${currentAppointment.patientName}</p>
                 <p class="text-gray-700 text-sm">เวลา: ${currentAppointment.timeSlot}</p>
