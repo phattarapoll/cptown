@@ -6,6 +6,87 @@
     <title>ระบบจองคิวออนไลน์</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/styleonline.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* CSS สำหรับการกระพริบเบาๆ ของพื้นหลังเท่านั้น */
+        @keyframes blink-background {
+            0% { background-color: rgba(220, 38, 38, 1); } /* แดงเข้มเต็มที่ */
+            50% { background-color: rgba(220, 38, 38, 0.7); } /* แดงจางลงเล็กน้อย */
+            100% { background-color: rgba(220, 38, 38, 1); }
+        }
+
+        .blinking-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .blinking-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgb(220, 38, 38); /* สีแดงเริ่มต้น (bg-red-600) */
+            border-radius: 9999px;
+            z-index: -1;
+            animation: blink-background 2s infinite ease-in-out;
+        }
+
+        /* ปรับขนาดตัวอักษรสำหรับข้อความนี้ */
+        .small-readable-text {
+            font-size: 0.85rem;
+            line-height: 1.3;
+        }
+
+        /* ปฏิทิน: พื้นหลังสีม่วงอ่อน */
+        .calendar-grid-container {
+            background-color: #E6E6FA; /* Lavender - ม่วงอ่อน */
+            border-radius: 10px; /* เพิ่มมนมุมเล็กน้อย */
+            padding: 10px; /* เพิ่ม padding ให้ดูโปร่งขึ้น */
+        }
+
+        /* วันในสัปดาห์ (จันทร์-อาทิตย์) */
+        .day-names div {
+            font-weight: bold;
+            color: #555;
+            text-align: center;
+            padding: 8px 0;
+        }
+        
+        /* วันเสาร์และอาทิตย์ (พื้นหลังสีเทา) */
+        .day-names div:nth-child(1), /* อาทิตย์ */
+        .day-names div:nth-child(7), /* เสาร์ */
+        .calendar-grid .day.day-weekend { /* สำหรับวันที่ใน grid */
+            background-color: #696969; /* สีดำอ่อน */
+            border-radius: 5px; /* ทำให้มุมมนเล็กน้อย */
+        }
+
+        /* ปรับปรุงช่องวันในปฏิทิน */
+        .calendar-grid .day {
+            padding: 15px 5px; /* เพิ่ม padding ให้ช่องกว้างขึ้น */
+            border-radius: 8px; /* ทำให้มุมมนสวยงาม */
+            transition: background-color 0.3s ease; /* เพิ่ม transition ให้ดูนุ่มนวลเวลา hover/active */
+            margin: 2px; /* เพิ่มระยะห่างระหว่างช่อง */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* เพิ่มเงาเล็กน้อย */
+            background-color: #FFF; /* ให้วันธรรมดามีพื้นหลังสีขาว */
+            cursor: pointer;
+        }
+
+        /* เมื่อเลื่อนเมาส์ไปบนวัน */
+        .calendar-grid .day:hover:not(.day-empty):not(.day-selected) {
+            background-color: #DDA0DD; /* สีม่วงกลางเมื่อ hover */
+        }
+
+        /* วันที่ถูกเลือก */
+        .calendar-grid .day.day-selected {
+            background-color: #BA55D3; /* สีม่วงเข้มเมื่อถูกเลือก */
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+    </style>
 </head>
 <body>
 	<button class="back-to-previous-button" onclick="window.location.href = '../index.html'">← ย้อนกลับ</button>
@@ -18,9 +99,7 @@
             <div class="header-content">
                 <h1 class="title">ปฏิทินจองคิว</h1>
                 <p class="subtitle">
-                    งานทันตสาธารณสุข <br>
-                    ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร<br>
-                    เลือกวันที่และช่วงเวลาที่คุณต้องการจอง
+                    งานทันตสาธารณสุข ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร
                 </p>
             </div>
         </header>
@@ -33,13 +112,13 @@
             </div>
             <div class="calendar-grid-container">
                 <div class="day-names">
-                    <div>อา.</div>
-                    <div>จ.</div>
-                    <div>อ.</div>
-                    <div>พ.</div>
-                    <div>พฤ.</div>
-                    <div>ศ.</div>
-                    <div>ส.</div>
+                    <div class="day-of-week">อา.</div>
+                    <div class="day-of-week">จ.</div>
+                    <div class="day-of-week">อ.</div>
+                    <div class="day-of-week">พ.</div>
+                    <div class="day-of-week">พฤ.</div>
+                    <div class="day-of-week">ศ.</div>
+                    <div class="day-of-week">ส.</div>
                 </div>
                 <div id="calendarGrid" class="calendar-grid">
                     </div>
@@ -79,7 +158,7 @@
                         <option value="ปวดฟัน">ปวดฟัน</option>
                         <option value="เสียวฟัน">เสียวฟัน</option>
                         <option value="ต้องการถอนฟัน">ต้องการถอนฟัน</option>
-                        <option value="ต้องการทาฟลูออไรด์">ต้องการทาฟลูออไรด์</option>
+						<option value="ต้องการทาฟลูออไรด์">ต้องการทาฟลูออไรด์</option>
 						<option value="ต้องการขูดหินน้ำลาย">ต้องการขูดหินน้ำลาย</option>
                         <option value="อื่นๆ">อื่นๆ</option>
                     </select>
@@ -93,6 +172,14 @@
         <div class="spinner"></div>
         <p>กำลังดำเนินการ...</p>
     </div>
+				        <div class="flex justify-center mt-4">
+            <div class="bg-red-600 text-white p-1 px-3 text-center flex items-center rounded-full shadow-md blinking-container">
+                <p class="text-sm font-semibold m-0 small-readable-text">
+				">>> ให้บริการผู้ป่วย ในเขตตำบลท่าตะเภา,สิทธิ์ข้าราชการ,พนักงานลูกจ้างเทศบาลเมืองชุมพร,ครูและนักเรียนในเขตพื้นที่ <<<"
+				<br>
+				(รร.สหศึกษา รร.เทศบาล1ท่าตะเภา รร.เทศบาล1 รร.ฝวาหมินกงลิ รร.อนุบาลเมืองชุมพร รร.สอาดเผดิมวิทยา รร.ศรียาภัย)</p>
+            </div>
+        </div>
 
     <script src="assets/customonline.js"></script>
 
