@@ -28,9 +28,21 @@
             right: 0;
             bottom: 0;
             background-color: rgb(220, 38, 38); /* สีแดงเริ่มต้น (bg-red-600) */
-            border-radius: 9999px;
+            border-radius: 9999px; 
             z-index: -1;
             animation: blink-background 2s infinite ease-in-out;
+        }
+
+        /* New CSS for centering and sharp corners */
+        .centered-no-radius {
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 0; /* Ensures sharp corners */
+        }
+
+        /* Override the before pseudo-element for sharp corners as well */
+        .centered-no-radius::before {
+            border-radius: 0 !important; /* Important to override the more specific rule */
         }
 
         /* ปรับขนาดตัวอักษรสำหรับข้อความนี้ */
@@ -173,11 +185,9 @@
         <p>กำลังดำเนินการ...</p>
     </div>
 				        <div class="flex justify-center mt-4">
-            <div class="bg-red-600 text-white p-1 px-3 text-center flex items-center rounded-full shadow-md blinking-container">
+            <div class="bg-red-600 text-white p-1 px-3 text-center flex items-center shadow-md blinking-container centered-no-radius">
                 <p class="text-sm font-semibold m-0 small-readable-text">
-				">>> ให้บริการผู้ป่วย ในเขตตำบลท่าตะเภา,สิทธิ์ข้าราชการ,พนักงานลูกจ้างเทศบาลเมืองชุมพร,ครูและนักเรียนในเขตพื้นที่ <<<"
-				<br>
-				(รร.สหศึกษา รร.เทศบาล1ท่าตะเภา รร.เทศบาล1 รร.ฝวาหมินกงลิ รร.อนุบาลเมืองชุมพร รร.สอาดเผดิมวิทยา รร.ศรียาภัย)</p>
+				ให้บริการผู้ป่วย ในเขตตำบลท่าตะเภา,สิทธิ์ข้าราชการ,พนักงานลูกจ้างเทศบาลเมืองชุมพร,ครูและนักเรียนในเขตพื้นที่ <br>(รร.สหศึกษา รร.ฝวาหมินกงลิ รร.อนุบาลเมืองชุมพร รร.สอาดเผดิมวิทยา รร.ศรียาภัย รร.เทศบาล1บ้านท่าตะเภา)</p>
             </div>
         </div>
 
