@@ -525,36 +525,22 @@ main.container {
 /* --- Custom styles for Image Rotator Section (ประมวลภาพ) --- */
 
 /* กำหนดความสูงสำหรับคอลัมน์ 'ประมวลภาพ' โดยเฉพาะ */
-/* ใช้ class ที่เจาะจงมากขึ้น หรือ id ถ้ามี */
-/* ในกรณีนี้ เราจะใช้ .lg\:w-1\/2 ที่เป็นคอลัมน์ด้านขวาของ section นั้น */
-/* โดยการเพิ่ม class เฉพาะหรือปรับแก้ div ให้มี class/id ที่ระบุได้ง่ายขึ้น */
-/* ถ้าไม่ได้เพิ่ม id ให้กับ div ประมวลภาพ เราจะใช้การเลือกที่เจาะจงมากขึ้น */
 section.glassy-section > div.lg\:w-1\/2.bg-gray-50.p-6.rounded-xl.shadow-inner.relative.scrolling-text-container {
     height: 450px; /* กำหนดความสูงคงที่สำหรับคอลัมน์ประมวลภาพ */
     display: flex; /* ทำให้เป็น flex container */
     flex-direction: column; /* จัดเนื้อหาในแนวตั้ง */
-    /* ไม่ต้องใส่ flex-basis หรือ max-width ที่นี่ เพราะเป็นการควบคุมภายในคอลัมน์เดียว */
+    /* ลบ padding-top ที่เคยมีออก */
 }
 
-
-.scrolling-text-container {
-    position: relative;
-    padding-top: 80px; /* เพิ่ม padding เพื่อดันเนื้อหาลงมาจากส่วนหัว H3 */
-    height: 100%; /* ให้ส่วนนี้มีความสูงเต็มเท่ากับพาเรนต์ */
-    display: flex; /* ใช้ flex เพื่อให้เนื้อหาเติมเต็มพื้นที่ที่เหลือ */
-    flex-direction: column; /* จัดเรียงส่วนประกอบในแนวตั้ง */
-}
-
-.scrolling-text-container h3 {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 10;
-    background-color: inherit; /* สืบทอดสีพื้นหลังจากพาเรนต์เพื่อให้เข้ากัน */
-    /* ตรวจสอบให้แน่ใจว่า padding-left และ padding-right สอดคล้องกับพาเรนต์เพื่อการจัดแนวที่เหมาะสม */
-    padding-left: 24px; /* ตรงกับ p-6 (padding-x: 1.5rem = 24px) จากพาเรนต์ */
-    padding-right: 24px; /* ตรงกับ p-6 (padding-x: 1.5rem = 24px) จากพาเรนต์ */
+/* Modify h3 inside this specific scrolling-text-container */
+section.glassy-section > div.lg\:w-1\/2.bg-gray-50.p-6.rounded-xl.shadow-inner.relative.scrolling-text-container h3 {
+    position: static; /* Allow h3 to flow naturally within the flex container */
+    /* Remove top, left, right, z-index as they are not needed for static positioning */
+    background-color: rgba(240, 244, 248, 0.9); /* Keep background for header */
+    border-bottom: 2px solid #cbd5e1; /* Keep border for header */
+    border-radius: 0.75rem 0.75rem 0 0; /* Keep rounded corners */
+    padding: 1.5rem 1.5rem 0.75rem 1.5rem; /* Keep existing padding */
+    flex-shrink: 0; /* Prevent it from shrinking */
 }
 
 /* ปรับแต่งเนื้อหาส่วนภาพหมุนเพื่อควบคุมขนาดภาพ */
