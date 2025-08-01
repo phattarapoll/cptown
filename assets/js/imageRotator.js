@@ -1,17 +1,27 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // กำหนดไฟล์รูปภาพ (GIF) ที่จะใช้
-    const imagePath = 'Image/01.gif'; 
+    const youtubeFrame = document.getElementById('youtubeFrame');
+    const fullScreenBtn = document.getElementById('fullScreenBtn');
 
-    // รับอ้างอิงถึงองค์ประกอบรูปภาพใน HTML ที่มี id เป็น 'rotatingImage'
-    const rotatingImage = document.getElementById('rotatingImage');
+    // **แทนที่ YOUR_GOOGLE_DRIVE_VIDEO_ID ด้วย ID ของวิดีโอที่คุณคัดลอกมา**
+    const googleDriveVideoID = '1JCOSghPnf5j5fK-VfPKbZvBuKmNSyx2E';
 
-    // ตั้งค่า src และ alt text ของรูปภาพ
-    rotatingImage.src = imagePath;
-    rotatingImage.alt = 'ภาพกิจกรรม'; // ตั้งค่า alt text ที่เหมาะสม
+    // สร้าง URL สำหรับการ embed วิดีโอจาก Google Drive
+    // ลบ autoplay=1 ออกเพื่อให้วิดีโอไม่เล่นอัตโนมัติ
+    const googleDriveEmbedURL = `https://drive.google.com/file/d/${googleDriveVideoID}/preview`;
 
-    // เพิ่มคลาส 'visible' เพื่อให้ภาพแสดงขึ้นมา
-    rotatingImage.classList.add('visible');
+    // ตั้งค่า src ของ iframe ให้เป็น URL ของ Google Drive
+    youtubeFrame.src = googleDriveEmbedURL;
 
-    // ไม่ต้องมีฟังก์ชันสำหรับการเปลี่ยนภาพหรือการสุ่ม 
-    // เพราะเราต้องการแสดงภาพเดียวตลอดไป
+    // ปุ่มขยายเต็มจอ
+    fullScreenBtn.addEventListener('click', function() {
+        if (youtubeFrame.requestFullscreen) {
+            youtubeFrame.requestFullscreen();
+        } else if (youtubeFrame.mozRequestFullScreen) { /* Firefox */
+            youtubeFrame.mozRequestFullScreen();
+        } else if (youtubeFrame.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+            youtubeFrame.webkitRequestFullscreen();
+        } else if (youtubeFrame.msRequestFullscreen) { /* IE/Edge */
+            youtubeFrame.msRequestFullscreen();
+        }
+    });
 });
