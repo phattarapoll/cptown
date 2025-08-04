@@ -1,14 +1,15 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbw3gsV4e3a4-98wL2fu0-xXg9D-zvTDBgyKu_xqBu4atmG2bHZZoteI2J4_qlLU3GhO-w/exec';
+    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbxWwIkmDMyqtSfIIxfPl5XQ5s8LdyHu23hB0h7B9MVJuzUId_AgBhFPxRseI1Tgv2Pw/exec';
 
     // Elements for different sections
     const officerSelect = document.getElementById('officer-select');
     const contentSections = document.getElementById('content-sections');
-    
+
     // Collapsible elements
     const personalInfoCard = document.getElementById('personal-info-card');
     const workInfoCard = document.getElementById('work-info-card');
-    
+    const leaveFormSection = document.getElementById('leave-form-section');
+
     // Elements for dashboard
     const userNameElement = document.getElementById('user-name');
     const userPositionElement = document.getElementById('user-position');
@@ -19,14 +20,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const oldWorkDurationElement = document.getElementById('old-work-duration');
     const newWorkDurationElement = document.getElementById('new-work-duration');
     const totalWorkDurationElement = document.getElementById('total-work-duration');
-    
+
     // New leave info elements
     const sickLeaveUsedElement = document.getElementById('sick-leave-used');
     const sickLeaveRemainingElement = document.getElementById('sick-leave-remaining');
     const personalLeaveUsedElement = document.getElementById('personal-leave-used');
     const vacationLeaveUsedElement = document.getElementById('vacation-leave-used');
     const vacationLeaveRemainingElement = document.getElementById('vacation-leave-remaining');
-    
+
     // Elements for leave form
     const leaveForm = document.getElementById('leave-form');
     const leaveTypeInput = document.getElementById('leave-type');
@@ -34,6 +35,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const leaveEndDateInput = document.getElementById('leave-end-date');
     const leavePhoneInput = document.getElementById('leave-phone');
     const leaveReasonInput = document.getElementById('leave-reason');
+
+    // Floating panel elements
+    const floatingOfficerButton = document.getElementById('floating-officer-button');
+    const floatingOfficerPanel = document.getElementById('floating-officer-panel');
+    const closeOfficerPanelButton = document.getElementById('close-officer-panel');
+    const floatingHistoryButton = document.getElementById('floating-history-button');
+    const floatingHistoryPanel = document.getElementById('floating-history-panel');
+    const closeHistoryPanelButton = document.getElementById('close-history-panel');
+
+    const loginForm = document.getElementById('login-form');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const loginButton = document.getElementById('login-button');
 
     // Elements for leave history
     const leaveHistoryTableBody = document.querySelector('#leave-history-table tbody');
@@ -53,9 +67,9 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }
-
     setupCollapsible(personalInfoCard);
     setupCollapsible(workInfoCard);
+    setupCollapsible(leaveFormSection);
 
     // ฟังก์ชันสำหรับจัดรูปแบบวันที่
     function formatDateForDisplay(dateString) {
@@ -75,11 +89,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!startDate || !endDate) return 'ไม่มีข้อมูล';
         const start = new Date(startDate);
         const end = new Date(endDate);
-        
+
         let years = end.getFullYear() - start.getFullYear();
         let months = end.getMonth() - start.getMonth();
         let days = end.getDate() - start.getDate();
-        
+
         if (days < 0) {
             months--;
             days += new Date(end.getFullYear(), end.getMonth(), 0).getDate();
@@ -110,31 +124,29 @@ document.addEventListener('DOMContentLoaded', function() {
     // ฟังก์ชันสำหรับแสดงข้อมูลผู้ใช้งานบน Dashboard
     function renderDashboard(userData, leaveHistory) {
         if (!userData) return;
-        
+
         currentUser = userData;
         userNameElement.textContent = userData.name;
         userPositionElement.textContent = userData.position;
         userOrganizationElement.textContent = userData.organization;
         userAddressElement.textContent = userData.address;
         userPhoneElement.textContent = userData.phone;
-        
+
         workStartDateElement.textContent = formatDateForDisplay(userData.workStartDate);
-        
-        // แก้ไขการคำนวณระยะเวลาทำงานให้ถูกต้องตามโครงสร้างชีทของคุณ
+
         const oldWorkDuration = calculateWorkDuration(userData.workStartDate, userData.workTransferDate);
         const newWorkDuration = calculateWorkDuration(userData.workTransferDate, new Date().toISOString().split('T')[0]);
         const totalWorkDuration = calculateWorkDuration(userData.workStartDate, new Date().toISOString().split('T')[0]);
-        
+
         oldWorkDurationElement.textContent = oldWorkDuration;
         newWorkDurationElement.textContent = newWorkDuration;
         totalWorkDurationElement.textContent = totalWorkDuration;
-        
+
         const usedSickLeaveDays = leaveHistory.filter(l => l.leaveType === 'ลาป่วย' && l.status === 'อนุมัติแล้ว').reduce((sum, l) => sum + (parseInt(l.duration) || 0), 0);
         const usedPersonalLeaveDays = leaveHistory.filter(l => l.leaveType === 'ลากิจ' && l.status === 'อนุมัติแล้ว').reduce((sum, l) => sum + (parseInt(l.duration) || 0), 0);
         const usedVacationDays = leaveHistory.filter(l => l.leaveType === 'ลาพักผ่อน' && l.status === 'อนุมัติแล้ว').reduce((sum, l) => sum + (parseInt(l.duration) || 0), 0);
-        
-        // Assumption: Maximum sick leave days is 30. Please adjust this number if needed.
-        const totalSickLeave = 30; 
+
+        const totalSickLeave = 30;
         const remainingSickLeave = totalSickLeave - usedSickLeaveDays;
         const remainingVacationDays = (userData.annualLeave + userData.accumulatedLeave) - usedVacationDays;
 
@@ -146,6 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         renderLeaveHistory(leaveHistory);
         contentSections.classList.remove('hidden');
+        floatingHistoryButton.classList.remove('hidden');
     }
 
     // ฟังก์ชันสำหรับแสดงประวัติการลา
@@ -181,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (leaveStatus === 'อนุมัติแล้ว' || leaveStatus === 'รออนุมัติยกเลิก') {
             confirmationMessage = 'คำขอลาได้รับการอนุมัติแล้ว การยกเลิกต้องรอผู้ดูแลระบบอนุมัติอีกครั้ง ยืนยันการส่งคำขอยกเลิกหรือไม่?';
         } else {
-            return; // ไม่ต้องทำอะไรถ้าสถานะเป็นอย่างอื่น
+            return;
         }
 
         if (!confirm(confirmationMessage)) return;
@@ -200,16 +213,16 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('ไม่สามารถยกเลิกได้: ' + result.message);
         }
     }
-    
+
     // ฟังก์ชันสำหรับจัดการการส่งคำขอลา
     leaveForm.addEventListener('submit', async function(event) {
         event.preventDefault();
 
         const startDate = leaveStartDateInput.value;
         const endDate = leaveEndDateInput.value;
-        
+
         const duration = calculateWorkingDays(startDate, endDate);
-        
+
         const leaveData = {
             id: currentUser.id,
             leaveType: leaveTypeInput.value,
@@ -222,7 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const formData = new URLSearchParams(leaveData);
         formData.append('action', 'submitLeave');
-        
+
         const response = await fetch(appsScriptUrl, {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -247,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
             body: `action=getOfficerList`
         });
         const result = await response.json();
-        
+
         if (result.success) {
             result.officers.forEach(officer => {
                 const option = document.createElement('option');
@@ -259,11 +272,12 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('ไม่สามารถดึงรายชื่อเจ้าหน้าที่ได้: ' + result.message);
         }
     }
-    
+
     // ฟังก์ชันสำหรับดึงข้อมูลผู้ใช้งานที่ถูกเลือก
     async function fetchUserData(officerId) {
         if (!officerId) {
             contentSections.classList.add('hidden');
+            floatingHistoryButton.classList.add('hidden');
             return;
         }
 
@@ -276,15 +290,71 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (result.success) {
             renderDashboard(result.user, result.leaveHistory);
+            floatingOfficerPanel.classList.remove('visible');
         } else {
             alert('ไม่สามารถดึงข้อมูลได้: ' + result.message);
         }
     }
 
-    // Event Listener เมื่อมีการเลือกเจ้าหน้าที่
-    officerSelect.addEventListener('change', function() {
-        const selectedOfficerId = this.value;
-        fetchUserData(selectedOfficerId);
+    // Event Listeners for floating panels
+    floatingOfficerButton.addEventListener('click', () => {
+        floatingOfficerPanel.classList.toggle('visible');
+    });
+    closeOfficerPanelButton.addEventListener('click', () => {
+        floatingOfficerPanel.classList.remove('visible');
+    });
+
+    floatingHistoryButton.addEventListener('click', () => {
+        floatingHistoryPanel.classList.toggle('visible');
+    });
+    closeHistoryPanelButton.addEventListener('click', () => {
+        floatingHistoryPanel.classList.remove('visible');
+    });
+
+    // Event Listener สำหรับการเข้าสู่ระบบ พร้อมสถานะโหลด
+    loginForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const originalButtonText = loginButton.textContent;
+        loginButton.textContent = '⌛ กำลังโหลด...';
+        loginButton.disabled = true;
+        loginButton.classList.add('loading');
+
+        const selectedOfficerId = officerSelect.value;
+        const username = usernameInput.value;
+        const password = passwordInput.value;
+
+        if (!selectedOfficerId) {
+            alert('กรุณาเลือกเจ้าหน้าที่');
+            loginButton.textContent = originalButtonText;
+            loginButton.disabled = false;
+            loginButton.classList.remove('loading');
+            return;
+        }
+
+        try {
+            const response = await fetch(appsScriptUrl, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `action=login&id=${selectedOfficerId}&username=${username}&password=${password}`
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                await fetchUserData(selectedOfficerId);
+                usernameInput.value = '';
+                passwordInput.value = '';
+            } else {
+                alert(result.message);
+            }
+        } catch (error) {
+            console.error('Login failed:', error);
+            alert('เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง');
+        } finally {
+            loginButton.textContent = originalButtonText;
+            loginButton.disabled = false;
+            loginButton.classList.remove('loading');
+        }
     });
 
     // เมื่อหน้าเว็บโหลดเสร็จ ให้ดึงรายชื่อเจ้าหน้าที่มาแสดงทันที

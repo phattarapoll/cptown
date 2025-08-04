@@ -12,13 +12,6 @@
     <div class="container">
         <h1>ระบบจัดการวันลาข้าราชการ</h1>
         
-        <div id="officer-selection-section" class="card">
-            <h2><i class="fa-solid fa-user-gear"></i> เลือกเจ้าหน้าที่</h2>
-            <select id="officer-select">
-                <option value="">-- กรุณาเลือกเจ้าหน้าที่ --</option>
-            </select>
-        </div>
-        
         <div id="content-sections" class="hidden">
             <div class="main-content">
                 <div class="left-column">
@@ -27,7 +20,7 @@
                             <h3><i class="fa-solid fa-user"></i> ข้อมูลส่วนบุคคล</h3>
                             <i class="fa-solid fa-chevron-right"></i>
                         </div>
-                        <div class="collapsible-content">
+                        <div class="collapsible-content expanded">
                             <p><strong>ชื่อ:</strong> <span id="user-name"></span></p>
                             <p><strong>ตำแหน่ง:</strong> <span id="user-position"></span></p>
                             <p><strong>สังกัด:</strong> <span id="user-organization"></span></p>
@@ -36,25 +29,30 @@
                         </div>
                     </div>
                     <div id="leave-form-section" class="card">
-                        <h2><i class="fa-solid fa-calendar-plus"></i> ยื่นคำขอลา</h2>
-                        <form id="leave-form">
-                            <label for="leave-type">ประเภทการลา:</label>
-                            <select id="leave-type" name="leave-type" required>
-                                <option value="">เลือกประเภทการลา</option>
-                                <option value="ลาป่วย">ลาป่วย</option>
-                                <option value="ลากิจ">ลากิจ</option>
-                                <option value="ลาพักผ่อน">ลาพักผ่อน</option>
-                            </select>
-                            <label for="leave-start-date">วันที่เริ่มต้น:</label>
-                            <input type="date" id="leave-start-date" name="leave-start-date" required>
-                            <label for="leave-end-date">วันที่สิ้นสุด:</label>
-                            <input type="date" id="leave-end-date" name="leave-end-date" required>
-                            <label for="leave-phone">เบอร์โทรศัพท์ติดต่อ:</label>
-                            <input type="tel" id="leave-phone" name="leave-phone" required>
-                            <label for="leave-reason">สาเหตุการลา:</label>
-                            <textarea id="leave-reason" name="leave-reason" required></textarea>
-                            <button type="submit">ส่งคำขอลา</button>
-                        </form>
+                        <div class="collapsible-header">
+                            <h2><i class="fa-solid fa-calendar-plus"></i> ยื่นคำขอลา</h2>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </div>
+                        <div class="collapsible-content">
+                            <form id="leave-form">
+                                <label for="leave-type">ประเภทการลา:</label>
+                                <select id="leave-type" name="leave-type" required>
+                                    <option value="">เลือกประเภทการลา</option>
+                                    <option value="ลาป่วย">ลาป่วย</option>
+                                    <option value="ลากิจ">ลากิจ</option>
+                                    <option value="ลาพักผ่อน">ลาพักผ่อน</option>
+                                </select>
+                                <label for="leave-start-date">วันที่เริ่มต้น:</label>
+                                <input type="date" id="leave-start-date" name="leave-start-date" required>
+                                <label for="leave-end-date">วันที่สิ้นสุด:</label>
+                                <input type="date" id="leave-end-date" name="leave-end-date" required>
+                                <label for="leave-phone">เบอร์โทรศัพท์ติดต่อ:</label>
+                                <input type="tel" id="leave-phone" name="leave-phone" required>
+                                <label for="leave-reason">สาเหตุการลา:</label>
+                                <textarea id="leave-reason" name="leave-reason" required></textarea>
+                                <button type="submit">ส่งคำขอลา</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
 
@@ -64,7 +62,7 @@
                             <h3><i class="fa-solid fa-briefcase"></i> ข้อมูลการทำงาน</h3>
                             <i class="fa-solid fa-chevron-right"></i>
                         </div>
-                        <div class="collapsible-content">
+                        <div class="collapsible-content expanded">
                             <p><strong>วันที่เริ่มงานที่ปัจจุบัน:</strong> <span id="work-start-date"></span></p>
                             <p><strong>ระยะเวลาทำงานที่เก่า:</strong> <span id="old-work-duration"></span></p>
                             <p><strong>ระยะเวลาทำงานที่ใหม่:</strong> <span id="new-work-duration"></span></p>
@@ -77,26 +75,54 @@
                         <p><strong>ลากิจ:</strong> ไปแล้ว <span id="personal-leave-used"></span> วัน</p>
                         <p><strong>ลาพักผ่อน:</strong> ไปแล้ว <span id="vacation-leave-used"></span> วัน (คงเหลือ <span id="vacation-leave-remaining"></span> วัน)</p>
                     </div>
-                    <div id="leave-history-section" class="card">
-                        <h2><i class="fa-solid fa-history"></i> ประวัติการลา</h2>
-                        <table id="leave-history-table">
-                            <thead>
-                                <tr>
-                                    <th>ประเภท</th>
-                                    <th>วันที่เริ่ม</th>
-                                    <th>วันที่สิ้นสุด</th>
-                                    <th>จำนวนวัน</th>
-                                    <th>สถานะ</th>
-                                    <th>การจัดการ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                </tbody>
-                        </table>
-                    </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <button id="floating-officer-button" class="floating-button left">
+        <i class="fa-solid fa-user-gear"></i> เลือกเจ้าหน้าที่
+    </button>
+    <div id="floating-officer-panel" class="floating-panel left">
+        <div class="floating-panel-header">
+            <h2>เข้าสู่ระบบ</h2>
+            <span id="close-officer-panel" class="floating-panel-close">&times;</span>
+        </div>
+        <form id="login-form">
+            <label for="officer-select">เลือกเจ้าหน้าที่:</label>
+            <select id="officer-select" required>
+                <option value="">-- กรุณาเลือกเจ้าหน้าที่ --</option>
+            </select>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit" id="login-button">เข้าสู่ระบบ</button>
+        </form>
+    </div>
+
+    <button id="floating-history-button" class="floating-button right hidden">
+        <i class="fa-solid fa-history"></i> ประวัติการลา
+    </button>
+    <div id="floating-history-panel" class="floating-panel right">
+        <div class="floating-panel-header">
+            <h2>ประวัติการลา</h2>
+            <span id="close-history-panel" class="floating-panel-close">&times;</span>
+        </div>
+        <table id="leave-history-table">
+            <thead>
+                <tr>
+                    <th>ประเภท</th>
+                    <th>วันที่เริ่ม</th>
+                    <th>วันที่สิ้นสุด</th>
+                    <th>จำนวนวัน</th>
+                    <th>สถานะ</th>
+                    <th>การจัดการ</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
     </div>
 
     <script src="script.js"></script>
