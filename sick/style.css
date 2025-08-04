@@ -230,6 +230,8 @@ th {
     padding: 20px;
     z-index: 999;
     transition: transform 0.3s ease, opacity 0.3s ease;
+    overflow-y: auto;
+    max-height: 80vh;
 }
 
 .floating-panel.left {
@@ -379,4 +381,8 @@ th {
 
 #cancel-modal-button:hover {
     background-color: #bd2130;
+}
+
+.table-scroll-container {
+    overflow-x: auto;
 }
