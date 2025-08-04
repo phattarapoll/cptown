@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบสอบถามความพึงพอใจ</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-heartbeat"></i> แบบสอบถามความพึงพอใจการบริการ<br>งานทันตสาธารณสุข</h1>
+        <form id="satisfactionForm">
+            <div class="form-section">
+                <h2><i class="fas fa-info-circle"></i> ส่วนที่ 1: ข้อมูลทั่วไป</h2>
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> สถานภาพของผู้ตอบแบบสอบถาม:</label>
+                    <div class="radio-group">
+                        <input type="radio" id="status1" name="สถานภาพของผู้ตอบแบบสอบถาม" value="นักเรียน/นักศึกษา" required>
+                        <label for="status1">นักเรียน/นักศึกษา</label>
+                        <input type="radio" id="status2" name="สถานภาพของผู้ตอบแบบสอบถาม" value="ประชาชนทั่วไป">
+                        <label for="status2">ประชาชนทั่วไป</label>
+                        <input type="radio" id="status3" name="สถานภาพของผู้ตอบแบบสอบถาม" value="อื่นๆ">
+                        <label for="status3">อื่นๆ</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-venus-mars"></i> เพศ:</label>
+                    <div class="radio-group">
+                        <input type="radio" id="gender1" name="เพศ" value="ชาย" required>
+                        <label for="gender1">ชาย</label>
+                        <input type="radio" id="gender2" name="เพศ" value="หญิง">
+                        <label for="gender2">หญิง</label>
+                        <input type="radio" id="gender3" name="เพศ" value="ไม่ระบุ">
+                        <label for="gender3">ไม่ระบุ</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-hand-holding-medical"></i> ท่านรับบริการอะไรในครั้งนี้:</label>
+                    <div class="radio-group">
+                        <input type="radio" id="service1" name="ท่านรับบริการอะไรในครั้งนี้" value="ปรึกษาสุขภาพช่องปาก" required>
+                        <label for="service1">ปรึกษาสุขภาพช่องปาก</label>
+                        <input type="radio" id="service2" name="ท่านรับบริการอะไรในครั้งนี้" value="ขูดหินน้ำลาย">
+                        <label for="service2">ขูดหินน้ำลาย</label>
+                        <input type="radio" id="service3" name="ท่านรับบริการอะไรในครั้งนี้" value="อุดฟัน">
+                        <label for="service3">อุดฟัน</label>
+                        <input type="radio" id="service4" name="ท่านรับบริการอะไรในครั้งนี้" value="เคลือบหลุมร่องฟัน">
+                        <label for="service4">เคลือบหลุมร่องฟัน</label>
+                        <input type="radio" id="service5" name="ท่านรับบริการอะไรในครั้งนี้" value="ถอนฟัน">
+                        <label for="service5">ถอนฟัน</label>
+                        <input type="radio" id="service6" name="ท่านรับบริการอะไรในครั้งนี้" value="ทาฟลูออไรด์วานิช">
+                        <label for="service6">ทาฟลูออไรด์วานิช</label>
+                        <input type="radio" id="service7" name="ท่านรับบริการอะไรในครั้งนี้" value="อื่นๆ">
+                        <label for="service7">อื่นๆ</label>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="form-section">
+                <h2><i class="fas fa-star-half-alt"></i> ส่วนที่ 2: การประเมินความพึงพอใจ (ด้านบริการ)</h2>
+                <p class="description">โปรดให้คะแนนระดับความพึงพอใจ (5 = ดีมาก, 1 = ควรปรับปรุง)</p>
+                <button type="button" class="btn-fill-5" data-section="part2"><i class="fas fa-check-double"></i> เลือก 5 ทั้งหมด (ส่วนบริการ)</button>
+
+                <div class="rating-group" data-section="part2">
+                    <label>1. ความสุภาพอ่อนโยน อ่อนน้อม ยิ้มแย้มแจ่มใส วาจาสุภาพ</label><br>
+                    <div class="radio-scale">
+                        <input type="radio" id="p2_q1_r1" name="ความสุภาพอ่อนโยน อ่อนน้อม ยิ้มแย้มแจ่มใส วาจาสุภาพ" value="1" required><label for="p2_q1_r1">1</label>
+                        <input type="radio" id="p2_q1_r2" name="ความสุภาพอ่อนโยน อ่อนน้อม ยิ้มแย้มแจ่มใส วาจาสุภาพ" value="2"><label for="p2_q1_r2">2</label>
+                        <input type="radio" id="p2_q1_r3" name="ความสุภาพอ่อนโยน อ่อนน้อม ยิ้มแย้มแจ่มใส วาจาสุภาพ" value="3"><label for="p2_q1_r3">3</label>
+                        <input type="radio" id="p2_q1_r4" name="ความสุภาพอ่อนโยน อ่อนน้อม ยิ้มแย้มแจ่มใส วาจาสุภาพ" value="4"><label for="p2_q1_r4">4</label>
+                        <input type="radio" id="p2_q1_r5" name="ความสุภาพอ่อนโยน อ่อนน้อม ยิ้มแย้มแจ่มใส วาจาสุภาพ" value="5"><label for="p2_q1_r5">5</label>
+                    </div>
+                </div>
+
+                <div class="rating-group" data-section="part2">
+                    <label>2. ความสนใจเอาใจใส่ เต็มใจช่วยเหลือ</label><br>
+                    <div class="radio-scale">
+                        <input type="radio" id="p2_q2_r1" name="ความสนใจเอาใจใส่ เต็มใจช่วยเหลือ" value="1" required><label for="p2_q2_r1">1</label>
+                        <input type="radio" id="p2_q2_r2" name="ความสนใจเอาใจใส่ เต็มใจช่วยเหลือ" value="2"><label for="p2_q2_r2">2</label>
+                        <input type="radio" id="p2_q2_r3" name="ความสนใจเอาใจใส่ เต็มใจช่วยเหลือ" value="3"><label for="p2_q2_r3">3</label>
+                        <input type="radio" id="p2_q2_r4" name="ความสนใจเอาใจใส่ เต็มใจช่วยเหลือ" value="4"><label for="p2_q2_r4">4</label>
+                        <input type="radio" id="p2_q2_r5" name="ความสนใจเอาใจใส่ เต็มใจช่วยเหลือ" value="5"><label for="p2_q2_r5">5</label>
+                    </div>
+                </div>
+
+                <div class="rating-group" data-section="part2">
+                    <label>3. การตอบข้อสงสัยแก่ท่านและญาติด้วยความเต็มใจ</label><br>
+                    <div class="radio-scale">
+                        <input type="radio" id="p2_q3_r1" name="การตอบข้อสงสัยแก่ท่านและญาติด้วยความเต็มใจ" value="1" required><label for="p2_q3_r1">1</label>
+                        <input type="radio" id="p2_q3_r2" name="การตอบข้อสงสัยแก่ท่านและญาติด้วยความเต็มใจ" value="2"><label for="p2_q3_r2">2</label>
+                        <input type="radio" id="p2_q3_r3" name="การตอบข้อสงสัยแก่ท่านและญาติด้วยความเต็มใจ" value="3"><label for="p2_q3_r3">3</label>
+                        <input type="radio" id="p2_q3_r4" name="การตอบข้อสงสัยแก่ท่านและญาติด้วยความเต็มใจ" value="4"><label for="p2_q3_r4">4</label>
+                        <input type="radio" id="p2_q3_r5" name="การตอบข้อสงสัยแก่ท่านและญาติด้วยความเต็มใจ" value="5"><label for="p2_q3_r5">5</label>
+                    </div>
+                </div>
+
+
+                <div class="rating-group" data-section="part2">
+                    <label>4. ความรู้ความสามารถในการให้บริการ</label><br>
+                    <div class="radio-scale">
+                        <input type="radio" id="p2_q4_r1" name="ความรู้ความสามารถในการให้บริการ" value="1" required><label for="p2_q4_r1">1</label>
+                        <input type="radio" id="p2_q4_r2" name="ความรู้ความสามารถในการให้บริการ" value="2"><label for="p2_q4_r2">2</label>
+                        <input type="radio" id="p2_q4_r3" name="ความรู้ความสามารถในการให้บริการ" value="3"><label for="p2_q4_r3">3</label>
+                        <input type="radio" id="p2_q4_r4" name="ความรู้ความสามารถในการให้บริการ" value="4"><label for="p2_q4_r4">4</label>
+                        <input type="radio" id="p2_q4_r5" name="ความรู้ความสามารถในการให้บริการ" value="5"><label for="p2_q4_r5">5</label>
+                    </div>
+                </div>
+
+            </div>
+
+            <hr>
+
+            <div class="form-section">
+                <h2><i class="fas fa-star"></i> ส่วนที่ 3: การประเมินความพึงพอใจ (การให้บริการทั่วไป)</h2>
+                <p class="description">โปรดให้คะแนนระดับความพึงพอใจ (5 = ดีมาก, 1 = ควรปรับปรุง)</p>
+                <button type="button" class="btn-fill-5" data-section="part3"><i class="fas fa-check-double"></i> เลือก 5 ทั้งหมด (ส่วนบริการทั่วไป)</button>
+
+                <div class="rating-group" data-section="part3">
+                    <label>1. กริยามารยาทและการแต่งกายของผู้ให้บริการ</label><br>
+                    <div class="radio-scale">
+                        <input type="radio" id="p3_q1_r1" name="กริยามารยาทและการแต่งกายของผู้ให้บริการ" value="1" required><label for="p3_q1_r1">1</label>
+                        <input type="radio" id="p3_q1_r2" name="กริยามารยาทและการแต่งกายของผู้ให้บริการ" value="2"><label for="p3_q1_r2">2</label>
+                        <input type="radio" id="p3_q1_r3" name="กริยามารยาทและการแต่งกายของผู้ให้บริการ" value="3"><label for="p3_q1_r3">3</label>
+                        <input type="radio" id="p3_q1_r4" name="กริยามารยาทและการแต่งกายของผู้ให้บริการ" value="4"><label for="p3_q1_r4">4</label>
+                        <input type="radio" id="p3_q1_r5" name="กริยามารยาทและการแต่งกายของผู้ให้บริการ" value="5"><label for="p3_q1_r5">5</label>
+                    </div>
+                </div>
+
+                <div class="rating-group" data-section="part3">
+                    <label>2. ความรวดเร็วและความพร้อมในการให้บริการ</label><br>
+                    <div class="radio-scale">
+                        <input type="radio" id="p3_q2_r1" name="ความรวดเร็วและความพร้อมในการให้บริการ" value="1" required><label for="p3_q2_r1">1</label>
+                        <input type="radio" id="p3_q2_r2" name="ความรวดเร็วและความพร้อมในการให้บริการ" value="2"><label for="p3_q2_r2">2</label>
+                        <input type="radio" id="p3_q2_r3" name="ความรวดเร็วและความพร้อมในการให้บริการ" value="3"><label for="p3_q2_r3">3</label>
+                        <input type="radio" id="p3_q2_r4" name="ความรวดเร็วและความพร้อมในการให้บริการ" value="4"><label for="p3_q2_r4">4</label>
+                        <input type="radio" id="p3_q2_r5" name="ความรวดเร็วและความพร้อมในการให้บริการ" value="5"><label for="p3_q2_r5">5</label>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="form-section">
+                <h2><i class="fas fa-comment-dots"></i> ส่วนที่ 4: ข้อเสนอแนะ</h2>
+                <div class="form-group">
+                    <label for="praise">เรื่องที่ชื่นชม:</label>
+                    <textarea id="praise" name="เรื่องที่ชื่นชม" rows="4" placeholder="กรุณาพิมพ์ข้อเสนอแนะที่นี่..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="criticism">เรื่องที่ควรแก้ไข:</label>
+                    <textarea id="criticism" name="เรื่องที่ควรแก้ไข" rows="4" placeholder="กรุณาพิมพ์ข้อเสนอแนะที่นี่..."></textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn"><i class="fas fa-paper-plane"></i> ส่งแบบสอบถาม</button>
+            </form>
+    </div>
+
+    <footer class="footer">
+        <p>สร้างและพัฒนาโดย นายภัทรพล ไพศาลวัชรเมธี</p>
+        <p>งานทันตสาธารณสุข ศูนย์บริการสาธารณสุข เทศบาลเมืองจังหวัดชุมพร</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
+</body>
+</html>

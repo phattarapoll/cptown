@@ -1,0 +1,197 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7f6;
+    display: flex;
+    flex-direction: column; /* Changed to column to accommodate footer */
+    justify-content: flex-start; /* Align to top */
+    align-items: center; /* Center horizontally */
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    color: #333;
+}
+
+.container {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 20px; /* Adjust margin for footer */
+}
+
+h1 {
+    text-align: center;
+    color: #007bff;
+    margin-bottom: 30px;
+    font-size: 2.2em;
+    font-weight: 600;
+}
+
+h1 .fas { /* Style for icons in h1 */
+    margin-right: 10px;
+    color: #28a745; /* สีเขียวสำหรับไอคอนในหัวข้อหลัก */
+}
+
+h2 {
+    color: #007bff;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+h2 .fas { /* Style for icons in h2 */
+    margin-right: 10px;
+    color: #007bff; /* สีน้ำเงินสำหรับไอคอนในหัวข้อส่วนย่อย */
+}
+
+.form-section {
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+    display: flex;
+    align-items: center;
+}
+
+label .fas { /* Style for icons in labels */
+    margin-right: 8px;
+    color: #6c757d; /* สีเทาสำหรับไอคอนใน label */
+}
+
+.radio-group, .radio-scale {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.radio-group input[type="radio"],
+.radio-scale input[type="radio"] {
+    display: none; /* ซ่อน radio button เดิม */
+}
+
+.radio-group label,
+.radio-scale label {
+    background-color: #e9ecef;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid #ced4da;
+    font-weight: normal; /* Override default label bold */
+}
+
+.radio-group input[type="radio"]:checked + label,
+.radio-scale input[type="radio"]:checked + label {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
+}
+
+.radio-scale label {
+    min-width: 40px;
+    text-align: center;
+}
+
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    font-size: 1em;
+    box-sizing: border-box;
+    min-height: 100px;
+    resize: vertical;
+    transition: border-color 0.3s;
+}
+
+textarea:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.btn-fill-5 {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Space between icon and text */
+}
+
+.btn-fill-5:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+}
+
+.submit-btn { /* Changed from button[type="submit"] to .submit-btn for clarity */
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: 600;
+    width: 100%;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px; /* Space between icon and text */
+}
+
+.submit-btn:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}
+
+/* SweetAlert2 Custom Styles */
+.swal2-title-custom {
+    color: #007bff !important;
+    font-size: 2.5em !important;
+    font-weight: bold !important;
+}
+
+.swal2-html-container-custom {
+    font-size: 1.2em !important;
+    line-height: 1.6 !important;
+    color: #555 !important;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 40px;
+    padding: 20px;
+    color: #6c757d;
+    font-size: 0.9em;
+    width: 100%;
+    max-width: 800px; /* Match container width */
+}
