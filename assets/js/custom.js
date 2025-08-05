@@ -263,11 +263,11 @@ document.addEventListener('DOMContentLoaded', () => {
             currentCard.innerHTML = `
                 <div class="flex items-center mb-2">
                     <i class="fas fa-play-circle text-blue-600 text-xl mr-2"></i>
-                    <p class="font-bold text-blue-800 text-lg">คิวปัจจุบัน:ห้องตรวจ2</p>
+                    <p class="font-bold text-blue-800 text-lg">คิวปัจจุบัน</p>
                 </div>
                 <p class="text-gray-900 text-xl font-semibold">${currentAppointment.patientName}</p>
                 <p class="text-gray-700 text-sm">เวลา: ${currentAppointment.timeSlot}</p>
-                <p class="text-red-600 text-sm mt-1">กำลังดำเนินการ</p>
+                <p class="text-red-600 text-sm mt-1">เรียกคิวบริการ : ห้องตรวจ2</p>
             `;
             queueDisplay.appendChild(currentCard);
         } else if (currentServiceStatus.type === 'operational' && bookings.length === 0) {
