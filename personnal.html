@@ -15,8 +15,8 @@
             --text-color: #333;
             --header-color: #3b5998;
             --border-color: #ddd;
-            --light-green: #a7f3d0;
-            --light-red: #fca5a5;
+            --light-green: #a7f3d0; /* สีเขียวอ่อน */
+            --light-red: #fca5a5;   /* สีแดงอ่อน */
         }
 
         body {
@@ -194,6 +194,7 @@
             margin: 0 auto;
         }
 
+        /* Popup Styles */
         .popup-overlay {
             position: fixed;
             top: 0;
@@ -256,6 +257,7 @@
             cursor: pointer;
         }
 
+        /* Responsive Design */
         @media (max-width: 768px) {
             .level-container {
                 flex-wrap: wrap;
@@ -279,7 +281,7 @@
 </head>
 <body>
     <a href="index.html" class="back-to-main"><i class="fas fa-arrow-left"></i> กลับสู่หน้าหลัก</a>
-    <h1>ผังบุคลากร ฝ่ายบริการสาธารณสุข<br>ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร</h1>
+    <h1>ผังบุคลากร ฝ่ายบริการสาธารณสุข<br> ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร</h1>
     <div class="family-tree-container" id="family-tree-container">
         </div>
 
@@ -306,7 +308,7 @@
 
         const fetchFamilyTreeData = async () => {
             try {
-                const response = await fetch(WEB_APP_URL);
+                const response = await fetch(`${WEB_APP_URL}?action=getFamilyTree`);
                 const data = await response.json();
                 if (data.people) {
                     renderFamilyTree(data.people);
@@ -326,8 +328,8 @@
             photoWrapper.classList.add('person-photo-wrapper');
             const img = document.createElement('img');
             img.classList.add('person-photo');
-            img.src = person.รูปภาพ || 'https://via.placeholder.com/100';
-            img.alt = person.ชื่อสกุล;
+            img.src = person.photoUrl || 'https://via.placeholder.com/100';
+            img.alt = person.name;
             photoWrapper.appendChild(img);
             const photoAnimation = document.createElement('div');
             photoAnimation.classList.add('photo-animation');
@@ -338,7 +340,7 @@
             nameWrapper.classList.add('person-name-wrapper');
             const nameDiv = document.createElement('div');
             nameDiv.classList.add('person-name');
-            nameDiv.textContent = person.ชื่อสกุล;
+            nameDiv.textContent = person.name;
             nameWrapper.appendChild(nameDiv);
             const nameAnimation = document.createElement('div');
             nameAnimation.classList.add('name-animation');
@@ -347,7 +349,7 @@
 
             const roleDiv = document.createElement('div');
             roleDiv.classList.add('person-role');
-            roleDiv.textContent = person.ตำแหน่ง || '';
+            roleDiv.textContent = person.role || '';
             div.appendChild(roleDiv);
 
             div.addEventListener('click', () => showPopup(person));
@@ -356,17 +358,14 @@
 
         const renderFamilyTree = (groupedPeople) => {
             const levels = Object.keys(groupedPeople).sort((a, b) => b - a);
-            familyTreeContainer.innerHTML = ''; // Clear existing content
 
             levels.forEach((level, index) => {
                 const levelContainer = document.createElement('div');
                 levelContainer.classList.add('level-container');
 
-                if (groupedPeople.hasOwnProperty(level)) {
-                    groupedPeople[`${level}`].forEach(person => {
-                        levelContainer.appendChild(createPersonBlock(person));
-                    });
-                }
+                groupedPeople.hasOwnProperty(level) && groupedPeople[`${level}`].forEach(person => {
+                    levelContainer.appendChild(createPersonBlock(person));
+                });
 
                 familyTreeContainer.appendChild(levelContainer);
 
@@ -379,9 +378,9 @@
         };
 
         const showPopup = (person) => {
-            popupPhoto.src = person.รูปภาพ || 'https://via.placeholder.com/150';
-            popupName.textContent = person.ชื่อสกุล;
-            popupRole.textContent = person.ตำแหน่ง || '';
+            popupPhoto.src = person.photoUrl || 'https://via.placeholder.com/150';
+            popupName.textContent = person.name;
+            popupRole.textContent = person.role || '';
             popupBio.textContent = person.bio || 'ไม่มีข้อมูล';
             popupOverlay.style.display = 'flex';
         };
