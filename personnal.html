@@ -3,100 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ผังระดับการทำงาน</title>
+    <title>ผังบุคลากร เทศบาลเมืองชุมพร | Organization Chart</title>
+    
     <link rel="stylesheet" href="assets/css/personal.css">
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Sarabun:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <a href="index.html" class="back-button">← ย้อนกลับไปหน้าหลัก</a>
-            <div class="dropdown">
-                <button class="dropdown-button">≡ เมนู</button>
-                <div class="dropdown-content">
-                    <a href="disease-details.html">ความรู้เกี่ยวกับโรค</a>
-                    <a href="download.html">ดาวน์โหลด</a>
-                </div>
-            </div>
-        </div>
+
+    <button class="back-button animate__animated animate__fadeInLeft" onclick="window.history.back()">
+        <span class="button-text">← ย้อนกลับ</span>
+    </button>
+    
+    <header class="main-header animate__animated animate__fadeInDown">
+        <h1 class="main-heading">ผังบุคลากร</h1>
+        <p class="sub-heading">เทศบาลเมืองชุมพร</p>
     </header>
 
-    <div class="container">
-        <div class="organization-chart">
-            <div class="chart-row single-item">
-                <div class="chart-item">
-                    <img src="assets/images/personnal/1.jpg" alt="บุคคล 1">
-                    <p class="name">นายศรีชัย วีระนรพานิช</p>
-                    <p class="position">นายกเทศมนตรีเมืองชุมพร</p>
-                </div>
-            </div>
-
-            <div class="chart-row single-item">
-                <div class="chart-item">
-                    <img src="assets/images/personnal/2.jpg" alt="บุคคล 2">
-                    <p class="name">นายเจริญ โพธิ์ศรีทอง</p>
-                    <p class="position">รองปลัดเทศบาลเมืองชุมพร</p>
-                </div>
-            </div>
-
-            <div class="chart-row single-item">
-                <div class="chart-item">
-                    <img src="assets/images/personnal/3.jpg" alt="บุคคล 3">
-                    <p class="name">นางรดาณัฐ สินสมบุญ</p>
-                    <p class="position">ผู้อำนวยการกองสาธารณสุขและสิ่งแวดล้อม</p>
-                </div>
-            </div>
-
-            <div class="chart-row single-item">
-                <div class="chart-item">
-                    <img src="assets/images/personnal/4.jpg" alt="บุคคล 4">
-                    <p class="name">นางสาวปุริมปรัชญ์ นาคดนตรี</p>
-                    <p class="position">หัวหน้าฝ่ายบริการสาธารณสุข</p>
-                </div>
-            </div>
-
-            <div class="chart-row multi-item">
-                <div class="chart-item">
-                    <img src="assets/images/personnal/5.1.jpg" alt="บุคคล 5">
-                    <p class="name">นางสุจิตรา พันธ์พัฒไพบูลย์</p>
-                    <p class="position">พยาบาลวิชาชีพชำนาญการพิเศษ</p>
-                </div>
-                <div class="chart-item">
-                    <img src="assets/images/personnal/5.2.jpg" alt="บุคคล 6">
-                    <p class="name">นางธนิกา โพธิ์กระสังข์</p>
-                    <p class="position">พยาบาลวิชาชีพชำนาญการพิเศษ</p>
-                </div>
-                <div class="chart-item">
-                    <img src="assets/images/personnal/5.3.png" alt="บุคคล 7">
-                    <p class="name">นายภัทรพล ไพศาลวัชรเมธี</p>
-                    <p class="position">ทันตสาธารณสุขชำนาญงาน รก.อาวุโส</p>
-                </div>
-                <div class="chart-item">
-                    <img src="assets/images/personnal/5.4.jpg" alt="บุคคล 8">
-                    <p class="name">นางสาวพันธิตรา โพธารส</p>
-                    <p class="position">พยาบาลวิชาชีพ ปฎิบัติการ</p>
-                </div>
-            </div>
-        </div>
-    </div>
+    <main class="content-container animate__animated animate__fadeInUp">
+        <div id="orgChartContainer"></div>
+    </main>
+    
+    <footer class="main-footer animate__animated animate__fadeIn">
+        <p class="footer-text">© 2025 เทศบาลเมืองชุมพร</p>
+    </footer>
 
     <script>
-        const dropdownButton = document.querySelector('.dropdown-button');
-        const dropdownContent = document.querySelector('.dropdown-content');
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzAyuWTE_5lrMBFb3fkRqmkHwMzfeBBh47D7m_jNPvktFNPNtReSDS4ALlB7szkx85Q/exec';
+        const container = document.getElementById('orgChartContainer');
 
-        // เปิด/ปิด Dropdown เมื่อคลิกปุ่ม
-        dropdownButton.addEventListener('click', () => {
-            dropdownContent.classList.toggle('show');
-        });
-
-        // ปิด Dropdown เมื่อคลิกนอกพื้นที่
-        window.addEventListener('click', (event) => {
-            if (!event.target.matches('.dropdown-button') && !event.target.closest('.dropdown-content')) {
-                if (dropdownContent.classList.contains('show')) {
-                    dropdownContent.classList.remove('show');
+        async function fetchAndRenderOrgChart() {
+            try {
+                const response = await fetch(scriptURL + '?action=getOrgChart&origin=' + encodeURIComponent(window.location.origin));
+                
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
                 }
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    const groupedData = result.data;
+                    const sortedLevels = Object.keys(groupedData).sort((a, b) => b - a);
+
+                    let html = '';
+                    sortedLevels.forEach(level => {
+                        html += `
+                            <div class="level-container">
+                                <h2>${groupedData[level][0]['ตำแหน่ง']}</h2>
+                                <div class="employee-group">
+                        `;
+                        groupedData[level].forEach(employee => {
+                            html += `
+                                <div class="employee-card">
+                                    <img src="${employee['รูปภาพ']}" alt="${employee['ชื่อ-สกุล']}">
+                                    <h3>${employee['ชื่อ-สกุล']}</h3>
+                                    <p>${employee['ตำแหน่ง']}</p>
+                                </div>
+                            `;
+                        });
+                        html += `
+                                </div>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+                } else {
+                    throw new Error(result.message || 'Failed to fetch data from API');
+                }
+            } catch (error) {
+                console.error('Error fetching org chart:', error);
+                container.innerHTML = '<p class="error-message">ไม่สามารถโหลดข้อมูลผังบุคลากรได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง</p>';
             }
-        });
+        }
+        
+        document.addEventListener('DOMContentLoaded', fetchAndRenderOrgChart);
     </script>
 </body>
 </html>
