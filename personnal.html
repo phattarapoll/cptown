@@ -3,83 +3,399 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ผังบุคลากร เทศบาลเมืองชุมพร | Organization Chart</title>
-    
-    <link rel="stylesheet" href="assets/css/personal.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Sarabun:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    
-</head>
-<body>
+    <title>ผังครอบครัว PSVMT</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Sarabun:wght@400;600&display=swap');
+        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
 
-    <button class="back-button animate__animated animate__fadeInLeft" onclick="window.history.back()">
-        <span class="button-text">← ย้อนกลับ</span>
-    </button>
-    
-    <header class="main-header animate__animated animate__fadeInDown">
-        <h1 class="main-heading">ผังบุคลากร</h1>
-        <p class="sub-heading">เทศบาลเมืองชุมพร</p>
-    </header>
+        :root {
+            --bg-color: #f5f7fa;
+            --primary-color: #3b5998;
+            --secondary-color: #e9ebee;
+            --text-color: #333;
+            --header-color: #3b5998;
+            --border-color: #ddd;
+            --light-green: #a7f3d0; /* สีเขียวอ่อน */
+            --light-red: #fca5a5;   /* สีแดงอ่อน */
+        }
 
-    <main class="content-container animate__animated animate__fadeInUp">
-        <div id="orgChartContainer"></div>
-    </main>
-    
-    <footer class="main-footer animate__animated animate__fadeIn">
-        <p class="footer-text">© 2025 เทศบาลเมืองชุมพร</p>
-    </footer>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
 
-    <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwqcMB-5eJyQvifRVVStR1rP_D-ELXdONTGxBDifE3zwh6S6yyD9ykJCdMC6E1JrZrH/exec';
-        const container = document.getElementById('orgChartContainer');
+        .back-to-main {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 15px;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
 
-        async function fetchAndRenderOrgChart() {
-            try {
-                const response = await fetch(scriptURL + '?action=getOrgChart&origin=' + encodeURIComponent(window.location.origin));
-                
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const result = await response.json();
-                
-                if (result.status === 'success') {
-                    const groupedData = result.data;
-                    const sortedLevels = Object.keys(groupedData).sort((a, b) => b - a);
+        .back-to-main:hover {
+            background-color: #ddd;
+        }
 
-                    let html = '';
-                    sortedLevels.forEach(level => {
-                        html += `
-                            <div class="level-container">
-                                <h2>${groupedData[level][0]['ตำแหน่ง']}</h2>
-                                <div class="employee-group">
-                        `;
-                        groupedData[level].forEach(employee => {
-                            html += `
-                                <div class="employee-card">
-                                    <img src="${employee['รูปภาพ']}" alt="${employee['ชื่อ-สกุล']}">
-                                    <h3>${employee['ชื่อ-สกุล']}</h3>
-                                    <p>${employee['ตำแหน่ง']}</p>
-                                </div>
-                            `;
-                        });
-                        html += `
-                                </div>
-                            </div>
-                        `;
-                    });
-                    container.innerHTML = html;
-                } else {
-                    throw new Error(result.message || 'Failed to fetch data from API');
-                }
-            } catch (error) {
-                console.error('Error fetching org chart:', error);
-                container.innerHTML = '<p class="error-message">ไม่สามารถโหลดข้อมูลผังบุคลากรได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง</p>';
+        .back-to-main i {
+            margin-right: 5px;
+        }
+
+        h1, h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--header-color);
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .family-tree-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+            margin-top: 40px;
+        }
+
+        .level-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .level-label {
+            position: absolute;
+            left: 0;
+            transform: translateX(-150%);
+            font-weight: 600;
+            color: var(--header-color);
+            font-size: 1.2em;
+        }
+
+        .person {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 20px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .person:hover {
+            transform: translateY(-5px);
+        }
+
+        .person-photo-wrapper {
+            position: relative;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid var(--primary-color);
+        }
+
+        .person-photo {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .person:hover .person-photo {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .photo-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--light-green);
+            opacity: 0;
+            border-radius: 50%;
+            animation: pulse 2s infinite alternate;
+            z-index: -1;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.9);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(1.1);
+                opacity: 0;
             }
         }
-        
-        document.addEventListener('DOMContentLoaded', fetchAndRenderOrgChart);
+
+        .person-name-wrapper {
+            position: relative;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .person-name {
+            font-weight: 600;
+            color: var(--text-color);
+            position: relative;
+            z-index: 1;
+        }
+
+        .name-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--light-red);
+            opacity: 0;
+            border-radius: 5px;
+            animation: glow 1.5s infinite alternate;
+            z-index: -1;
+        }
+
+        @keyframes glow {
+            0% {
+                opacity: 0.6;
+                transform: scale(0.95);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1.05);
+            }
+        }
+
+        .person-role {
+            font-size: 0.9em;
+            color: #666;
+            text-align: center;
+        }
+
+        .connection-line {
+            width: 2px;
+            height: 50px;
+            background-color: var(--primary-color);
+            margin: 0 auto;
+        }
+
+        /* Popup Styles */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .popup-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            width: 400px;
+            max-width: 90%;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            position: relative;
+            color: var(--text-color);
+        }
+
+        .popup-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .popup-name {
+            font-size: 2em;
+            color: var(--header-color);
+            margin-bottom: 5px;
+        }
+
+        .popup-role {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .popup-bio {
+            font-size: 1em;
+            color: var(--text-color);
+            margin-bottom: 15px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5em;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .level-container {
+                flex-wrap: wrap;
+                margin-bottom: 30px;
+            }
+            .person {
+                margin: 10px;
+            }
+            .person-photo {
+                width: 80px;
+                height: 80px;
+            }
+            .level-label {
+                position: static;
+                transform: none;
+                text-align: center;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-to-main"><i class="fas fa-arrow-left"></i> กลับสู่หน้าหลัก</a>
+    <h1>ผังบุคลากร ฝ่ายบริการสาธารณสุข</h1>
+    <div class="family-tree-container" id="family-tree-container">
+        </div>
+
+    <div class="popup-overlay" id="popup-overlay">
+        <div class="popup-content">
+            <span class="close-btn" id="close-btn">&times;</span>
+            <img src="" id="popup-photo" class="popup-photo">
+            <h2 id="popup-name" class="popup-name"></h2>
+            <p id="popup-role" class="popup-role"></p>
+            <p id="popup-bio" class="popup-bio"></p>
+        </div>
+    </div>
+
+    <script>
+        // ใส่ URL ของ Google Apps Script ของคุณที่นี่
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbze0KNIQK2lWWCDuw-phpRiKsNiK8JjvzMLqsWKpdjfc7VQNxZXByCUk-20sjGkrf4D/exec';
+        const familyTreeContainer = document.getElementById('family-tree-container');
+        const popupOverlay = document.getElementById('popup-overlay');
+        const closeBtn = document.getElementById('close-btn');
+        const popupPhoto = document.getElementById('popup-photo');
+        const popupName = document.getElementById('popup-name');
+        const popupRole = document.getElementById('popup-role');
+        const popupBio = document.getElementById('popup-bio');
+
+        const fetchFamilyTreeData = async () => {
+            try {
+                const response = await fetch(`${WEB_APP_URL}?action=getFamilyTree`);
+                const data = await response.json();
+                if (data.people) {
+                    renderFamilyTree(data.people);
+                } else {
+                    console.error('Error: No people data found in response.');
+                }
+            } catch (error) {
+                console.error('Error fetching family tree data:', error);
+            }
+        };
+
+        const createPersonBlock = (person) => {
+            const div = document.createElement('div');
+            div.classList.add('person');
+
+            const photoWrapper = document.createElement('div');
+            photoWrapper.classList.add('person-photo-wrapper');
+            const img = document.createElement('img');
+            img.classList.add('person-photo');
+            img.src = person.photoUrl || 'https://via.placeholder.com/100';
+            img.alt = person.name;
+            photoWrapper.appendChild(img);
+            const photoAnimation = document.createElement('div');
+            photoAnimation.classList.add('photo-animation');
+            photoWrapper.appendChild(photoAnimation);
+            div.appendChild(photoWrapper);
+
+            const nameWrapper = document.createElement('div');
+            nameWrapper.classList.add('person-name-wrapper');
+            const nameDiv = document.createElement('div');
+            nameDiv.classList.add('person-name');
+            nameDiv.textContent = person.name;
+            nameWrapper.appendChild(nameDiv);
+            const nameAnimation = document.createElement('div');
+            nameAnimation.classList.add('name-animation');
+            nameWrapper.appendChild(nameAnimation);
+            div.appendChild(nameWrapper);
+
+            const roleDiv = document.createElement('div');
+            roleDiv.classList.add('person-role');
+            roleDiv.textContent = person.role || '';
+            div.appendChild(roleDiv);
+
+            div.addEventListener('click', () => showPopup(person));
+            return div;
+        };
+
+        const renderFamilyTree = (groupedPeople) => {
+            const levels = Object.keys(groupedPeople).sort((a, b) => b - a);
+
+            levels.forEach((level, index) => {
+                const levelContainer = document.createElement('div');
+                levelContainer.classList.add('level-container');
+
+                groupedPeople.hasOwnProperty(level) && groupedPeople[`${level}`].forEach(person => {
+                    levelContainer.appendChild(createPersonBlock(person));
+                });
+
+                familyTreeContainer.appendChild(levelContainer);
+
+                if (index < levels.length - 1) {
+                    const line = document.createElement('div');
+                    line.classList.add('connection-line');
+                    familyTreeContainer.appendChild(line);
+                }
+            });
+        };
+
+        const showPopup = (person) => {
+            popupPhoto.src = person.photoUrl || 'https://via.placeholder.com/150';
+            popupName.textContent = person.name;
+            popupRole.textContent = person.role || '';
+            popupBio.textContent = person.bio || 'ไม่มีข้อมูล';
+            popupOverlay.style.display = 'flex';
+        };
+
+        closeBtn.addEventListener('click', () => {
+            popupOverlay.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === popupOverlay) {
+                popupOverlay.style.display = 'none';
+            }
+        });
+
+        fetchFamilyTreeData();
     </script>
 </body>
 </html>
