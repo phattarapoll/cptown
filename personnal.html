@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ผังครอบครัว PSVMT</title>
+    <title>ผังบุคลากร</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Sarabun:wght@400;600&display=swap');
         @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
@@ -277,13 +277,33 @@
                 margin-bottom: 10px;
             }
         }
+        /* Loading arrow CSS */
+        .loading-arrow {
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 25px solid var(--primary-color);
+            margin: 0 auto;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
     <a href="index.html" class="back-to-main"><i class="fas fa-arrow-left"></i> กลับสู่หน้าหลัก</a>
+    
+    <div id="loading-arrow-container" style="display: none; text-align: center; margin-top: 50px;">
+        <div class="loading-arrow"></div>
+        <p style="margin-top: 10px; font-size: 1.2em;">กำลังโหลดข้อมูล...</p>
+    </div>
+
     <h1>ผังบุคลากร ฝ่ายบริการสาธารณสุข<br> ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร</h1>
     <div class="family-tree-container" id="family-tree-container">
-        </div>
+    </div>
 
     <div class="popup-overlay" id="popup-overlay">
         <div class="popup-content">
@@ -305,11 +325,16 @@
         const popupName = document.getElementById('popup-name');
         const popupRole = document.getElementById('popup-role');
         const popupBio = document.getElementById('popup-bio');
+        const loadingArrowContainer = document.getElementById('loading-arrow-container');
 
         const fetchFamilyTreeData = async () => {
             try {
+                // แสดงสัญลักษณ์โหลดก่อนการเรียกข้อมูล
+                loadingArrowContainer.style.display = 'block';
+
                 const response = await fetch(`${WEB_APP_URL}?action=getFamilyTree`);
                 const data = await response.json();
+                
                 if (data.people) {
                     renderFamilyTree(data.people);
                 } else {
@@ -317,6 +342,9 @@
                 }
             } catch (error) {
                 console.error('Error fetching family tree data:', error);
+            } finally {
+                // ซ่อนสัญลักษณ์โหลดเมื่อการทำงานเสร็จสิ้น
+                loadingArrowContainer.style.display = 'none';
             }
         };
 
