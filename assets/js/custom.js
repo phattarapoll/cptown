@@ -308,12 +308,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const apptDateTime = new Date(appt.date);
                 const timeDiff = apptDateTime.getTime() - now.getTime();
 
-                // สร้าง element สำหรับแสดงสถานะ
+                // สร้าง element สำหรับแสดงสถานะและเพิ่มคลาส CSS ที่เหมาะสม
                 const statusElement = document.createElement('span');
                 statusElement.textContent = appt.status;
                 statusElement.classList.add('ml-4', 'font-bold', 'text-sm');
 
-                // ตรวจสอบค่าสถานะและเพิ่มคลาส CSS ที่เหมาะสม
                 if (appt.status === 'ผิดนัดบริการ') {
                     statusElement.classList.add('blink-red'); // ใช้คลาส CSS สำหรับการแสดงผลสีแดงกะพริบ
                 } else if (appt.status === 'เรียบร้อย') {
@@ -322,9 +321,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     statusElement.classList.add('text-gray-500'); // สถานะอื่นๆ
                 }
 
+                // ปรับเปลี่ยน innerHTML เพื่อให้สถานะแสดงต่อท้ายชื่อผู้ป่วย
                 futureCard.innerHTML = `
-                    <p class="font-semibold text-gray-800">${appt.patientName}
-                    ${statusElement.outerHTML}
+                    <p class="font-semibold text-gray-800">
+                        ${appt.patientName} ${statusElement.outerHTML}
                     </p>
                     <p class="text-gray-600 text-sm">
                         ${apptDateTime.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })} เวลา ${appt.timeSlot}
@@ -558,7 +558,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const newsError = document.getElementById('newsError');
 
     // Replace with your deployed Google Apps Script Web App URL
-    const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbzHy1NyAVT3fOQzQpgeKf0L4duDNr94evxd-h-AUkYPKJYhfkQMN7T_iFwjJVtlQlLN/exec';
+    const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwKFlYyhT0CJiUYjGiYddN0egMilOsySaG8TNhnY__Sx91_Y2cLaYvsLRt5zwALrzHR/exec';
 
     async function fetchNewsFromGoogleSheet() {
         newsLoading.classList.remove('hidden');
