@@ -9,10 +9,15 @@
 </head>
 <body>
 
-    <div class="container">
+    <div class="container" id="login-container">
         <h1>ระบบจัดการวันลาข้าราชการ</h1>
-        
-        <div id="content-sections" class="hidden">
+        <h2>เลือกชื่อเจ้าหน้าที่เพื่อเข้าสู่ระบบ</h2>
+        <div id="officer-list-container">
+            </div>
+    </div>
+    
+    <div class="container hidden" id="main-app-container">
+        <div id="content-sections">
             <div class="main-content">
                 <div class="left-column">
                     <div id="personal-info-card" class="card">
@@ -79,26 +84,22 @@
             </div>
         </div>
     </div>
-
-    <button id="floating-officer-button" class="floating-button left">
-        <i class="fa-solid fa-user-gear"></i> เลือกเจ้าหน้าที่
-    </button>
-    <div id="floating-officer-panel" class="floating-panel left">
-        <div class="floating-panel-header">
-            <h2>เข้าสู่ระบบ</h2>
-            <span id="close-officer-panel" class="floating-panel-close">&times;</span>
+    
+    <div id="login-modal" class="modal">
+        <div class="modal-content-wrapper">
+            <div class="modal-content">
+                <span class="close-button" id="close-login-modal">&times;</span>
+                <h2>เข้าสู่ระบบสำหรับ: <span id="login-officer-name"></span></h2>
+                <form id="login-form-modal">
+                    <input type="hidden" id="login-officer-id">
+                    <label for="username-modal">Username:</label>
+                    <input type="text" id="username-modal" name="username" required>
+                    <label for="password-modal">Password:</label>
+                    <input type="password" id="password-modal" name="password" required>
+                    <button type="submit" id="login-button-modal">เข้าสู่ระบบ</button>
+                </form>
+            </div>
         </div>
-        <form id="login-form">
-            <label for="officer-select">เลือกเจ้าหน้าที่:</label>
-            <select id="officer-select" required>
-                <option value="">-- กรุณาเลือกเจ้าหน้าที่ --</option>
-            </select>
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-            <button type="submit" id="login-button">เข้าสู่ระบบ</button>
-        </form>
     </div>
 
     <button id="floating-history-button" class="floating-button right hidden">

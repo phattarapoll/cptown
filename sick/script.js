@@ -1,9 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbxWwIkmDMyqtSfIIxfPl5XQ5s8LdyHu23hB0h7B9MVJuzUId_AgBhFPxRseI1Tgv2Pw/exec';
+    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbxtDwxIEHk7kkdghpA_zARoLJiy14_R4nP1wAXU_IK_ENtFuxwzk8ncr_hAhZL5Me_k/exec';
 
     // Elements for different sections
-    const officerSelect = document.getElementById('officer-select');
-    const contentSections = document.getElementById('content-sections');
+    const loginContainer = document.getElementById('login-container');
+    const mainAppContainer = document.getElementById('main-app-container');
+    const officerListContainer = document.getElementById('officer-list-container');
 
     // Collapsible elements
     const personalInfoCard = document.getElementById('personal-info-card');
@@ -37,17 +38,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const leaveReasonInput = document.getElementById('leave-reason');
 
     // Floating panel elements
-    const floatingOfficerButton = document.getElementById('floating-officer-button');
-    const floatingOfficerPanel = document.getElementById('floating-officer-panel');
-    const closeOfficerPanelButton = document.getElementById('close-officer-panel');
     const floatingHistoryButton = document.getElementById('floating-history-button');
     const floatingHistoryPanel = document.getElementById('floating-history-panel');
     const closeHistoryPanelButton = document.getElementById('close-history-panel');
 
-    const loginForm = document.getElementById('login-form');
-    const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
-    const loginButton = document.getElementById('login-button');
+    // New modal elements
+    const loginModal = document.getElementById('login-modal');
+    const closeLoginModalButton = document.getElementById('close-login-modal');
+    const loginOfficerNameElement = document.getElementById('login-officer-name');
+    const loginFormModal = document.getElementById('login-form-modal');
+    const loginOfficerIdInput = document.getElementById('login-officer-id');
+    const usernameModalInput = document.getElementById('username-modal');
+    const passwordModalInput = document.getElementById('password-modal');
+    const loginButtonModal = document.getElementById('login-button-modal');
 
     // Elements for leave history
     const leaveHistoryTableBody = document.querySelector('#leave-history-table tbody');
@@ -157,10 +160,13 @@ document.addEventListener('DOMContentLoaded', function() {
         vacationLeaveRemainingElement.textContent = remainingVacationDays;
 
         renderLeaveHistory(leaveHistory);
-        contentSections.classList.remove('hidden');
+
+        // Show the main app container and hide the login container
+        loginContainer.style.display = 'none';
+        mainAppContainer.style.display = 'block';
         floatingHistoryButton.classList.remove('hidden');
     }
-
+    
     // ฟังก์ชันสำหรับแสดงประวัติการลา
     function renderLeaveHistory(history) {
         leaveHistoryTableBody.innerHTML = '';
@@ -252,7 +258,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // ฟังก์ชันสำหรับดึงรายชื่อเจ้าหน้าที่ทั้งหมด
+    // ฟังก์ชันสำหรับดึงรายชื่อเจ้าหน้าที่ทั้งหมดและแสดงเป็น Card
     async function fetchOfficerList() {
         const response = await fetch(appsScriptUrl, {
             method: 'POST',
@@ -262,22 +268,41 @@ document.addEventListener('DOMContentLoaded', function() {
         const result = await response.json();
 
         if (result.success) {
+            officerListContainer.innerHTML = '';
             result.officers.forEach(officer => {
-                const option = document.createElement('option');
-                option.value = officer.id;
-                option.textContent = officer.name;
-                officerSelect.appendChild(option);
+                const card = document.createElement('div');
+                card.classList.add('officer-card');
+                card.dataset.id = officer.id;
+                card.dataset.name = officer.name;
+                card.innerHTML = `<div class="icon-placeholder"><i class="fa-solid fa-user"></i></div><h4>${officer.name}</h4>`;
+                officerListContainer.appendChild(card);
+            });
+            document.querySelectorAll('.officer-card').forEach(card => {
+                card.addEventListener('click', handleOfficerCardClick);
             });
         } else {
             alert('ไม่สามารถดึงรายชื่อเจ้าหน้าที่ได้: ' + result.message);
         }
     }
 
+    // ฟังก์ชันสำหรับจัดการการคลิกที่ Officer Card
+    function handleOfficerCardClick(event) {
+        const officerId = event.currentTarget.dataset.id;
+        const officerName = event.currentTarget.dataset.name;
+        
+        // ตั้งค่า modal ด้วยข้อมูลที่เลือก
+        loginOfficerIdInput.value = officerId;
+        loginOfficerNameElement.textContent = officerName;
+        usernameModalInput.value = '';
+        passwordModalInput.value = '';
+
+        // แสดง modal
+        loginModal.classList.add('visible');
+    }
+
     // ฟังก์ชันสำหรับดึงข้อมูลผู้ใช้งานที่ถูกเลือก
     async function fetchUserData(officerId) {
         if (!officerId) {
-            contentSections.classList.add('hidden');
-            floatingHistoryButton.classList.add('hidden');
             return;
         }
 
@@ -290,47 +315,42 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (result.success) {
             renderDashboard(result.user, result.leaveHistory);
-            floatingOfficerPanel.classList.remove('visible');
         } else {
             alert('ไม่สามารถดึงข้อมูลได้: ' + result.message);
         }
     }
 
-    // Event Listeners for floating panels
-    floatingOfficerButton.addEventListener('click', () => {
-        floatingOfficerPanel.classList.toggle('visible');
-    });
-    closeOfficerPanelButton.addEventListener('click', () => {
-        floatingOfficerPanel.classList.remove('visible');
-    });
-
+    // Event Listeners for floating panels and modals
     floatingHistoryButton.addEventListener('click', () => {
         floatingHistoryPanel.classList.toggle('visible');
     });
+
     closeHistoryPanelButton.addEventListener('click', () => {
         floatingHistoryPanel.classList.remove('visible');
     });
 
-    // Event Listener สำหรับการเข้าสู่ระบบ พร้อมสถานะโหลด
-    loginForm.addEventListener('submit', async function(event) {
+    closeLoginModalButton.addEventListener('click', () => {
+        loginModal.classList.remove('visible');
+    });
+
+    window.addEventListener('click', (event) => {
+        if (event.target === loginModal) {
+            loginModal.classList.remove('visible');
+        }
+    });
+
+    // Event Listener สำหรับการเข้าสู่ระบบใน Modal พร้อมสถานะโหลด
+    loginFormModal.addEventListener('submit', async function(event) {
         event.preventDefault();
 
-        const originalButtonText = loginButton.textContent;
-        loginButton.textContent = '⌛ กำลังโหลด...';
-        loginButton.disabled = true;
-        loginButton.classList.add('loading');
+        const originalButtonText = loginButtonModal.textContent;
+        loginButtonModal.textContent = '⌛ กำลังโหลด...';
+        loginButtonModal.disabled = true;
+        loginButtonModal.classList.add('loading');
 
-        const selectedOfficerId = officerSelect.value;
-        const username = usernameInput.value;
-        const password = passwordInput.value;
-
-        if (!selectedOfficerId) {
-            alert('กรุณาเลือกเจ้าหน้าที่');
-            loginButton.textContent = originalButtonText;
-            loginButton.disabled = false;
-            loginButton.classList.remove('loading');
-            return;
-        }
+        const selectedOfficerId = loginOfficerIdInput.value;
+        const username = usernameModalInput.value;
+        const password = passwordModalInput.value;
 
         try {
             const response = await fetch(appsScriptUrl, {
@@ -342,8 +362,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (result.success) {
                 await fetchUserData(selectedOfficerId);
-                usernameInput.value = '';
-                passwordInput.value = '';
+                usernameModalInput.value = '';
+                passwordModalInput.value = '';
+                loginModal.classList.remove('visible'); // Close modal on success
             } else {
                 alert(result.message);
             }
@@ -351,9 +372,9 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Login failed:', error);
             alert('เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง');
         } finally {
-            loginButton.textContent = originalButtonText;
-            loginButton.disabled = false;
-            loginButton.classList.remove('loading');
+            loginButtonModal.textContent = originalButtonText;
+            loginButtonModal.disabled = false;
+            loginButtonModal.classList.remove('loading');
         }
     });
 
