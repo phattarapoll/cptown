@@ -73,6 +73,18 @@
             font-size: 1.5rem;
             color: yellow; /* For the warning icon */
         }
+		
+		.blink-red {
+        color: #ef4444; /* หรือ color: red; */
+        font-weight: bold;
+        animation: blinker 1s linear infinite;
+    }
+
+    @keyframes blinker {
+        50% {
+            opacity: 0;
+        }
+    }
 
         /* Keyframes for fade in and out */
         @keyframes fadeInOut {

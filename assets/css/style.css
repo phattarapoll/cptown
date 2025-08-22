@@ -570,16 +570,3 @@ section.glassy-section > div.lg\:w-1\/2.bg-gray-50.p-6.rounded-xl.shadow-inner.r
 .image-rotator-content img.visible {
     opacity: 1;
 }
-
-/* สถานะกระพริบ */
-    .blink-red {
-        color: #ef4444; /* หรือ color: red; */
-        font-weight: bold;
-        animation: blinker 1s linear infinite;
-    }
-
-    @keyframes blinker {
-        50% {
-            opacity: 0;
-        }
-    }
