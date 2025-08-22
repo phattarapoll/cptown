@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
         queueLoading.classList.remove('hidden'); // แสดงตัวโหลด
         queueError.classList.add('hidden'); // ซ่อนข้อความข้อผิดพลาด
 
-        if (BOOKING_API_URL === 'https://script.google.com/macros/s/AKfycbxKo-3Xq4Nucr1wAlyLZ4C1Ndwi3sak2e1nbAfR1nwPnMw2aVKhpT0PACzss3SwGwFc/exec' || BOOKING_API_URL.includes('YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL')) { // ตรวจสอบ URL Placeholder
+        if (BOOKING_API_URL === 'https://script.google.com/macros/s/AKfycbwKFlYyhT0CJiUYjGiYddN0egMilOsySaG8TNhnY__Sx91_Y2cLaYvsLRt5zwALrzHR/exec' || BOOKING_API_URL.includes('YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL')) { // ตรวจสอบ URL Placeholder
             console.error('ข้อผิดพลาด: กรุณาใส่ URL ของ Google Apps Script Web App สำหรับคิวบริการในไฟล์ custom.js');
             queueLoading.classList.add('hidden');
             queueError.classList.remove('hidden');
