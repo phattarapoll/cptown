@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const queueLoading = document.getElementById('queueLoading');
     const queueError = document.getElementById('queueError');
     const scrollingQueueContainer = document.querySelector('.scrolling-queue-container');
-	const queueFullscreenToggle = document.getElementById('queueFullscreenToggle');
+    const queueFullscreenToggle = document.getElementById('queueFullscreenToggle');
 
     // ** เพิ่มโค้ดสำหรับ Fullscreen API ที่นี่ **
     queueFullscreenToggle.addEventListener('click', () => {
@@ -52,21 +52,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Event listener สำหรับเมื่อสถานะ Fullscreen มีการเปลี่ยนแปลง
     document.addEventListener('fullscreenchange', () => {
-    const isFullscreen = document.fullscreenElement === scrollingQueueContainer;
-    const fullscreenInfoRight = document.querySelector('.fullscreen-info-right');
+        const isFullscreen = document.fullscreenElement === scrollingQueueContainer;
+        const fullscreenInfoRight = document.querySelector('.fullscreen-info-right');
 
-    if (isFullscreen) {
-        scrollingQueueContainer.classList.add('fullscreen-active', 'fullscreen-split');
-        queueDisplay.style.height = '100%';
-        queueDisplay.style.maxHeight = 'none';
-        fullscreenInfoRight.classList.remove('hidden'); // แสดงข้อมูลด้านขวา
-    } else {
-        scrollingQueueContainer.classList.remove('fullscreen-active', 'fullscreen-split');
-        queueDisplay.style.height = '600px';
-        queueDisplay.style.maxHeight = '600px';
-        fullscreenInfoRight.classList.add('hidden'); // ซ่อนข้อมูลด้านขวา
-    }
-});
+        if (isFullscreen) {
+            scrollingQueueContainer.classList.add('fullscreen-active', 'fullscreen-split');
+            queueDisplay.style.height = '100%';
+            queueDisplay.style.maxHeight = 'none';
+            fullscreenInfoRight.classList.remove('hidden'); // แสดงข้อมูลด้านขวา
+        } else {
+            scrollingQueueContainer.classList.remove('fullscreen-active', 'fullscreen-split');
+            queueDisplay.style.height = '600px';
+            queueDisplay.style.maxHeight = '600px';
+            fullscreenInfoRight.classList.add('hidden'); // ซ่อนข้อมูลด้านขวา
+        }
+    });
 
 
     // สำคัญ: แทนที่ 'กรุณาใส่ URL Web App ของ Google Apps Script สำหรับฟังก์ชันคิวบริการที่นี่' ด้วย URL ที่ Deploy แล้วของคุณ
@@ -80,13 +80,13 @@ document.addEventListener('DOMContentLoaded', () => {
         { start: '11:00', end: '11:30', type: 'operational', label: 'คิวที่4' },
         { start: '08:00', end: '08:30', type: 'preparing', label: 'เตรียมให้บริการ' },
         { start: '12:00', end: '13:00', type: 'preparing', label: 'พักเที่ยง' },
-		{ start: '13:00', end: '16:30', type: 'preparing', label: 'งานเอกสาร/ล้างเครื่องมือ/ออกหน่วย' },
+        { start: '13:00', end: '16:30', type: 'preparing', label: 'งานเอกสาร/ล้างเครื่องมือ/ออกหน่วย' },
         { start: '16:30', end: '07:59', type: 'closed', label: 'ปิดบริการ' } // อันนี้ข้ามเที่ยงคืน
     ];
 
     // ฟังก์ชันช่วยเหลือเพื่อกำหนดสถานะบริการปัจจุบันตามเวลา
     function getCurrentServiceStatus(checkTime) {
-		const dayOfWeek = checkTime.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+        const dayOfWeek = checkTime.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
         if (dayOfWeek === 0 || dayOfWeek === 6) { // Sunday or Saturday
             return { type: 'closed', label: 'ปิดทำการวันหยุดสุดสัปดาห์' };
         }
@@ -180,6 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // แก้ไขฟังก์ชัน updateQueueDisplay เพื่อรองรับการแสดงผลสถานะ
     function updateQueueDisplay(bookings) {
         queueDisplay.innerHTML = ''; // ล้างการแสดงผลปัจจุบัน
         const now = new Date(); // เวลาปัจจุบันที่แน่นอน
@@ -199,7 +200,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p class="text-gray-600 text-sm mt-1">กรุณามาตามเวลานัด</p>
             `;
             queueDisplay.appendChild(closedCard);
-            // ไม่มี 'return;' ที่นี่ เพื่อให้แสดงคิวที่กำลังจะมาถึงต่อได้
         } else if (currentServiceStatus.type === 'preparing') {
             const preparingCard = document.createElement('div');
             preparingCard.classList.add('queue-card', 'bg-orange-100', 'border-orange-400');
@@ -212,7 +212,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p class="text-gray-600 text-sm mt-1">ตรวจฟัน ห้องตรวจ2</p>
             `;
             queueDisplay.appendChild(preparingCard);
-            // ไม่มี 'return;' ที่นี่
         } else if (currentServiceStatus.type === 'out_of_defined_hours') {
             const outOfHoursCard = document.createElement('div');
             outOfHoursCard.classList.add('queue-card', 'bg-gray-100', 'border-gray-300');
@@ -225,7 +224,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p class="text-gray-500 text-sm mt-1">โปรดตรวจสอบเวลาให้บริการ </p>
             `;
             queueDisplay.appendChild(outOfHoursCard);
-            // ไม่มี 'return;' ที่นี่
         }
 
 
@@ -255,8 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // แสดงคิวปัจจุบัน ถ้าสถานะไม่ใช่ closed/preparing/out_of_defined_hours หรือถ้ามีคิวปัจจุบันจริงๆ
-        // (แก้ไข: เงื่อนไขการแสดงผลคิวปัจจุบัน/ออกหน่วย/ไม่มีคิวปัจจุบันถูกปรับให้แสดงหลังจาก status card เสมอ)
+        // แสดงคิวปัจจุบัน
         if (currentAppointment) {
             const currentCard = document.createElement('div');
             currentCard.classList.add('queue-card', 'bg-blue-100', 'border-blue-400', 'current-queue');
@@ -271,7 +268,6 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             queueDisplay.appendChild(currentCard);
         } else if (currentServiceStatus.type === 'operational' && bookings.length === 0) {
-            // แสดงกรณีออกหน่วย/ปฏิบัติงานเอกสารเฉพาะเมื่ออยู่ในเวลาทำการและไม่มีคิว
             const noQueueCard = document.createElement('div');
             noQueueCard.classList.add('queue-card', 'bg-yellow-100', 'border-yellow-400');
             noQueueCard.innerHTML = `
@@ -284,7 +280,6 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             queueDisplay.appendChild(noQueueCard);
         } else if (currentServiceStatus.type === 'operational' && !currentAppointment && bookings.length > 0) {
-            // แสดงเมื่อไม่มีคิวปัจจุบัน แต่มีคิวในอนาคต (เฉพาะเมื่ออยู่ในเวลาทำการ)
             const noCurrentCard = document.createElement('div');
             noCurrentCard.classList.add('queue-card', 'bg-gray-100', 'border-gray-300');
             noCurrentCard.innerHTML = `
@@ -301,7 +296,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (upcomingAppointments.length > 0) {
             const upcomingHeader = document.createElement('div');
             upcomingHeader.classList.add('text-lg', 'font-bold', 'text-blue-700', 'mt-4', 'mb-2', 'border-b', 'border-blue-200', 'pb-1', 'px-3');
-            // ** เพิ่มข้อความระบุจำนวนคิวที่เหลือตรงนี้ **
             upcomingHeader.innerHTML = `
                 คิวที่กำลังจะมาถึง:
                 <span class="text-sm font-normal text-gray-600">(${upcomingAppointments.length} คิวรอ)</span>
@@ -314,8 +308,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 const apptDateTime = new Date(appt.date);
                 const timeDiff = apptDateTime.getTime() - now.getTime();
 
+                // สร้าง element สำหรับแสดงสถานะ
+                const statusElement = document.createElement('span');
+                statusElement.textContent = appt.status;
+                statusElement.classList.add('ml-4', 'font-bold', 'text-sm');
+
+                // ตรวจสอบค่าสถานะและเพิ่มคลาส CSS ที่เหมาะสม
+                if (appt.status === 'ผิดนัดบริการ') {
+                    statusElement.classList.add('blink-red'); // ใช้คลาส CSS สำหรับการแสดงผลสีแดงกะพริบ
+                } else if (appt.status === 'เรียบร้อย') {
+                    statusElement.classList.add('text-green-600');
+                } else {
+                    statusElement.classList.add('text-gray-500'); // สถานะอื่นๆ
+                }
+
                 futureCard.innerHTML = `
-                    <p class="font-semibold text-gray-800">${appt.patientName}</p>
+                    <p class="font-semibold text-gray-800">${appt.patientName}
+                    ${statusElement.outerHTML}
+                    </p>
                     <p class="text-gray-600 text-sm">
                         ${apptDateTime.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })} เวลา ${appt.timeSlot}
                     </p>
@@ -324,7 +334,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 queueDisplay.appendChild(futureCard);
             });
         } else if (!currentAppointment && queueDisplay.children.length === 0) {
-            // กรณีไม่มีคิวปัจจุบัน และไม่มีคิวในอนาคตเลย และยังไม่มีการ์ดสถานะถูกเพิ่ม
             const noBookingsFoundCard = document.createElement('div');
             noBookingsFoundCard.classList.add('queue-card', 'bg-gray-100', 'border-gray-300');
             noBookingsFoundCard.innerHTML = `
@@ -339,13 +348,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         // คำนวณความสูงในการเลื่อนและใช้อนิเมชัน
-        // ตรวจสอบว่ามีเนื้อหาให้เลื่อนหรือไม่
-        if (queueDisplay.children.length > 0) { // มีการ์ดแสดงผลแล้ว
+        if (queueDisplay.children.length > 0) {
             const contentHeight = queueDisplay.scrollHeight;
-            const containerHeight = scrollingQueueContainer.clientHeight - 50; // ลบความสูงของส่วนหัว
+            const containerHeight = scrollingQueueContainer.clientHeight - 50;
             if (contentHeight > containerHeight) {
                 const scrollHeight = -(contentHeight - containerHeight);
-                const animationDuration = contentHeight / 20; // ปรับความเร็วตามต้องการ (พิกเซลต่อวินาที)
+                const animationDuration = contentHeight / 20;
                 queueDisplay.style.setProperty('--scroll-height', `${scrollHeight}px`);
                 queueDisplay.style.animationDuration = `${animationDuration}s`;
                 queueDisplay.style.animationPlayState = 'running';
@@ -382,12 +390,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (currentStatus === 'open') {
                 card.dataset.status = 'closed';
-                statusSpan.textContent = 'ปิด';
+                statusSpan.textContent = 'closed';
                 statusSpan.classList.remove('service-status-open');
                 statusSpan.classList.add('service-status-closed');
             } else {
                 card.dataset.status = 'open';
-                statusSpan.textContent = 'เปิด';
+                statusSpan.textContent = 'open';
                 statusSpan.classList.remove('service-status-closed');
                 statusSpan.classList.add('service-status-open');
             }
