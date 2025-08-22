@@ -558,7 +558,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const newsError = document.getElementById('newsError');
 
     // Replace with your deployed Google Apps Script Web App URL
-    const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwKFlYyhT0CJiUYjGiYddN0egMilOsySaG8TNhnY__Sx91_Y2cLaYvsLRt5zwALrzHR/exec';
+    const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbzHy1NyAVT3fOQzQpgeKf0L4duDNr94evxd-h-AUkYPKJYhfkQMN7T_iFwjJVtlQlLN/exec';
 
     async function fetchNewsFromGoogleSheet() {
         newsLoading.classList.remove('hidden');
