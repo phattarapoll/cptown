@@ -1,11 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbxWwIkmDMyqtSfIIxfPl5XQ5s8LdyHu23hB0h7B9MVJuzUId_AgBhFPxRseI1Tgv2Pw/exec';
+    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbws64s-H7zRbtj2zEWrM6XSv8g_bTQY6lWrQKv5tWPazVjiCBWFpyiEvWmBdQ3Ivj32/exec';
     const pendingLeaveTableBody = document.querySelector('#pending-leave-table tbody');
-    
+
     // Elements for the new modal
     const modal = document.getElementById('approval-modal');
     const modalContent = document.getElementById('modal-content');
-    const closeButton = document.querySelector('.close-button');
 
     // ฟังก์ชันสำหรับจัดรูปแบบวันที่
     function formatDateForDisplay(dateString) {
@@ -52,16 +51,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
         requests.forEach(request => {
             const row = pendingLeaveTableBody.insertRow();
+            let statusBadge = '';
+            let approveButtonText = 'อนุมัติ';
+            let approveButtonClass = 'approve-button';
+
+            if (request.status === 'รออนุมัติยกเลิก') {
+                statusBadge = '<span class="status-badge-cancel"> (รออนุมัติยกเลิก)</span>';
+                approveButtonText = 'อนุมัติการยกเลิก';
+            }
+
             row.innerHTML = `
                 <td>${request.name}</td>
-                <td>${request.leaveType}</td>
+                <td>${request.leaveType}${statusBadge}</td>
                 <td>${request.duration}</td>
                 <td>${formatDateForDisplay(request.startDate)}</td>
                 <td>${formatDateForDisplay(request.endDate)}</td>
                 <td>${request.reason}</td>
                 <td>
-                    <button class="approve-button" data-leave-id="${request.leaveId}">อนุมัติ</button>
-                    <button class="reject-button" data-leave-id="${request.leaveId}">ไม่อนุมัติ</button>
+                    <button class="${approveButtonClass}" data-leave-id="${request.leaveId}" data-status="${request.status}">${approveButtonText}</button>
+                    <button class="reject-button" data-leave-id="${request.leaveId}" data-status="${request.status}">ไม่อนุมัติ</button>
                 </td>
             `;
         });
@@ -74,26 +82,35 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ฟังก์ชันสำหรับจัดการการอนุมัติ (ปรับใหม่)
+    // ฟังก์ชันสำหรับจัดการการอนุมัติ
     function handleApproveRequest(event) {
         const row = event.target.closest('tr');
         const leaveId = event.target.dataset.leaveId;
+        const currentStatus = event.target.dataset.status;
         const name = row.children[0].textContent;
-        const leaveType = row.children[1].textContent;
+        const leaveType = row.children[1].textContent.replace(' (รออนุมัติยกเลิก)', '');
         const duration = row.children[2].textContent;
         const startDate = row.children[3].textContent;
         const endDate = row.children[4].textContent;
         const reason = row.children[5].textContent;
-        
-        showApprovalModal({leaveId, name, leaveType, duration, startDate, endDate, reason});
+
+        showApprovalModal({ leaveId, name, leaveType, duration, startDate, endDate, reason, currentStatus });
     }
 
     // ฟังก์ชันสำหรับแสดง Modal
     function showApprovalModal(requestData) {
         if (!modal || !modalContent) return;
-        
+
+        let modalTitle = 'อนุมัติคำขอลา';
+        let confirmButtonText = 'อนุมัติ';
+
+        if (requestData.currentStatus === 'รออนุมัติยกเลิก') {
+            modalTitle = 'อนุมัติการยกเลิกคำขอลา';
+            confirmButtonText = 'ยืนยันการยกเลิก';
+        }
+
         modalContent.innerHTML = `
-            <h2>ขออนุมัติลา</h2>
+            <h2>${modalTitle}</h2>
             <p><strong>ชื่อ:</strong> ${requestData.name}</p>
             <p><strong>ประเภทการลา:</strong> ${requestData.leaveType}</p>
             <p><strong>วันที่เริ่ม:</strong> ${requestData.startDate}</p>
@@ -101,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <p><strong>จำนวนวัน:</strong> ${requestData.duration} วัน</p>
             <p><strong>สาเหตุ:</strong> ${requestData.reason}</p>
             <div class="modal-buttons">
-                <button id="confirm-approve-button" class="approve-button" data-leave-id="${requestData.leaveId}">อนุมัติ</button>
+                <button id="confirm-approve-button" class="approve-button" data-leave-id="${requestData.leaveId}" data-status="${requestData.currentStatus}">${confirmButtonText}</button>
                 <button id="cancel-modal-button" class="reject-button">ยกเลิก</button>
             </div>
         `;
@@ -125,10 +142,10 @@ document.addEventListener('DOMContentLoaded', function() {
             body: `action=approveLeave&leaveId=${leaveId}`
         });
         const result = await response.json();
-        
+
         if (result.success) {
             alert(result.message);
-            fetchPendingRequests(); // โหลดข้อมูลใหม่
+            fetchPendingRequests();
         } else {
             alert('ไม่สามารถอนุมัติได้: ' + result.message);
         }
@@ -138,7 +155,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // ฟังก์ชันสำหรับจัดการการไม่อนุมัติ
     async function handleRejectRequest(event) {
         const leaveId = event.target.dataset.leaveId;
-        if (!confirm('ยืนยันการไม่อนุมัติคำขอลาหรือไม่?')) return;
+        const currentStatus = event.target.dataset.status;
+        let message = 'ยืนยันการไม่อนุมัติคำขอลาหรือไม่?';
+
+        if (currentStatus === 'รออนุมัติยกเลิก') {
+            message = 'ยืนยันการไม่อนุมัติการยกเลิกคำขอลาหรือไม่? คำขอจะกลับเป็นสถานะเดิม';
+        }
+
+        if (!confirm(message)) return;
 
         const response = await fetch(appsScriptUrl, {
             method: 'POST',
@@ -146,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
             body: `action=rejectLeave&leaveId=${leaveId}`
         });
         const result = await response.json();
-        
+
         if (result.success) {
             alert(result.message);
             fetchPendingRequests(); // โหลดข้อมูลใหม่
@@ -154,19 +178,6 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('ไม่สามารถไม่อนุมัติได้: ' + result.message);
         }
     }
-    
-    // Event listener for closing modal
-    if (closeButton) {
-        closeButton.addEventListener('click', () => {
-            modal.style.display = 'none';
-        });
-    }
-
-    window.addEventListener('click', (event) => {
-        if (event.target === modal) {
-            modal.style.display = 'none';
-        }
-    });
 
     // เมื่อโหลดหน้าเว็บเสร็จ ให้ดึงรายการคำขอที่รออนุมัติมาแสดง
     fetchPendingRequests();
