@@ -45,23 +45,23 @@
             opacity: 0.8;
         }
         .category-title {
-            background-color: #f8f9fa;
+            background-color: #C71585;
             padding: 15px 25px;
             font-weight: bold;
             border-top: 1px solid #e9ecef;
             border-bottom: 1px solid #e9ecef;
-            color: #495057;
+            color: white;
             font-size: 1.2rem;
             cursor: pointer;
             position: relative;
             transition: background-color 0.3s ease;
         }
         .category-title:hover {
-            background-color: #e2e6ea;
+            background-color: #FF1493;
         }
         .category-title .fas {
             margin-right: 15px;
-            color: #007bff;
+            color: white;
         }
         .category-title::after {
             content: "\f0d7";
@@ -72,6 +72,7 @@
             top: 50%;
             transform: translateY(-50%) rotate(0deg);
             transition: transform 0.3s ease;
+            color: white;
         }
         .category-title.collapsed::after {
             transform: translateY(-50%) rotate(-90deg);
@@ -140,32 +141,36 @@
             font-size: 1.5rem;
             margin-bottom: 20px;
         }
-        .password-box input {
-            padding: 12px;
+        .password-box .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
             margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 1.2rem;
-            text-align: center;
-            width: 200px;
-            transition: border-color 0.3s ease;
         }
-        .password-box input:focus {
-            outline: none;
-            border-color: #007bff;
-        }
-        .password-box button {
-            background-color: #007bff;
-            color: white;
+        .password-box .keypad-button {
+            width: 70px;
+            height: 70px;
+            background-color: #e9ecef;
             border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
+            border-radius: 50%;
+            font-size: 1.8rem;
+            font-weight: bold;
             cursor: pointer;
-            font-size: 1.1rem;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.2s ease, transform 0.1s ease;
         }
-        .password-box button:hover {
-            background-color: #0056b3;
+        .password-box .keypad-button:hover {
+            background-color: #ddd;
+        }
+        .password-box .keypad-button.pressed {
+            background-color: #FF0000; /* สีแดงเมื่อกด */
+            color: white;
+        }
+        .password-box #pin-display {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #555;
+            min-height: 25px;
+            margin-bottom: 20px;
         }
         .password-box #error-message {
             color: red;
@@ -179,8 +184,20 @@
     <div id="password-overlay">
         <div class="password-box">
             <h2>กรุณาใส่รหัสผ่านผู้ดูแล</h2>
-            <input type="password" id="password-input" placeholder="ใส่รหัส 4 หลัก" maxlength="4">
-            <button onclick="checkPassword()">เข้าสู่ระบบ</button>
+            <div id="pin-display"></div>
+            <div class="keypad">
+                <button class="keypad-button" data-num="1">1</button>
+                <button class="keypad-button" data-num="2">2</button>
+                <button class="keypad-button" data-num="3">3</button>
+                <button class="keypad-button" data-num="4">4</button>
+                <button class="keypad-button" data-num="5">5</button>
+                <button class="keypad-button" data-num="6">6</button>
+                <button class="keypad-button" data-num="7">7</button>
+                <button class="keypad-button" data-num="8">8</button>
+                <button class="keypad-button" data-num="9">9</button>
+                <button class="keypad-button" data-num="clear">C</button>
+                <button class="keypad-button" data-num="0">0</button>
+            </div>
             <p id="error-message">รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่</p>
         </div>
     </div>
@@ -391,68 +408,104 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const correctPassword = "3946";
-        const passwordInput = document.getElementById("password-input");
-        const passwordOverlay = document.getElementById("password-overlay");
-        const content = document.getElementById("content");
-        const errorMessage = document.getElementById("error-message");
-        const categoryTitles = document.querySelectorAll(".category-title");
-        const digitalClock = document.getElementById("digital-clock");
+const correctPassword = "3946";
+let enteredPassword = "";
+const keypadButtons = document.querySelectorAll(".keypad-button");
+const passwordOverlay = document.getElementById("password-overlay");
+const content = document.getElementById("content");
+const errorMessage = document.getElementById("error-message");
+const pinDisplay = document.getElementById("pin-display");
+const categoryTitles = document.querySelectorAll(".category-title");
+const digitalClock = document.getElementById("digital-clock");
 
-        function checkPassword() {
-            if (passwordInput.value === correctPassword) {
-                passwordOverlay.style.display = "none";
-                content.style.display = "block";
-            } else {
-                errorMessage.style.display = "block";
-                passwordInput.value = "";
-            }
+function updatePinDisplay() {
+    pinDisplay.textContent = "*".repeat(enteredPassword.length);
+}
+
+function resetKeypad() {
+    enteredPassword = "";
+    updatePinDisplay();
+    keypadButtons.forEach(button => {
+        button.classList.remove("pressed");
+    });
+    errorMessage.style.display = "none";
+}
+
+keypadButtons.forEach(button => {
+    button.addEventListener("click", function() {
+        const num = this.getAttribute("data-num");
+
+        if (num === "clear") {
+            resetKeypad();
+            return;
         }
 
-        passwordInput.addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                checkPassword();
-            }
-        });
+        if (enteredPassword.length < 4) {
+            enteredPassword += num;
+            this.classList.add("pressed");
+            updatePinDisplay();
 
-        categoryTitles.forEach(title => {
-            title.addEventListener('click', () => {
-                const targetId = title.getAttribute('data-bs-target');
-                const targetCollapse = document.querySelector(targetId);
-                const isCollapsed = title.classList.contains('collapsed');
-
-                // ปิดอันอื่นทั้งหมด
-                categoryTitles.forEach(otherTitle => {
-                    const otherTargetId = otherTitle.getAttribute('data-bs-target');
-                    const otherTargetCollapse = document.querySelector(otherTargetId);
-                    if (otherTargetCollapse.classList.contains('show')) {
-                        otherTargetCollapse.classList.remove('show');
-                        otherTitle.classList.add('collapsed');
+            if (enteredPassword.length === 4) {
+                setTimeout(() => {
+                    if (enteredPassword === correctPassword) {
+                        errorMessage.textContent = "รหัสผ่านถูกต้อง!";
+                        errorMessage.style.color = "green";
+                        errorMessage.style.display = "block";
+                        setTimeout(() => {
+                            passwordOverlay.style.display = "none";
+                            content.style.display = "block";
+                            resetKeypad();
+                        }, 500);
+                    } else {
+                        errorMessage.textContent = "รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่";
+                        errorMessage.style.color = "red";
+                        errorMessage.style.display = "block";
+                        setTimeout(() => {
+                            resetKeypad();
+                        }, 1500);
                     }
-                });
+                }, 200);
+            }
+        }
+    });
+});
 
-                // เปิด/ปิดอันที่คลิก
-                if (isCollapsed) {
-                    targetCollapse.classList.add('show');
-                    title.classList.remove('collapsed');
-                } else {
-                    // หากคลิกหัวข้อที่เปิดอยู่แล้ว ให้ปิด
-                    targetCollapse.classList.remove('show');
-                    title.classList.add('collapsed');
-                }
-            });
+// Other functions remain unchanged
+categoryTitles.forEach(title => {
+    title.addEventListener('click', () => {
+        const targetId = title.getAttribute('data-bs-target');
+        const targetCollapse = document.querySelector(targetId);
+        const isCollapsed = title.classList.contains('collapsed');
+
+        categoryTitles.forEach(otherTitle => {
+            const otherTargetId = otherTitle.getAttribute('data-bs-target');
+            const otherTargetCollapse = document.querySelector(otherTargetId);
+            if (otherTargetCollapse.classList.contains('show')) {
+                otherTargetCollapse.classList.remove('show');
+                otherTitle.classList.add('collapsed');
+            }
         });
 
-        function updateClock() {
-            const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            digitalClock.textContent = `${hours}:${minutes}:${seconds}`;
+        if (isCollapsed) {
+            targetCollapse.classList.add('show');
+            title.classList.remove('collapsed');
+        } else {
+            targetCollapse.classList.remove('show');
+            title.classList.add('collapsed');
         }
+    });
+});
 
-        setInterval(updateClock, 1000);
-        updateClock(); // เรียกครั้งแรกเพื่อแสดงเวลาทันที
+function updateClock() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    digitalClock.textContent = `${hours}:${minutes}:${seconds}`;
+}
+
+setInterval(updateClock, 1000);
+updateClock();
     </script>
 </body>
 </html>
