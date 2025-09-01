@@ -464,6 +464,10 @@ keypadButtons.forEach(button => {
         if (enteredPassword.length < 4) {
             enteredPassword += num;
             this.classList.add("pressed");
+            // เพิ่มโค้ดส่วนนี้เพื่อลบสีแดงหลังจาก 0.5 วินาที
+            setTimeout(() => {
+                this.classList.remove("pressed");
+            }, 100);
             updatePinDisplay();
 
             if (enteredPassword.length === 4) {
@@ -490,7 +494,6 @@ keypadButtons.forEach(button => {
         }
     });
 });
-
 // Other functions remain unchanged
 categoryTitles.forEach(title => {
     title.addEventListener('click', () => {
