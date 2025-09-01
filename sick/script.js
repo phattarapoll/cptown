@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbxtDwxIEHk7kkdghpA_zARoLJiy14_R4nP1wAXU_IK_ENtFuxwzk8ncr_hAhZL5Me_k/exec';
+    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbxDtN3wCGYSXAGhH0sU62i4ig6xgNDMq25Ln6d-FKWYS0vYAJUZRG4lq9jPuiKacQXauQ/exec';
 
     // Elements for different sections
     const loginContainer = document.getElementById('login-container');
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const workStartDateElement = document.getElementById('work-start-date');
     const oldWorkDurationElement = document.getElementById('old-work-duration');
     const newWorkDurationElement = document.getElementById('new-work-duration');
-    const totalWorkDurationElement = document.getElementById('total-work-duration');
+    const totalWorkDurationElement = document = ('total-work-duration');
 
     // New leave info elements
     const sickLeaveUsedElement = document.getElementById('sick-leave-used');
@@ -48,9 +48,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const loginOfficerNameElement = document.getElementById('login-officer-name');
     const loginFormModal = document.getElementById('login-form-modal');
     const loginOfficerIdInput = document.getElementById('login-officer-id');
-    const usernameModalInput = document.getElementById('username-modal');
     const passwordModalInput = document.getElementById('password-modal');
-    const loginButtonModal = document.getElementById('login-button-modal');
+    const passwordDisplay = document.getElementById('password-display');
+    const keypadContainer = document.getElementById('keypad-container');
+    let currentPassword = '';
 
     // Elements for leave history
     const leaveHistoryTableBody = document.querySelector('#leave-history-table tbody');
@@ -166,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
         mainAppContainer.style.display = 'block';
         floatingHistoryButton.classList.remove('hidden');
     }
-    
+
     // ฟังก์ชันสำหรับแสดงประวัติการลา
     function renderLeaveHistory(history) {
         leaveHistoryTableBody.innerHTML = '';
@@ -289,12 +290,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function handleOfficerCardClick(event) {
         const officerId = event.currentTarget.dataset.id;
         const officerName = event.currentTarget.dataset.name;
-        
+
         // ตั้งค่า modal ด้วยข้อมูลที่เลือก
         loginOfficerIdInput.value = officerId;
         loginOfficerNameElement.textContent = officerName;
-        usernameModalInput.value = '';
-        passwordModalInput.value = '';
+        currentPassword = ''; // Reset password
+        passwordModalInput.value = ''; // Reset hidden password input
+        passwordDisplay.textContent = ''; // Reset password display
 
         // แสดง modal
         loginModal.classList.add('visible');
@@ -339,42 +341,67 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Event Listener สำหรับการเข้าสู่ระบบใน Modal พร้อมสถานะโหลด
+    // Event listener for the keypad buttons
+    keypadContainer.addEventListener('click', function(event) {
+        if (event.target.classList.contains('keypad-button')) {
+            const value = event.target.textContent.trim();
+            if (!isNaN(parseInt(value))) {
+                if (currentPassword.length < 4) { // จำกัดรหัสผ่านให้เป็น 4 หลัก
+                    currentPassword += value;
+                    passwordDisplay.textContent = '*'.repeat(currentPassword.length);
+                    passwordModalInput.value = currentPassword; // Set the value of the hidden input
+                    
+                    if (currentPassword.length === 4) {
+                        // ส่งฟอร์มอัตโนมัติเมื่อรหัสผ่านครบ 4 หลัก
+                        loginFormModal.dispatchEvent(new Event('submit'));
+                    }
+                }
+            } else if (event.target.classList.contains('backspace')) {
+                currentPassword = currentPassword.slice(0, -1);
+                passwordDisplay.textContent = '*'.repeat(currentPassword.length);
+                passwordModalInput.value = currentPassword;
+            } else if (event.target.classList.contains('clear')) {
+                currentPassword = '';
+                passwordDisplay.textContent = '';
+                passwordModalInput.value = '';
+            }
+        }
+    });
+
+    // Event Listener สำหรับการเข้าสู่ระบบใน Modal พร้อมสถานะโหลด (แก้ไขแล้ว)
     loginFormModal.addEventListener('submit', async function(event) {
         event.preventDefault();
 
-        const originalButtonText = loginButtonModal.textContent;
-        loginButtonModal.textContent = '⌛ กำลังโหลด...';
-        loginButtonModal.disabled = true;
-        loginButtonModal.classList.add('loading');
+        // แสดงสถานะกำลังโหลด
+        passwordDisplay.textContent = 'กำลังตรวจสอบ...';
 
         const selectedOfficerId = loginOfficerIdInput.value;
-        const username = usernameModalInput.value;
         const password = passwordModalInput.value;
 
         try {
             const response = await fetch(appsScriptUrl, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                body: `action=login&id=${selectedOfficerId}&username=${username}&password=${password}`
+                body: `action=login&id=${selectedOfficerId}&password=${password}`
             });
             const result = await response.json();
 
             if (result.success) {
                 await fetchUserData(selectedOfficerId);
-                usernameModalInput.value = '';
+                currentPassword = '';
                 passwordModalInput.value = '';
+                passwordDisplay.textContent = '';
                 loginModal.classList.remove('visible'); // Close modal on success
             } else {
                 alert(result.message);
+                currentPassword = '';
+                passwordModalInput.value = '';
+                passwordDisplay.textContent = '';
+                passwordDisplay.textContent = 'ไม่ถูกต้อง ลองอีกครั้ง';
             }
         } catch (error) {
             console.error('Login failed:', error);
             alert('เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง');
-        } finally {
-            loginButtonModal.textContent = originalButtonText;
-            loginButtonModal.disabled = false;
-            loginButtonModal.classList.remove('loading');
         }
     });
 
