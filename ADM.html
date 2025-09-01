@@ -116,69 +116,71 @@
         .footer p {
             margin: 5px 0;
         }
-        /* Password Prompt Styling */
-        #password-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .password-box {
-            background-color: white;
-            padding: 40px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-        }
-        .password-box h2 {
-            color: #333;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-        }
-        .password-box .keypad {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .password-box .keypad-button {
-            width: 70px;
-            height: 70px;
-            background-color: #e9ecef;
-            border: none;
-            border-radius: 50%;
-            font-size: 1.8rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.2s ease, transform 0.1s ease;
-        }
-        .password-box .keypad-button:hover {
-            background-color: #ddd;
-        }
-        .password-box .keypad-button.pressed {
-            background-color: #FF0000; /* สีแดงเมื่อกด */
-            color: white;
-        }
-        .password-box #pin-display {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #555;
-            min-height: 25px;
-            margin-bottom: 20px;
-        }
-        .password-box #error-message {
-            color: red;
-            margin-top: 15px;
-            font-weight: bold;
-            display: none;
-        }
-    </style>
+		
+/* Password Prompt Styling */
+#password-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.password-box {
+    background-color: white;
+    padding: 50px; /* เพิ่มพื้นที่ภายในกล่อง */
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    max-width: 400px; /* จำกัดความกว้างสูงสุด */
+    width: 90%; /* ให้กล่องปรับขนาดตามหน้าจอ */
+}
+.password-box h2 {
+    color: #333;
+    font-size: 1.8rem; /* เพิ่มขนาดตัวอักษรของหัวข้อ */
+    margin-bottom: 30px;
+}
+.password-box .keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px; /* เพิ่มระยะห่างระหว่างปุ่ม */
+    margin-bottom: 30px;
+}
+.password-box .keypad-button {
+    width: 90px; /* เพิ่มความกว้างของปุ่ม */
+    height: 90px; /* เพิ่มความสูงของปุ่ม */
+    background-color: #e9ecef;
+    border: none;
+    border-radius: 50%;
+    font-size: 2.2rem; /* เพิ่มขนาดตัวเลขในปุ่ม */
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+.password-box .keypad-button:hover {
+    background-color: #ddd;
+}
+.password-box .keypad-button.pressed {
+    background-color: #FF0000;
+    color: white;
+}
+.password-box #pin-display {
+    font-size: 2.5rem; /* เพิ่มขนาดตัวอักษรของรหัสที่แสดง */
+    font-weight: bold;
+    color: #555;
+    min-height: 40px; /* เพิ่มความสูงขั้นต่ำ */
+    margin-bottom: 25px;
+}
+.password-box #error-message {
+    color: red;
+    margin-top: 20px;
+    font-weight: bold;
+    display: none;
+}    </style>
 </head>
 <body>
     <div id="password-overlay">
