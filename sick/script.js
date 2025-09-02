@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbxDtN3wCGYSXAGhH0sU62i4ig6xgNDMq25Ln6d-FKWYS0vYAJUZRG4lq9jPuiKacQXauQ/exec';
+    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbyHtIUFOpU317yoHuis5U0--sRq9RD2AlA8-TA3gg1cUdsHddhyOCVpj2m2bMd1WhTarw/exec';
 
     // Elements for different sections
     const loginContainer = document.getElementById('login-container');
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const workStartDateElement = document.getElementById('work-start-date');
     const oldWorkDurationElement = document.getElementById('old-work-duration');
     const newWorkDurationElement = document.getElementById('new-work-duration');
-    const totalWorkDurationElement = document = ('total-work-duration');
+    const totalWorkDurationElement = document.getElementById('total-work-duration');
 
     // New leave info elements
     const sickLeaveUsedElement = document.getElementById('sick-leave-used');
