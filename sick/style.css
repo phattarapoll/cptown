@@ -9,7 +9,7 @@
 }
 
 body {
-    font-family: 'Sarabun', sans-serif;
+    font-family: 'TH Sarabun New', sans-serif; /* แนะนำให้ใช้ font นี้สำหรับภาษาไทยใน PDF */
     background-color: #212529; /* Dark background color */
     color: var(--light-color); /* Light text color */
     margin: 0;
