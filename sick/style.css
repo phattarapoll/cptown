@@ -9,9 +9,11 @@
 }
 
 body {
-    font-family: 'TH Sarabun New', sans-serif; /* แนะนำให้ใช้ font นี้สำหรับภาษาไทยใน PDF */
-    background-color: #212529; /* Dark background color */
-    color: var(--light-color); /* Light text color */
+    font-family: 'TH Sarabun New', sans-serif;
+    font-size: 18px; /* ปรับขนาดตัวอักษรเริ่มต้นให้ใหญ่ขึ้น */
+    line-height: 1.6; /* เพิ่มระยะห่างระหว่างบรรทัดเพื่อให้อ่านง่าย */
+    background-color: #212529;
+    color: var(--light-color);
     margin: 0;
     padding: 0;
     display: flex;
@@ -25,29 +27,39 @@ body {
 .container {
     width: 90%;
     max-width: 1200px;
-    background-color: #343a40; /* Darker container background */
+    background-color: #343a40;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
+    padding: 30px; /* เพิ่ม padding ให้มีพื้นที่มากขึ้น */
     margin-bottom: 20px;
 }
 
 h1, h2, h3 {
-    color: #fff; /* White headings */
-    font-weight: 600;
+    color: #fff;
+    font-weight: 700; /* เพิ่มความหนาของหัวข้อ */
+    letter-spacing: 0.5px; /* เพิ่มระยะห่างระหว่างตัวอักษรในหัวข้อ */
 }
 
 h1 {
     text-align: center;
     margin-bottom: 20px;
     color: var(--primary-color);
+    font-size: 36px; /* ปรับขนาด H1 ให้ใหญ่ขึ้น */
+}
+
+h2 {
+    font-size: 28px; /* ปรับขนาด H2 ให้ใหญ่ขึ้น */
+}
+
+h3 {
+    font-size: 24px; /* ปรับขนาด H3 ให้ใหญ่ขึ้น */
 }
 
 .card {
-    background-color: #495057; /* Card background color */
+    background-color: #495057;
     padding: 20px;
     border-radius: 8px;
-    border: 1px solid #6c757d; /* Lighter border for visibility */
+    border: 1px solid #6c757d;
     margin-bottom: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
@@ -79,7 +91,7 @@ h1 {
 }
 
 .collapsible-content.expanded {
-    max-height: 1000px; /* Adjust based on content height */
+    max-height: 1000px;
 }
 
 .main-content {
@@ -95,13 +107,14 @@ h1 {
 
 label {
     display: block;
-    margin-top: 10px;
-    font-weight: 500;
+    margin-top: 15px;
+    font-weight: 600; /* ปรับความหนาของ Label */
+    font-size: 16px; /* ปรับขนาด Label ให้ชัดเจน */
 }
 
-input {
+input, select, textarea {
     width: 100%;
-    padding: 8px;
+    padding: 10px; /* เพิ่ม padding ในช่องกรอก */
     margin-top: 5px;
     margin-bottom: 15px;
     border: 1px solid #6c757d;
@@ -109,40 +122,17 @@ input {
     color: var(--light-color);
     border-radius: 4px;
     box-sizing: border-box;
-}
-
-select {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    margin-bottom: 15px;
-    border: 1px solid #6c757d;
-    background-color: #495057;
-    color: var(--light-color);
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-textarea {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    margin-bottom: 15px;
-    border: 1px solid #6c757d;
-    background-color: #495057;
-    color: var(--light-color);
-    border-radius: 4px;
-    box-sizing: border-box;
+    font-size: 16px; /* ปรับขนาดตัวอักษรในช่องกรอก */
 }
 
 button {
     background-color: var(--primary-color);
     color: #fff;
-    padding: 10px 15px;
+    padding: 12px 20px; /* เพิ่ม padding ในปุ่ม */
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 16px; /* ปรับขนาดตัวอักษรในปุ่ม */
     transition: background-color 0.2s ease;
 }
 
@@ -166,8 +156,8 @@ button:hover {
 
 .cancel-button {
     background-color: var(--secondary-color);
-    font-size: 12px;
-    padding: 6px 10px;
+    font-size: 14px; /* ปรับขนาดตัวอักษรในปุ่ม Cancel */
+    padding: 8px 12px;
 }
 .cancel-button:hover {
     background-color: #545b62;
@@ -177,11 +167,12 @@ table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 15px;
+    font-size: 16px; /* ปรับขนาดตัวอักษรในตาราง */
 }
 
 th, td {
     border: 1px solid #6c757d;
-    padding: 8px;
+    padding: 10px; /* เพิ่ม padding ใน cell ของตาราง */
     text-align: left;
 }
 
@@ -224,7 +215,7 @@ th {
     bottom: 80px;
     width: 90%;
     max-width: 450px;
-    background-color: #495057; /* Dark panel background */
+    background-color: #495057;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     padding: 20px;
@@ -272,8 +263,8 @@ th {
 
 /* Style for the loading button */
 #login-button.loading {
-    background-color: var(--danger-color); /* Red background */
-    cursor: wait; /* Change cursor to indicate loading */
+    background-color: var(--danger-color);
+    cursor: wait;
 }
 
 /* Spinner animation - The following CSS creates a spinning hourglass effect */
@@ -291,17 +282,17 @@ th {
 
 /* New Modal Styles for admin_approval.js */
 .modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1000; /* Sit on top */
+    display: none;
+    position: fixed;
+    z-index: 1000;
     left: 0;
     top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    background-color: rgba(0, 0, 0, 0.7); /* Black w/ opacity */
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
     justify-content: center;
     align-items: center;
-    overflow: auto; /* Enable scroll if needed */
+    overflow: auto;
 }
 
 .modal.visible {
@@ -310,7 +301,7 @@ th {
 
 .modal-content-wrapper {
     background-color: #343a40;
-    padding: 20px;
+    padding: 30px; /* เพิ่ม padding ใน modal */
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     width: 90%;
@@ -318,7 +309,7 @@ th {
     position: relative;
     color: #fff;
     animation: fadeIn 0.3s ease-out;
-    margin: auto; /* Center the modal content vertically and horizontally */
+    margin: auto;
 }
 
 .close-button {
@@ -343,6 +334,7 @@ th {
 
 .modal-content p {
     margin: 10px 0;
+    font-size: 16px; /* ปรับขนาดตัวอักษรใน p ของ modal */
 }
 
 .modal-content strong {
@@ -388,7 +380,7 @@ th {
 }
 /* New styles for the initial login screen */
 #login-container {
-    display: block; /* Show this container by default */
+    display: block;
     text-align: center;
     padding: 30px;
 }
@@ -424,12 +416,13 @@ th {
 .officer-card h4 {
     margin: 0;
     color: var(--light-color);
-    font-weight: 600;
+    font-weight: 700; /* ปรับความหนาของชื่อ */
+    font-size: 20px; /* ปรับขนาดชื่อให้ใหญ่ขึ้น */
 }
 
 .officer-card p {
     margin: 5px 0 0;
-    font-size: 14px;
+    font-size: 16px; /* ปรับขนาดตัวอักษร p ใน card */
     color: var(--light-color);
 }
 
@@ -501,5 +494,5 @@ th {
     background-color: var(--danger-color);
     color: #fff;
     cursor: wait;
-    pointer-events: none; /* Prevents multiple clicks */
+    pointer-events: none;
 }
