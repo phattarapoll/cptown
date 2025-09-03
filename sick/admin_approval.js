@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbz2aJ3uwQ7NBRfK-h7UmjlkUZ51I5pqLZs4mxAJWmnvbL48qFXGgKFZE6ExbD8f9kjf5Q/exec';
+    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbxwR_bI93fJlAXOJ4er6RZ_iwhz6VQB-ZhsuFtIM12aWGepl64jVfvoYRz9UXwEnigr2A/exec';
     const pendingLeaveTableBody = document.querySelector('#pending-leave-table tbody');
 
     // Elements for the new modal
