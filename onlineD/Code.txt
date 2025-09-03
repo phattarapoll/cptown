@@ -13,99 +13,74 @@ function doGet(e) {
     }
 
     // --- ดึงข้อมูล Config ---
+    // ดึงข้อมูลทั้งหมดในครั้งเดียวเพื่อรับประกันว่า array จะมีขนาดเท่ากัน
+    const configDataRaw = configSheet.getRange('A9:D').getValues();
+    
+    // สร้าง array ที่จะใช้ส่งไปหา client
+    const unavailableDates = [];
+    const holidayNames = [];
 
-    // ดึง unavailableDates จากคอลัมน์ A9 ลงไป
-    const unavailableDatesRaw = configSheet.getRange('A9:A').getValues().flat().filter(String);
-    const unavailableDates = unavailableDatesRaw.map(d => Utilities.formatDate(new Date(d), Session.getScriptTimeZone(), 'yyyy-MM-dd'));
+    // วน loop เพื่อจัดข้อมูลให้เป็นระเบียบและกรองค่าที่ว่างออก
+    configDataRaw.forEach(row => {
+      const date = row[0]; // คอลัมน์ A
+      const holidayName = row[3]; // คอลัมน์ D
 
-    // ดึง holidayNames จากคอลัมน์ D9 ลงไป
-    const holidayNamesRaw = configSheet.getRange('D9:D').getValues().flat().filter(String);
-
-    // สร้าง object สำหรับ holidays ในรูปแบบ {'MM/DD/YYYY': 'Holiday Name'}
-    const holidays = {};
-    unavailableDatesRaw.forEach((dateString, index) => {
-        const dateObj = new Date(dateString);
-        if (!isNaN(dateObj.getTime()) && holidayNamesRaw[index]) {
-            const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-            const day = dateObj.getDate().toString().padStart(2, '0');
-            const year = dateObj.getFullYear();
-            holidays[`${month}/${day}/${year}`] = holidayNamesRaw[index];
-        }
-    });
-
-    // ดึง unavailableWeekdays จาก B4 (สมมติว่าเป็น "0,6" หรือค่าอื่นๆ ในเซลล์เดียว)
-    const unavailableWeekdaysRaw = configSheet.getRange('B4').getValue();
-    const unavailableWeekdays = unavailableWeekdaysRaw ? String(unavailableWeekdaysRaw).split(',').map(Number) : [];
-
-    // ดึง timeSlots จากช่วง C2:C8 และรวมเข้าด้วยกัน
-    const timeSlotsRawList = configSheet.getRange('C2:C8').getValues(); 
-    const timeSlots = [];
-    timeSlotsRawList.flat().filter(String).forEach(item => { 
-      try {
-        const parsedSlots = JSON.parse(item.replace(/'/g, '"')); 
-        if (Array.isArray(parsedSlots)) {
-          parsedSlots.forEach(slot => timeSlots.push(slot.trim()));
-        }
-      } catch (e) {
-        item.split(',').map(s => s.trim()).forEach(slot => timeSlots.push(slot));
+      if (date) {
+        unavailableDates.push(Utilities.formatDate(new Date(date), Session.getScriptTimeZone(), 'yyyy-MM-dd'));
+        // ตรวจสอบให้แน่ใจว่ามีชื่อวันหยุด
+        holidayNames.push(holidayName ? String(holidayName).trim() : '');
       }
     });
-    const uniqueTimeSlots = [...new Set(timeSlots)];
 
+    const unavailableWeekdays = configSheet.getRange('B2:B8').getValues().flat().filter(String).map(Number);
+    
+    // ตั้งค่าช่วงเวลาให้เป็นไปตามที่ลูกค้ากำหนด
+    const timeSlots = ["08:30-09:30", "09:30-10:30", "10:30-11:00", "11:00-11:30"];
+    
     const config = {
-      unavailableDates: unavailableDates,
-      unavailableWeekdays: unavailableWeekdays,
-      timeSlots: uniqueTimeSlots,
+      unavailableDates,
+      unavailableWeekdays,
+      timeSlots,
+      holidayNames
     };
 
-    // --- ดึงข้อมูลการจองทั้งหมด ---
-    // **สำคัญมาก: ปรับเปลี่ยนช่วงคอลัมน์ให้ตรงกับโครงสร้างชีท Booking ของคุณ**
-    // หากคอลัมน์ A ของคุณคือ Timestamp และ B คือ Full Name
-    // และข้อมูลเริ่มต้นที่แถว 2 (เช่น B2) ถึงแถวสุดท้าย
-    // ให้ใช้ 'B2:F' + bookingSheet.getLastRow()
-    // ถ้า A เป็นแค่หัวข้อแต่ไม่มีข้อมูลจริง และข้อมูลคนแรกเริ่มที่ B2 D2 E2 F2
-    // การดึง 'B2:F' จะให้ array ที่ index 0 คือ B, index 1 คือ C, index 2 คือ D, ...
-    const bookingDataRaw = bookingSheet.getRange('B2:F' + bookingSheet.getLastRow()).getValues(); 
+    // --- ดึงข้อมูลการจอง (Bookings) ---
+    const bookingRange = bookingSheet.getDataRange();
+    const bookingValues = bookingRange.getValues();
+    const bookingData = {};
 
-    const bookings = []; 
-    bookingDataRaw.forEach(row => {
-      // ตรวจสอบว่า row มีข้อมูลเพียงพอสำหรับชื่อ วันที่ และเวลา
-      // row[0] คือ FullName (คอลัมน์ B)
-      // row[1] คือ Tel Number (คอลัมน์ C)
-      // row[2] คือ BookingDate (คอลัมน์ D)
-      // row[3] คือ TimeSlot (คอลัมน์ E)
-      // row[4] คือ bookingReason (คอลัมน์ F)
-      if (row[0] && row[2] && row[3]) { 
-        const patientName = row[0];        // คอลัมน์ B (index 0 จาก range 'B:F')
-        const bookingDate = Utilities.formatDate(new Date(row[2]), Session.getScriptTimeZone(), 'YYYY-MM-DD'); // คอลัมน์ D (index 2 จาก range 'B:F')
-        const timeSlot = row[3];           // คอลัมน์ E (index 3 จาก range 'B:F')
-        const bookingReason = row[4];      // คอลัมน์ F (index 4 จาก range 'B:F')
+    if (bookingValues.length > 1) {
+      const header = bookingValues[0];
+      const dateColumnIndex = header.indexOf('BookingDate');
+      const timeSlotColumnIndex = header.indexOf('TimeSlot');
 
-        // ตรวจสอบว่าวันที่สามารถแปลงเป็น Date ได้หรือไม่
-        if (isNaN(new Date(bookingDate).getTime())) {
-            Logger.log(`Skipping booking due to invalid date format: ${row[2]}`);
-            return; // ข้ามรายการนี้ถ้าวันที่ไม่ถูกต้อง
-        }
-
-        bookings.push({
-            patientName: patientName,
-            date: bookingDate,
-            timeSlot: timeSlot,
-            bookingReason: bookingReason 
-        });
+      if (dateColumnIndex === -1 || timeSlotColumnIndex === -1) {
+        throw new Error('Booking sheet is missing "BookingDate" or "TimeSlot" header.');
       }
-    });
 
-    // ส่งข้อมูล config, bookings และ holidays กลับไปในรูปแบบ JSON
-    return ContentService.createTextOutput(JSON.stringify({ 
-        config: config, 
-        bookings: bookings, 
-        holidays: holidays 
-    }))
+      for (let i = 1; i < bookingValues.length; i++) {
+        const row = bookingValues[i];
+        const dateRaw = row[dateColumnIndex];
+        const timeSlot = row[timeSlotColumnIndex];
+
+        if (dateRaw && timeSlot) {
+          const date = Utilities.formatDate(new Date(dateRaw), Session.getScriptTimeZone(), 'yyyy-MM-dd');
+          if (!bookingData[date]) {
+            bookingData[date] = {};
+          }
+          if (!bookingData[date][timeSlot]) {
+            bookingData[date][timeSlot] = 0;
+          }
+          bookingData[date][timeSlot]++;
+        }
+      }
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({ config, bookings: bookingData }))
       .setMimeType(ContentService.MimeType.JSON);
 
   } catch (error) {
-    Logger.log("Error in doGet: " + error.message);
+    console.error(`Error in doGet: ${error.message}`);
     return ContentService.createTextOutput(JSON.stringify({ error: error.message }))
       .setMimeType(ContentService.MimeType.JSON);
   }
@@ -120,31 +95,24 @@ function doPost(e) {
     if (!bookingSheet) {
       throw new Error('Sheet "Booking" not found.');
     }
-
-    if (!e || !e.parameters) {
-      throw new Error("Invalid request: Missing parameters.");
+    if (!calendar) {
+      throw new Error('Calendar not found.');
     }
 
-    // รับค่าจากฟอร์ม
-    const fullName = e.parameters.fullName?.[0] || '';
-    const telNumber = e.parameters.telNumber?.[0] || '';
-    const bookingDate = e.parameters.bookingDate?.[0] || '';
-    const timeSlot = e.parameters.timeSlot?.[0] || '';
-    const bookingReason = e.parameters.bookingReason?.[0] || '';
+    const { fullName, telNumber, bookingDate, timeSlot, bookingReason } = e.parameter;
 
-    // ตรวจสอบข้อมูลที่จำเป็น
     if (!fullName || !telNumber || !bookingDate || !timeSlot || !bookingReason) {
-      throw new Error('Missing required booking data (ชื่อ-สกุล, เบอร์โทร, วันที่, เวลา หรืออาการ).');
+      throw new Error('Missing required booking data.');
     }
 
     // แปลง bookingDate จาก string เป็น Date object
-    const dateParts = bookingDate.split('-'); // ['2025','07','10']
+    const dateParts = bookingDate.split('-');
     const dateObject = new Date(Number(dateParts[0]), Number(dateParts[1]) - 1, Number(dateParts[2]));
 
     // แปลง timeSlot เป็นเวลาเริ่ม-สิ้นสุด
-    const [startStr, endStr] = timeSlot.split('-').map(t => t.trim());
-    const [startHour, startMinute] = startStr.split(':').map(Number);
-    const [endHour, endMinute] = endStr.split(':').map(Number);
+    const [startStr, endStr] = timeSlot.split(' - ')[0].split(':').map(Number);
+    const [startHour, startMinute] = startStr.split(' ')[0].split(':').map(Number);
+    const [endHour, endMinute] = endStr.split(' ')[0].split(':').map(Number);
 
     const startDateTime = new Date(dateObject);
     startDateTime.setHours(startHour, startMinute, 0);
@@ -169,14 +137,18 @@ function doPost(e) {
       endDateTime,
       {
         description: `เบอร์โทร: ${telNumber}`,
-        sendInvites: false
+        guests: `mailto:${fullName}@example.com`,
+        sendInvites: false,
+        location: 'สถานพยาบาล',
+        // ตั้งค่าให้ Event เป็นสีที่ต้องการ
+        colorId: CalendarApp.EventColor.PALE_GREEN,
       }
     );
 
-    return ContentService.createTextOutput("Booking successful!");
+    return ContentService.createTextOutput('Booking successful!');
 
   } catch (error) {
-    Logger.log("Error in doPost: " + error.message);
-    return ContentService.createTextOutput('Booking failed: ' + error.message);
+    console.error(`Error in doPost: ${error.message}`);
+    return ContentService.createTextOutput('Error: ' + error.message);
   }
 }

@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // กำหนด URL ของ Google Apps Script Web App ของคุณ
     // *** สำคัญมาก: โปรดเปลี่ยน URL ด้านล่างนี้เป็น URL ของ Google Apps Script Web App ของคุณเอง ***
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbycjWvCE6YXT-ZsqrifwsfwA60dmPN40d_nrtNoVmDBJOfxKPnyA6nCeDFAyA_hGVErQw/exec';
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyfxsILlI-Cq683ExlHdiUzAqE1oijn0z5eqWioxQ_UweFOP8oKb8mVE98PNHASAUx69g/exec';
 
     const calendarGrid = document.getElementById('calendarGrid');
     const currentMonthYearDisplay = document.getElementById('currentMonthYear');
@@ -47,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await response.json();
 
-            // เพิ่มการตรวจสอบความสมบูรณ์ของข้อมูลที่ได้รับ
             if (!data || !data.config || !data.bookings) {
                 throw new Error("โครงสร้างข้อมูลที่ได้รับจากเซิร์ฟเวอร์ไม่ถูกต้อง");
             }
@@ -78,6 +77,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const firstDayOfMonth = new Date(year, monthIndex, 1).getDay();
         const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+        
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const bookingLimit = new Date();
+        bookingLimit.setDate(today.getDate() + 31);
+        bookingLimit.setHours(0, 0, 0, 0);
 
         for (let i = 0; i < firstDayOfMonth; i++) {
             const emptyDiv = document.createElement('div');
@@ -87,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         for (let day = 1; day <= daysInMonth; day++) {
             const date = new Date(year, monthIndex, day);
+            date.setHours(0, 0, 0, 0);
             const dateString = formatDateForComparison(date);
             const dayOfWeek = date.getDay();
 
@@ -94,28 +100,26 @@ document.addEventListener('DOMContentLoaded', () => {
             dayDiv.classList.add('calendar-day');
             dayDiv.innerHTML = `<span class="day-number">${day}</span>`;
 
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            date.setHours(0, 0, 0, 0);
-
             if (date.getTime() === today.getTime()) {
                 dayDiv.classList.add('current-day');
             }
 
+            let isUnavailable = false;
+            let displayReason = '';
+            let tooltipReason = '';
+
             if (date < today) {
-                dayDiv.classList.add('disabled');
-                dayDiv.title = 'วันนี้ผ่านไปแล้ว';
+                isUnavailable = true;
+                tooltipReason = 'วันนี้ผ่านไปแล้ว';
+            } else if (date > bookingLimit) {
+                isUnavailable = true;
+                displayReason = 'เกินเวลาจอง';
+                tooltipReason = 'เกินเวลาจอง';
+            } else if (configData.unavailableWeekdays.includes(dayOfWeek)) {
+                isUnavailable = true;
+                displayReason = 'ปิดทำการ';
+                tooltipReason = 'ปิดทำการ (เสาร์-อาทิตย์)';
             } else {
-                let isUnavailable = false;
-                let displayReason = '';
-                let tooltipReason = '';
-
-                if (configData.unavailableWeekdays.includes(dayOfWeek)) {
-                    isUnavailable = true;
-                    displayReason = 'ปิดทำการ';
-                    tooltipReason = 'ปิดทำการ (เสาร์-อาทิตย์)';
-                }
-
                 const holidayIndex = configData.unavailableDates.indexOf(dateString);
                 if (holidayIndex !== -1) {
                     isUnavailable = true;
@@ -131,43 +135,44 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     }
                 }
+            }
 
-                if (isUnavailable) {
+            if (isUnavailable) {
+                dayDiv.classList.add('unavailable');
+                dayDiv.title = tooltipReason;
+                if (displayReason) {
+                    dayDiv.innerHTML += `<small>${displayReason}</small>`;
+                }
+                dayDiv.style.cursor = 'not-allowed';
+            } else {
+                const availableSlots = getAvailableSlotsCount(dateString);
+                const totalSlots = configData.timeSlots.length;
+
+                const slotCountSpan = document.createElement('span');
+                slotCountSpan.classList.add('slot-count');
+
+                if (totalSlots === 0) {
+                    slotCountSpan.textContent = `ไม่มีคิวตั้งค่า`;
+                    slotCountSpan.classList.add('full');
                     dayDiv.classList.add('unavailable');
-                    dayDiv.title = tooltipReason;
-                    if (displayReason) {
-                        dayDiv.innerHTML += `<small>${displayReason}</small>`;
-                    }
+                    dayDiv.title = 'ไม่มีช่วงเวลาที่ตั้งค่าไว้';
+                    dayDiv.style.cursor = 'not-allowed';
+                } else if (availableSlots > 0) {
+                    slotCountSpan.classList.add('available');
+                    slotCountSpan.textContent = `ว่าง ${availableSlots}/${totalSlots}`;
                 } else {
-                    const availableSlots = getAvailableSlotsCount(dateString);
-                    const totalSlots = configData.timeSlots.length;
+                    slotCountSpan.classList.add('full');
+                    slotCountSpan.textContent = `เต็ม ${availableSlots}/${totalSlots}`;
+                    dayDiv.classList.add('unavailable');
+                    dayDiv.title = 'คิวเต็ม';
+                }
+                dayDiv.appendChild(slotCountSpan);
 
-                    const slotCountSpan = document.createElement('span');
-                    slotCountSpan.classList.add('slot-count');
-
-                    if (totalSlots === 0) {
-                        slotCountSpan.textContent = `ไม่มีคิวตั้งค่า`;
-                        slotCountSpan.classList.add('full');
-                        dayDiv.classList.add('unavailable');
-                        dayDiv.title = 'ไม่มีช่วงเวลาที่ตั้งค่าไว้';
-                        dayDiv.style.cursor = 'not-allowed';
-                    } else if (availableSlots > 0) {
-                        slotCountSpan.classList.add('available');
-                        slotCountSpan.textContent = `ว่าง ${availableSlots}/${totalSlots}`;
-                    } else {
-                        slotCountSpan.classList.add('full');
-                        slotCountSpan.textContent = `เต็ม ${availableSlots}/${totalSlots}`;
-                        dayDiv.classList.add('unavailable');
-                        dayDiv.title = 'คิวเต็ม';
-                    }
-                    dayDiv.appendChild(slotCountSpan);
-
-                    if (availableSlots > 0 && totalSlots > 0) {
-                        dayDiv.addEventListener('click', () => showTimeSlots(date));
-                    } else {
-                        dayDiv.classList.add('disabled');
-                        dayDiv.style.cursor = 'not-allowed';
-                    }
+                if (availableSlots > 0 && totalSlots > 0) {
+                    dayDiv.addEventListener('click', () => showTimeSlots(date));
+                } else {
+                    dayDiv.classList.add('disabled');
+                    dayDiv.style.cursor = 'not-allowed';
                 }
             }
             calendarGrid.appendChild(dayDiv);
