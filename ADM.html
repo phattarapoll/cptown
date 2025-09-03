@@ -180,7 +180,109 @@
     margin-top: 20px;
     font-weight: bold;
     display: none;
-}    </style>
+}    
+/* เปลี่ยนสี card-header ให้ดูทันสมัยขึ้น */
+.card-header {
+    background-color: #f8f9fa; /* สีเทาอ่อน */
+    color: #343a40; /* สีตัวอักษรเข้ม */
+    font-size: 1.5rem;
+    font-weight: 600;
+    border-bottom: 3px solid #6c757d;
+    position: relative;
+    padding: 20px 25px;
+}
+
+/* ปรับปรุง category-title */
+.category-title {
+            background-color: #495057; /* เปลี่ยนเป็นสีเทาเข้ม */
+            padding: 15px 25px;
+            font-weight: bold;
+            border-top: 1px solid #e9ecef;
+            border-bottom: 1px solid #e9ecef;
+            color: white; /* เปลี่ยนเป็นสีขาว */
+            font-size: 1.2rem;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.3s ease;
+        }
+        .category-title:hover {
+            background-color: #6c757d; /* สีเทาอ่อนลงเมื่อโฮเวอร์ */
+        }
+        .category-title .fas {
+            margin-right: 15px;
+            color: white; /* เปลี่ยนเป็นสีขาว */
+        }
+        .category-title::after {
+            content: "\f0d7";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%) rotate(0deg);
+            transition: transform 0.3s ease;
+            color: white; /* เปลี่ยนเป็นสีขาว */
+        }
+        .category-title.collapsed::after {
+            transform: translateY(-50%) rotate(-90deg);
+        }
+
+/* ปรับปรุงปุ่ม keypad */
+.password-box .keypad-button {
+    background-color: #f1f3f5;
+    border: 2px solid #e9ecef;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.password-box .keypad-button:hover {
+    background-color: #e2e6ea;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+}
+
+/* อนิเมชั่นสำหรับรายการเมนู (list-group-item) */
+.list-group-item {
+    transition: all 0.3s ease;
+    border-left: 5px solid transparent;
+}
+.list-group-item:hover {
+    background-color: #f1f5f9;
+    border-left-color: #007bff;
+    transform: translateX(5px);
+}
+/* Styling for the status dot and text */
+.status-info {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #4CAF50; /* Green color for text */
+}
+
+.status-dot {
+    height: 12px;
+    width: 12px;
+    background-color: #4CAF50;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+    animation: pulse 1.5s infinite;
+}
+
+/* Animation for the pulsating effect */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+    }
+}
+</style>
 </head>
 <body>
     <div id="password-overlay">
@@ -210,6 +312,8 @@
                 <i class="fas fa-user-shield"></i> ระบบสำหรับผู้ดูแล
                 <div id="digital-clock"></div>
             </div>
+
+
             <div class="card-body p-0">
                 <div class="category-title" data-bs-toggle="collapse" data-bs-target="#general-systems" aria-expanded="true">
                     <i class="fas fa-desktop"></i> ระบบงานทั่วไป
@@ -252,6 +356,7 @@
                     </li>
                 </ul>
 
+
                 <div class="category-title collapsed" data-bs-toggle="collapse" data-bs-target="#dental-systems" aria-expanded="false">
                     <i class="fas fa-tooth"></i> ทันตกรรม
                 </div>
@@ -277,6 +382,7 @@
                         </a>
                     </li>
                 </ul>
+				
 
                 <div class="category-title collapsed" data-bs-toggle="collapse" data-bs-target="#system-management" aria-expanded="false">
                     <i class="fas fa-cogs"></i> การจัดการฐานข้อมูล
@@ -343,6 +449,62 @@
                         </a>
                     </li>
                 </ul>
+
+<div class="category-title collapsed" data-bs-toggle="collapse" data-bs-target="#personal-websites" aria-expanded="false">
+    <i class="fas fa-globe"></i> เว็ปไซต์ส่วนตัว
+</div>
+<ul class="list-group list-group-flush collapse" id="personal-websites">
+    <li class="list-group-item">
+        <a href="https://calendar.google.com/calendar/u/0/r?pli=1" target="_blank">
+            <i class="fas fa-calendar-alt"></i> ปฏิทินส่วนตัว
+        </a>
+    </li>
+    <li class="list-group-item">
+        <a href="https://mail.google.com/mail/u/0/#inbox" target="_blank">
+            <i class="fas fa-envelope"></i> Gmail
+        </a>
+    </li>
+    <li class="list-group-item">
+        <a href="https://drive.google.com/drive/my-drive" target="_blank">
+            <i class="fab fa-google-drive"></i> Gไดร์ฟ
+        </a>
+    </li>
+    <li class="list-group-item">
+        <a href="https://phattarapoll.github.io/cptown/ADM.html" target="_blank">
+            <i class="fas fa-link"></i> ADM
+        </a>
+    </li>
+    <li class="list-group-item">
+        <a href="https://cptown.6te.net/" target="_blank">
+            <i class="fas fa-link"></i> CPT
+        </a>
+    </li>
+    <li class="list-group-item">
+        <a href="https://psvmt.6te.net/" target="_blank">
+            <i class="fas fa-link"></i> PSVMT
+        </a>
+    </li>
+    <li class="list-group-item">
+        <a href="https://authenservice.nhso.go.th/authencode/claimcode#/claimcode/create" target="_blank">
+            <i class="fas fa-id-card"></i> ยืนยันตัวตน
+        </a>
+    </li>
+    <li class="list-group-item">
+        <a href="https://www.dropbox.com/login?cont=%2Fh" target="_blank">
+            <i class="fab fa-dropbox"></i> Dropbox
+        </a>
+    </li>
+    <li class="list-group-item">
+        <a href="https://eservice.dlt.go.th/esvapp/login.jsf?prev=L2luZGV4LmpzZg==&m=Session%20timeout" target="_blank">
+            <i class="fas fa-car"></i> ขนส่ง
+        </a>
+    </li>
+    <li class="list-group-item">
+        <a href="https://www.dedbit.com/my.php" target="_blank">
+            <i class="fas fa-coins"></i> Dedbit
+        </a>
+    </li>
+</ul>
 
                 <div class="category-title collapsed" data-bs-toggle="collapse" data-bs-target="#personal-management" aria-expanded="false">
                     <i class="fas fa-user-circle"></i> การจัดการส่วนตัว
@@ -413,20 +575,25 @@
                             <i class="fas fa-database"></i>ฐานข้อมูลเว็ป/ผังครอบครัว/ส่วนตัว 
                         </a>
                     </li>
-                    <li class="list-group-item">
+					<li class="list-group-item">
                         <a href="https://docs.google.com/spreadsheets/d/1MkkVOCB2NR7GnevKBRF-UVmZM1sbM9gy3eiyD1so_j8/edit?gid=1783086412#gid=1783086412" target="_blank">
-                            <i class="fas fa-database"></i>ฐานข้อมูลคณิตศาสตร์
+                            <i class="fas fa-database"></i> ฐานข้อมูลคณิตศาสตร์
+                        </a>
                     </li>
                 </ul>
             </div>
-        </div>
+        </div> <!-- ปิด card -->
+		
         <div class="footer">
+            <div class="status-info">
+                <span class="status-dot"></span>
+                <span id="status-text"></span>
+            </div>
             <p>สร้างและพัฒนา... นายภัทรพล ไพศาลวัชรเมธี</p>
             <p>ทันตสาธารณสุขอาวุโส</p>
             <p>ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร</p>
         </div>
-    </div>
-
+    </div> <!-- ปิด container -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
 const correctPassword = "3946";
@@ -442,6 +609,18 @@ const digitalClock = document.getElementById("digital-clock");
 function updatePinDisplay() {
     pinDisplay.textContent = "*".repeat(enteredPassword.length);
 }
+
+// Function to count categories and list items
+function updateStatus() {
+    const categoryCount = document.querySelectorAll('.category-title').length;
+    const listItemCount = document.querySelectorAll('.list-group-item').length;
+    const statusText = document.getElementById('status-text');
+
+    statusText.textContent = `มี ${categoryCount} หัวข้อหลัก และ ${listItemCount} หัวข้อย่อย`;
+}
+
+// Call the function when the page loads
+window.addEventListener('load', updateStatus);
 
 function resetKeypad() {
     enteredPassword = "";
