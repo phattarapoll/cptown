@@ -495,3 +495,11 @@ th {
 .keypad-button.clear:hover {
     background-color: #e0a800;
 }
+
+/* --- Added style for the submit leave button --- */
+.submit-button.loading {
+    background-color: var(--danger-color);
+    color: #fff;
+    cursor: wait;
+    pointer-events: none; /* Prevents multiple clicks */
+}
