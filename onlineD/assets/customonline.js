@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // กำหนด URL ของ Google Apps Script Web App ของคุณ setTimeout
     // **สำคัญมาก: เปลี่ยน YOUR_WEB_APP_URL_HERE ให้เป็น URL ที่คุณได้จากการ Deploy Code.gs**
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwCMcCKwj1a8F95OPBU6XgXt4cmzVnsWDqdaumV0OyfqoW22NK57Z7MWks01cPS-iC-_g/exec'; 
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw7wH8r9lCEgMTlIiySJfZ_vsniBCeyiaBlYtXZhIOHe34CLUfXQpT8rt36av32ZqIPOQ/exec'; 
 
     const calendarGrid = document.getElementById('calendarGrid');
     const currentMonthYearDisplay = document.getElementById('currentMonthYear');
