@@ -5,6 +5,144 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบอนุมัติวันลา</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        .modal-content {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        .password-display {
+            font-size: 24px;
+            letter-spacing: 5px;
+            color: #ffffff; /* เปลี่ยนสีข้อความรหัสผ่านเป็นสีขาว */
+            background-color: #333; /* เพิ่มพื้นหลังสีเข้ม */
+            padding: 10px;
+            border-radius: 5px;
+            min-height: 28px;
+            margin-top: 10px;
+        }
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 25px;
+        }
+        .key {
+            padding: 20px;
+            font-size: 18px;
+            background-color: #ecf0f1;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            color: black !important; /* เปลี่ยนสีข้อความปุ่มตัวเลขเป็นสีดำ */
+        }
+        .key:hover {
+            background-color: #dce1e5;
+        }
+        .key:active {
+            transform: scale(0.95);
+        }
+        .approve-button, .reject-button, .delete-key {
+            color: white !important; /* Force white text color for contrast */
+        }
+        .delete-key {
+            grid-column: span 3;
+            background-color: #e74c3c;
+        }
+        .delete-key:hover {
+            background-color: #c0392b;
+        }
+        .login-status {
+            color: #e74c3c;
+            font-weight: 500;
+            margin-top: 20px;
+        }
+        .login-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #28a745;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+        }
+        #login-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        #login-info p {
+            margin: 0;
+            font-weight: bold;
+        }
+        #logout-button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        #logout-button:hover {
+            background-color: #d32f2f;
+        }
+        #pending-requests-section {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        /* Style for the dropdown in the login popup */
+        .modal-content select {
+            background-color: #333; /* พื้นหลังสีเข้ม */
+            color: #ffffff; /* ข้อความสีขาว */
+            border: 1px solid #555;
+            padding: 8px;
+            border-radius: 5px;
+            width: 100%;
+        }
+        /* Make labels in the login popup black */
+        .modal-content label {
+            color: #333; /* ข้อความป้ายกำกับเป็นสีดำ */
+        }
+
+        /* Ensure all text in the approval modal is black */
+        #approval-modal .modal-content h2,
+        #approval-modal .modal-content p,
+        #approval-modal .modal-content strong {
+            color: black !important;
+        }
+    </style>
 </head>
 <body>
 
@@ -12,6 +150,11 @@
         <h1>ระบบอนุมัติวันลา</h1>
         <p>สำหรับผู้ดูแลระบบหรือผู้จัดการ</p>
         
+        <div id="login-info" class="card" style="display: none;">
+            <p id="login-message"></p>
+            <button id="logout-button">ออกจากระบบ</button>
+        </div>
+
         <div id="pending-requests-section" class="card">
             <h2>รายการคำขอลาที่รออนุมัติ</h2>
             <table id="pending-leave-table">
@@ -32,6 +175,36 @@
         </div>
     </div>
 
+    <div id="login-modal" class="modal">
+        <div class="modal-content-wrapper">
+            <div class="modal-content">
+                <h2>เข้าสู่ระบบผู้ดูแลระบบ</h2>
+                <div class="form-group">
+                    <label for="officer-select">เลือกชื่อผู้ดูแลระบบ:</label>
+                    <select id="officer-select"></select>
+                </div>
+                <div class="form-group">
+                    <label>รหัสผ่าน (4 หลัก):</label>
+                    <div id="password-display" class="password-display"></div>
+                </div>
+                <div id="numeric-keypad" class="keypad">
+                    <button class="key" data-key="1">1</button>
+                    <button class="key" data-key="2">2</button>
+                    <button class="key" data-key="3">3</button>
+                    <button class="key" data-key="4">4</button>
+                    <button class="key" data-key="5">5</button>
+                    <button class="key" data-key="6">6</button>
+                    <button class="key" data-key="7">7</button>
+                    <button class="key" data-key="8">8</button>
+                    <button class="key" data-key="9">9</button>
+                    <button class="key" data-key="0">0</button>
+                    <button class="key delete-key" data-key="delete">ลบ</button>
+                </div>
+                <p id="login-status" class="login-status"></p>
+            </div>
+        </div>
+    </div>
+
     <div id="approval-modal" class="modal">
         <div class="modal-content-wrapper">
             <div id="modal-content" class="modal-content">
@@ -40,5 +213,6 @@
     </div>
 
     <script src="admin_approval.js"></script>
+    <script src="login_popup.js"></script>
 </body>
 </html>

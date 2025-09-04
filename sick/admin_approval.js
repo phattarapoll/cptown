@@ -1,8 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbz4MUtWxKqdOK0qTMN3n3s-v8tUNTpwxnArjPktanjjhtOFyO_q0GRRxa7HVTxPf81xYA/exec';
+    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbzHe6eIcMBN7O1PfZvXS1LXMzgrIC5ReWDDJiznzn6v3nOH6Qjum8inWxSqype_38Bchw/exec';
     const pendingLeaveTableBody = document.querySelector('#pending-leave-table tbody');
-
-    // Elements for the new modal
     const modal = document.getElementById('approval-modal');
     const modalContent = document.getElementById('modal-content');
 
@@ -20,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ฟังก์ชันสำหรับดึงและแสดงรายการคำขอลาที่รออนุมัติ
-    async function fetchPendingRequests() {
+    window.fetchPendingRequests = async function() {
         pendingLeaveTableBody.innerHTML = '<tr><td colspan="7">กำลังโหลด...</td></tr>';
         try {
             const response = await fetch(appsScriptUrl, {
@@ -97,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
         showApprovalModal({ leaveId, name, leaveType, duration, startDate, endDate, reason, currentStatus });
     }
 
-    // ฟังก์ชันสำหรับแสดง Modal
+    // ฟังก์ชันสำหรับแสดง Modal และกำหนดสีข้อความเป็นสีดำ
     function showApprovalModal(requestData) {
         if (!modal || !modalContent) return;
 
@@ -110,13 +108,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         modalContent.innerHTML = `
-            <h2>${modalTitle}</h2>
-            <p><strong>ชื่อ:</strong> ${requestData.name}</p>
-            <p><strong>ประเภทการลา:</strong> ${requestData.leaveType}</p>
-            <p><strong>วันที่เริ่ม:</strong> ${requestData.startDate}</p>
-            <p><strong>วันที่สิ้นสุด:</strong> ${requestData.endDate}</p>
-            <p><strong>จำนวนวัน:</strong> ${requestData.duration} วัน</p>
-            <p><strong>สาเหตุ:</strong> ${requestData.reason}</p>
+            <h2 style="color: black;">${modalTitle}</h2>
+            <p style="color: black;"><strong>ชื่อ:</strong> ${requestData.name}</p>
+            <p style="color: black;"><strong>ประเภทการลา:</strong> ${requestData.leaveType}</p>
+            <p style="color: black;"><strong>วันที่เริ่ม:</strong> ${requestData.startDate}</p>
+            <p style="color: black;"><strong>วันที่สิ้นสุด:</strong> ${requestData.endDate}</p>
+            <p style="color: black;"><strong>จำนวนวัน:</strong> ${requestData.duration} วัน</p>
+            <p style="color: black;"><strong>สาเหตุ:</strong> ${requestData.reason}</p>
             <div class="modal-buttons">
                 <button id="confirm-approve-button" class="approve-button" data-leave-id="${requestData.leaveId}" data-status="${requestData.currentStatus}">${confirmButtonText}</button>
                 <button id="cancel-modal-button" class="reject-button">ยกเลิก</button>
@@ -145,12 +143,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (result.success) {
             alert(result.message);
-            fetchPendingRequests();
+            window.fetchPendingRequests();
         } else {
             alert('ไม่สามารถอนุมัติได้: ' + result.message);
         }
     }
-
 
     // ฟังก์ชันสำหรับจัดการการไม่อนุมัติ
     async function handleRejectRequest(event) {
@@ -173,12 +170,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (result.success) {
             alert(result.message);
-            fetchPendingRequests(); // โหลดข้อมูลใหม่
+            window.fetchPendingRequests();
         } else {
             alert('ไม่สามารถไม่อนุมัติได้: ' + result.message);
         }
     }
-
-    // เมื่อโหลดหน้าเว็บเสร็จ ให้ดึงรายการคำขอที่รออนุมัติมาแสดง
-    fetchPendingRequests();
 });
