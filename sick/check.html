@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			font-family: 'Kanit', sans-serif;
             background-color: #f4f7f6;
             color: #333;
         }
@@ -29,8 +29,8 @@
         .password-display {
             font-size: 24px;
             letter-spacing: 5px;
-            color: #ffffff; /* เปลี่ยนสีข้อความรหัสผ่านเป็นสีขาว */
-            background-color: #333; /* เพิ่มพื้นหลังสีเข้ม */
+            color: #ffffff;
+            background-color: #333;
             padding: 10px;
             border-radius: 5px;
             min-height: 28px;
@@ -50,7 +50,7 @@
             border-radius: 10px;
             cursor: pointer;
             transition: background-color 0.2s, transform 0.1s;
-            color: black !important; /* เปลี่ยนสีข้อความปุ่มตัวเลขเป็นสีดำ */
+            color: black !important;
         }
         .key:hover {
             background-color: #dce1e5;
@@ -59,7 +59,7 @@
             transform: scale(0.95);
         }
         .approve-button, .reject-button, .delete-key {
-            color: white !important; /* Force white text color for contrast */
+            color: white !important;
         }
         .delete-key {
             grid-column: span 3;
@@ -122,25 +122,24 @@
             background-color: #fff;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        /* Style for the dropdown in the login popup */
         .modal-content select {
-            background-color: #333; /* พื้นหลังสีเข้ม */
-            color: #ffffff; /* ข้อความสีขาว */
+            background-color: #333;
+            color: #ffffff;
             border: 1px solid #555;
             padding: 8px;
             border-radius: 5px;
             width: 100%;
         }
-        /* Make labels in the login popup black */
         .modal-content label {
-            color: #333; /* ข้อความป้ายกำกับเป็นสีดำ */
+            color: #333;
         }
-
-        /* Ensure all text in the approval modal is black */
         #approval-modal .modal-content h2,
         #approval-modal .modal-content p,
         #approval-modal .modal-content strong {
             color: black !important;
+        }
+        .subtitle {
+            color: white; /* ข้อความ "สำหรับผู้ดูแลระบบหรือผู้จัดการ" เป็นสีขาว */
         }
     </style>
 </head>
@@ -148,7 +147,7 @@
 
     <div class="container">
         <h1>ระบบอนุมัติวันลา</h1>
-        <p>สำหรับผู้ดูแลระบบหรือผู้จัดการ</p>
+        <p class="subtitle">สำหรับผู้ดูแลระบบและผู้จัดการ</p>
         
         <div id="login-info" class="card" style="display: none;">
             <p id="login-message"></p>

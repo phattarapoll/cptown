@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbzHe6eIcMBN7O1PfZvXS1LXMzgrIC5ReWDDJiznzn6v3nOH6Qjum8inWxSqype_38Bchw/exec';
+    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbyHl1Bny2wB--upeU0PBwafooNrmddwVrzLZz70r3sRUn6ep9CfCyVSJidtw-f_kEZsUw/exec';
 
     const loginModal = document.getElementById('login-modal');
     const officerSelect = document.getElementById('officer-select');
@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const pendingRequestsSection = document.getElementById('pending-requests-section');
 
     let currentPassword = '';
+    window.loggedInAdminId = null; // เพิ่มตัวแปรนี้เพื่อเก็บ ID ของผู้ดูแลระบบ
 
     // ฟังก์ชันสำหรับดึงรายชื่อผู้ดูแลระบบจาก Apps Script
     async function fetchAdmins() {
@@ -19,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch(appsScriptUrl, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                body: `action=getAdmins` // เรียกใช้ฟังก์ชันใหม่
+                body: `action=getAdmins`
             });
             const result = await response.json();
             if (result.success && result.officers.length > 0) {
@@ -79,6 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             const result = await response.json();
             if (result.success) {
+                window.loggedInAdminId = userId; // บันทึก ID ของผู้ดูแลระบบ
                 const selectedOfficerName = officerSelect.options[officerSelect.selectedIndex].text;
                 loginModal.style.display = 'none';
                 pendingRequestsSection.style.display = 'block';
@@ -109,5 +111,5 @@ document.addEventListener('DOMContentLoaded', function() {
     loginModal.style.display = 'flex';
     pendingRequestsSection.style.display = 'none';
     loginInfo.style.display = 'none';
-    fetchAdmins(); // เรียกใช้ฟังก์ชันใหม่
+    fetchAdmins();
 });

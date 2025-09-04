@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbzHe6eIcMBN7O1PfZvXS1LXMzgrIC5ReWDDJiznzn6v3nOH6Qjum8inWxSqype_38Bchw/exec';
+    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbyHl1Bny2wB--upeU0PBwafooNrmddwVrzLZz70r3sRUn6ep9CfCyVSJidtw-f_kEZsUw/exec';
     const pendingLeaveTableBody = document.querySelector('#pending-leave-table tbody');
     const modal = document.getElementById('approval-modal');
     const modalContent = document.getElementById('modal-content');
@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.style.display = 'flex';
 
         document.getElementById('confirm-approve-button').addEventListener('click', () => {
-            sendApproval(requestData.leaveId);
+            sendApproval(requestData.leaveId, window.loggedInAdminId);
         });
 
         document.getElementById('cancel-modal-button').addEventListener('click', () => {
@@ -132,12 +132,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ฟังก์ชันสำหรับส่งคำขออนุมัติจริง
-    async function sendApproval(leaveId) {
+    async function sendApproval(leaveId, approverId) { // เพิ่ม parameter approverId
         modal.style.display = 'none';
         const response = await fetch(appsScriptUrl, {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: `action=approveLeave&leaveId=${leaveId}`
+            body: `action=approveLeave&leaveId=${leaveId}&approverId=${approverId}` // ส่ง approverId ไปยัง Apps Script
         });
         const result = await response.json();
 
