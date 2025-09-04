@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // เพิ่ม event listener สำหรับปุ่มออกจากระบบ
     logoutButton.addEventListener('click', function() {
-        window.location.href = 'intro.html';
+        window.location.href = 'check.html';
     });
 
     // เริ่มต้นหน้าด้วยการแสดงป๊อปอัปและดึงรายชื่อเจ้าหน้าที่
