@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycby0DPWJl_mKhdoR3KNQ-3XeVuiZeruK663iZMn-a4dG2TNwxzXip-v7zttUgpQmkeEMzg/exec';
+    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbz4MUtWxKqdOK0qTMN3n3s-v8tUNTpwxnArjPktanjjhtOFyO_q0GRRxa7HVTxPf81xYA/exec';
 
     // Elements for different sections
     const loginContainer = document.getElementById('login-container');
