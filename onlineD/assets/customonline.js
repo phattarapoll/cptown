@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // กำหนด URL ของ Google Apps Script Web App ของคุณ
     // *** สำคัญมาก: โปรดเปลี่ยน URL ด้านล่างนี้เป็น URL ของ Google Apps Script Web App ของคุณเอง ***
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwaZj9svZdS_qLXo5465xjHfZyVwMpG58rRy5XT2Fb07azApUEt73cajLXMSpI_Z_kS/exec';
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwl3dJCAM9-WxGaUfNsUiM5T2O7IapESY3afOY3li95z3cgjoq5ZNThs4OpkWe03HluCg/exec';
 
     const calendarGrid = document.getElementById('calendarGrid');
     const currentMonthYearDisplay = document.getElementById('currentMonthYear');
