@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // *** สำคัญ: แทนที่ด้วย URL ของ Web App ที่คุณ Deploy จาก Google Apps Script ***
     // ดูวิธีการ Deploy ด้านล่างในส่วนของ Google Apps Script
-    const GOOGLE_APPS_SCRIPT_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzBKuod5FWjhYGQzBbPc2ZJ2VMBKj9_LyVRoMW1R7m_BxyzQ5rKlmtI_TgSulLOdt5e0g/exec'; // เปลี่ยนตรงนี้
+    const GOOGLE_APPS_SCRIPT_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw2P0zMxMbQXYECvSt1VbbnWJkHE15j2URkLXhn6YvjreTBEOTEtZZ_3KRBRlw1rDKK6A/exec'; // เปลี่ยนตรงนี้
 
     // ฟังก์ชันสำหรับปุ่ม "เลือก 5 ทั้งหมด"
     document.querySelectorAll('.btn-fill-5').forEach(button => {
