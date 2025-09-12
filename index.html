@@ -27,7 +27,6 @@
                     <a href="https://script.google.com/macros/s/AKfycbyGNVCUL7_F1uOXUw_2wWd9izqYzdD_MEpkJSSDzXsoCDADvS00fHX_KPP3BcsO7AVP/exec"" target="_blank">โปรแกรมตรวจสุขภาพช่องปากเบื้องต้น</a>
                     <a href="personnal.html" target="_blank">ผังบุคลากร</a>
                     <a href="sick/intro.html" target="_blank">ระบบวันลา</a>
-                    <a href="sick/check.html" target="_blank">ระบบอนุมัติวันลา</a>
                     <a href="https://script.google.com/macros/s/AKfycbyZKYH3o6v3kuW-lBCc7NgAl1BF_pCofxppFxAb4CzzX28bqHJxm3b8QGXTDDaScjAG/exec" target="_blank">ระบบหนังสือราชการ</a>
                     <a href="disease-details.html" target="_blank">ความรู้เกี่ยวกับโรค</a>
                     <a href="https://script.google.com/macros/s/AKfycbxEpBQtYHfx-6YlRrGju21xBxrREiZMFFwjove2nO6RMzABvZNKdkACYteAI0buthqdnQ/exec" target="_blank">สรุปผลความพึงพอใจ</a>
@@ -46,12 +45,43 @@
                     <a href="https://www.facebook.com/tasaban.tai" target="_blank">ศูนย์ฟอกไต ทม.ชพ.</a>
                     <a href="http://fctmc.6te.net/TARA/Tara.html" target="_blank">ศูนย์ธาราบำบัด ทม.ชพ.</a>
                     <a href="https://cpn.hdc.moph.go.th/hdc/main/index_pk.php" target="_blank">HDC</a>
-					            <button id="adminLoginBtn" onclick="window.location.href='ADM.html'">
-										<i class="fas fa-user-shield mr-2"></i>
-								</button>
-
+					 <button id="adminLoginBtn" onclick="window.location.href='ADM.html'">    </button>
                 </div>
             </div>
+			
+			<div class="relative dropdown">
+    <button id="staffDropdownBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out mt-2 md:mt-0">
+        สำหรับผู้ดูแล <i class="fas fa-caret-down ml-2"></i>
+    </button>
+    <div id="staffDropdownContent" class="dropdown-content password-input-container">
+        <div id="passwordForm">
+            <input type="password" id="passwordField" class="password-field" maxlength="4" placeholder="รหัสผ่าน" readonly>
+            <div class="keypad">
+                <button class="keypad-btn">1</button>
+                <button class="keypad-btn">2</button>
+                <button class="keypad-btn">3</button>
+                <button class="keypad-btn">4</button>
+                <button class="keypad-btn">5</button>
+                <button class="keypad-btn">6</button>
+                <button class="keypad-btn">7</button>
+                <button class="keypad-btn">8</button>
+                <button class="keypad-btn">9</button>
+                <button class="keypad-btn clear-btn">C</button>
+                <button class="keypad-btn">0</button>
+                <button class="keypad-btn backspace-btn"><i class="fas fa-backspace"></i></button>
+            </div>
+        </div>
+        <div id="staffLinks" class="hidden">
+            <a href="sick/check.html" target="_blank">อนุมัติวันลา</a>
+            <a href="https://script.google.com/macros/s/AKfycbw9Ni-VpZivC2WtNQ8rtoOYJnSwtnx5CZX06itXzzQSHsCU9dN7EpI9NQLAFpxyx9V4/exec" target="_blank">ระบบเบิก/แผนรายปี/ประวัติเบิกวัสดุ</a>
+            <a href="https://script.google.com/macros/s/AKfycbwDjPHqsSF0LH2KHW9jwS6pWkZhwKl79B0ElAiMsY0cjTiT2ziW4tK5Rx4CnbFBMnuSVg/exec" target="_blank">ระบบครุภัณฑ์</a>
+            <a href="https://phattarapoll.github.io/cptown/DCHECK" target="_blank">DENT-CHECK V.4</a>
+            <a href="https://script.google.com/macros/s/AKfycbyo4ORMjGWe4R65cNqR9VlBySKWLcfdEf-1RJUDaCtqE_6nC1koO3XDjmH0Ai28qK0Z/exec" target="_blank">บันทึกภาระงานรายวัน P4P</a>
+            <a href="ADM.html" target="_blank">ADMIN ONLY</a>
+        </div>
+    </div>
+</div>
+
             </a>
         </nav>
     </header>

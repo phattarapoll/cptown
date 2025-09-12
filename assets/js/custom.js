@@ -613,4 +613,55 @@ document.addEventListener('DOMContentLoaded', () => {
     // Make sure to replace 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE' with your actual deployed URL
     // If you don't replace it, you will see an error message.
     fetchNewsFromGoogleSheet();
+	
+	// New logic for the Staff Login button
+const staffDropdownBtn = document.getElementById('staffDropdownBtn');
+const staffDropdownContent = document.getElementById('staffDropdownContent');
+const passwordField = document.getElementById('passwordField');
+const passwordForm = document.getElementById('passwordForm');
+const staffLinks = document.getElementById('staffLinks');
+const keypadBtns = staffDropdownContent.querySelectorAll('.keypad-btn');
+const correctPassword = '3946';
+
+if (staffDropdownBtn && staffDropdownContent && passwordField && passwordForm && staffLinks && keypadBtns) {
+    staffDropdownBtn.addEventListener('click', (event) => {
+        staffDropdownContent.classList.toggle('active');
+        // Reset the display when opened again
+        passwordField.value = '';
+        passwordForm.classList.remove('hidden');
+        staffLinks.classList.add('hidden');
+        event.stopPropagation();
+    });
+
+    keypadBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const value = btn.textContent.trim();
+            if (btn.classList.contains('clear-btn')) {
+                passwordField.value = '';
+            } else if (btn.classList.contains('backspace-btn')) {
+                passwordField.value = passwordField.value.slice(0, -1);
+            } else if (passwordField.value.length < 4) {
+                passwordField.value += value;
+            }
+
+            if (passwordField.value.length === 4) {
+                if (passwordField.value === correctPassword) {
+                    passwordForm.classList.add('hidden');
+                    staffLinks.classList.remove('hidden');
+                } else {
+                    alert('รหัสผ่านไม่ถูกต้อง');
+                    passwordField.value = '';
+                }
+            }
+        });
+    });
+
+    // Prevent closing the dropdown when clicking inside the content
+    staffDropdownContent.addEventListener('click', (event) => {
+        event.stopPropagation();
+    });
+}
+
+
 });

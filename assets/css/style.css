@@ -570,3 +570,55 @@ section.glassy-section > div.lg\:w-1\/2.bg-gray-50.p-6.rounded-xl.shadow-inner.r
 .image-rotator-content img.visible {
     opacity: 1;
 }
+
+/* Password Input */
+.password-input-container {
+    padding: 1rem;
+    width: 250px;
+}
+
+.password-field {
+    width: 100%;
+    padding: 0.5rem;
+    text-align: center;
+    font-size: 1.25rem;
+    letter-spacing: 0.2rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    background-color: #f9f9f9;
+}
+
+.keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+}
+
+.keypad-btn {
+    padding: 1rem;
+    font-size: 1.25rem;
+    font-weight: bold;
+    background-color: #e2e8f0;
+    color: #4a5568;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s;
+}
+
+.keypad-btn:hover {
+    background-color: #cbd5e0;
+}
+
+.keypad-btn.clear-btn,
+.keypad-btn.backspace-btn {
+    background-color: #cbd5e0;
+}
+
+.keypad-btn.clear-btn:hover,
+.keypad-btn.backspace-btn:hover {
+    background-color: #a0aec0;
+}
+
+.hidden {
+    display: none;
+}
