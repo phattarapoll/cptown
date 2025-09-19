@@ -12,7 +12,7 @@ body {
     justify-content: center;
     align-items: flex-start;
     min-height: 100vh;
-    padding: 30px 20px;
+    padding: 20px 20px;
     box-sizing: border-box;
 }
 
@@ -21,7 +21,7 @@ body {
     width: 100%;
     margin: 0 auto;
     background-color: #ffffff;
-    padding: 50px 60px;
+    padding: 20px 30px;
     border-radius: 15px;
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
     animation: fadeIn 0.8s ease-out;
@@ -118,7 +118,7 @@ table {
 
 /* ปรับ padding สำหรับการแสดงผลบนหน้าจอปกติ */
 th, td {
-    padding: 5px 20px; /* **เปลี่ยนจาก 12px 20px เป็น 5px 20px** เพื่อให้บน-ล่าง เหลือประมาณ 5px */
+    padding: 5px 20px;
     text-align: left;
     border-bottom: 1px solid #e7ecef;
 }
@@ -215,20 +215,20 @@ tr:hover td {
     font-family: 'Playfair Display', serif;
     color: #1a2a4b;
     margin-top: 0;
-    margin-bottom: 25px;
-    font-size: 2.2em;
+    margin-bottom: 5px;
+    font-size: 1.2em;
     border-bottom: 1px dashed #a0d3f7;
-    padding-bottom: 12px;
+    padding-bottom: 3px;
 }
 
 .notes ol {
     list-style-type: decimal;
-    padding-left: 35px;
+    padding-left: 5px;
     margin-top: 0;
 }
 
 .notes li {
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     color: #555;
     font-size: 1.18em;
 }
@@ -285,8 +285,8 @@ tr:hover td {
         background-color: #fff;
         padding: 0;
         margin: 0;
-        transform: scale(0.85); /* อาจต้องลองปรับค่านี้อีก หากเนื้อหายาวมาก */
-        transform-origin: top left;
+        transform: scale(0.9);
+        transform-origin: center center;
         width: 100vw;
         overflow: hidden;
         height: auto;
@@ -299,8 +299,8 @@ tr:hover td {
     .container {
         box-shadow: none;
         border-radius: 0;
-        padding: 0;
-        margin: 0;
+        padding: 5px 0; /* เปลี่ยนตรงนี้เพื่อเพิ่มระยะห่างด้านบนและล่าง */
+        margin: 0 auto;
         width: 100%;
         max-width: none;
     }
@@ -325,10 +325,9 @@ tr:hover td {
         table-layout: fixed;
         width: 100%;
     }
-    /* ปรับ padding สำหรับการพิมพ์ให้สั้นที่สุด */
     th, td {
         border: 1px solid #ccc;
-        padding: 2px 6px; /* **เปลี่ยนจาก 3px 6px เป็น 2px 6px** เพื่อให้บน-ล่าง เหลือประมาณ 2px */
+        padding: 2px 6px;
         vertical-align: top;
     }
     th {
@@ -337,8 +336,6 @@ tr:hover td {
     td {
         font-size: 0.8em;
     }
-
-    /* ปรับความกว้างคอลัมน์สำหรับการพิมพ์โดยเฉพาะ */
     th:nth-child(1), td:nth-child(1) { width: 22%; }
     th:nth-child(2), td:nth-child(2) { width: 25%; }
     th:nth-child(3), td:nth-child(3) { width: 8%; white-space: nowrap; }
@@ -352,7 +349,6 @@ tr:hover td {
         text-align: center;
     }
     
-    /* สไตล์สำหรับส่วนหมายเหตุเมื่อพิมพ์ */
     .notes {
         display: block;
         margin-top: 15px;
@@ -397,7 +393,7 @@ tr:hover td {
     }
     /* ปรับ padding สำหรับหน้าจอทั่วไป */
     th, td {
-        padding: 8px 15px; /* ปรับลด padding สำหรับหน้าจอขนาดกลาง */
+        padding: 8px 15px;
     }
     #print-button-fixed-container {
         top: 15px;
@@ -428,7 +424,7 @@ tr:hover td {
         margin-bottom: 30px;
     }
     th, td {
-        padding: 5px 12px; /* ปรับลด padding สำหรับหน้าจอเล็ก */
+        padding: 5px 12px;
         font-size: 0.9em;
     }
     .notes {
@@ -464,6 +460,6 @@ tr:hover td {
         font-size: 1.6em;
     }
     th, td {
-        padding: 4px 8px; /* ปรับลด padding สำหรับหน้าจอเล็กสุด */
+        padding: 4px 8px;
     }
 }
