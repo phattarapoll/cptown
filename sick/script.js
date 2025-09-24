@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const floatingHistoryButton = document.getElementById('floating-history-button');
     const floatingHistoryPanel = document.getElementById('floating-history-panel');
     const closeHistoryPanelButton = document.getElementById('close-history-panel');
+    const printButton = document.getElementById('print-history-button'); // เพิ่ม element ของปุ่มพิมพ์
 
     // New modal elements
     const loginModal = document.getElementById('login-modal');
@@ -284,6 +285,25 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             alert('ไม่สามารถดึงรายชื่อเจ้าหน้าที่ได้: ' + result.message);
         }
+		document.querySelectorAll('.officer-card').forEach(card => {
+    card.addEventListener('click', function (e) {
+        const ripple = document.createElement('span');
+        ripple.classList.add('ripple');
+
+        const rect = card.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        ripple.style.width = ripple.style.height = size + 'px';
+        ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+        ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+
+        card.appendChild(ripple);
+
+        setTimeout(() => {
+            ripple.remove();
+        }, 600);
+    });
+});
+
     }
 
     // ฟังก์ชันสำหรับจัดการการคลิกที่ Officer Card
@@ -324,7 +344,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Event Listeners for floating panels and modals
     floatingHistoryButton.addEventListener('click', () => {
-        floatingHistoryPanel.classList.toggle('visible');
+        floatingHistoryPanel.classList.add('visible');
     });
 
     closeHistoryPanelButton.addEventListener('click', () => {
@@ -340,6 +360,45 @@ document.addEventListener('DOMContentLoaded', function() {
             loginModal.classList.remove('visible');
         }
     });
+    
+    // เพิ่ม Event Listener สำหรับปุ่มพิมพ์
+    if (printButton) {
+        printButton.addEventListener('click', () => {
+            // Hide the floating button before printing
+            const floatingButton = document.getElementById('floating-history-button');
+            if (floatingButton) {
+                floatingButton.style.display = 'none';
+            }
+
+            // Hide all elements on the page except the history panel
+            const elementsToHide = document.querySelectorAll('body > *:not(#floating-history-panel)');
+            elementsToHide.forEach(el => el.style.display = 'none');
+            
+            // Set the panel to be full screen for printing
+            floatingHistoryPanel.style.position = 'static';
+            floatingHistoryPanel.style.width = '100%';
+            floatingHistoryPanel.style.maxHeight = 'none';
+
+            // Use a timeout to ensure CSS changes are applied before printing
+            setTimeout(() => {
+                window.print();
+                
+                // Restore the original display of elements after printing
+                elementsToHide.forEach(el => el.style.display = '');
+                
+                // Restore the original panel styles
+                floatingHistoryPanel.style.position = '';
+                floatingHistoryPanel.style.width = '';
+                floatingHistoryPanel.style.maxHeight = '';
+                
+                // Restore the floating button's display
+                if (floatingButton) {
+                    floatingButton.style.display = '';
+                }
+            }, 500); // A short delay ensures a smoother print experience
+        });
+    }
+
 
     // Event listener for the keypad buttons
     keypadContainer.addEventListener('click', function(event) {
