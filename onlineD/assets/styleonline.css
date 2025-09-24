@@ -496,6 +496,76 @@ body {
     100% { transform: rotate(360deg); }
 }
 
+/* Custom Styles for Info Card and Bubble */
+.info-bubble {
+    background: #e63946; /* สีแดงเดิม */
+    color: white;
+    padding: 1.25rem 2.5rem; /* ปรับ padding ให้เว้นขอบ 1 เคาะ */
+    border-radius: 20px; /* ทำให้มนอย่างโดดเด่น */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    text-align: center;
+    animation: blink-soft 2s infinite ease-in-out; /* ใช้ animation ใหม่ */
+}
+
+@keyframes blink-soft {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.02); opacity: 0.85; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* ปรับแก้ CSS เดิมเพื่อให้รองรับการปรับเปลี่ยนใหม่ */
+.blinking-container, .centered-no-radius {
+    /* ลบ CSS ที่ทำให้เป็นสี่เหลี่ยมออก */
+    border-radius: 20px !important;
+    animation: none; /* ลบ animation เดิมออกเพื่อป้องกันการซ้ำซ้อน */
+}
+
+/* ลบ pseudo-element เดิมที่ไม่จำเป็นออก */
+.blinking-container::before, .centered-no-radius::before {
+    display: none;
+}
+
+.small-readable-text {
+    line-height: 1.5;
+}
+
+/* ปรับแก้ CSS เดิมเพื่อให้รองรับการปรับเปลี่ยนใหม่ */
+.blinking-container, .centered-no-radius {
+    /* ลบ CSS ที่ทำให้เป็นสี่เหลี่ยมออก */
+    border-radius: 20px !important;
+    animation: none; /* ลบ animation เดิมออกเพื่อป้องกันการซ้ำซ้อน */
+}
+
+/* ลบ pseudo-element เดิมที่ไม่จำเป็นออก */
+.blinking-container::before, .centered-no-radius::before {
+    display: none;
+}
+
+.small-readable-text {
+    line-height: 1.5;
+}
+
+/* New CSS for smaller profile picture */
+.profile-pic-small {
+    width: 64px; /* กำหนดความกว้าง */
+    height: 64px; /* กำหนดความสูง */
+    border: 3px solid #fff; /* ขอบสีขาวรอบรูป */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* ปรับเงาเล็กน้อย */
+}
+
+/* Ensure text is left-aligned within its container */
+.text-left {
+    text-align: left;
+}
+
+/* Adjust the original profile-section for proper alignment */
+.profile-section {
+    justify-content: center; /* จัดให้เนื้อหากลาง */
+    align-items: center; /* จัดให้รูปและข้อความอยู่กึ่งกลางแนวตั้ง */
+}
+
 /* Back to previous button (new addition) */
 .back-to-previous-button {
     position: absolute;
