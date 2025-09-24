@@ -614,16 +614,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // If you don't replace it, you will see an error message.
     fetchNewsFromGoogleSheet();
 	
-	// New logic for the Staff Login button
+// New logic for the Staff Login button
 const staffDropdownBtn = document.getElementById('staffDropdownBtn');
 const staffDropdownContent = document.getElementById('staffDropdownContent');
 const passwordField = document.getElementById('passwordField');
 const passwordForm = document.getElementById('passwordForm');
 const staffLinks = document.getElementById('staffLinks');
 const keypadBtns = staffDropdownContent.querySelectorAll('.keypad-btn');
+const loginButton = document.getElementById('loginButton'); // เพิ่มบรรทัดนี้
+const cancelButton = document.getElementById('cancelButton'); // เพิ่มบรรทัดนี้
 const correctPassword = '3946';
 
-if (staffDropdownBtn && staffDropdownContent && passwordField && passwordForm && staffLinks && keypadBtns) {
+if (staffDropdownBtn && staffDropdownContent && passwordField && passwordForm && staffLinks && keypadBtns && loginButton && cancelButton) {
     staffDropdownBtn.addEventListener('click', (event) => {
         staffDropdownContent.classList.toggle('active');
         // Reset the display when opened again
@@ -633,6 +635,17 @@ if (staffDropdownBtn && staffDropdownContent && passwordField && passwordForm &&
         event.stopPropagation();
     });
 
+    // ฟังก์ชันสำหรับจัดการการล็อกอิน
+    function attemptLogin() {
+        if (passwordField.value === correctPassword) {
+            passwordForm.classList.add('hidden');
+            staffLinks.classList.remove('hidden');
+        } else {
+            alert('รหัสผ่านไม่ถูกต้อง');
+            passwordField.value = '';
+        }
+    }
+
     keypadBtns.forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -641,20 +654,24 @@ if (staffDropdownBtn && staffDropdownContent && passwordField && passwordForm &&
                 passwordField.value = '';
             } else if (btn.classList.contains('backspace-btn')) {
                 passwordField.value = passwordField.value.slice(0, -1);
-            } else if (passwordField.value.length < 4) {
-                passwordField.value += value;
+            } else { // เปลี่ยนเป็น else
+            passwordField.value += value;
             }
-
-            if (passwordField.value.length === 4) {
-                if (passwordField.value === correctPassword) {
-                    passwordForm.classList.add('hidden');
-                    staffLinks.classList.remove('hidden');
-                } else {
-                    alert('รหัสผ่านไม่ถูกต้อง');
-                    passwordField.value = '';
-                }
-            }
+            // ลบโค้ดตรวจสอบความยาว 4 ตัวที่ล็อกอินอัตโนมัติออก
         });
+    });
+
+    // เพิ่ม Event Listener สำหรับปุ่ม "ตกลง"
+    loginButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        attemptLogin();
+    });
+
+    // เพิ่ม Event Listener สำหรับปุ่ม "ยกเลิก"
+    cancelButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        passwordField.value = '';
+        staffDropdownContent.classList.remove('active');
     });
 
     // Prevent closing the dropdown when clicking inside the content
