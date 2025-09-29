@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const floatingHistoryButton = document.getElementById('floating-history-button');
     const floatingHistoryPanel = document.getElementById('floating-history-panel');
     const closeHistoryPanelButton = document.getElementById('close-history-panel');
-    const printButton = document.getElementById('print-history-button'); // เพิ่ม element ของปุ่มพิมพ์
+    const printButton = document.getElementById('print-history-button');
 
     // New modal elements
     const loginModal = document.getElementById('login-modal');
@@ -56,8 +56,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Elements for leave history
     const leaveHistoryTableBody = document.querySelector('#leave-history-table tbody');
+    
+    // Elements ที่เพิ่ม/แก้ไขสำหรับตัวกรองช่วงปี
+    const historyStartYearFilter = document.getElementById('history-start-year-filter');
+    const historyEndYearFilter = document.getElementById('history-end-year-filter');
+    const applyFilterButton = document.getElementById('apply-filter-button'); 
 
     let currentUser = null;
+    let allLeaveHistory = []; // เพิ่มตัวแปรเพื่อเก็บประวัติการลาทั้งหมด
 
     // ----- ส่วนของฟังก์ชันการทำงาน -----
 
@@ -125,12 +131,91 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         return count;
     }
+    
+    // ฟังก์ชันสำหรับสร้างตัวเลือกปีในตัวกรอง (สำหรับ Start Year และ End Year)
+    function populateYearFilter(history) {
+        const years = new Set();
+        history.forEach(item => {
+            if (item.startDate) {
+                // เก็บปี ค.ศ. ของทุกการลา
+                years.add(new Date(item.startDate).getFullYear()); 
+            }
+            if (item.endDate) {
+                // เก็บปี ค.ศ. ของทุกการลา
+                years.add(new Date(item.endDate).getFullYear()); 
+            }
+        });
+
+        const sortedYears = Array.from(years).sort((a, b) => b - a); // เรียงจากมากไปน้อย (ปีล่าสุดอยู่หน้าสุด)
+
+        if (!historyStartYearFilter || !historyEndYearFilter) return;
+
+        // ล้างตัวเลือกเดิม
+        historyStartYearFilter.innerHTML = '';
+        historyEndYearFilter.innerHTML = '';
+
+        // เพิ่มปีตามข้อมูลที่มีอยู่ (ทั้ง Start และ End)
+        sortedYears.forEach(year => {
+            const phYear = year + 543; // พ.ศ.
+
+            // ตัวเลือกสำหรับปีเริ่มต้น
+            const startOption = document.createElement('option');
+            startOption.value = year;
+            startOption.textContent = phYear;
+            historyStartYearFilter.appendChild(startOption);
+
+            // ตัวเลือกสำหรับปีสิ้นสุด
+            const endOption = document.createElement('option');
+            endOption.value = year;
+            endOption.textContent = phYear;
+            historyEndYearFilter.appendChild(endOption);
+        });
+
+        // ตั้งค่าตัวเลือกเริ่มต้น: เริ่มต้นเป็นปีที่น้อยที่สุด, สิ้นสุดเป็นปีที่มากที่สุด
+        if (sortedYears.length > 0) {
+            historyStartYearFilter.value = sortedYears[sortedYears.length - 1]; // ปีที่เก่าที่สุด
+            historyEndYearFilter.value = sortedYears[0]; // ปีที่ใหม่ที่สุด
+        }
+    }
+
+    // ฟังก์ชันสำหรับกรองข้อมูลประวัติและแสดงผล
+    function filterAndRenderHistory() {
+        if (!historyStartYearFilter || !historyEndYearFilter) {
+            renderLeaveHistory(allLeaveHistory); // แสดงทั้งหมดหากตัวกรองไม่พร้อม
+            return;
+        }
+        
+        const startYear = parseInt(historyStartYearFilter.value);
+        const endYear = parseInt(historyEndYearFilter.value);
+
+        // ตรวจสอบความถูกต้องของช่วงปี
+        if (startYear > endYear) {
+            alert('ปีเริ่มต้นต้องไม่มากกว่าปีสิ้นสุด กรุณาเลือกช่วงปีใหม่');
+            return;
+        }
+
+        const filteredHistory = allLeaveHistory.filter(item => {
+            if (!item.startDate || !item.endDate) return false;
+
+            const leaveStartYear = new Date(item.startDate).getFullYear();
+            const leaveEndYear = new Date(item.endDate).getFullYear();
+
+            // เงื่อนไข: วันลาจะถูกแสดงหากช่วงปีของวันลา 'คาบเกี่ยว' กับช่วงปีที่เลือก
+            // คือ วันลาเริ่มต้นก่อน/ตรงกับปีสิ้นสุดที่เลือก AND วันลาสิ้นสุดหลัง/ตรงกับปีเริ่มต้นที่เลือก
+            return leaveStartYear <= endYear && leaveEndYear >= startYear;
+        });
+        
+        // แสดงผลลัพธ์
+        renderLeaveHistory(filteredHistory);
+    }
 
     // ฟังก์ชันสำหรับแสดงข้อมูลผู้ใช้งานบน Dashboard
     function renderDashboard(userData, leaveHistory) {
         if (!userData) return;
 
         currentUser = userData;
+        allLeaveHistory = leaveHistory; // เก็บประวัติทั้งหมดไว้
+        
         userNameElement.textContent = userData.name;
         userPositionElement.textContent = userData.position;
         userOrganizationElement.textContent = userData.organization;
@@ -147,6 +232,7 @@ document.addEventListener('DOMContentLoaded', function() {
         newWorkDurationElement.textContent = newWorkDuration;
         totalWorkDurationElement.textContent = totalWorkDuration;
 
+        // คำนวณวันลาที่ใช้ไปจาก allLeaveHistory
         const usedSickLeaveDays = leaveHistory.filter(l => l.leaveType === 'ลาป่วย' && l.status === 'อนุมัติแล้ว').reduce((sum, l) => sum + (parseInt(l.duration) || 0), 0);
         const usedPersonalLeaveDays = leaveHistory.filter(l => l.leaveType === 'ลากิจ' && l.status === 'อนุมัติแล้ว').reduce((sum, l) => sum + (parseInt(l.duration) || 0), 0);
         const usedVacationDays = leaveHistory.filter(l => l.leaveType === 'ลาพักผ่อน' && l.status === 'อนุมัติแล้ว').reduce((sum, l) => sum + (parseInt(l.duration) || 0), 0);
@@ -161,7 +247,9 @@ document.addEventListener('DOMContentLoaded', function() {
         vacationLeaveUsedElement.textContent = usedVacationDays;
         vacationLeaveRemainingElement.textContent = remainingVacationDays;
 
-        renderLeaveHistory(leaveHistory);
+        // สร้างตัวเลือกปีและแสดงผลประวัติการลาที่กรองแล้ว
+        populateYearFilter(allLeaveHistory);
+        filterAndRenderHistory(); // แสดงประวัติการลาตามปีที่ถูกตั้งค่าเริ่มต้น (ปีที่เก่าที่สุด - ปีที่ใหม่ที่สุด)
 
         // Show the main app container and hide the login container
         loginContainer.style.display = 'none';
@@ -172,6 +260,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // ฟังก์ชันสำหรับแสดงประวัติการลา
     function renderLeaveHistory(history) {
         leaveHistoryTableBody.innerHTML = '';
+        if (history.length === 0) {
+            const row = leaveHistoryTableBody.insertRow();
+            row.innerHTML = `<td colspan="6" style="text-align: center;">ไม่พบประวัติการลาในรอบปีที่เลือก</td>`;
+            return;
+        }
+
         history.forEach(item => {
             const row = leaveHistoryTableBody.insertRow();
             row.innerHTML = `
@@ -286,23 +380,23 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('ไม่สามารถดึงรายชื่อเจ้าหน้าที่ได้: ' + result.message);
         }
 		document.querySelectorAll('.officer-card').forEach(card => {
-    card.addEventListener('click', function (e) {
-        const ripple = document.createElement('span');
-        ripple.classList.add('ripple');
+            card.addEventListener('click', function (e) {
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple');
 
-        const rect = card.getBoundingClientRect();
-        const size = Math.max(rect.width, rect.height);
-        ripple.style.width = ripple.style.height = size + 'px';
-        ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
-        ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+                const rect = card.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+                ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
 
-        card.appendChild(ripple);
+                card.appendChild(ripple);
 
-        setTimeout(() => {
-            ripple.remove();
-        }, 600);
-    });
-});
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
 
     }
 
@@ -361,40 +455,69 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // เพิ่ม Event Listener สำหรับปุ่มพิมพ์
+    // Event Listener สำหรับปุ่ม "กรองตามช่วงปี"
+    if (applyFilterButton) {
+        applyFilterButton.addEventListener('click', filterAndRenderHistory);
+    }
+    // Event Listener สำหรับปุ่มพิมพ์
     if (printButton) {
         printButton.addEventListener('click', () => {
-            // Hide the floating button before printing
+            // ซ่อนปุ่ม Floating, ตัวควบคุมการกรอง และ Close Button ก่อนพิมพ์
             const floatingButton = document.getElementById('floating-history-button');
-            if (floatingButton) {
-                floatingButton.style.display = 'none';
-            }
+            const panelHeader = document.querySelector('#floating-history-panel .floating-panel-header');
 
-            // Hide all elements on the page except the history panel
+            // ซ่อนปุ่มและตัวควบคุมที่ไม่ต้องการให้ปรากฏในการพิมพ์
+            if (floatingButton) floatingButton.style.display = 'none';
+            if (panelHeader) {
+                // ซ่อนส่วนของ Filter และ Action ที่ไม่ต้องการให้พิมพ์
+                const closeBtn = panelHeader.querySelector('.floating-panel-close');
+                if (closeBtn) closeBtn.style.display = 'none';
+                
+                // ซ่อนส่วนของปุ่มกรองทั้งหมดและปุ่มพิมพ์ (เพื่อให้เหลือแค่หัวข้อกับตาราง)
+                const filterControls = panelHeader.querySelector('.filter-controls');
+                const printBtn = document.getElementById('print-history-button');
+                if (filterControls) filterControls.style.display = 'none';
+                if (printBtn) printBtn.style.display = 'none'; // ซ่อนปุ่มพิมพ์ตัวมันเอง
+
+            }
+            
+            // ซ่อนทุกองค์ประกอบยกเว้นพาเนลประวัติ
             const elementsToHide = document.querySelectorAll('body > *:not(#floating-history-panel)');
             elementsToHide.forEach(el => el.style.display = 'none');
             
-            // Set the panel to be full screen for printing
+            // ตั้งค่าพาเนลให้เต็มจอสำหรับการพิมพ์
             floatingHistoryPanel.style.position = 'static';
             floatingHistoryPanel.style.width = '100%';
             floatingHistoryPanel.style.maxHeight = 'none';
+            floatingHistoryPanel.style.boxShadow = 'none'; // เอาเงาออก
 
-            // Use a timeout to ensure CSS changes are applied before printing
+            // ใช้ timeout เพื่อให้มั่นใจว่า CSS ถูกนำไปใช้ก่อนพิมพ์
             setTimeout(() => {
                 window.print();
                 
-                // Restore the original display of elements after printing
+                // กู้คืนการแสดงผลเดิมหลังพิมพ์
                 elementsToHide.forEach(el => el.style.display = '');
                 
-                // Restore the original panel styles
+                // กู้คืนสไตล์พาเนลเดิม
                 floatingHistoryPanel.style.position = '';
                 floatingHistoryPanel.style.width = '';
                 floatingHistoryPanel.style.maxHeight = '';
-                
-                // Restore the floating button's display
-                if (floatingButton) {
-                    floatingButton.style.display = '';
+                floatingHistoryPanel.style.boxShadow = ''; // กู้คืนเงา
+
+                // กู้คืนการแสดงผลของปุ่ม Floating
+                if (floatingButton) floatingButton.style.display = '';
+
+                // กู้คืนการแสดงผลของ Action ต่างๆ ใน Header
+                if (panelHeader) {
+                    const closeBtn = panelHeader.querySelector('.floating-panel-close');
+                    if (closeBtn) closeBtn.style.display = '';
+                    
+                    const filterControls = panelHeader.querySelector('.filter-controls');
+                    const printBtn = document.getElementById('print-history-button');
+                    if (filterControls) filterControls.style.display = '';
+                    if (printBtn) printBtn.style.display = ''; // กู้คืนปุ่มพิมพ์
                 }
+
             }, 500); // A short delay ensures a smoother print experience
         });
     }
