@@ -604,6 +604,136 @@ body {
     line-height: 1.5;
 }
 
+ /* CSS สำหรับการกระพริบเบาๆ ของพื้นหลังเท่านั้น */
+    @keyframes blink-background {
+        0% { background-color: rgba(220, 38, 38, 1); } /* แดงเข้มเต็มที่ */
+        50% { background-color: rgba(220, 38, 38, 0.7); } /* แดงจางลงเล็กน้อย */
+        100% { background-color: rgba(220, 38, 38, 1); }
+    }
+
+    .blinking-container {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .blinking-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgb(220, 38, 38); /* สีแดงเริ่มต้น (bg-red-600) */
+        border-radius: 9999px; 
+        z-index: -1;
+        animation: blink-background 2s infinite ease-in-out;
+    }
+
+    /* New CSS for centering and sharp corners */
+    .centered-no-radius {
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 0; /* Ensures sharp corners */
+    }
+
+    /* Override the before pseudo-element for sharp corners as well */
+    .centered-no-radius::before {
+        border-radius: 0 !important; /* Important to override the more specific rule */
+    }
+
+    /* ปรับขนาดตัวอักษรสำหรับข้อความนี้ */
+    .small-readable-text {
+        font-size: 0.85rem;
+        line-height: 1.3;
+    }
+
+    /* ปฏิทิน: พื้นหลังสีม่วงอ่อน */
+    .calendar-grid-container {
+        background-color: #E6E6FA; /* Lavender - ม่วงอ่อน */
+        border-radius: 10px; /* เพิ่มมนมุมเล็กน้อย */
+        padding: 10px; /* เพิ่ม padding ให้ดูโปร่งขึ้น */
+    }
+
+    /* วันในสัปดาห์ (จันทร์-อาทิตย์) */
+    .day-names div {
+        font-weight: bold;
+        color: #555;
+        text-align: center;
+        padding: 8px 0;
+    }
+    
+    /* วันเสาร์และอาทิตย์ (พื้นหลังสีเทา) */
+    .day-names div:nth-child(1), /* อาทิตย์ */
+    .day-names div:nth-child(7), /* เสาร์ */
+    .calendar-grid .day.day-weekend { /* สำหรับวันที่ใน grid */
+        background-color: #696969; /* สีดำอ่อน */
+        border-radius: 5px; /* ทำให้มุมมนเล็กน้อย */
+    }
+
+    /* ปรับปรุงช่องวันในปฏิทิน */
+    .calendar-grid .day {
+        padding: 15px 5px; /* เพิ่ม padding ให้ช่องกว้างขึ้น */
+        border-radius: 8px; /* ทำให้มุมมนสวยงาม */
+        transition: background-color 0.3s ease; /* เพิ่ม transition ให้ดูนุ่มนวลเวลา hover/active */
+        margin: 2px; /* เพิ่มระยะห่างระหว่างช่อง */
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* เพิ่มเงาเล็กน้อย */
+        background-color: #FFF; /* ให้วันธรรมดามีพื้นหลังสีขาว */
+        cursor: pointer;
+    }
+
+    /* เมื่อเลื่อนเมาส์ไปบนวัน */
+    .calendar-grid .day:hover:not(.day-empty):not(.day-selected) {
+        background-color: #DDA0DD; /* สีม่วงกลางเมื่อ hover */
+    }
+
+    /* วันที่ถูกเลือก */
+    .calendar-grid .day.day-selected {
+        background-color: #BA55D3; /* สีม่วงเข้มเมื่อถูกเลือก */
+        color: white;
+        font-weight: bold;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    /* --- CSS สำหรับการกระพริบเมื่อผิดนัด (No-Show Warning) --- */
+    @keyframes blink-yellow {
+        0%, 100% { background-color: #FFFACD; } /* Lemon Chiffon (สีเหลืองอ่อน) */
+        50% { background-color: #FFD700; } /* Gold (สีเหลืองเข้ม) */
+    }
+
+    @keyframes blink-orange {
+        0%, 100% { background-color: #FFDAB9; } /* Peach Puff (สีส้มอ่อน) */
+        50% { background-color: #FFA500; } /* Orange (สีส้มเข้ม) */
+    }
+
+    @keyframes blink-red {
+        0%, 100% { background-color: #F08080; } /* Light Coral (สีแดงอ่อน) */
+        50% { background-color: #DC143C; } /* Crimson (สีแดงเข้ม) */
+    }
+
+    .time-slot.blink-yellow {
+        animation: blink-yellow 1.5s infinite;
+    }
+
+    .time-slot.blink-orange {
+        animation: blink-orange 1s infinite;
+    }
+
+    .time-slot.blink-red {
+        animation: blink-red 0.5s infinite; /* กระพริบเร็วขึ้นเพื่อเตือน */
+    }
+
+    .time-slot.unavailable-slot {
+        pointer-events: none; /* เพื่อให้แน่ใจว่าคลิกไม่ได้ */
+    }
+
+    .time-slot .no-show-count-text {
+        display: block;
+        font-size: 0.75em;
+        font-weight: bold;
+        color: #333; /* สีตัวอักษรให้อ่านง่าย */
+        margin-top: 2px;
+    }
+
 /* Utility Classes */
 .hidden {
     display: none !important;

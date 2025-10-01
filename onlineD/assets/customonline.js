@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // กำหนด URL ของ Google Apps Script Web App ของคุณ
     // *** สำคัญมาก: โปรดเปลี่ยน URL ด้านล่างนี้เป็น URL ของ Google Apps Script Web App ของคุณเอง ***
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxcDeIV22HphBl7Srn-dp4h244IvxABznVR7o3j0jD74zX3FZAyYacVGDARSz6EFVvDXA/exec';
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxMdWfiovLFpb0aDCY0fsuREQFgKcbacZFq7LdoZoK_QdPiN8ic7Caomf4x_4c8k6jzng/exec';
 
     const calendarGrid = document.getElementById('calendarGrid');
     const currentMonthYearDisplay = document.getElementById('currentMonthYear');
@@ -33,6 +33,60 @@ document.addEventListener('DOMContentLoaded', () => {
         holidayNames: []
     };
     let bookingData = {};
+    let noShowCount = {}; 
+
+    // --- ฟังก์ชันสำหรับซ่อนนามสกุลบางส่วน (Masking) ---
+    function maskFullName(fullName) {
+        if (!fullName || typeof fullName !== 'string') return '';
+        
+        const parts = fullName.trim().split(/\s+/).filter(p => p.length > 0);
+        
+        // ถ้ามีแค่ชื่อเดียว (หรือไม่มีนามสกุล) ก็แสดงชื่อเต็ม
+        if (parts.length <= 1) {
+            return fullName.trim(); 
+        }
+
+        const firstNameParts = parts.slice(0, -1);
+        const lastNamePart = parts[parts.length - 1];
+
+        // ถ้าพยัญชนะตัวแรกของนามสกุลเป็นตัวอักษรเดียว ก็แสดงตัวนั้นไปเลย
+        if (lastNamePart.length <= 1) {
+            return `${firstNameParts.join(' ')} ${lastNamePart}`;
+        }
+
+        // เก็บพยัญชนะตัวแรกของนามสกุล และแทนที่ส่วนที่เหลือด้วย ***
+        const maskedLastName = `${lastNamePart.charAt(0)}***`;
+        
+        return `${firstNameParts.join(' ')} ${maskedLastName}`;
+    }
+    // -----------------------------------------------------------------------------------
+    
+    // --- ฟังก์ชัน: ตรวจสอบ No-Show โดยใช้การค้นหาชื่อแบบบางส่วน (Partial Match) ---
+    function getNoShowCountByPartialName(currentName, noShowCountMap) {
+        if (!currentName || currentName.length < 3) return 0; 
+
+        const normalizedCurrentName = currentName.trim().toLowerCase();
+        let maxCount = 0;
+        
+        for (const key in noShowCountMap) {
+            if (noShowCountMap.hasOwnProperty(key)) {
+                const normalizedKey = key.trim().toLowerCase();
+                
+                // ตรวจสอบว่าชื่อสั้นกว่า (ไม่ว่าจะเป็น key หรือ currentName) อยู่ในชื่อที่ยาวกว่าหรือไม่
+                const [name1, name2] = [normalizedCurrentName, normalizedKey].sort((a, b) => a.length - b.length);
+                
+                if (name2.includes(name1) && name1.length > 2) { 
+                    if (noShowCountMap[key] > maxCount) {
+                        maxCount = noShowCountMap[key];
+                    }
+                }
+            }
+        }
+        
+        return maxCount;
+    }
+    // -----------------------------------------------------------------------------------
+
 
     async function fetchData() {
         try {
@@ -47,18 +101,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await response.json();
 
-            if (!data || !data.config || !data.bookings) {
+            if (!data || !data.config || !data.bookings || !data.noShowCount) {
                 throw new Error("โครงสร้างข้อมูลที่ได้รับจากเซิร์ฟเวอร์ไม่ถูกต้อง");
             }
             
             configData = data.config;
             bookingData = data.bookings;
+            noShowCount = data.noShowCount;
+            
             if (!Array.isArray(configData.timeSlots)) {
-                console.warn("configData.timeSlots ไม่ใช่ Array หรือเป็น undefined, กำหนดค่าเริ่มต้นเป็น Array ว่าง");
                 configData.timeSlots = [];
             }
-            console.log('Config Data:', configData);
-            console.log('Booking Data:', bookingData);
+            
             renderCalendar(currentMonth, currentYear);
             formMessage.textContent = '';
         } catch (error) {
@@ -97,11 +151,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const dayOfWeek = date.getDay();
 
             const dayDiv = document.createElement('div');
-            dayDiv.classList.add('calendar-day');
+            dayDiv.classList.add('calendar-day', 'day');
             dayDiv.innerHTML = `<span class="day-number">${day}</span>`;
 
             if (date.getTime() === today.getTime()) {
                 dayDiv.classList.add('current-day');
+            }
+            
+            if (dayOfWeek === 0 || dayOfWeek === 6) { 
+                dayDiv.classList.add('day-weekend');
             }
 
             let isUnavailable = false;
@@ -130,8 +188,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         tooltipReason = specificHolidayName;
                     } else {
                         if (!configData.unavailableWeekdays.includes(dayOfWeek)) {
-                            displayReason = '';
-                            tooltipReason = '';
+                            displayReason = 'ปิดทำการ';
+                            tooltipReason = 'ปิดทำการ';
                         }
                     }
                 }
@@ -163,12 +221,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     slotCountSpan.classList.add('full');
                     slotCountSpan.textContent = `เต็ม ${availableSlots}/${totalSlots}`;
-                    dayDiv.classList.add('unavailable');
-                    dayDiv.title = 'คิวเต็ม';
+                    dayDiv.title = 'คิวเต็ม (คลิกเพื่อดูรายละเอียด)';
                 }
                 dayDiv.appendChild(slotCountSpan);
 
-                if (availableSlots > 0 && totalSlots > 0) {
+                if (totalSlots > 0 && !isUnavailable) {
                     dayDiv.addEventListener('click', () => showTimeSlots(date));
                 } else {
                     dayDiv.classList.add('disabled');
@@ -181,14 +238,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getAvailableSlotsCount(dateString) {
         if (!configData.timeSlots || configData.timeSlots.length === 0) {
-            console.warn("Time slots are not configured or empty.");
             return 0;
         }
 
         let availableCount = configData.timeSlots.length;
         if (bookingData[dateString]) {
             for (const slot of configData.timeSlots) {
-                if (bookingData[dateString][slot] && bookingData[dateString][slot] > 0) {
+                if (bookingData[dateString][slot] && bookingData[dateString][slot].count && bookingData[dateString][slot].count > 0) {
                     availableCount--;
                 }
             }
@@ -211,14 +267,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const dayOfWeek = date.getDay();
         const dayOfMonth = date.getDate();
 
-        if (dayOfWeek === 5) {
+        if (dayOfWeek === 5) { // วันศุกร์
             const fridayWarning = document.createElement('div');
             fridayWarning.classList.add('blinking-message');
             fridayWarning.innerHTML = 'ให้บริการเฉพาะกลุ่ม 60 ปีขึ้นไป';
             selectedDateDisplay.insertAdjacentElement('afterend', fridayWarning);
         }
 
-        if (dayOfWeek === 2 && dayOfMonth >= 8 && dayOfMonth <= 14) {
+        if (dayOfWeek === 2 && dayOfMonth >= 8 && dayOfMonth <= 14) { // วันอังคาร ระหว่างวันที่ 8 ถึง 14
             const tuesdayWarning = document.createElement('div');
             tuesdayWarning.classList.add('blinking-message');
             tuesdayWarning.innerHTML = 'เฉพาะกลุ่มคลินิกเด็กดี';
@@ -234,8 +290,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 timeSlotDiv.textContent = slot;
 
                 let isSlotBooked = false;
-                if (bookingData[dateString] && bookingData[dateString][slot] && bookingData[dateString][slot] > 0) {
-                    isSlotBooked = true;
+                let userFullName = '';
+                
+                if (bookingData[dateString] && bookingData[dateString][slot]) {
+                    if (bookingData[dateString][slot].count && bookingData[dateString][slot].count > 0) {
+                        isSlotBooked = true;
+                        userFullName = bookingData[dateString][slot].fullName;
+                    }
                 }
 
                 let isPastTime = false;
@@ -250,6 +311,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (isSlotBooked || isPastTime) {
                     timeSlotDiv.classList.add('unavailable-slot');
                     timeSlotDiv.title = isSlotBooked ? 'ช่วงเวลานี้ถูกจองแล้ว' : 'ช่วงเวลานี้ผ่านไปแล้ว';
+
+                    if (isSlotBooked) {
+                        // *** ใช้ฟังก์ชัน maskFullName เพื่อซ่อนนามสกุลบางส่วน ***
+                        timeSlotDiv.textContent = maskFullName(userFullName); 
+                        
+                        if (userFullName) {
+                            const noShowCountForUser = getNoShowCountByPartialName(userFullName, noShowCount); 
+                            
+                            if (noShowCountForUser > 0) {
+                                timeSlotDiv.classList.add('no-show-warning'); 
+                                
+                                if (noShowCountForUser === 1) {
+                                    timeSlotDiv.classList.add('blink-yellow');
+                                } else if (noShowCountForUser === 2) {
+                                    timeSlotDiv.classList.add('blink-orange');
+                                } else if (noShowCountForUser >= 3) {
+                                    timeSlotDiv.classList.add('blink-red');
+                                }
+                                
+                                timeSlotDiv.title += ` (ผู้จองมีประวัติผิดนัด ${noShowCountForUser} ครั้ง! ควรติดต่อเจ้าหน้าที่)`;
+                                timeSlotDiv.innerHTML += `<small class="no-show-count-text">ผิดนัด ${noShowCountForUser} ครั้ง</small>`;
+                            } else {
+                                timeSlotDiv.title += ` (ผู้จอง: ${userFullName})`;
+                            }
+                        }
+                    } else if (isPastTime) {
+                         // หากเป็นเวลาที่ผ่านไปแล้ว ให้คงข้อความเวลาไว้
+                    }
+
                     timeSlotDiv.style.cursor = 'not-allowed';
                 } else {
                     timeSlotDiv.addEventListener('click', () => openBookingPopup(date, slot));
@@ -262,15 +352,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function openBookingPopup(date, slot) {
-        console.log('openBookingPopup ถูกเรียกใช้งานสำหรับวันที่:', date, 'ช่วงเวลา:', slot);
+        const fullNameInput = document.getElementById('fullName');
+        const currentFullName = fullNameInput.value.trim();
+
+        if (currentFullName) {
+            const noShowCountForUser = getNoShowCountByPartialName(currentFullName, noShowCount);
+            
+            if (noShowCountForUser >= 3) {
+                const maxNoShowWarning = document.createElement('div');
+                maxNoShowWarning.classList.add('blinking-message', 'blink-red', 'centered-no-radius');
+                maxNoShowWarning.innerHTML = `⚠️ **ไม่สามารถจองได้** ⚠️<br>เนื่องจากมีประวัติผิดนัดบริการ **${noShowCountForUser} ครั้ง** (เกิน 3 ครั้ง)<br><small>กรุณาติดต่อเจ้าหน้าที่เพื่อดำเนินการ</small>`;
+                
+                document.querySelectorAll('.blinking-message').forEach(msg => msg.remove());
+
+                timeSlotDetails.querySelector('h2').insertAdjacentElement('afterend', maxNoShowWarning);
+                return; 
+            }
+        }
+
         selectedTimeSlot = slot;
         popupDate.textContent = formatDateThai(date);
         popupTimeSlot.textContent = slot;
         formMessage.textContent = '';
         formMessage.className = 'form-message';
-        document.getElementById('fullName').value = '';
-        document.getElementById('telNumber').value = '';
-        document.getElementById('bookingReason').value = '';
+        document.getElementById('bookingReason').value = ''; 
         bookingPopup.classList.remove('hidden');
         timeSlotDetails.classList.add('hidden');
 
@@ -286,6 +391,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const telNumber = document.getElementById('telNumber').value.trim();
         const bookingReason = document.getElementById('bookingReason').value.trim();
         const bookingDate = formatDateForComparison(selectedDate);
+
+        const noShowCountForUser = getNoShowCountByPartialName(fullName, noShowCount);
+        if (noShowCountForUser >= 3) {
+            loadingSpinner.classList.add('hidden');
+            formMessage.textContent = `❌ ไม่สามารถจองได้: คุณมีประวัติผิดนัด ${noShowCountForUser} ครั้ง (เกิน 3 ครั้ง)`;
+            formMessage.className = 'form-message error';
+            bookingPopup.classList.remove('hidden');
+            bookingPopup.classList.add('is-active');
+            return;
+        }
 
         if (!fullName) {
             formMessage.textContent = 'กรุณาป้อนชื่อ-นามสกุล';
@@ -342,7 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.querySelector('.calendar-wrapper').classList.remove('hidden');
                     selectedDate = null;
                     selectedTimeSlot = null;
-                    fetchData();
+                    fetchData(); // โหลดข้อมูลใหม่เพื่อให้แสดงสถานะล่าสุด
                 }, 4000);
             } else {
                 loadingSpinner.classList.add('hidden');

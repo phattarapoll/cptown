@@ -1,6 +1,6 @@
 // กำหนด ID ของ Google Sheet และ Google Calendar ของคุณ
-const SPREADSHEET_ID = '1H52HRx2loIpta5tLpLy7UWHQF2UDbvG-XTQ30mxJFoY'; // **ตรวจสอบว่า ID นี้ถูกต้อง**
-const CALENDAR_ID = '0afed3760ac3168dd3e2bdc8d3f9c2fe21abaf0f7128f5cd3b2259bc458f7b2d@group.calendar.google.com'; // **ตรวจสอบว่า ID นี้ถูกต้อง**
+const SPREADSHEET_ID = '1H52HRx2loIpta5tLpLy7UWHQF2UDbvG-XTQ30mxJFoY';
+const CALENDAR_ID = '0afed3760ac3168dd3e2bdc8d3f9c2fe21abaf0f7128f5cd3b2259bc458f7b2d@group.calendar.google.com';
 
 function doGet(e) {
   try {
@@ -13,28 +13,22 @@ function doGet(e) {
     }
 
     // --- ดึงข้อมูล Config ---
-    // ดึงข้อมูลทั้งหมดในครั้งเดียวเพื่อรับประกันว่า array จะมีขนาดเท่ากัน
     const configDataRaw = configSheet.getRange('A9:D').getValues();
     
-    // สร้าง array ที่จะใช้ส่งไปหา client
     const unavailableDates = [];
     const holidayNames = [];
 
-    // วน loop เพื่อจัดข้อมูลให้เป็นระเบียบและกรองค่าที่ว่างออก
     configDataRaw.forEach(row => {
       const date = row[0]; // คอลัมน์ A
       const holidayName = row[3]; // คอลัมน์ D
-
       if (date) {
         unavailableDates.push(Utilities.formatDate(new Date(date), Session.getScriptTimeZone(), 'yyyy-MM-dd'));
-        // ตรวจสอบให้แน่ใจว่ามีชื่อวันหยุด
         holidayNames.push(holidayName ? String(holidayName).trim() : '');
       }
     });
 
     const unavailableWeekdays = configSheet.getRange('B2:B8').getValues().flat().filter(String).map(Number);
     
-    // ตั้งค่าช่วงเวลาให้เป็นไปตามที่ลูกค้ากำหนด
     const timeSlots = ["08:30-09:30", "09:30-10:30", "10:30-11:00", "11:00-11:30"];
     
     const config = {
@@ -89,6 +83,7 @@ function doGet(e) {
 function doPost(e) {
   try {
     const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const configSheet = ss.getSheetByName('config'); // สมมติว่ามี sheet ชื่อ 'config' สำหรับวันหยุด
     const bookingSheet = ss.getSheetByName('Booking');
     const calendar = CalendarApp.getCalendarById(CALENDAR_ID);
 
@@ -105,14 +100,83 @@ function doPost(e) {
       throw new Error('Missing required booking data.');
     }
 
-    // แปลง bookingDate จาก string เป็น Date object
+    // --- ส่วนที่แก้ไข ---
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const bookingDateObject = new Date(bookingDate);
+    bookingDateObject.setHours(0, 0, 0, 0);
+
+    // ดึงวันหยุดและวันหยุดสุดสัปดาห์จาก Sheet 'config' (ถ้ามี)
+    let unavailableDates = [];
+    if (configSheet) {
+      const configDataRaw = configSheet.getRange('A9:A').getValues(); // สมมติว่าคอลัมน์ A มีวันหยุด
+      unavailableDates = configDataRaw.map(row => {
+        const date = row[0];
+        if (date instanceof Date) {
+          return Utilities.formatDate(date, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+        }
+        return null; // จัดการกรณีที่ข้อมูลในเซลล์ไม่ใช่ Date
+      }).filter(date => date !== null); // กรองค่า null ออก
+    }
+    
+    let remainingDays = 32; // จำนวนวันที่ต้องการให้จองล่วงหน้า (รวมเสาร์-อาทิตย์)
+    let currentDate = new Date(today);
+    currentDate.setHours(0, 0, 0, 0);
+    
+    let calculatedDays = 0;
+    while (calculatedDays < remainingDays && currentDate <= bookingDateObject) {
+        const dayOfWeek = currentDate.getDay(); // 0 = อาทิตย์, 1 = จันทร์, ..., 6 = เสาร์
+        const formattedDate = Utilities.formatDate(currentDate, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+
+        // ตรวจสอบว่าเป็นวันเสาร์-อาทิตย์ หรือ วันหยุดที่กำหนดไว้
+        if (dayOfWeek !== 0 && dayOfWeek !== 6 && !unavailableDates.includes(formattedDate)) {
+            calculatedDays++;
+        }
+        
+        // เลื่อนไปยังวันถัดไป
+        currentDate.setDate(currentDate.getDate() + 1);
+
+        // เพื่อป้องกัน Loop ไม่มีที่สิ้นสุด (เผื่อวันหยุดเยอะมาก)
+        if (calculatedDays > 40) { 
+            break; 
+        }
+    }
+
+    // หากจำนวนวันที่คำนวณได้น้อยกว่า 32 วัน (ไม่รวมวันหยุด/เสาร์-อาทิตย์) และวันที่จองเลย 32 วันทำการที่เหลือไปแล้ว
+    // หรือ หากวันที่ที่เลือกมาเกิน 32 วันทำการนับจากวันถัดไป
+    // เราจะใช้ค่า dayDiff ใหม่เพื่อเปรียบเทียบ
+    const daysDifference = Math.round((bookingDateObject.getTime() - today.getTime()) / (1000 * 3600 * 24)); // คำนวณวันแบบปกติ
+
+    // ตรวจสอบว่าวันที่จองล่วงหน้าเกิน 32 วันทำการ (รวมเสาร์-อาทิตย์) หรือไม่
+    // โดยการนับวันจริงที่เหลือถึงวันที่จอง
+    let daysCounter = 0;
+    let checkDate = new Date(today);
+    checkDate.setDate(checkDate.getDate() + 1); // เริ่มนับจากวันถัดไป
+    
+    while(checkDate <= bookingDateObject) {
+      const dayOfWeek = checkDate.getDay();
+      const formattedDate = Utilities.formatDate(checkDate, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+      
+      if (dayOfWeek !== 0 && dayOfWeek !== 6 && !unavailableDates.includes(formattedDate)) {
+        daysCounter++;
+      }
+      checkDate.setDate(checkDate.getDate() + 1);
+      // เพิ่มการป้องกัน loop
+      if (daysCounter > 40) break; 
+    }
+    
+    if (daysCounter > 32) { // ถ้าจำนวนวันทำการที่นับได้เกิน 32 วัน
+      return ContentService.createTextOutput('Error: ไม่สามารถจองล่วงหน้าเกิน 32 วันทำการได้');
+    }
+    // --- สิ้นสุดส่วนที่แก้ไข ---
+
+    // ... โค้ดส่วนที่เหลือ (การสร้าง Event และการ append Row) ...
     const dateParts = bookingDate.split('-');
     const dateObject = new Date(Number(dateParts[0]), Number(dateParts[1]) - 1, Number(dateParts[2]));
-
-    // แปลง timeSlot เป็นเวลาเริ่ม-สิ้นสุด
-    const [startStr, endStr] = timeSlot.split(' - ')[0].split(':').map(Number);
-    const [startHour, startMinute] = startStr.split(' ')[0].split(':').map(Number);
-    const [endHour, endMinute] = endStr.split(' ')[0].split(':').map(Number);
+    
+    const [timeStart, timeEnd] = timeSlot.split('-');
+    const [startHour, startMinute] = timeStart.split(':').map(Number);
+    const [endHour, endMinute] = timeEnd.split(':').map(Number);
 
     const startDateTime = new Date(dateObject);
     startDateTime.setHours(startHour, startMinute, 0);
@@ -120,30 +184,35 @@ function doPost(e) {
     const endDateTime = new Date(dateObject);
     endDateTime.setHours(endHour, endMinute, 0);
 
-    // ✨ บันทึกลง Google Sheet
     bookingSheet.appendRow([
-      new Date(),       // A: Timestamp
-      fullName,         // B: ชื่อ
-      telNumber,        // C: เบอร์
-      dateObject,       // D: วันที่จอง
-      timeSlot,         // E: ช่วงเวลา
-      bookingReason     // F: อาการ
+      new Date(),
+      fullName,
+      telNumber,
+      dateObject,
+      timeSlot,
+      bookingReason
     ]);
 
-    // ✨ บันทึกลง Google Calendar
     calendar.createEvent(
-      `${fullName} (${bookingReason})`, // หัวเรื่อง
+      `${fullName} (${bookingReason})`, 
       startDateTime,
       endDateTime,
       {
         description: `เบอร์โทร: ${telNumber}`,
-        guests: `mailto:${fullName}@example.com`,
         sendInvites: false,
-        location: 'สถานพยาบาล',
-        // ตั้งค่าให้ Event เป็นสีที่ต้องการ
+        location: 'ตึกเก่า ทม.ชพ.',
         colorId: CalendarApp.EventColor.PALE_GREEN,
       }
     );
+
+    // --- ส่วนของการส่งข้อความ LINE (ยังคงเหมือนเดิม) ---
+    sendBookingCardToLine({
+      fullName: fullName,
+      telNumber: telNumber,
+      bookingDate: bookingDate,
+      timeSlot: timeSlot,
+      bookingReason: bookingReason
+    });
 
     return ContentService.createTextOutput('Booking successful!');
 
