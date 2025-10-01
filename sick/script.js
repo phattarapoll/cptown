@@ -132,6 +132,50 @@ document.addEventListener('DOMContentLoaded', function() {
         return count;
     }
     
+    // *** เริ่มส่วนของฟังก์ชันที่เพิ่ม/แก้ไขสำหรับปีงบประมาณ ***
+
+    // ฟังก์ชันใหม่: คำนวณช่วงปีงบประมาณปัจจุบัน (ต.ค. - ก.ย.)
+    function getCurrentFiscalYearDates() {
+        const today = new Date();
+        let startYear, endYear;
+
+        // ปีงบประมาณเริ่ม 1 ตุลาคม (เดือน 9)
+        if (today.getMonth() >= 9) { // เดือน 9 คือ ตุลาคม (0=ม.ค., 9=ต.ค.)
+            startYear = today.getFullYear(); // ต.ค. ปีปัจจุบัน
+            endYear = today.getFullYear() + 1; // ก.ย. ปีหน้า
+        } else {
+            startYear = today.getFullYear() - 1; // ต.ค. ปีที่แล้ว
+            endYear = today.getFullYear(); // ก.ย. ปีปัจจุบัน
+        }
+
+        // วันที่เริ่มต้น: 1 ตุลาคม ของปีเริ่มต้น
+        const startDate = new Date(startYear, 9, 1); // 9 = ตุลาคม
+
+        // วันที่สิ้นสุด: 30 กันยายน ของปีสิ้นสุด
+        const endDate = new Date(endYear, 8, 30); // 8 = กันยายน
+        
+        // แปลงเป็น ISO String เพื่อความเข้ากันได้กับข้อมูลอื่น ๆ
+        const startISODate = startDate.toISOString().split('T')[0];
+        const endISODate = endDate.toISOString().split('T')[0];
+
+        return { start: startISODate, end: endISODate };
+    }
+
+    // ฟังก์ชันสำหรับตรวจสอบว่าวันลาคาบเกี่ยวกับช่วงปีงบประมาณที่กำหนดหรือไม่
+    function isLeaveInFiscalYear(leaveItem, fiscalYearStart, fiscalYearEnd) {
+        if (!leaveItem.startDate || !leaveItem.endDate) return false;
+
+        const leaveStart = new Date(leaveItem.startDate);
+        const leaveEnd = new Date(leaveItem.endDate);
+        const fiscalStart = new Date(fiscalYearStart);
+        const fiscalEnd = new Date(fiscalYearEnd);
+        
+        // เงื่อนไข: วันลาเริ่มต้นก่อน/ตรงกับวันสิ้นสุดงบประมาณ AND วันลาสิ้นสุดหลัง/ตรงกับวันเริ่มต้นงบประมาณ
+        return leaveStart <= fiscalEnd && leaveEnd >= fiscalStart;
+    }
+
+    // *** สิ้นสุดส่วนของฟังก์ชันที่เพิ่ม/แก้ไขสำหรับปีงบประมาณ ***
+    
     // ฟังก์ชันสำหรับสร้างตัวเลือกปีในตัวกรอง (สำหรับ Start Year และ End Year)
     function populateYearFilter(history) {
         const years = new Set();
@@ -209,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
         renderLeaveHistory(filteredHistory);
     }
 
-    // ฟังก์ชันสำหรับแสดงข้อมูลผู้ใช้งานบน Dashboard
+    // ฟังก์ชันสำหรับแสดงข้อมูลผู้ใช้งานบน Dashboard (มีการแก้ไขส่วนคำนวณวันลา)
     function renderDashboard(userData, leaveHistory) {
         if (!userData) return;
 
@@ -231,14 +275,24 @@ document.addEventListener('DOMContentLoaded', function() {
         oldWorkDurationElement.textContent = oldWorkDuration;
         newWorkDurationElement.textContent = newWorkDuration;
         totalWorkDurationElement.textContent = totalWorkDuration;
+        
+        // *** ส่วนที่แก้ไข: กรองประวัติการลาตามปีงบประมาณปัจจุบันก่อนคำนวณ ***
+        const fiscalYearDates = getCurrentFiscalYearDates();
+        
+        const currentFiscalLeaveHistory = leaveHistory.filter(item => {
+            return isLeaveInFiscalYear(item, fiscalYearDates.start, fiscalYearDates.end);
+        });
 
-        // คำนวณวันลาที่ใช้ไปจาก allLeaveHistory
-        const usedSickLeaveDays = leaveHistory.filter(l => l.leaveType === 'ลาป่วย' && l.status === 'อนุมัติแล้ว').reduce((sum, l) => sum + (parseInt(l.duration) || 0), 0);
-        const usedPersonalLeaveDays = leaveHistory.filter(l => l.leaveType === 'ลากิจ' && l.status === 'อนุมัติแล้ว').reduce((sum, l) => sum + (parseInt(l.duration) || 0), 0);
-        const usedVacationDays = leaveHistory.filter(l => l.leaveType === 'ลาพักผ่อน' && l.status === 'อนุมัติแล้ว').reduce((sum, l) => sum + (parseInt(l.duration) || 0), 0);
-
-        const totalSickLeave = 30;
+        // คำนวณวันลาที่ใช้ไปจาก currentFiscalLeaveHistory เท่านั้น
+        const usedSickLeaveDays = currentFiscalLeaveHistory.filter(l => l.leaveType === 'ลาป่วย' && l.status === 'อนุมัติแล้ว').reduce((sum, l) => sum + (parseInt(l.duration) || 0), 0);
+        const usedPersonalLeaveDays = currentFiscalLeaveHistory.filter(l => l.leaveType === 'ลากิจ' && l.status === 'อนุมัติแล้ว').reduce((sum, l) => sum + (parseInt(l.duration) || 0), 0);
+        const usedVacationDays = currentFiscalLeaveHistory.filter(l => l.leaveType === 'ลาพักผ่อน' && l.status === 'อนุมัติแล้ว').reduce((sum, l) => sum + (parseInt(l.duration) || 0), 0);
+        
+        // วันลาป่วยคงเหลือจะอ้างอิงตามปีงบประมาณปัจจุบัน (30 วัน/ปี)
+        const totalSickLeave = 30; 
         const remainingSickLeave = totalSickLeave - usedSickLeaveDays;
+        
+        // วันลาพักผ่อนคงเหลือจะคำนวณตามสิทธิ์คงเหลือ (สมมติว่าค่า annualLeave และ accumulatedLeave คือสิทธิ์วันลาพักผ่อนประจำปีที่ได้รับมา ณ วันที่ 1 ต.ค.)
         const remainingVacationDays = (userData.annualLeave + userData.accumulatedLeave) - usedVacationDays;
 
         sickLeaveUsedElement.textContent = usedSickLeaveDays;
@@ -246,6 +300,7 @@ document.addEventListener('DOMContentLoaded', function() {
         personalLeaveUsedElement.textContent = usedPersonalLeaveDays;
         vacationLeaveUsedElement.textContent = usedVacationDays;
         vacationLeaveRemainingElement.textContent = remainingVacationDays;
+        // *** สิ้นสุดส่วนที่แก้ไข ***
 
         // สร้างตัวเลือกปีและแสดงผลประวัติการลาที่กรองแล้ว
         populateYearFilter(allLeaveHistory);
