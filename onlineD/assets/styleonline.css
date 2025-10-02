@@ -206,7 +206,7 @@ body {
 }
 
 .calendar-day.current-day {
-    border: 3px solid #e63946; /* กรอบสีแดงสำหรับวันปัจจุบัน */
+    border: 3px solid #99FF00; /* กรอบสีเขียวสำหรับวันปัจจุบัน */
     box-shadow: 0 0 10px rgba(230, 57, 70, 0.5);
 }
 
@@ -285,11 +285,12 @@ body {
 
 .time-slot.unavailable-slot {
     background-color: #e0e0e0;
-    color: #a0a0a0;
+    color: #333; /* <-- เปลี่ยนเป็นสีดำ (#333) หรือสีอื่นที่ชัดเจน */
     cursor: not-allowed;
-    opacity: 0.8;
-    text-decoration: line-through;
+    opacity: 1; /* <-- เปลี่ยนเป็น 1 เพื่อให้สีเข้มขึ้นและไม่จาง */
+    text-decoration: none; /* <-- ลบขีดทับออก */
     box-shadow: none;
+    font-weight: normal; /* <-- อาจเพิ่มอันนี้เพื่อไม่ให้เป็นตัวหนาเกินไป */
 }
 
 .back-button {
