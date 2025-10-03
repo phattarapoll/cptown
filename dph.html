@@ -9,194 +9,264 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
+        /* กำหนดค่าสีหลักที่ดูหรูหรา: กรมท่าเข้ม (Navy) และ ทอง (Gold) */
+        :root {
+            --color-primary: #0A1931; /* Deep Navy Blue */
+            --color-accent: #C19A6B;  /* Soft Gold/Bronze */
+            --color-light: #F7F9F9;   /* Off-White */
+            --color-success: #388E3C; /* Emerald Green */
+            --color-error: #B03A2E;   /* Burgundy Red */
+        }
+
         html, body {
             height: 100%;
             margin: 0;
+            font-family: 'Sarabun', sans-serif;
         }
         body {
             display: flex;
             flex-direction: column;
+            background-color: var(--color-light); /* ใช้ Off-White */
+            color: var(--color-primary);
         }
         main {
             flex: 1;
         }
+        
+        /* สไตล์สำหรับส่วนท้าย (Footer) */
         .footer-content {
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: left;
-            gap: 1rem;
+            gap: 1.5rem;
         }
         .footer-image {
-            width: 50px; /* Adjust size as needed */
-            height: 50px; /* Adjust size as needed */
+            width: 60px; /* ขยายขนาดเล็กน้อย */
+            height: 60px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid white;
+            border: 3px solid var(--color-accent); /* กรอบสีทอง */
+            box-shadow: 0 0 10px rgba(193, 154, 107, 0.5);
         }
         .footer-text {
-            font-size: 9pt; /* 9pt font size */
+            /* ปรับขนาดฟอนต์ให้เหมาะกับ responsive */
+            font-size: 0.75rem; 
             display: flex;
             flex-direction: column;
         }
         .footer-text p {
-            margin: 0; /* Remove default paragraph margin */
-            line-height: 1.3; /* Adjust line height for better spacing */
+            margin: 0; 
+            line-height: 1.4; 
         }
 
-        /* Styles for the new floating alert */
+        /* Glassmorphism สำหรับแผงลอยด้านข้าง (Floating Panels) */
+        .glassy-panel {
+            background-color: rgba(255, 255, 255, 0.85); /* Off-white semi-transparent */
+            backdrop-filter: blur(8px); /* The Glass Effect */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(10, 25, 49, 0.15); /* Elegant Shadow */
+        }
+        /* Glassmorphism สำหรับส่วนแสดงคิวหลัก */
+        .glassy-section {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(4px);
+            box-shadow: 0 4px 20px rgba(10, 25, 49, 0.1);
+        }
+
+        /* Floating Alert สไตล์หรูหรา */
         .floating-alert {
             position: fixed;
-            top: 20px; /* Adjust top position as needed */
-            right: 20px; /* Adjust right position as needed */
-            z-index: 1000; /* Ensure it's on top */
-            background-color: rgba(220, 38, 38, 0.8); /* Red with 80% opacity for transparency */
-            color: white;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background-color: rgba(10, 25, 49, 0.9); /* Deep Navy background */
+            color: var(--color-accent); /* Gold Text */
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--color-accent);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            animation: fadeInOut 10s forwards; /* Fade in and out over 10 seconds */
-            /* Animation for background blinking */
-            --alert-background-color: rgba(220, 38, 38, 0.8); /* Default red with transparency */
-            animation: fadeInOut 10s forwards, blinkGreen 1s infinite alternate;
-        }
-
-        .floating-alert.fading-out {
-            opacity: 0;
-            transition: opacity 1s ease-out;
+            gap: 1rem;
+            animation: fadeInOut 10s forwards, blinkBorder 1s infinite alternate; /* เปลี่ยน Animation เป็น blinkBorder */
         }
 
         .floating-alert .icon {
-            font-size: 1.5rem;
-            color: yellow; /* For the warning icon */
+            font-size: 1.75rem;
+            color: #FFEB3B; /* Bright Gold Icon */
         }
 		
-		.blink-red {
-        color: #ef4444; /* หรือ color: red; */
-        font-weight: bold;
-        animation: blinker 1s linear infinite;
-    }
-
-    @keyframes blinker {
-        50% {
-            opacity: 0;
-        }
-    }
-
         /* Keyframes for fade in and out */
         @keyframes fadeInOut {
-            0% { opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { opacity: 0; }
+            0% { opacity: 0; transform: translateY(-20px); }
+            10% { opacity: 1; transform: translateY(0); }
+            90% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); }
         }
 
-        /* Keyframes for blinking green background */
-        @keyframes blinkGreen {
-            50% { background-color: rgba(34, 197, 94, 0.8); } /* Green with transparency */
-            100% { background-color: rgba(34, 197, 94, 0.8); } /* Red */
+        /* Keyframes สำหรับเส้นขอบกระพริบเบาๆ (สีทอง) */
+        @keyframes blinkBorder {
+            0% { border-color: var(--color-accent); }
+            100% { border-color: rgba(193, 154, 107, 0.4); }
+        }
+
+        /* สไตล์สถานะบริการ */
+        .service-status-open {
+            background-color: var(--color-success); /* Emerald Green */
+            color: var(--color-light);
+            box-shadow: 0 2px 5px rgba(56, 142, 60, 0.4);
+        }
+        .service-status-closed {
+            background-color: var(--color-error); /* Burgundy Red */
+            color: var(--color-light);
+        }
+
+        /* ปรับสีปุ่มสลับแผงลอย */
+        #toggleServicePanel, #toggleNewsPanel {
+            background-color: var(--color-primary);
+            color: var(--color-accent);
+            border-left: 3px solid var(--color-accent);
+        }
+        #toggleNewsPanel {
+             border-right: 3px solid var(--color-accent);
+        }
+        #toggleServicePanel:hover, #toggleNewsPanel:hover {
+            background-color: var(--color-accent);
+            color: var(--color-primary);
+        }
+
+        /* ปรับสีปุ่มหลัก */
+        .btn-gold {
+            background-color: var(--color-accent);
+            color: var(--color-primary);
+            font-weight: 600;
+            transition: all 0.3s;
+            border: 1px solid var(--color-accent);
+        }
+        .btn-gold:hover {
+            background-color: var(--color-primary);
+            color: var(--color-accent);
         }
     </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-navy': '#0A1931',
+                        'accent-gold': '#C19A6B',
+                        'off-white': '#F7F9F9',
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="bg-off-white text-primary-navy">
 
-    <header id="mainHeader" >
-        <div class="text-center mb-2"> <h1 class="font-bold text-lg text-shadow">งานทันตสาธารณสุข ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร 333 ตำบลท่าตะเภา อำเภอเมืองชุมพร จังหวัดชุมพร 86000</h1><br>
-        </div>
-        <nav class="flex items-center space-x-4 justify-center">
-            <a href="index.html" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out">
-                เข้าสู่เว็ปไซต์
-            </a>
-            <a href="recive/index.html" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out">
-                ให้คะแนนบริการ
-            </a>
+    <header id="mainHeader" class="p-4 bg-white bg-opacity-10 shadow-lg fixed w-full z-30">
+        <nav class="flex items-center justify-between">
+            <div class="text-base sm:text-xl font-bold text-primary-navy border-l-4 border-accent-gold pl-3 py-1">
+                งานทันตสาธารณสุข ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร 077-507082
+            </div>
+            <div class="flex items-center space-x-4 sm:space-x-6">
+                <a href="index.html" target="_blank" class="btn-gold py-2 px-3 sm:px-6 rounded-lg shadow-lg text-sm">
+                    <i class="fas fa-desktop mr-1 sm:mr-2"></i> เว็ปไซต์
+                </a>
+                <a href="recive/index.html" target="_blank" class="btn-gold py-2 px-3 sm:px-6 rounded-lg shadow-lg text-sm">
+                    <i class="fas fa-star mr-1 sm:mr-2"></i> ให้คะแนน
+                </a>
+            </div>
         </nav>
-        </header>
+    </header>
 
-    <div id="serviceStatusFloating" class="fixed top-1/2 left-0 -translate-y-1/2 w-72 bg-white bg-opacity-75 p-6 rounded-r-xl shadow-lg z-40 transition-transform duration-300 ease-in-out transform -translate-x-full">
-        <h2 class="text-3xl font-bold text-blue-800 mb-6 border-b-2 border-blue-300 pb-2">บริการผู้ป่วยที่เปิด</h2>
+    <div id="serviceStatusFloating" class="fixed top-1/2 left-0 -translate-y-1/2 w-80 glassy-panel p-6 rounded-r-2xl z-40 transition-transform duration-300 ease-in-out transform -translate-x-full">
+        <h2 class="text-3xl font-bold text-primary-navy mb-6 border-b-2 border-accent-gold pb-2">บริการผู้ป่วยที่เปิด</h2>
         <div class="grid grid-cols-1 gap-4">
-            <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="open">
+            <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-[1.02]" data-status="open" style="border-left: 4px solid var(--color-success);">
                 <span class="text-lg font-semibold text-gray-800">ตรวจสุขภาพช่องปาก</span>
-                <span class="service-status px-3 py-1 rounded-full font-bold text-sm service-status-open">open</span>
+                <span class="service-status px-3 py-1 rounded-full font-bold text-sm service-status-open">OPEN</span>
             </div>
-            <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="open">
+            <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-[1.02]" data-status="open" style="border-left: 4px solid var(--color-success);">
                 <span class="text-lg font-semibold text-gray-800">อุดฟัน</span>
-                <span class="service-status px-3 py-1 rounded-full font-bold text-sm service-status-open">open</span>
+                <span class="service-status px-3 py-1 rounded-full font-bold text-sm service-status-open">OPEN</span>
             </div>
-            <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="open">
+            <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-[1.02]" data-status="open" style="border-left: 4px solid var(--color-success);">
                 <span class="text-lg font-semibold text-gray-800">ขูดหินน้ำลาย</span>
-                <span class="service-status px-3 py-1 rounded-full font-bold text-sm service-status-open">open</span>
+                <span class="service-status px-3 py-1 rounded-full font-bold text-sm service-status-open">OPEN</span>
             </div>
-            <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="open">
+            <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-[1.02]" data-status="open" style="border-left: 4px solid var(--color-success);">
                 <span class="text-lg font-semibold text-gray-800">ถอนฟัน</span>
-                <span class="service-status px-3 py-1 rounded-full font-bold text-sm service-status-open">open</span>
+                <span class="service-status px-3 py-1 rounded-full font-bold text-sm service-status-open">OPEN</span>
             </div>
-            <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="open">
+            <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-[1.02]" data-status="open" style="border-left: 4px solid var(--color-success);">
                 <span class="text-lg font-semibold text-gray-800">เคลือบหลุมร่องฟัน</span>
-                <span class="service-status px-3 py-1 rounded-full font-bold text-sm service-status-open">open</span>
+                <span class="service-status px-3 py-1 rounded-full font-bold text-sm service-status-open">OPEN</span>
             </div>
-            <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="closed">
+            <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-[1.02]" data-status="closed" style="border-left: 4px solid var(--color-error);">
                 <span class="text-lg font-semibold text-gray-800">รักษารากฟัน</span>
-                <span class="service-status px-3 py-1 rounded-full font-bold text-sm service-status-closed">closed</span>
+                <span class="service-status px-3 py-1 rounded-full font-bold text-sm service-status-closed">CLOSED</span>
             </div>
-            <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="closed">
+            <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-[1.02]" data-status="closed" style="border-left: 4px solid var(--color-error);">
                 <span class="text-lg font-semibold text-gray-800">ทำฟันปลอม</span>
-                <span class="service-status px-3 py-1 rounded-full font-bold text-sm service-status-closed">closed</span>
+                <span class="service-status px-3 py-1 rounded-full font-bold text-sm service-status-closed">CLOSED</span>
             </div>
         </div>
     </div>
 
-    <div id="newsFloatingPanel" class="fixed top-1/2 right-0 -translate-y-1/2 w-72 bg-white bg-opacity-75 p-6 rounded-l-xl shadow-lg z-40 transition-transform duration-300 ease-in-out transform translate-x-full">
-        <h2 class="text-3xl font-bold text-blue-800 mb-6 border-b-2 border-blue-300 pb-2">กระดานข่าว</h2>
+    <div id="newsFloatingPanel" class="fixed top-1/2 right-0 -translate-y-1/2 w-80 glassy-panel p-6 rounded-l-2xl z-40 transition-transform duration-300 ease-in-out transform translate-x-full">
+        <h2 class="text-3xl font-bold text-primary-navy mb-6 border-b-2 border-accent-gold pb-2">กระดานข่าว</h2>
         <div id="newsBoard" class="space-y-4 text-gray-700">
             <div id="newsLoading" class="text-center py-4">
-                <i class="fas fa-spinner fa-spin text-blue-500 text-3xl"></i>
+                <i class="fas fa-spinner fa-spin text-primary-navy text-3xl"></i>
                 <p class="mt-2 text-gray-600">กำลังโหลดข่าวสาร...</p>
             </div>
             <div id="newsError" class="text-center py-4 text-red-600 hidden">
                 <i class="fas fa-exclamation-triangle text-3xl mb-2"></i>
-                <p>ไม่สามารถโหลดข่าวสารได้ กรุณาลองใหม่อีกครั้ง หรือตรวจสอบการตั้งค่า Apps Script</p>
+                <p>ไม่สามารถโหลดข่าวสารได้ กรุณาลองใหม่อีกครั้ง</p>
             </div>
         </div>
     </div>
 
-    <button id="toggleServicePanel" onclick="toggleServicePanel()" class="fixed top-1/2 -translate-y-1/2 left-0 p-2 rounded-r-lg bg-blue-500 hover:bg-blue-600 text-white shadow-lg z-50 cursor-pointer transition-colors duration-300">
+    <button id="toggleServicePanel" onclick="toggleServicePanel()" class="fixed top-1/2 -translate-y-1/2 left-0 p-3 rounded-r-lg shadow-lg z-50 cursor-pointer transition-colors duration-300">
         <i id="toggleServiceIcon" class="fas fa-stethoscope text-lg"></i>
     </button>
 
-    <button id="toggleNewsPanel" onclick="toggleNewsPanel()" class="fixed top-1/2 -translate-y-1/2 right-0 p-2 rounded-l-lg bg-blue-500 hover:bg-blue-600 text-white shadow-lg z-50 cursor-pointer transition-colors duration-300">
+    <button id="toggleNewsPanel" onclick="toggleNewsPanel()" class="fixed top-1/2 -translate-y-1/2 right-0 p-3 rounded-l-lg shadow-lg z-50 cursor-pointer transition-colors duration-300">
         <i id="toggleNewsIcon" class="fas fa-newspaper text-lg"></i>
     </button>
 
-    <main class="container mx-auto p-6 mt-28 lg:mt-32 lg:pl-80 lg:pr-80">
-        <section class="glassy-section p-8 rounded-xl shadow-lg mb-8 flex flex-col">
-            <div class="lg:w-full"> <div class="bg-gray-50 p-6 rounded-xl shadow-inner flex flex-col">
+    <main class="container mx-auto p-6 mt-36">
+        <section class="glassy-section p-4 sm:p-6 rounded-2xl shadow-xl mb-8 flex flex-col max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto">
+            <div class="lg:w-full">
+                <div class="bg-off-white p-4 sm:p-6 rounded-xl shadow-inner flex flex-col border border-accent-gold/50">
 					<div class="flex items-center justify-between mb-4">
-						<h2 class="text-2xl font-bold text-blue-800 pb-2">
-							<i class="fas fa-list-ol mr-2"></i>:
+                        <h2 class="text-2xl sm:text-3xl font-bold text-primary-navy pb-2 border-l-4 border-accent-gold pl-3">
+							<i class="fas fa-list-ol mr-2"></i>คิว
 						</h2>
-						<span id="currentTime" class="text-gray-600 text-sm font-medium">
+                        <span id="currentTime" class="text-gray-600 text-sm sm:text-base font-medium">
 							<i class="fas fa-clock mr-2"></i>:
 						</span>
-						<button id="queueFullscreenToggle" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-3 rounded-full shadow-md transition duration-300 ease-in-out text-sm">
-							<i class="fas fa-expand-alt mr-1"></i>
+                        <button id="queueFullscreenToggle" class="btn-gold py-1 px-3 sm:px-4 rounded-full text-xs sm:text-sm">
+							<i class="fas fa-expand-alt mr-1"></i> Full
 						</button>
 					</div>
                     <div id="scrollingQueueContainer" class="scrolling-queue-container flex-grow relative">
-                        <div id="queueDisplay" class="flex-grow overflow-y-auto bg-white p-4 rounded-lg border border-gray-200 mb-4 h-96 relative" tabindex="0">
+                        <div id="queueDisplay" class="flex-grow overflow-y-auto bg-white p-4 rounded-lg border border-gray-200 mb-4 h-80 sm:h-96 relative" tabindex="0">
+                            <div class="text-center text-accent-gold text-2xl sm:text-4xl font-extrabold py-2 sm:py-4 border-b-2 border-accent-gold/50 mb-4">
+                                คิวบริการทันตสาธารณสุข <span class="text-primary-navy">วันนี้</span>
+                            </div>
                             <div id="queueLoading" class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 z-10">
-                                <i class="fas fa-spinner fa-spin text-blue-500 text-3xl"></i>
+                                <i class="fas fa-spinner fa-spin text-primary-navy text-3xl"></i>
                                 <p class="ml-2 text-gray-600">กำลังโหลดคิว...</p>
                             </div>
                             <div id="queueError" class="absolute inset-0 flex flex-col items-center justify-center bg-white bg-opacity-80 z-10 hidden text-red-600 text-center p-4">
                                 <i class="fas fa-exclamation-triangle text-3xl mb-2"></i>
-                                <p>ไม่สามารถโหลดคิวได้ กรุณาตรวจสอบ URL หรือการตั้งค่า Apps Script</p>
+                                <p>ไม่สามารถโหลดคิวได้ กรุณาตรวจสอบ</p>
                             </div>
                         </div>
+                        
                         <div class="fullscreen-info-right hidden">
                             <img src="assets/images/tm.png" alt="ตราเทศบาลเมืองชุมพร">
                             <p>งานทันตสาธารณสุข</p>
@@ -214,24 +284,23 @@
                     </div>
                 </div>
             </div>
-
             </section>
-        <div class="flex justify-center mt-4">
-            <div class="bg-red-600 text-white p-1 px-3 text-center flex items-center rounded-full shadow-md">
-                <i class="fas fa-hospital-alt text-base mr-2"></i>
-                <p class="text-sm font-semibold m-0">ให้บริการผู้ป่วย ในเขตตำบลท่าตะเภา,สิทธิ์ข้าราชการ,พนักงานลูกจ้างเทศบาลเมืองชุมพร,ครูและนักเรียนในเขตพื้นที่ <br>(รร.สหศึกษา รร.ฝวาหมินกงลิ รร.อนุบาลเมืองชุมพร รร.สอาดเผดิมวิทยา รร.ศรียาภัย รร.เทศบาล1บ้านท่าตะเภา)</p>
+        <div class="flex justify-center mt-4 sm:mt-6">
+            <div class="bg-primary-navy text-accent-gold p-3 sm:p-4 px-4 sm:px-6 text-center flex items-center rounded-xl shadow-xl max-w-full lg:max-w-4xl">
+                <i class="fas fa-hospital-alt text-base sm:text-lg mr-3"></i>
+                <p class="text-xs sm:text-sm font-semibold m-0">ให้บริการผู้ป่วย ในเขตตำบลท่าตะเภา,สิทธิ์ข้าราชการ,พนักงานลูกจ้างเทศบาลเมืองชุมพร,ครูและนักเรียนในเขตพื้นที่ <br class="sm:hidden">(รร.สหศึกษา รร.ฝวาหมินกงลิ รร.อนุบาลเมืองชุมพร รร.สอาดเผดิมวิทยา รร.ศรียาภัย รร.เทศบาล1บ้านท่าตะเภา)</p>
             </div>
         </div>
     </main>
 
-    <footer class="bg-blue-800 text-white p-6 text-center rounded-t-xl shadow-inner mt-auto">
+    <footer class="bg-gray-900 text-off-white p-4 sm:p-6 text-center rounded-t-xl shadow-inner mt-auto">
         <div class="footer-content">
             <img src="assets/images/admin.jpg" alt="รูปโปรไฟล์ผู้ให้บริการ" class="footer-image">
-            <div class="footer-text">
+            <div class="footer-text text-xs sm:text-sm">
                 <p><strong>ผู้ให้บริการ:</strong> นายภัทรพล ไพศาลวัชรเมธี</p>
                 <p><strong>ตำแหน่ง:</strong> ทันตสาธารณสุขชำนาญงาน รักษาการอาวุโส</p>
                 <p><strong>สถานที่ปฏิบัติงาน:</strong> ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร (ตึกเก่า)
-                    <button id="adminLoginBtn" class="ml-2 text-white text-opacity-75 hover:text-opacity-100 focus:outline-none">
+                    <button id="adminLoginBtn" class="ml-2 text-accent-gold hover:text-white focus:outline-none">
                         <i class="fas fa-user-shield text-base"></i>
                     </button>
                 </p>
@@ -243,7 +312,9 @@
         <i class="fas fa-exclamation-triangle icon"></i>
         <p class="text-lg font-semibold">ควรรอรับบริการก่อนล่วงหน้า 5-10 นาที และนำบัตรประชาชนมาด้วย</p>
     </div>
+    
     <script>
+        // JavaScript ฟังก์ชันการทำงานเดิม
         function toggleServicePanel() {
             const panel = document.getElementById('serviceStatusFloating');
             const icon = document.getElementById('toggleServiceIcon');
@@ -276,7 +347,6 @@
             }
         }
 
-        // JavaScript สำหรับแสดงเวลาปัจจุบัน
         function updateCurrentTime() {
             const now = new Date();
             const options = {
@@ -289,30 +359,27 @@
                 second: '2-digit',
                 hour12: false
             };
-            // กำหนด locale เป็น 'th-TH' เพื่อให้แสดงเป็นภาษาไทย
             const formattedTime = now.toLocaleDateString('th-TH', options);
             document.getElementById('currentTime').textContent = `เวลาปัจจุบัน: ${formattedTime} น.`;
         }
 
-        // Function to handle the fading out of the alert
         function setupFloatingAlert() {
             const alert = document.getElementById('floatingAlert');
             if (alert) {
                 // Remove the alert after 10 seconds
                 setTimeout(() => {
-                    alert.classList.add('fading-out'); // Add class for fade out transition
+                    alert.classList.add('fading-out'); 
                     setTimeout(() => {
-                        alert.remove(); // Remove element from DOM after transition
-                    }, 1000); // Match this with the transition duration for fading-out
-                }, 9000); // Start fading out at 9 seconds, so it's fully gone by 10 seconds
+                        alert.remove(); 
+                    }, 1000); 
+                }, 9000); 
             }
         }
 
-        // Call functions when the DOM is fully loaded
         document.addEventListener('DOMContentLoaded', () => {
             updateCurrentTime();
             setInterval(updateCurrentTime, 1000);
-            setupFloatingAlert(); // Initialize the floating alert behavior
+            setupFloatingAlert(); 
         });
     </script>
     <script src="assets/js/custom.js"></script>

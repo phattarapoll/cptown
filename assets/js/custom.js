@@ -68,7 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-
     // สำคัญ: แทนที่ 'กรุณาใส่ URL Web App ของ Google Apps Script สำหรับฟังก์ชันคิวบริการที่นี่' ด้วย URL ที่ Deploy แล้วของคุณ
     const BOOKING_API_URL = 'https://script.google.com/macros/s/AKfycbw8wDGyZWTmG3DLWRwt8_k9x3iYKSxkTl3Rulyll5ObGxOTkJrw3xwB-xBSwBBeOhVE/exec'; // ตรวจสอบให้แน่ใจว่าเป็น URL ที่ Deploy แล้วของคุณ
 
@@ -137,6 +136,32 @@ document.addEventListener('DOMContentLoaded', () => {
         return parts.length > 0 ? parts.join(' ') : 'กำลังจะเริ่ม';
     }
 
+    // *** ฟังก์ชันช่วยเหลือเพื่อซ่อนนามสกุลบางส่วนด้วย ** (ตัด 4 อักษรสุดท้าย) ***
+    function maskLastName(fullName) {
+        if (!fullName) return '';
+        const parts = fullName.trim().split(/\s+/); // แยกชื่อและนามสกุลด้วยช่องว่าง
+        if (parts.length > 1) {
+            const firstName = parts[0];
+            const lastNameParts = parts.slice(1);
+            let originalLastNameWord = lastNameParts[0]; // ใช้คำแรกของนามสกุล
+
+            const originalLength = originalLastNameWord.length;
+            let maskedPart = '';
+            
+            if (originalLength <= 4) {
+                // ถ้าสั้นกว่าหรือเท่ากับ 4 อักษร ให้แสดงอักษรแรกและตามด้วย ** (เพื่อไม่ให้ว่างเปล่า)
+                maskedPart = originalLastNameWord.substring(0, 1) + '**'; 
+            } else {
+                // ถ้ามากกว่า 4 อักษร ให้ตัด 4 ตัวสุดท้ายออกและแทนที่ด้วย **
+                maskedPart = originalLastNameWord.substring(0, originalLength - 4) + '**';
+            }
+            
+            // นำชื่อและนามสกุลที่ถูกปกปิดมาต่อกัน
+            return `${firstName} ${maskedPart}`;
+        }
+        return fullName; // ถ้ามีแค่ชื่อหรือนามสกุลไม่มีช่องว่าง
+    }
+
     async function fetchBookingData() {
         queueLoading.classList.remove('hidden'); // แสดงตัวโหลด
         queueError.classList.add('hidden'); // ซ่อนข้อความข้อผิดพลาด
@@ -180,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // แก้ไขฟังก์ชัน updateQueueDisplay เพื่อรองรับการแสดงผลสถานะ
+    // แก้ไขฟังก์ชัน updateQueueDisplay เพื่อรองรับการแสดงผลสถานะและการปกปิดนามสกุล
     function updateQueueDisplay(bookings) {
         queueDisplay.innerHTML = ''; // ล้างการแสดงผลปัจจุบัน
         const now = new Date(); // เวลาปัจจุบันที่แน่นอน
@@ -255,6 +280,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // แสดงคิวปัจจุบัน
         if (currentAppointment) {
+            const maskedPatientName = maskLastName(currentAppointment.patientName); 
+            
             const currentCard = document.createElement('div');
             currentCard.classList.add('queue-card', 'bg-blue-100', 'border-blue-400', 'current-queue');
             currentCard.innerHTML = `
@@ -262,7 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <i class="fas fa-play-circle text-blue-600 text-xl mr-2"></i>
                     <p class="font-bold text-blue-800 text-lg">คิวปัจจุบัน</p>
                 </div>
-                <p class="text-gray-900 text-xl font-semibold">${currentAppointment.patientName}</p>
+                <p class="text-gray-900 text-xl font-semibold">${maskedPatientName}</p>
                 <p class="text-gray-700 text-sm">เวลา: ${currentAppointment.timeSlot}</p>
                 <p class="text-red-600 text-sm mt-1">เรียกคิวบริการ : ห้องตรวจ2</p>
             `;
@@ -303,6 +330,8 @@ document.addEventListener('DOMContentLoaded', () => {
             queueDisplay.appendChild(upcomingHeader);
 
             upcomingAppointments.forEach(appt => {
+                const maskedPatientName = maskLastName(appt.patientName);
+                
                 const futureCard = document.createElement('div');
                 futureCard.classList.add('queue-card', 'bg-green-50', 'border-green-300', 'upcoming-queue-item');
                 const apptDateTime = new Date(appt.date);
@@ -324,7 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // ปรับเปลี่ยน innerHTML เพื่อให้สถานะแสดงต่อท้ายชื่อผู้ป่วย
                 futureCard.innerHTML = `
                     <p class="font-semibold text-gray-800">
-                        ${appt.patientName} ${statusElement.outerHTML}
+                        ${maskedPatientName} ${statusElement.outerHTML}
                     </p>
                     <p class="text-gray-600 text-sm">
                         ${apptDateTime.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })} เวลา ${appt.timeSlot}
@@ -406,85 +435,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const scrollingCommentDisplay = document.getElementById('scrollingCommentDisplay');
     const sheetData = [
         { colA: "28/9/2020, 13:27:58", colK: "หมอน่ารัก นัดทำฟันที่บ้านก็ได้ ขอบคุณค่ะ" },
-        { colA: "3/10/2020, 9:14:19", colK: "หมอน่ารัก พูดดี " },
-        { colA: "3/10/2020, 9:14:19", colK: "ลูกชมว่าหมอมือนิ่ม น่ารัก" },
-        { colA: "5/10/2020, 13:58:33", colK: "ไฮแทคเกินทำไม่ค่อยถูกค่ะ " },
-        { colA: "7/10/2020, 8:12:01", colK: "ประทับใจมาก นัดเองได้ สุดยอด" },
-        { colA: "7/10/2020, 10:15:29", colK: "มีความรู้สึกดีมากที่ลูกได้มารักษากับหมอ " },
-        { colA: "7/10/2020, 8:12:01", colK: "ดีมาก" },
-        { colA: "7/10/2020, 10:15:29", colK: "ดีมาก" },
-        { colA: "8/10/2020, 18:53:45", colK: "มีความรู้สึกดีมากที่ลูกได้มารักษากับหมอ " },
-        { colA: "11/10/2020, 9:38:05", colK: "เยี่ยมหมอสุดยอดมาก" },
-        { colA: "16/10/2020, 14:35:31", colK: "หมอมือนิ่มมาก" },
-        { colA: "19/10/2020, 9:12:22", colK: "เยี่ยมเลย หมอพูดน่ารัก ไม่ใช้อารมณ์" },
-        { colA: "2/11/2020, 12:06:33", colK: "ดีมาก หมอยินดีช่วยเหลือเสมอ" },
-        { colA: "4/11/2020, 8:31:21", colK: "ดีมาก" },
-        { colA: "14/11/2020, 7:21:37", colK: "ลูกชมว่าหมอทำไม่เจ็บ มือเบา" },
-        { colA: "24/11/2020, 12:31:43", colK: "หมอฟันมือนิ่ม พูดเพราะมากค่ะ" },
-        { colA: "29/11/2020, 13:59:28", colK: "หมอเป็นกันเองมากค่ะ" },
-        { colA: "11/12/2020, 13:53:01", colK: "หมอเป็นกันเองมากค่ะ" },
-        { colA: "17/12/2020, 16:06:39", colK: "หมอบริการถึงบ้าน บริการดีมากๆ เห็นใจประชาชนคะ" },
-        { colA: "22/12/2020, 20:40:25", colK: "ให้คำแนะนำ บริการดีมาก" },
-        { colA: "24/12/2020, 11:39:44", colK: "ดีมาก" },
-        { colA: "26/1/2021, 15:45:33", colK: "พูดจาดี อ่อนน้อม" },
-        { colA: "27/1/2021, 7:45:04", colK: "หมอจริิงใจทำมาก ยอมรับเลย" },
-        { colA: "28/1/2021, 20:29:32", colK: "ดีมากเลย" },
-        { colA: "2/2/2021, 7:18:31", colK: "หมอน่ารักมากเลย หายกังวลเรื่องปวดฟันเลยค่ะ" },
-        { colA: "5/2/2021, 8:02:58", colK: "หมอน่ารัก พูดดี เป็นกันเอง" },
-        { colA: "20/2/2021, 8:15:36", colK: "สะดวกดี เข้าถึงบริการง่าย ทำได้ทุกเวลา" },
-        { colA: "9/3/2021, 8:55:09", colK: "ขอบคุณที่ให้การรักษาอย่างดี" },
-        { colA: "21/3/2021, 15:09:10", colK: "ดีเยีายม" },
-        { colA: "5/6/2021, 17:45:03", colK: "ยินดีให้บริการมาก ชื่นชมที่สุดคะ" },
-        { colA: "29/7/2021, 8:39:08", colK: "ความรู้และความตั้งใจ ที่ให้บริการ ดีมาก" },
-        { colA: "1/11/2021, 13:47:52", colK: "หมอให้คำแนะนำดี จริงใจ" },
-        { colA: "4/3/2022, 8:08:06", colK: "หมอฟันน่ารักนะ ยินดีให้บริการตลอด" },
-        { colA: "25/5/2022, 7:22:32", colK: "ชื่นชมมาก ดีมาก" },
-        { colA: "7/7/2022, 19:02:13", colK: "Dมาก" },
-        { colA: "8/2/2023, 8:02:26", colK: "ดีมากทุกส่วนคับ" },
-        { colA: "28/4/2023, 19:34:49", colK: "ใส่ในการให้บริการ" },
-        { colA: "18/5/2023, 20:40:50", colK: "ไม่เคยเจอหมอที่จริงใจบริการแบบนี้เลย" },
-        { colA: "6/9/2023, 16:53:21", colK: "ฝีมือดีมาก มือเบา " },
-        { colA: "6/9/2023, 19:17:05", colK: "บริการดี" },
-        { colA: "21/11/2023, 20:14:16", colK: "น่าชมเชยมากครับ" },
-        { colA: "24/12/2023, 18:42:06", colK: "น่ารัก พูดดีมาก ดีใจที่เจอหมอที่อยากรักษาคนไข้แบบนี้" },
-        { colA: "23/5/2024, 6:56:13", colK: "ให้คำแนะนำดีมากๆคะ" },
-        { colA: "17/7/2024, 22:36:17", colK: "มือนิ่มมาก ถอนฟันไม่เจ็บเลย" },
-        { colA: "24/7/2024, 18:04:31", colK: "ทำดีมาก ขอบคุณค่ะ" },
-        { colA: "29/7/2024, 20:45:15", colK: "ขอบคุณหมอมากคะ ถึงจะเป็นคนไข้นอกพื้นที่หมอก็ยังเต็มใจทำให้ และบริการเป็นอย่างดี อยากอยู่ที่ชุมพรให้หมอดูแลมากๆคะ" },
-        { colA: "7/9/2024, 7:30:00", colK: "ทำดีคะ" },
-        { colA: "19/9/2024, 20:43:52", colK: "หมอมือนิ่มมาก ไม่เจ็บเหมือนที่อื่น" },
-        { colA: "13/10/2024, 17:40:50", colK: "น้องบอกว่า หมอถอนฟันไม่เจ็บ ฉีดยาก็ไม่เจ็บคับ" },
-        { colA: "5/1/2025, 21:19:45", colK: "ให้คำแนะนำและบริการดีมากค่ะ" },
-        { colA: "6/2/2025, 17:16:09", colK: "พูดน่ารักมาก เป็นกันเอง อธิบายได้เข้าใจมากค่ะ" },
-        { colA: "6/2/2025, 16:17:24", colK: "ขั้นเทพจริงค่ะ ฝีมือดีจริงๆ" },
-        { colA: "6/2/2025, 19:19:38", colK: "ผมพึ่งรู้จาก chatGPT ว่าที่นี้เป็นสถานบริการอันดับ 1 ของชุมพร ที่โปรแกรมแนะนำ /หมอแนะนำดีมากคับ ขนาดว่าผมอยู่นอกพื้นที่" },
-        { colA: "6/2/2025, 17:16:09", colK: "มือนิ่มมากคะ " },
-        { colA: "1/5/2025, 14:46:28", colK: "เยี่ยมจริงคับผม" },
-        { colA: "13/5/2025, 8:54:05", colK: "เยี่ยมจริงคับ สมคำล่ำลือ" },
-        { colA: "14/5/2025, 11:06:15", colK: "ได้รับคำแนะนำที่ดีมากคับ" },
-        { colA: "15/5/2025, 13:08:28", colK: "สุดยอดจิง ยก5นิ้วเลย" },
-        { colA: "30/6/2025, 11:26:33", colK: "น้องหมอน่ารักมาก" },
-        { colA: "27/5/2025, 10:50:08", colK: "ดีมาก" },
-        { colA: "30/5/2025, 21:19:45", colK: "เยี่ยมจริง สะดวก ตอบแบบสอบถามก็ง่าย ดีมากๆคับ" },
-        { colA: "31/5/2025, 17:16:09", colK: "ดีมากคะ" },
-        { colA: "2/6/2025, 16:17:24", colK: "ขดีๆๆเลยคะ" },
-        { colA: "5/6/2025, 19:19:38", colK: "ลูกบอกว่า หมอใจดีมาก ถอนฟันไม่เจ็บ ไม่ไปทำที่อื่นแล้ว" },
-        { colA: "6/6/2025, 17:16:09", colK: "ให้คำแนะนำดีมาก " },
-        { colA: "1/6/2025, 14:46:28", colK: "ไม่ถือตัวเลย น่ารักมากจ๊ะ" },
-        { colA: "3/7/2025, 15:52:49, 8:54:05", colK: "เป็นแบบสอบถามที่ตอบง่ายที่สุดเท่าที่เคยเจอมา555" },
-        { colA: "4/7/2025, 22:23:05, 11:06:15", colK: "ได้รับคำแนะนำที่ดีมากคับ" },
-        { colA: "5/7/2025, 7:00:16", colK: "สุดยอดจิง ยก5นิ้วเลย" },
-        { colA: "5/7/2025, 15:46:45", colK: "น้องหมอน่ารักมาก" },
-        { colA: "6/7/2025, 6:41:18", colK: "ดีมาก" },
-        { colA: "6/7/2025, 6:41:18", colK: "ลูกบอกว่า หมอใจดีมาก ถอนฟันไม่เจ็บ ไม่ไปทำที่อื่นแล้ว" },
-        { colA: "6/7/2025, 6:41:18", colK: "ให้คำแนะนำดีมาก" },
-        { colA: "6/7/2025, 6:41:18", colK: "ไม่ถือตัวเลย น่ารักมากจ๊ะ" },
-        { colA: "6/7/2025, 6:41:18", colK: "จองง่ายดีค่ะ" },
-        { colA: "7/7/2025, 16:52:47", colK: "ว้าวมาก ทึ่งเลย มีระบบแบบนี้ด้วย เทศบาลเมืองชุมพรน่าอยู่ นายกใข้โชคดีที่มีบุคลากรดี ประชาชนโชคดีที่มีพ่อเมืองดี เยี่ยมมาก" },
-        { colA: "10/7/2025, 0:43:52", colK: "สะดวกมากคับ" },
-        { colA: "21/7/2025, 9:55:35", colK: "ดีๆๆ เยี่ยมๆๆ" },
-        { colA: "23/7/2025, 20:44:30", colK: "สะดวกคับ" },
-        { colA: "25/7/2025, 13:52:59", colK: "ให้คำแนะนำดีมากๆคะ" },
     // { colA: "", colK: "" },
     ];
 
