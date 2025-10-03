@@ -361,7 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (noShowCountForUser >= 3) {
                 const maxNoShowWarning = document.createElement('div');
                 maxNoShowWarning.classList.add('blinking-message', 'blink-red', 'centered-no-radius');
-                maxNoShowWarning.innerHTML = `⚠️ **ไม่สามารถจองได้** ⚠️<br>เนื่องจากมีประวัติผิดนัดบริการ **${noShowCountForUser} ครั้ง** (เกิน 3 ครั้ง)<br><small>กรุณาติดต่อเจ้าหน้าที่เพื่อดำเนินการ</small>`;
+                maxNoShowWarning.innerHTML = `⚠️ **ไม่สามารถจองได้** ⚠️<br>เนื่องจากมีประวัติผิดนัดบริการ **${noShowCountForUser} ครั้ง** (เกิน 3 ครั้ง)<br><small>แนะนำ เข้ารับบริการด้วยตนเอง หรือติดต่อเจ้าหน้าที่</small>`;
                 
                 document.querySelectorAll('.blinking-message').forEach(msg => msg.remove());
 
