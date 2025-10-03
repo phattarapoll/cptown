@@ -331,8 +331,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                 }
                                 
                                 timeSlotDiv.title += ` (ผู้จองมีประวัติผิดนัด ${noShowCountForUser} ครั้ง! ควรติดต่อเจ้าหน้าที่)`;
-                                timeSlotDiv.innerHTML += `<small class="no-show-count-text">ผิดนัด ${noShowCountForUser} ครั้ง</small>`;
-                            } else {
+								timeSlotDiv.innerHTML += `<small class="no-show-count-text">⚠️  ${noShowCountForUser} ครั้ง</small>`;                            
+								} else {
                                 timeSlotDiv.title += ` (ผู้จอง: ${userFullName})`;
                             }
                         }
