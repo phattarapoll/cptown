@@ -435,7 +435,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const scrollingCommentDisplay = document.getElementById('scrollingCommentDisplay');
     const sheetData = [
         { colA: "28/9/2020, 13:27:58", colK: "หมอน่ารัก นัดทำฟันที่บ้านก็ได้ ขอบคุณค่ะ" },
-    // { colA: "", colK: "" },
     ];
 
 
