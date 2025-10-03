@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let bookingData = {};
     let noShowCount = {}; 
 
-    // --- ฟังก์ชันสำหรับซ่อนนามสกุลบางส่วน (Masking) ---
+    // --- ฟังก์ชันสำหรับซ่อนนามสกุลบางส่วน (Masking) *** อัปเดตที่นี่ *** ---
     function maskFullName(fullName) {
         if (!fullName || typeof fullName !== 'string') return '';
         
@@ -46,18 +46,20 @@ document.addEventListener('DOMContentLoaded', () => {
             return fullName.trim(); 
         }
 
-        const firstNameParts = parts.slice(0, -1);
-        const lastNamePart = parts[parts.length - 1];
-
-        // ถ้าพยัญชนะตัวแรกของนามสกุลเป็นตัวอักษรเดียว ก็แสดงตัวนั้นไปเลย
-        if (lastNamePart.length <= 1) {
-            return `${firstNameParts.join(' ')} ${lastNamePart}`;
-        }
-
-        // เก็บพยัญชนะตัวแรกของนามสกุล และแทนที่ส่วนที่เหลือด้วย ***
-        const maskedLastName = `${lastNamePart.charAt(0)}***`;
+        // ชื่อแรก (First Name)
+        const firstName = parts[0]; 
         
-        return `${firstNameParts.join(' ')} ${maskedLastName}`;
+        // นามสกุลและชื่ออื่นๆ ที่ตามมา (Last Name / Other parts)
+        const otherParts = parts.slice(1);
+        
+        // นำส่วนแรกของนามสกุลมา (อาจจะเป็นนามสกุลหลัก หรือส่วนอื่นๆ ที่ตามมา)
+        const firstCharOfOtherParts = otherParts[0].charAt(0); 
+        
+        // สร้างส่วนที่ซ่อน
+        const maskedOtherParts = firstCharOfOtherParts + '***'; 
+        
+        // รวมชื่อแรกกับส่วนที่ซ่อนของนามสกุล
+        return `${firstName} ${maskedOtherParts}`;
     }
     // -----------------------------------------------------------------------------------
     
@@ -391,6 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const telNumber = document.getElementById('telNumber').value.trim();
         const bookingReason = document.getElementById('bookingReason').value.trim();
         const bookingDate = formatDateForComparison(selectedDate);
+        const bookingDateThai = formatDateThai(selectedDate); // สำหรับแสดงผล
 
         const noShowCountForUser = getNoShowCountByPartialName(fullName, noShowCount);
         if (noShowCountForUser >= 3) {
@@ -441,24 +444,64 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (result.includes('Booking successful!')) {
                 loadingSpinner.classList.add('hidden');
-                formMessage.textContent = 'ได้รับการจองคิวของท่านแล้ว กรุณานำบัตรประชาชน หรือเอกสารที่เกี่ยวข้องมาด้วย ขอบคุณครับ';
-                formMessage.className = 'form-message success';
-                bookingPopup.classList.remove('hidden');
-                bookingPopup.classList.add('is-active');
+                
+                // 1. ซ่อน UI การจองทั้งหมด
+                const container = document.querySelector('.container');
+                const calendarWrapper = document.querySelector('.calendar-wrapper'); // องค์ประกอบหลักของปฏิทิน
+                const infoBubble = document.querySelector('.info-bubble'); // ซ่อน Info Bubble ที่ด้านล่าง
+                
+                if (calendarWrapper) calendarWrapper.classList.add('hidden');
+                timeSlotDetails.classList.add('hidden');
+                bookingPopup.classList.remove('is-active');
+                bookingPopup.classList.add('hidden');
+                
+                // ซ่อนส่วนข้อมูลเพิ่มเติมที่อาจจะอยู่ด้านล่าง
+                if (infoBubble) infoBubble.classList.add('hidden');
+                
+                // 2. เตรียมข้อความสรุปผลการจอง
+                const reasonText = document.querySelector(`#bookingReason option[value="${bookingReason}"]`).textContent;
 
-                document.getElementById('fullName').value = '';
-                document.getElementById('telNumber').value = '';
+                const successSummary = `
+                    <div id="permanentSuccessSummary" class="glass-effect" style="margin: 40px auto; max-width: 600px; text-align: center; color: #1d3557; padding: 25px; border: 5px solid #2a9d8f; border-radius: 15px; background-color: rgba(230, 255, 250, 0.9); box-shadow: 0 0 20px rgba(42, 157, 143, 0.7); animation: fadeIn 0.5s;">
+                        <i class="fas fa-check-circle" style="font-size: 5em; color: #2a9d8f; margin-bottom: 15px;"></i>
+                        <h3 style="margin-top: 0; color: #2a9d8f; font-size: 2.2em;">✅ การจองคิวสำเร็จโดยสมบูรณ์ ✅</h3>
+                        <p style="font-size: 1.2em; font-weight: bold; margin-bottom: 20px;">
+                            กรุณาบันทึกหน้านี้ไว้ และนำบัตรประชาชน/เอกสารที่เกี่ยวข้องมาด้วย
+                        </p>
+                        <div style="text-align: left; padding: 15px; background-color: #ffffff; border-radius: 10px; border: 1px solid #ccc;">
+                            <p style="margin: 5px 0;"><strong>👤 ผู้จอง:</strong> ${fullName}</p>
+                            <p style="margin: 5px 0;"><strong>🗓 วันที่นัด:</strong> ${bookingDateThai}</p>
+                            <p style="margin: 5px 0;"><strong>⏰ ช่วงเวลา:</strong> ${selectedTimeSlot}</p>
+                            <p style="margin: 5px 0;"><strong>📝 เหตุผล/อาการ:</strong> ${reasonText}</p>
+                            <hr style="border-top: 1px dashed #ddd; margin: 15px 0;">
+                            <p style="margin-top: 10px; font-size: 1.1em; color: ${noShowCountForUser > 0 ? '#e76f51' : '#457b9d'}; font-weight: bold;">
+                                <i class="fas fa-exclamation-triangle"></i> 
+                                **ประวัติผิดนัดบริการทั้งหมด:** ${noShowCountForUser} ครั้ง
+                                ${noShowCountForUser >= 3 ? `<br><small style="color: #c0392b; font-weight: bolder; display: block; margin-top: 5px;">(คุณยังสามารถใช้คิวที่จองนี้ได้ แต่ครั้งต่อไปจะไม่สามารถจองออนไลน์ได้)</small>` : noShowCountForUser > 0 ? `<br><small style="color: #f39c12; display: block; margin-top: 5px;">(โปรดมาตามนัดเพื่อรักษาสิทธิ์ในการจองออนไลน์ครั้งต่อไป)</small>` : ''}
+                            </p>
+                        </div>
+                        <button onclick="window.location.reload();" style="margin-top: 25px; padding: 12px 25px; font-size: 1.1em; background-color: #e63946; color: white; border: none; border-radius: 8px; cursor: pointer; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#c0392b'" onmouseout="this.style.backgroundColor='#e63946'">
+                            จองคิวใหม่ / กลับหน้าหลัก
+                        </button>
+                    </div>
+                `;
+                
+                // 3. แทรกข้อความสรุปถาวรลงใน Container
+                if (container) {
+                     const titleElement = container.querySelector('.title');
+                     if (titleElement) {
+                         // แทรกหลังส่วนหัวข้อหลัก
+                         titleElement.insertAdjacentHTML('afterend', successSummary);
+                     } else {
+                         // กรณีไม่มีหัวข้อ: แทนที่เนื้อหาทั้งหมดใน Container
+                         container.innerHTML = successSummary; 
+                     }
+                }
+
+                // 4. ล้างค่าในฟอร์ม (ถ้าจำเป็น) แต่ไม่ล้างชื่อ/เบอร์
                 document.getElementById('bookingReason').value = '';
 
-                setTimeout(() => {
-                    bookingPopup.classList.remove('is-active');
-                    bookingPopup.classList.add('hidden');
-                    timeSlotDetails.classList.add('hidden');
-                    document.querySelector('.calendar-wrapper').classList.remove('hidden');
-                    selectedDate = null;
-                    selectedTimeSlot = null;
-                    fetchData(); // โหลดข้อมูลใหม่เพื่อให้แสดงสถานะล่าสุด
-                }, 4000);
+                // 5. ลบ setTimeout ออกเพื่อให้ผลสรุปแสดงตลอดไป (ไม่มีโค้ด timeout แล้ว)
             } else {
                 loadingSpinner.classList.add('hidden');
                 formMessage.textContent = 'เกิดข้อผิดพลาดในการจอง: ' + result;
