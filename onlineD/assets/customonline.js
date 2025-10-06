@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const bookingLimit = new Date();
-        bookingLimit.setDate(today.getDate() + 31);
+        bookingLimit.setDate(today.getDate() + 23);
         bookingLimit.setHours(0, 0, 0, 0);
 
         for (let i = 0; i < firstDayOfMonth; i++) {
@@ -464,7 +464,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const successSummary = `
                     <div id="permanentSuccessSummary" class="glass-effect" style="margin: 40px auto; max-width: 600px; text-align: center; color: #1d3557; padding: 25px; border: 5px solid #2a9d8f; border-radius: 15px; background-color: rgba(230, 255, 250, 0.9); box-shadow: 0 0 20px rgba(42, 157, 143, 0.7); animation: fadeIn 0.5s;">
                         <i class="fas fa-check-circle" style="font-size: 5em; color: #2a9d8f; margin-bottom: 15px;"></i>
-                        <h3 style="margin-top: 0; color: #2a9d8f; font-size: 2.2em;">✅ การจองคิวสำเร็จโดยสมบูรณ์ ✅</h3>
+                        <h3 style="margin-top: 0; color: #2a9d8f; font-size: 2.2em;">✅ การจองคิวสำเร็จ ✅</h3>
                         <p style="font-size: 1.2em; font-weight: bold; margin-bottom: 20px;">
                             กรุณาบันทึกหน้านี้ไว้ และนำบัตรประชาชน/เอกสารที่เกี่ยวข้องมาด้วย
                         </p>
