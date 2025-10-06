@@ -3,12 +3,113 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>งานทันตสาธารณสุข</title>
+  <title>งานทันตสาธารณสุข - ล็อกอิน</title>
   <link rel="stylesheet" href="assets/css/styleDcheck.css">
   <link href="https://fonts.googleapis.com/css2?family=Sarabun&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    /* Updated styles for the submission history display */
+    /* ---------------------------------------------------------------------------------- */
+    /* ส่วนของ Style สำหรับหน้าจอ Login ที่เพิ่มเข้ามา */
+    /* ---------------------------------------------------------------------------------- */
+    #login-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #f4f7f6; /* สีพื้นหลังอ่อน ๆ */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000; /* ให้ทับหน้าจออื่น ๆ ทั้งหมด */
+      font-family: 'Sarabun', sans-serif;
+      flex-direction: column;
+    }
+
+    #login-box {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 90%;
+      max-width: 350px;
+    }
+
+    #passcode-display {
+      height: 40px;
+      margin-bottom: 20px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      font-size: 24px;
+      line-height: 36px;
+      color: #333;
+      text-align: center;
+      letter-spacing: 5px; /* Spacing between digits for better look */
+      background-color: #e9ecef;
+    }
+
+    #keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .keypad-button {
+      background-color: #007bff; /* สีน้ำเงินหลัก */
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 20px 10px;
+      font-size: 24px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .keypad-button:hover {
+      background-color: #0056b3;
+    }
+
+    .keypad-button:active {
+      background-color: #004085;
+      box-shadow: none;
+      transform: translateY(1px);
+    }
+
+    .keypad-button.action {
+      background-color: #6c757d; /* สีเทาสำหรับปุ่ม Clear/Backspace */
+      font-size: 18px;
+    }
+    /* กำหนดขนาดไอคอน Backspace */
+    .keypad-button.action i {
+        font-size: 24px;
+    }
+
+    .keypad-button.action:hover {
+      background-color: #5a6268;
+    }
+
+    #enter-button {
+      grid-column: span 3;
+      background-color: #28a745; /* สีเขียวสำหรับปุ่มตกลง */
+      font-size: 20px;
+      padding: 15px 10px;
+      margin-top: 10px;
+    }
+
+    #enter-button:hover {
+      background-color: #218838;
+    }
+
+    #message {
+        color: red;
+        font-weight: bold;
+        min-height: 20px; /* กันการกระโดดขององค์ประกอบอื่น */
+    }
+
+    /* Updated styles for the submission history display (from original file) */
     #submission-history {
       position: fixed;
       top: 20px;
@@ -32,11 +133,37 @@
     #submission-history p strong {
       color: #0056b3; /* A bit more prominent color for the code */
     }
+
+    /* เมื่อล็อกอินสำเร็จ ให้ซ่อน overlay */
+    .hidden {
+      display: none !important;
+    }
   </style>
 </head>
 <body>
-  <div id="submission-history"></div> <div class="container">
-    <h1> PROGRAM DENTCHECK V.4 </h1>
+  <div id="login-overlay">
+    <div id="login-box">
+        <h2>กรุณาป้อนรหัสผ่าน</h2>
+        <div id="passcode-display"></div>
+        <p id="message"></p>
+        <div id="keypad">
+            <button type="button" class="keypad-button" data-key="1">1</button>
+            <button type="button" class="keypad-button" data-key="2">2</button>
+            <button type="button" class="keypad-button" data-key="3">3</button>
+            <button type="button" class="keypad-button" data-key="4">4</button>
+            <button type="button" class="keypad-button" data-key="5">5</button>
+            <button type="button" class="keypad-button" data-key="6">6</button>
+            <button type="button" class="keypad-button" data-key="7">7</button>
+            <button type="button" class="keypad-button" data-key="8">8</button>
+            <button type="button" class="keypad-button" data-key="9">9</button> <button type="button" class="keypad-button action" id="clear-button">ล้าง</button> <button type="button" class="keypad-button" data-key="0">0</button>
+            <button type="button" class="keypad-button action" id="backspace-button"><i class="fas fa-backspace"></i></button> <button type="button" class="keypad-button action" id="enter-button">ตกลง</button>
+        </div>
+    </div>
+  </div>
+
+  <div id="submission-history"></div> 
+  <div class="container" id="main-content">
+    <h1> PROGRAM DENTCHECK V.5 </h1>
     
     <form id="dataForm">
       <div class="main-content-grid">
@@ -113,6 +240,66 @@
   </div>
 
   <script>
+    // ----------------------------------------------------------------------------------
+    // ส่วนของ Login Script
+    // ----------------------------------------------------------------------------------
+    const CORRECT_PASSCODE = "3946";
+    const passcodeDisplay = document.getElementById("passcode-display");
+    const loginOverlay = document.getElementById("login-overlay");
+    const keypadButtons = document.querySelectorAll(".keypad-button[data-key]");
+    const enterButton = document.getElementById("enter-button");
+    const clearButton = document.getElementById("clear-button");
+    const backspaceButton = document.getElementById("backspace-button"); // เพิ่มตัวแปรสำหรับปุ่ม Backspace
+    const messageElement = document.getElementById("message");
+    let currentPasscode = "";
+
+    // ฟังก์ชันอัปเดตการแสดงผลรหัสผ่าน
+    function updatePasscodeDisplay() {
+        // แทนที่ตัวเลขด้วยเครื่องหมายดอกจัน (*)
+        passcodeDisplay.textContent = "*".repeat(currentPasscode.length);
+        messageElement.textContent = ""; // ล้างข้อความแจ้งเตือน
+    }
+
+    // เพิ่ม Event Listener ให้กับปุ่มตัวเลข (1-9, 0)
+    keypadButtons.forEach(button => {
+        button.addEventListener("click", function() {
+            const key = this.dataset.key;
+            currentPasscode += key;
+            updatePasscodeDisplay();
+        });
+    });
+
+    // Event Listener สำหรับปุ่ม "ล้าง" (Clear All)
+    clearButton.addEventListener("click", function() {
+        currentPasscode = "";
+        updatePasscodeDisplay();
+    });
+
+    // Event Listener สำหรับปุ่ม "ลบทีละตัว" (Backspace)
+    backspaceButton.addEventListener("click", function() {
+        // ลบตัวอักษรตัวสุดท้ายออก
+        currentPasscode = currentPasscode.slice(0, -1);
+        updatePasscodeDisplay();
+    });
+
+    // Event Listener สำหรับปุ่ม "ตกลง"
+    enterButton.addEventListener("click", function() {
+        if (currentPasscode === CORRECT_PASSCODE) {
+            // ล็อกอินสำเร็จ
+            loginOverlay.classList.add("hidden");
+            // เรียกฟังก์ชันตั้งค่าเริ่มต้นของหน้าหลัก (ซึ่งอยู่ในส่วนด้านล่าง)
+            initialSetup(); 
+        } else {
+            // ล็อกอินไม่สำเร็จ
+            messageElement.textContent = "รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง";
+            currentPasscode = ""; // ล้างรหัสผ่านที่ป้อน
+            passcodeDisplay.textContent = ""; // แสดงผลเป็นค่าว่าง
+        }
+    });
+
+    // ----------------------------------------------------------------------------------
+    // ส่วนของ Script เดิม
+    // ----------------------------------------------------------------------------------
     const scriptURL = "https://script.google.com/macros/s/AKfycbwgNSARmEVj9bZU9euDyAkkuOb8PeJOtsHKHVjFcUR0AhP1ZQcOKcs4f4JmKk3H_fv-xg/exec";
     const form = document.getElementById("dataForm");
     const classInput = document.getElementById("class");
@@ -201,7 +388,7 @@
     }
 
     // --- Existing Form Logic (mostly unchanged) ---
-    classInput.addEventListener('change', function() {
+    function handleClassChange() {
       const grade = this.value;
       let npValue, nmValue;
 
@@ -225,7 +412,7 @@
 
       npInput.value = npValue;
       nmInput.value = nmValue;
-    });
+    }
 
     function getRandomInt(min, max) {
       min = Math.ceil(min);
@@ -245,24 +432,22 @@
       });
       cpInput.value = cpCount;
     }
-
-    actionButtons.forEach(button => {
-      button.addEventListener('click', function() {
-        const buttonName = this.dataset.name;
-        
-        if (this.classList.contains('selected')) {
-          this.classList.remove('selected');
-          selectedButtons.delete(buttonName);
-        } else {
-          this.classList.add('selected');
-          selectedButtons.add(buttonName);
-        }
-        updateCpCount();
-      });
-    });
+    
+    function handleActionButtonClick() {
+      const buttonName = this.dataset.name;
+      
+      if (this.classList.contains('selected')) {
+        this.classList.remove('selected');
+        selectedButtons.delete(buttonName);
+      } else {
+        this.classList.add('selected');
+        selectedButtons.add(buttonName);
+      }
+      updateCpCount();
+    }
 
     // เมื่อผู้ใช้ส่งฟอร์ม
-    form.addEventListener("submit", e => {
+    function handleFormSubmit(e) {
       e.preventDefault();
       
       submitButton.classList.add('blinking');
@@ -271,7 +456,7 @@
       const formData = new FormData(form);
       formData.append('CP', cpInput.value);
 
-		selectedButtons.forEach(name => {
+      selectedButtons.forEach(name => {
         formData.append(name, 'on');
       });
 
@@ -303,20 +488,42 @@
         submitButton.classList.remove('blinking');
         submitButton.disabled = false;
       });
+    }
+
+    // ฟังก์ชันสำหรับตั้งค่าเริ่มต้นของหน้าหลัก
+    function initialSetup() {
+        // เพิ่ม Event Listeners ของหน้าหลัก
+        classInput.addEventListener('change', handleClassChange);
+        actionButtons.forEach(button => {
+            button.addEventListener('click', handleActionButtonClick);
+        });
+        form.addEventListener("submit", handleFormSubmit);
+
+        // ตั้งค่าเริ่มต้นของหน้าหลัก
+        loadSubmissionHistory(); // โหลดประวัติการส่ง
+        updateSubmissionHistoryDisplay(); // แสดงประวัติ
+
+        document.getElementById("date").value = new Date().toLocaleDateString("th-TH");
+        fieldsToRemember.forEach(field => {
+            const savedValue = localStorage.getItem(field);
+            if (savedValue) {
+                document.querySelector(`[name="${field}"]`).value = savedValue;
+            }
+        });
+    }
+
+    // เมื่อโหลดหน้าเว็บเสร็จ (แต่ยังไม่ผ่านล็อกอิน)
+    document.addEventListener("DOMContentLoaded", function() {
+        // ซ่อนเนื้อหาหลักจนกว่าจะล็อกอินสำเร็จ
+        document.getElementById("main-content").style.display = 'none';
+
+        // เมื่อล็อกอินสำเร็จ ค่อยแสดงเนื้อหาหลัก
+        enterButton.addEventListener("click", function() {
+            if (currentPasscode === CORRECT_PASSCODE) {
+                document.getElementById("main-content").style.display = ''; // แสดงเนื้อหาหลัก
+            }
+        });
     });
-
-    // Initial setup on page load:
-    loadSubmissionHistory(); // Load any saved history
-    updateSubmissionHistoryDisplay(); // Display it
-
-    document.getElementById("date").value = new Date().toLocaleDateString("th-TH");
-    fieldsToRemember.forEach(field => {
-      const savedValue = localStorage.getItem(field);
-      if (savedValue) {
-        document.querySelector(`[name="${field}"]`).value = savedValue;
-      }
-    });
-
   </script>
 </body>
 </html>

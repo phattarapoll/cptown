@@ -16,6 +16,7 @@
             --color-light: #F7F9F9;   /* Off-White */
             --color-success: #388E3C; /* Emerald Green */
             --color-error: #B03A2E;   /* Burgundy Red */
+            --color-footer-bg: #4A148C; /* เพิ่มสีม่วงเข้ม (Deep Purple) */
         }
 
         html, body {
@@ -44,10 +45,10 @@
         .footer-image {
             width: 60px; /* ขยายขนาดเล็กน้อย */
             height: 60px;
-            border-radius: 50%;
+            /* ทำให้ขอบมนขึ้นเล็กน้อย */
+            border-radius: 0.5rem; /* หรือค่าอื่น ๆ เช่น 8px, 10px */
             object-fit: cover;
-            border: 3px solid var(--color-accent); /* กรอบสีทอง */
-            box-shadow: 0 0 10px rgba(193, 154, 107, 0.5);
+            /* ลบกรอบและเงาออก */
         }
         .footer-text {
             /* ปรับขนาดฟอนต์ให้เหมาะกับ responsive */
@@ -148,6 +149,11 @@
             background-color: var(--color-primary);
             color: var(--color-accent);
         }
+        
+        /* ปรับรูปในส่วนข้อมูลเจ้าหน้าที่ (Admin Info) ให้เป็นสี่เหลี่ยมมน */
+        .admin-profile-img {
+            border-radius: 0.5rem; /* ทำให้มีขอบมนเล็กน้อย (สี่เหลี่ยม) */
+        }
     </style>
     <script>
         tailwind.config = {
@@ -203,6 +209,10 @@
             <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-[1.02]" data-status="open" style="border-left: 4px solid var(--color-success);">
                 <span class="text-lg font-semibold text-gray-800">เคลือบหลุมร่องฟัน</span>
                 <span class="service-status px-3 py-1 rounded-full font-bold text-sm service-status-open">OPEN</span>
+            </div>
+            <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-[1.02]" data-status="closed" style="border-left: 4px solid var(--color-error);">
+                <span class="text-lg font-semibold text-gray-800">เกลารากฟัน</span>
+                <span class="service-status px-3 py-1 rounded-full font-bold text-sm service-status-closed">CLOSED</span>
             </div>
             <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-[1.02]" data-status="closed" style="border-left: 4px solid var(--color-error);">
                 <span class="text-lg font-semibold text-gray-800">รักษารากฟัน</span>
@@ -293,7 +303,7 @@
         </div>
     </main>
 
-    <footer class="bg-gray-900 text-off-white p-4 sm:p-6 text-center rounded-t-xl shadow-inner mt-auto">
+    <footer style="background-color: var(--color-footer-bg);" class="text-off-white p-4 sm:p-6 text-center rounded-t-xl shadow-inner mt-auto">
         <div class="footer-content">
             <img src="assets/images/admin.jpg" alt="รูปโปรไฟล์ผู้ให้บริการ" class="footer-image">
             <div class="footer-text text-xs sm:text-sm">
