@@ -173,8 +173,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 tooltipReason = 'วันนี้ผ่านไปแล้ว';
             } else if (date > bookingLimit) {
                 isUnavailable = true;
-                displayReason = 'เกินเวลาจอง';
-                tooltipReason = 'เกินเวลาจอง';
+                displayReason = 'รอเปิด';
+                tooltipReason = 'รอเปิด';
             } else if (configData.unavailableWeekdays.includes(dayOfWeek)) {
                 isUnavailable = true;
                 displayReason = 'ปิดทำการ';

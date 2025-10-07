@@ -57,7 +57,7 @@ body {
 }
 
 .title {
-    font-size: 3.5em;
+    font-size: 2.5em;
     font-weight: 700;
     color: #1d3557; /* สีน้ำเงินเข้ม */
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* เพิ่มเงาให้ข้อความ */
@@ -163,16 +163,16 @@ body {
     background-color: #a8dadc; /* สีฟ้าอ่อน */
     color: #1d3557;
     padding: 10px 0;
-    border-radius: 8px;
+    border-radius: 3px;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
-    min-height: 80px; /* เพิ่ม min-height */
+    min-height: 50px; /* เพิ่ม min-height */
     display: flex;
     flex-direction: column;
     justify-content: flex-start; /* เปลี่ยนจาก center เป็น flex-start */
     align-items: center;
     text-align: center;
-    font-size: 0.9em; /* ลดขนาด font สำหรับ day-number และ slot-count */
+    font-size: 0.8em; /* ลดขนาด font สำหรับ day-number และ slot-count */
     position: relative; /* สำหรับ relative positioning ของ slot-count */
     overflow: hidden; /* ซ่อนส่วนเกินเมื่อมีข้อความยาว */
     padding-top: 10px; /* เพิ่ม padding ด้านบนเล็กน้อย */
@@ -180,7 +180,7 @@ body {
 
 .calendar-day:hover:not(.disabled):not(.unavailable) {
     background-color: #457b9d; /* สีน้ำเงินเข้มขึ้นเมื่อ hover */
-    color: white;
+    color: red;
     transform: translateY(-3px); /* ยกขึ้นเล็กน้อย */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
@@ -205,9 +205,28 @@ body {
     font-weight: bold;
 }
 
+/* Keyframes for blink animation on current-day */
+@keyframes blinkCurrentDay {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        background-color: #ffffff; /* สีขาว (ขยายเข้า) */
+    }
+    50% {
+        transform: scale(1.05); /* ขยายออกเล็กน้อย */
+        box-shadow: 0 0 15px rgba(153, 255, 0, 0.5);
+        background-color: #d8ffb8; /* สีเขียวอ่อน (ขยายออก) */
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        background-color: #ffffff; /* สีขาว (ขยายเข้า) */
+    }
+}
+
 .calendar-day.current-day {
     border: 3px solid #99FF00; /* กรอบสีเขียวสำหรับวันปัจจุบัน */
-    box-shadow: 0 0 10px rgba(230, 57, 70, 0.5);
+    animation: blinkCurrentDay 2s infinite ease-in-out; /* ใช้ animation ใหม่ */
 }
 
 .calendar-day .day-number {
