@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const bookingLimit = new Date();
-        bookingLimit.setDate(today.getDate() + 23);
+        bookingLimit.setDate(today.getDate() + 22);
         bookingLimit.setHours(0, 0, 0, 0);
 
         for (let i = 0; i < firstDayOfMonth; i++) {
