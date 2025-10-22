@@ -36,6 +36,22 @@
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* สไตล์สำหรับ Modal และรูปภาพในกระดานข่าว (เพิ่มเพื่อรองรับการขยายภาพ) */
+        #imageModal {
+            display: none; /* ซ่อนไว้ตั้งแต่ต้น */
+            transition: opacity 0.3s ease;
+        }
+        #imageModal > span {
+            z-index: 51; 
+        }
+        .image-gallery-item {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .image-gallery-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -61,9 +77,8 @@
                     <a href="https://script.google.com/macros/s/AKfycbzzb8LaoKSjp1EjH7ipPooD8bomoRhLcfGrmVRU-9MN9dL2kl2CnLhVcLqLDG7EQ3GG/exec" target="_blank">ประเมินสมรรถนะช่องปาก 9 ด้าน</a>
                     <a href="https://script.google.com/macros/s/AKfycbyZKYH3o6v3kuW-lBCc7NgAl1BF_pCofxppFxAb4CzzX28bqHJxm3b8QGXTDDaScjAG/exec" target="_blank">ระบบหนังสือราชการ</a>
                     <a href="disease-details.html" target="_blank">ความรู้เกี่ยวกับโรค</a>
-                    <a href="https://script.google.com/macros/s/AKfycbyx2BQ9x1YTZh5gfs9Z1qlx3uCD39IXyAnDQNt7-dryETLD4XwM4Dk1TiZ9_Pt7qh7FRxg/exec" target="_blank">สรุปผลความพึงพอใจ</a>
+                    <a href="https://script.google.com/macros/s/AKfycbx2BQ9x1YTZh5gfs9Z1qlx3uCD39IXyAnDQNt7-dryETLD4XwM4Dk1TiZ9_Pt7qh7FRxg/exec" target="_blank">สรุปผลความพึงพอใจ</a>
                     <a href="clock/index.html" target="_blank">นาฬิกาพร้อมปฏิทินปฏิบัติงาน</a>
-                    <a href="hora/index.html" target="_blank">สุ่มคำทำนาย</a>
                     <a href="download.html" target="_blank">ดาวน์โหลด</a>
                 </div>
             </div>
@@ -132,6 +147,7 @@
             <a href="https://script.google.com/macros/s/AKfycbxHb-Scwa_xTExw95h8qKLQcI4EmrLfHCfNLZ98G4BXK4LaUk7avo4qnC_N2jzkObuuww/exec" target="_blank">สอบ ผู้ช่วยทันต</a>
             <a href="https://script.google.com/macros/s/AKfycbyAKLrF1PwV5gsDJOF5VMyKzdMmvEFsAGFheegkJwChbpi91kEfq47dWmygn0ZTORa1Tw/exec?page=index2" target="_blank">ผลสอบ ผู้ช่วยทันต</a>
             <a href="https://pic.in.th/cptown" target="_blank">ฝากรูปเว็ปไซต์</a>
+            <a href="hora/index.html" target="_blank">สุ่มคำทำนาย</a>
             <a href="ADM.html" target="_blank">ADMIN ONLY</a>
         </div>
     </div>
@@ -182,29 +198,68 @@
 
 
             <div class="lg:w-2/3">
-                <h2 class="text-3xl font-bold text-blue-800 mb-6 border-b-2 border-blue-300 pb-2">แนวทางการปฏิบัติงาน</h2>
+                <h2 class="text-3xl font-bold text-blue-800 mb-6 border-b-2 border-blue-300 pb-2">แนวทางการปฏิบัติงานทันตสาธารณสุขเชิงรุก</h2>
                 <div class="prose max-w-none text-gray-700 leading-relaxed">
-                    <p>
-                        งานทันตสาธารณสุข ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร มุ่งมั่นให้บริการด้านทันตกรรมที่มีคุณภาพแก่ประชาชนทุกท่าน เรายึดมั่นในหลักการทำงานที่เป็นมาตรฐานสากล เพื่อให้ผู้รับบริการได้รับความพึงพอใจสูงสุดและมีสุขภาพช่องปากที่ดีอย่างยั่งยืน
-                    </p>
-                    <h3 class="text-xl font-semibold text-blue-700 mt-4 mb-2">ขั้นตอนการให้บริการ</h3>
-                    <ol class="list-decimal list-inside ml-4">
-                        <li><strong>การลงทะเบียน:</strong> ผู้ป่วยใหม่และผู้ป่วยเก่าสามารถจองคิวบริการออนไลน์ได้ และต้องเตรียมบัตรประชาชนหรือเอกสารระบุตัวตนที่เกี่ยวข้องมาในวันรับบริการ</li>
-                        <li><strong>การตรวจวินิจฉัย:</strong> ตรวจสุขภาพช่องปากอย่างละเอียด เพื่อประเมินสภาพปัญหาและวางแผนการรักษาที่เหมาะสม</li>
-                        <li><strong>การให้คำปรึกษา:</strong>อธิบายแผนการรักษา ทางเลือก โดยละเอียด เพื่อให้ผู้ป่วยเข้าใจและตัดสินใจร่วมกัน</li>
-                        <li><strong>การรักษา:</strong> ดำเนินการรักษาตามแผนที่ตกลง เช่น การอุดฟัน, ขูดหินปูน, ถอนฟัน หรือการรักษาอื่นๆ</li>
-                        <li><strong>การติดตามผล:</strong> หลังการรักษา อาจมีการนัดหมายเพื่อติดตามผลหรือให้คำแนะนำในการดูแลสุขภาพช่องปากอย่างต่อเนื่อง</li>
-                    </ol>
-                    <h3 class="text-xl font-semibold text-blue-700 mt-4 mb-2">นโยบายสำคัญ</h3>
+                    <p><strong>ด้านการส่งเสริมสุขภาพและการป้องกันโรคในช่องปาก</strong></p>
+                    <p>เพื่อให้การดำเนินงานด้านทันตสาธารณสุขบรรลุเป้าหมายในการส่งเสริมสุขภาพช่องปากและลดอุบัติการณ์ของโรคในช่องปากอย่างยั่งยืน จึงกำหนดแนวทางการปฏิบัติงานที่เน้นการส่งเสริมและการป้องกันในกลุ่มเป้าหมายต่าง ๆ ดังต่อไปนี้</p>
+
+                    <h3 class="text-xl font-semibold text-blue-700 mt-6 mb-2">หลักการสำคัญ</h3>
                     <ul class="list-disc list-inside ml-4">
-                        <li><strong>ความปลอดภัย:</strong> ให้ความสำคัญสูงสุดกับความปลอดภัยของผู้ป่วย โดยใช้อุปกรณ์ที่ผ่านการฆ่าเชื้อ</li>
-                        <li><strong>คุณภาพ:</strong> ใช้เทคโนโลยีและวัสดุที่มีคุณภาพสูง เพื่อให้ผลการรักษามีประสิทธิภาพและคงทน</li>
-                        <li><strong>การเข้าถึง:</strong> มุ่งมั่นที่จะทำให้ผู้ป่วยไม่ต้องรอคิวบริการทันตกรรม สามารถนัดและตรวจสอบวันนัดได้ตลอด 24 ชั่วโมง</li>
-                        <li><strong>ความเป็นกันเอง:</strong>งานทันตสาธารณสุขพร้อมให้บริการด้วยความอบอุ่น เป็นกันเอง และให้คำแนะนำที่เป็นประโยชน์</li>
+                        <li>เน้นการดำเนินงานเชิงรุกในระดับชุมชนและสถานบริการ เพื่อสร้างความตระหนักและปรับเปลี่ยนพฤติกรรมสุขภาพช่องปาก</li>
+                        <li>บูรณาการงานทันตสาธารณสุขเข้ากับงานสาธารณสุขพื้นฐาน (PHC) และการดูแลในทุกช่วงวัย</li>
                     </ul>
-                    <p class="mt-4">
-                        หากมีข้อสงสัยหรือต้องการข้อมูลเพิ่มเติม โปรดติดต่อเจ้าหน้าที่ของเรา หรือโทร 077-507082
-                    </p>
+
+                    <h3 class="text-xl font-semibold text-blue-700 mt-6 mb-2">แนวทางการปฏิบัติงานส่งเสริมและป้องกัน</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full border-collapse table-auto text-sm">
+                            <thead>
+                                <tr class="bg-blue-100">
+                                    <th class="border p-2 text-left">กลุ่มเป้าหมาย</th>
+                                    <th class="border p-2 text-left">กิจกรรมส่งเสริมและป้องกัน</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="border p-2 font-semibold">หญิงตั้งครรภ์</td>
+                                    <td class="border p-2">
+                                        <ol class="list-decimal list-inside">
+                                            <li><strong>การให้ความรู้และคำแนะนำ:</strong> เน้นการดูแลสุขภาพช่องปากระหว่างตั้งครรภ์และผลกระทบต่อบุตร</li>
+                                            <li><strong>การตรวจสุขภาพช่องปาก:</strong> ตรวจคัดกรองความเสี่ยง และแก้ไขปัญหาระยะเริ่มแรกในช่วงอายุครรภ์ที่ปลอดภัย (4-6 เดือน)</li>
+                                        </ol>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="border p-2 font-semibold">เด็กเล็ก (0-2 ปี)</td>
+                                    <td class="border p-2">
+                                        <ol class="list-decimal list-inside">
+                                            <li><strong>ทาฟลูออไรด์วานิช:</strong> ให้แก่เด็กที่คลินิกเด็กดี หรือ ณ จุดบริการสุขภาพ เพื่อเสริมความแข็งแรงของฟัน</li>
+                                            <li><strong>ฝึกทักษะผู้ปกครอง:</strong> แนะนำและสาธิตการแปรงฟันให้บุตร (โดยเฉพาะเทคนิคการแปรงแห้ง) และการควบคุมอาหาร</li>
+                                        </ol>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="border p-2 font-semibold">เด็กวัยเรียน</td>
+                                    <td class="border p-2">
+                                        <ol class="list-decimal list-inside">
+                                            <li><strong>กิจกรรมทันตสุขภาพในโรงเรียน:</strong> จัดระบบการเฝ้าระวังทางทันตสุขภาพ (ตรวจสุขภาพช่องปากพร้อมคัดกรอง)</li>
+                                            <li><strong>การแปรงฟันตามแนวทาง:</strong> จัดให้มีการแปรงฟันหลังอาหารกลางวันอย่างมีประสิทธิภาพในโรงเรียน (School-based Toothbrushing)</li>
+                                            <li><strong>การเคลือบหลุมร่องฟัน (Sealant):</strong> ดำเนินการในกลุ่มเสี่ยงตามเกณฑ์</li>
+                                        </ol>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="border p-2 font-semibold">ประชาชนทั่วไป/วัยทำงาน/ผู้สูงอายุ</td>
+                                    <td class="border p-2">
+                                        <ol class="list-decimal list-inside">
+                                            <li><strong>การคัดกรองและให้คำปรึกษา:</strong> ตรวจสุขภาพช่องปากตามช่วงอายุ เพื่อค้นหาและจัดการความเสี่ยงโรคปริทันต์และมะเร็งช่องปาก</li>
+                                            <li><strong>รณรงค์ลดปัจจัยเสี่ยง:</strong> ส่งเสริมการลดการบริโภคน้ำตาลและอาหาร/เครื่องดื่มที่เป็นกรด การเลิกสูบบุหรี่</li>
+                                            <li><strong>ส่งเสริมการดูแลตนเอง:</strong> เน้นการแปรงฟันที่ถูกวิธี การใช้ไหมขัดฟัน/แปรงซอกฟัน และการเข้าถึงบริการทันตกรรมป้องกันอย่างสม่ำเสมอ</li>
+                                        </ol>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <a href="recive/index.html" target="_blank" class="inline-block mt-6 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 text-center">
                     <i class="far fa-smile mr-2"></i> ให้คะแนนบริการ
@@ -228,30 +283,35 @@
             </div>
 
             <div class="lg:w-1/3 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-gray-50 p-4 rounded-xl shadow-md border border-gray-200 text-center">
+                <div class="bg-gray-50 p-4 rounded-xl shadow-md border border-gray-200 text-center cursor-pointer image-gallery-item" onclick="openModal('assets/images/meeting/meeting-01.jpg')">
                     <img src="assets/images/meeting/meeting-01.jpg" alt="กิจกรรมทันตกรรม 1" class="w-full h-auto rounded-lg mb-3 object-cover">
                     <p class="font-semibold text-blue-700">QR CODE LINE</p>
                     <p class="text-sm text-gray-600">ท่านสามารถเพิ่มเพื่อน</p>
                     <p class="text-xs text-gray-500">หมายเหตุ: ระบบจองคิว</p>
                 </div>
-                <div class="bg-gray-50 p-4 rounded-xl shadow-md border border-gray-200 text-center">
+                <div class="bg-gray-50 p-4 rounded-xl shadow-md border border-gray-200 text-center cursor-pointer image-gallery-item" onclick="openModal('assets/images/meeting/meeting-02.jpg')">
                     <img src="assets/images/meeting/meeting-02.jpg" alt="กิจกรรมทันตกรรม 2" class="w-full h-auto rounded-lg mb-3 object-cover">
                     <p class="font-semibold text-blue-700">รณรงค์ตรวจฟัน</p>
                     <p class="text-sm text-gray-600">ทุกวันเวลาราชการ</p>
                     <p class="text-xs text-gray-500">หมายเหตุ: เฉพาะตรวจฟัน</p>
                 </div>
-                <div class="bg-gray-50 p-4 rounded-xl shadow-md border border-gray-200 text-center">
+                <div class="bg-gray-50 p-4 rounded-xl shadow-md border border-gray-200 text-center cursor-pointer image-gallery-item" onclick="openModal('Image/02.gif')">
                     <img src="Image/02.gif" alt="ภาพกิจกรรม 1" class="w-full h-auto rounded-lg mb-3 object-cover">
                     <p class="font-semibold text-blue-700">ประมวลภาพ</p>
                     <p class="text-sm text-gray-600"> 2023</p>
                 </div>
-                <div class="bg-gray-50 p-4 rounded-xl shadow-md border border-gray-200 text-center">
+                <div class="bg-gray-50 p-4 rounded-xl shadow-md border border-gray-200 text-center cursor-pointer image-gallery-item" onclick="openModal('Image/01.gif')">
                     <img src="Image/01.gif" alt="ภาพกิจกรรม 1" class="w-full h-auto rounded-lg mb-3 object-cover">
                     <p class="font-semibold text-blue-700">ประมวลภาพ</p>
                     <p class="text-sm text-gray-600"> 2024</p>
                 </div>
             </div>
         </section>
+
+        <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden" onclick="closeModal(event)">
+            <span class="absolute top-4 right-8 text-white text-5xl font-extralight cursor-pointer">&times;</span>
+            <img class="max-w-full max-h-full block m-auto shadow-2xl rounded-lg" id="modalImage">
+        </div>
 
         <section class="glassy-section p-8 rounded-xl shadow-lg mb-8">
             <h2 class="text-3xl font-bold text-blue-800 mb-6 border-b-2 border-blue-300 pb-2">บริการผู้ป่วยที่เปิด</h2>
@@ -377,8 +437,8 @@
                 
                 <div class="benefit-card bg-white p-4 rounded-xl shadow-md border-t-4 border-yellow-500 text-center !cursor-default">
                     <div class="flex items-start justify-center flex-col w-full">
-                        <h3 class="font-bold text-lg text-yellow-700 w-full">🎬 วีดิทัศน์ประชาสัมพันธ์</h3>
-                        <p class="text-sm text-gray-500 mt-1 w-full">คลิปวีดีโอประชาสัมพันธ์</p>
+                        <h3 class="font-bold text-lg text-yellow-700 w-full">🎬 วีดิทัศน์</h3>
+                        <p class="text-sm text-gray-500 mt-1 w-full">ประชาสัมพันธ์</p>
                     </div>
                     <div class="image-rotator-content w-full h-48 mt-3 relative">
                         <div class="relative w-full h-full">
@@ -393,48 +453,48 @@
                 "ถึงชาวเทศบาลเมืองชุมพรและพี่น้องท่าตะเภา! อย่ารอให้เป็นปัญหาเรื่องใหญ่ บุคลากรเทศบาลฯ และครอบครัว รวมถึงพี่น้องท่าตะเภา ล้วนมีสิทธิปัญหาด้านสุขภาพช่องปากที่พึงได้รับบริการ วันนี้! เข้าถึงบริการ ณ ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพรฯ(ตึกเก่า)"
             </p>
         </section>
-        <section class="glassy-section p-8 rounded-xl shadow-lg mb-8">
+		
+<section class="glassy-section p-8 rounded-xl shadow-lg mb-8">
             <h2 class="text-3xl font-bold text-blue-800 mb-6 border-b-2 border-blue-300 pb-2">ความพึงพอใจของผู้รับบริการ</h2>
-            <div class="w-full">
+            <div class="w-full space-y-4">
+                
                 <div class="mb-4">
-                    <label class="block text-lg font-medium text-gray-700 mb-2">ความสภาพอ่อนโยน</label>
+                    <label class="block text-lg font-medium text-gray-700 mb-2">กริยามารยาทและการแต่งกาย</label>
                     <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: 100%;">100%</div>
+                        <div class="progress-bar-fill" style="width: 99%;">4.99 / 5</div>
                     </div>
                 </div>
+                
                 <div class="mb-4">
-                    <label class="block text-lg font-medium text-gray-700 mb-2">ตอบข้อสงสัย (เต็มใจ)</label>
+                    <label class="block text-lg font-medium text-gray-700 mb-2">ความสุภาพอ่อนโยน อ่อนน้อม ยิ้มแย้มแจ่มใส วาจาสุภาพ</label>
                     <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: 100%;">100%</div>
+                        <div class="progress-bar-fill" style="width: 100%;">5 / 5</div>
                     </div>
                 </div>
+                
                 <div class="mb-4">
-                    <label class="block text-lg font-medium text-gray-700 mb-2">ตอบข้อสงสัยแก่ท่าน</label>
+                    <label class="block text-lg font-medium text-gray-700 mb-2">ความสนใจเอาใจใส่ เต็มใจช่วยเหลือ</label>
                     <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: 100%;">100%</div>
+                        <div class="progress-bar-fill" style="width: 100%;">5 / 5</div>
                     </div>
                 </div>
+                
+                <div class="mb-4">
+                    <label class="block text-lg font-medium text-gray-700 mb-2">ตอบข้อสงสัยด้วยความเต็มใจ</label>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: 100%;">5 / 5</div>
+                    </div>
+                </div>
+                
                 <div class="mb-4">
                     <label class="block text-lg font-medium text-gray-700 mb-2">ความรู้ความสามารถ</label>
                     <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: 100%;">100%</div>
-                    </div>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-lg font-medium text-gray-700 mb-2">กริยามารยาท</label>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: 100%;">100%</div>
-                    </div>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-lg font-medium text-gray-700 mb-2">ความรวดเร็ว</label>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: 100%;">100%</div>
+                        <div class="progress-bar-fill" style="width: 100%;">5 / 5</div>
                     </div>
                 </div>
             </div>
-            </section>
-
+        </section>
+		
         <section class="glassy-section p-8 rounded-xl shadow-lg mb-8">
             <h2 class="text-3xl font-bold text-blue-800 mb-6 border-b-2 border-blue-300 pb-2">ช่องทางการติดต่อ</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-700">
@@ -452,7 +512,7 @@
                 </div>
                 <div>
                     <p class="text-lg font-semibold text-blue-700"><i class="fas fa-globe mr-2 text-blue-500"></i> Website URL:</p>
-                    <p class="ml-6"><a href="https://phattarapoll.github.io/cptown/" target="_blank" class="text-blue-600 hover:underline">https://phattarapoll.github.io/cptown/</a></p>
+                    <p class="ml-6"><a href="https://cptown.6te.net" target="_blank" class="text-blue-600 hover:underline">https://cptown.6te.net</a></p>
                 </div>
             </div>
         </section>
@@ -468,6 +528,24 @@
         // 1. Script สำหรับการขยาย/ยุบ Card
         function toggleCard(cardElement) {
             cardElement.classList.toggle('expanded');
+        }
+
+        // 2. Script สำหรับการเปิด/ปิด Modal ขยายรูปภาพ
+        const modal = document.getElementById("imageModal");
+        const modalImg = document.getElementById("modalImage");
+        
+        // ฟังก์ชันเปิด Modal
+        function openModal(imageSrc) {
+            modal.style.display = "flex";
+            modalImg.src = imageSrc;
+        }
+        
+        // ฟังก์ชันปิด Modal (คลิกที่พื้นหลังหรือปุ่ม X)
+        function closeModal(event) {
+            // ตรวจสอบว่าคลิกที่ตัว Modal เอง หรือปุ่มปิด
+            if (event.target === modal || event.target.tagName === 'SPAN') {
+                modal.style.display = "none";
+            }
         }
         
         // **หมายเหตุ:** ฟังก์ชัน openModalQR() และ closeModalQR(event) ถูกนำออกแล้ว
