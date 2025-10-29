@@ -98,6 +98,13 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
+        /* CSS ใหม่สำหรับรหัสยกเลิก */
+        @keyframes codeFlash {
+            0% { color: #e63946; }
+            50% { color: #c0392b; }
+            100% { color: #e63946; }
+        }
+
     </style>
 </head>
 <body>
@@ -167,12 +174,11 @@
                     <select id="bookingReason" name="bookingReason" required>
                         <option value="">-- กรุณาเลือก --</option>
                         <option value="ตรวจฟัน">ตรวจสุขภาพช่องปากประจำปี</option>
-                        <option value="อุดฟัน">วัสดุอุดเก่าหลุด ฟันแตก /ต้องการอุดฟัน</option>
-						<option value="ขูดหินน้ำลาย">ต้องการขูดหินน้ำลาย</option>
+                        <option value="อุดฟัน">ต้องการอุดฟัน / วัสดุอุดเก่าหลุด ฟันแตก </option>
+						<option value="ขูดหินน้ำลาย">ต้องการขูดหินปูน</option>
                         <option value="ปวดฟัน">มีอาการปวดฟัน</option>
                         <option value="เสียวฟัน">มีอาการเสียวฟัน ขณะทานน้ำเย็น หรืออื่นๆ</option>
                         <option value="ถอนฟัน">ต้องการถอนฟัน (เฉพาะฟันที่มีอาการโยก และฟันน้ำนม)</option>
-						<option value="ขูดหินน้ำลาย">ต้องการขูดหินน้ำลาย</option>
                         <option value="อื่นๆ">อื่นๆ</option>
                     </select>
                     <button type="submit" class="submit-button">ยืนยันการจอง</button>
@@ -181,6 +187,23 @@
             </form>
         </div>
     </div>
+    
+    <div id="cancelPopup" class="popup-overlay hidden">
+        <div class="popup-content glass-effect">
+            <button id="closeCancelPopup" class="close-button">×</button>
+            <h2 class="popup-title" style="color: #e63946;">ยืนยันการยกเลิกคิว</h2>
+            <p><strong>วันที่:</strong> <span id="cancelPopupDate"></span></p>
+            <p><strong>ช่วงเวลา:</strong> <span id="cancelPopupTimeSlot"></span></p>
+            <p><strong>ผู้จอง:</strong> <span id="cancelPopupFullName"></span></p>
+            <p style="color: #e63946; font-weight: bold; margin-top: 15px;">โปรดป้อนรหัสยกเลิกคิว 6 หลัก (Code)</p> 
+            <div class="form-group">
+                <input type="password" id="cancelPassword" maxlength="6" pattern="[0-9]{6}" placeholder="รหัสผ่าน 6 หลัก" required style="text-align: center; font-size: 1.5em; letter-spacing: 2px;">
+            </div>
+            <button id="confirmCancelButton" class="submit-button" style="background-color: #e63946; margin-top: 15px;">ยืนยันการยกเลิก</button>
+            <div id="cancelFormMessage" class="form-message"></div>
+        </div>
+    </div>
+
     <div id="loadingSpinner" class="loading-spinner hidden">
         <div class="spinner"></div>
         <p>กำลังดำเนินการ...</p>

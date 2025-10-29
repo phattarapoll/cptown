@@ -283,17 +283,27 @@ body {
     margin-bottom: 20px;
 }
 
+/* --- Time Slot Enhancements for Cancellation Button --- */
 .time-slot {
     background-color: #a8dadc;
     color: #1d3557;
-    padding: 18px;
+    padding: 18px; /* Slightly reduced padding to accommodate button */
     border-radius: 10px;
     cursor: pointer;
     font-size: 1.1em;
     font-weight: bold;
     transition: background-color 0.3s ease, transform 0.2s ease;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    
+    /* *** New Flexbox Styles for Button Layout *** */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center; /* Ensure text is centered */
+    min-height: 80px; /* Ensure sufficient height */
 }
+
 
 .time-slot:hover:not(.unavailable-slot) {
     background-color: #457b9d;
@@ -303,13 +313,49 @@ body {
 }
 
 .time-slot.unavailable-slot {
+    /* Base style for unavailable/booked slots */
     background-color: #e0e0e0;
     color: #a0a0a0;
-    cursor: not-allowed;
+    cursor: default;
     opacity: 0.8;
-    text-decoration: none; /* <-- ลบขีดทับออก */
+    text-decoration: none;
     box-shadow: none;
+    
+    pointer-events: auto; /* Re-enable pointer events for the button inside */
+    cursor: default;
+    opacity: 1;
 }
+
+/* Ensure booked slots display correctly when not marked as no-show */
+.time-slot.unavailable-slot:not(.blink-red):not(.blink-orange):not(.blink-yellow) {
+    /* Default booked slot color (if no No-Show warning) */
+    background-color: #f1faee; 
+    color: #1d3557;
+}
+
+/* --- New CSS for the Cancel Button inside time slots (ตกแต่งสวยงาม) --- */
+.cancel-button {
+    background-color: #e63946; /* สีแดงเด่นชัด */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.8em;
+    font-weight: bold;
+    margin-top: 8px; /* เว้นระยะจากชื่อ */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    width: 90%; 
+    text-align: center;
+}
+
+.cancel-button:hover {
+    background-color: #c0392b; /* สีแดงเข้มขึ้นเมื่อ hover */
+    transform: translateY(-1px);
+}
+/* ---------------------------------------------------------------------- */
+
 
 .back-button {
     background-color: #f4a261;
@@ -415,13 +461,20 @@ body {
 
 .booking-form input[type="text"],
 .booking-form input[type="tel"],
-.booking-form select {
+.booking-form select,
+#cancelPassword { /* เพิ่ม #cancelPassword เพื่อให้มีสไตล์เหมือนกัน */
     width: calc(100% - 20px);
     padding: 10px;
     border: 1px solid #a8dadc;
     border-radius: 5px;
     font-size: 1.1em;
     box-sizing: border-box; /* รวม padding ใน width */
+}
+/* สไตล์พิเศษสำหรับรหัสผ่าน */
+#cancelPassword {
+    font-size: 1.5em; 
+    letter-spacing: 2px;
+    text-align: center;
 }
 
 .booking-form input:focus,
@@ -742,7 +795,7 @@ body {
     }
 
     .time-slot.unavailable-slot {
-        pointer-events: none; /* เพื่อให้แน่ใจว่าคลิกไม่ได้ */
+        pointer-events: auto; /* เพื่อให้แน่ใจว่าคลิกไม่ได้ */
     }
 
     .time-slot .no-show-count-text {
@@ -783,6 +836,11 @@ body {
     .time-slot {
         padding: 15px;
         font-size: 1em;
+    }
+    .cancel-button {
+        padding: 5px 8px; /* ปรับขนาดปุ่มสำหรับมือถือ */
+        font-size: 0.75em;
+        width: 95%;
     }
     .popup-content {
         padding: 25px;

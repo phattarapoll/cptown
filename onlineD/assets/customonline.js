@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // กำหนด URL ของ Google Apps Script Web App ของคุณ
     // *** สำคัญมาก: โปรดเปลี่ยน URL ด้านล่างนี้เป็น URL ของ Google Apps Script Web App ของคุณเอง ***
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxMdWfiovLFpb0aDCY0fsuREQFgKcbacZFq7LdoZoK_QdPiN8ic7Caomf4x_4c8k6jzng/exec';
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzTr4J35xgv0nsrTaTs1Qxn7A2GPZOb7ng9h5coals8BoTt4wxDCZWg48rAM0fBjNEyNw/exec';
 
     const calendarGrid = document.getElementById('calendarGrid');
     const currentMonthYearDisplay = document.getElementById('currentMonthYear');
@@ -19,6 +19,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const formMessage = document.getElementById('formMessage');
     const loadingSpinner = document.getElementById('loadingSpinner');
 
+    // *** ส่วนที่เพิ่มใหม่สำหรับยกเลิกคิว (Start) ***
+    const cancelPopup = document.getElementById('cancelPopup');
+    const closeCancelPopupBtn = document.getElementById('closeCancelPopup');
+    const cancelPopupDateDisplay = document.getElementById('cancelPopupDate');
+    const cancelPopupTimeSlotDisplay = document.getElementById('cancelPopupTimeSlot');
+    const cancelPopupFullNameDisplay = document.getElementById('cancelPopupFullName');
+    const cancelPasswordInput = document.getElementById('cancelPassword');
+    const confirmCancelButton = document.getElementById('confirmCancelButton');
+    const cancelFormMessage = document.getElementById('cancelFormMessage');
+    // *** ส่วนที่เพิ่มใหม่สำหรับยกเลิกคิว (End) ***
+
     bookingForm.addEventListener('submit', submitBooking);
 
     let currentMonth = new Date().getMonth();
@@ -34,8 +45,25 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     let bookingData = {};
     let noShowCount = {}; 
+    
+    // *** ตัวแปรสำหรับติดตามการยกเลิกคิว (เพิ่มใหม่) ***
+    let currentCancelDate = null;
+    let currentCancelTimeSlot = null;
+    
+    // *** Event Listener สำหรับปิด Popup ยกเลิก (เพิ่มใหม่) ***
+    closeCancelPopupBtn.addEventListener('click', () => {
+        cancelPopup.classList.remove('is-active');
+        // ต้องตรวจสอบว่ามีคลาส hidden ก่อนลบ is-active เพื่อป้องกันการแสดงผล
+        if (!cancelPopup.classList.contains('hidden')) { 
+             setTimeout(() => {
+                cancelPopup.classList.add('hidden');
+             }, 300);
+        }
+        // แสดง Time Slot Details กลับมา
+        timeSlotDetails.classList.remove('hidden'); 
+    });
 
-    // --- ฟังก์ชันสำหรับซ่อนนามสกุลบางส่วน (Masking) *** อัปเดตที่นี่ *** ---
+    // --- ฟังก์ชันสำหรับซ่อนนามสกุลบางส่วน (Masking) ---
     function maskFullName(fullName) {
         if (!fullName || typeof fullName !== 'string') return '';
         
@@ -77,6 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // ตรวจสอบว่าชื่อสั้นกว่า (ไม่ว่าจะเป็น key หรือ currentName) อยู่ในชื่อที่ยาวกว่าหรือไม่
                 const [name1, name2] = [normalizedCurrentName, normalizedKey].sort((a, b) => a.length - b.length);
                 
+                // ใช้ includes เพื่อค้นหาชื่อที่คล้ายกัน
                 if (name2.includes(name1) && name1.length > 2) { 
                     if (noShowCountMap[key] > maxCount) {
                         maxCount = noShowCountMap[key];
@@ -319,6 +348,25 @@ document.addEventListener('DOMContentLoaded', () => {
                         timeSlotDiv.textContent = maskFullName(userFullName); 
                         
                         if (userFullName) {
+                            
+                            // *** โค้ดใหม่: เพิ่มปุ่มยกเลิก (Start) ***
+                            const cancelButton = document.createElement('button');
+                            cancelButton.classList.add('cancel-button'); 
+                            cancelButton.innerHTML = 'ยกเลิก';
+                            
+                            // ดึงเบอร์โทรศัพท์ที่ถูก Mask
+                            const telNumberMasked = bookingData[dateString][slot].telNumber || '**********';
+
+                            // กำหนด Event Listener สำหรับเปิด Popup ยกเลิก
+                            cancelButton.addEventListener('click', (e) => {
+                                e.stopPropagation(); // หยุดไม่ให้คลิกวันแล้วเกิดการกระทำอื่นๆ
+                                // **สำคัญ:** เราไม่ใช้ telNumberMasked อีกต่อไป แต่ส่ง fullName และ date/slot
+                                cancelBooking(dateString, slot, telNumberMasked, userFullName); 
+                            });
+
+                            timeSlotDiv.appendChild(cancelButton); 
+                            // *** โค้ดใหม่: เพิ่มปุ่มยกเลิก (End) ***
+                            
                             const noShowCountForUser = getNoShowCountByPartialName(userFullName, noShowCount); 
                             
                             if (noShowCountForUser > 0) {
@@ -367,7 +415,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 document.querySelectorAll('.blinking-message').forEach(msg => msg.remove());
 
-                timeSlotDetails.querySelector('h2').insertAdjacentElement('afterend', maxNoShowWarning);
+                timeSlotDetails.querySelector('h3').insertAdjacentElement('afterend', maxNoShowWarning); // เปลี่ยนจาก h2 เป็น h3
                 return; 
             }
         }
@@ -395,21 +443,33 @@ document.addEventListener('DOMContentLoaded', () => {
         const bookingDate = formatDateForComparison(selectedDate);
         const bookingDateThai = formatDateThai(selectedDate); // สำหรับแสดงผล
 
-        const noShowCountForUser = getNoShowCountByPartialName(fullName, noShowCount);
-        if (noShowCountForUser >= 3) {
-            loadingSpinner.classList.add('hidden');
-            formMessage.textContent = `❌ ไม่สามารถจองได้: คุณมีประวัติผิดนัด ${noShowCountForUser} ครั้ง (เกิน 3 ครั้ง)`;
-            formMessage.className = 'form-message error';
-            bookingPopup.classList.remove('hidden');
-            bookingPopup.classList.add('is-active');
-            return;
-        }
-
+        // *** การตรวจสอบชื่อ-นามสกุล (ต้องมีวรรคคั่น) ***
         if (!fullName) {
             formMessage.textContent = 'กรุณาป้อนชื่อ-นามสกุล';
             formMessage.className = 'form-message error';
             return;
         }
+
+        const nameParts = fullName.split(/\s+/).filter(p => p.length > 0);
+
+        if (nameParts.length < 2) { 
+             formMessage.textContent = '❌ กรุณาใส่ ชื่อ-นามสกุล ที่ถูกต้องและมีวรรคคั่น (ตัวอย่าง: คนดี รักชาติ) หรือเลขบัตรประชาชน';
+             formMessage.className = 'form-message error';
+             return;
+        }
+        // ***********************************************
+
+        const noShowCountForUser = getNoShowCountByPartialName(fullName, noShowCount);
+        if (noShowCountForUser >= 3) {
+            loadingSpinner.classList.add('hidden');
+            formMessage.textContent = `❌ ไม่สามารถจองได้: คุณมีประวัติผิดนัด ${noShowCountForUser} ครั้ง (เกิน 3 ครั้ง)`;
+            formMessage.className = 'form-message error';
+            // แสดง Popup อีกครั้งเพื่อให้เห็นข้อความ Error
+            bookingPopup.classList.remove('hidden'); 
+            bookingPopup.classList.add('is-active');
+            return;
+        }
+
         if (!telNumber) {
             formMessage.textContent = 'กรุณาป้อนเบอร์โทรศัพท์';
             formMessage.className = 'form-message error';
@@ -423,6 +483,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         formMessage.textContent = '';
         formMessage.className = 'form-message';
+        bookingPopup.classList.remove('is-active');
         bookingPopup.classList.add('hidden');
         loadingSpinner.classList.remove('hidden');
 
@@ -432,6 +493,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('bookingDate', bookingDate);
         formData.append('timeSlot', selectedTimeSlot);
         formData.append('bookingReason', bookingReason);
+        formData.append('action', 'submitBooking'); // เพิ่ม action สำหรับ Apps Script
 
         try {
             const response = await fetch(WEB_APP_URL, {
@@ -439,27 +501,55 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: formData
             });
 
-            const result = await response.text();
-            console.log('ผลลัพธ์จากเซิร์ฟเวอร์:', result);
+            const resultText = await response.text();
+            let cancellationCode = null; // ตัวแปรสำหรับเก็บรหัส
+            let resultStatus = null;
+            let isSuccess = false;
 
-            if (result.includes('Booking successful!')) {
+            try {
+                // พยายามแปลงเป็น JSON เพื่อรองรับ Apps Script ที่ถูกแก้ไขแล้ว
+                const result = JSON.parse(resultText); 
+                resultStatus = result.status;
+                cancellationCode = result.cancellationCode; // ดึงรหัส 6 หลัก
+                
+                if (resultStatus === 'Booking successful!') {
+                    isSuccess = true;
+                }
+            } catch (e) {
+                // กรณีที่ Apps Script ยังคืนค่าเป็นข้อความธรรมดา (Error เก่า)
+                resultStatus = resultText;
+                isSuccess = resultText.includes('Booking successful!');
+            }
+
+            if (isSuccess) {
                 loadingSpinner.classList.add('hidden');
                 
                 // 1. ซ่อน UI การจองทั้งหมด
                 const container = document.querySelector('.container');
-                const calendarWrapper = document.querySelector('.calendar-wrapper'); // องค์ประกอบหลักของปฏิทิน
-                const infoBubble = document.querySelector('.info-bubble'); // ซ่อน Info Bubble ที่ด้านล่าง
+                const calendarWrapper = document.querySelector('.calendar-wrapper'); 
+                const infoBubble = document.querySelector('.info-bubble'); 
                 
                 if (calendarWrapper) calendarWrapper.classList.add('hidden');
                 timeSlotDetails.classList.add('hidden');
-                bookingPopup.classList.remove('is-active');
-                bookingPopup.classList.add('hidden');
                 
                 // ซ่อนส่วนข้อมูลเพิ่มเติมที่อาจจะอยู่ด้านล่าง
                 if (infoBubble) infoBubble.classList.add('hidden');
                 
                 // 2. เตรียมข้อความสรุปผลการจอง
-                const reasonText = document.querySelector(`#bookingReason option[value="${bookingReason}"]`).textContent;
+                const reasonElement = document.querySelector(`#bookingReason option[value="${bookingReason}"]`);
+                const reasonText = reasonElement ? reasonElement.textContent : 'ไม่ระบุ';
+                
+                // *** NEW: สร้างส่วนแสดงรหัสยกเลิกคิว ***
+                const codeDisplayHtml = cancellationCode 
+                    ? `
+                    <div class="code-display-box" style="margin: 15px auto; padding: 15px; border-radius: 10px; border: 3px dashed #e63946; background-color: #ffe6e6;">
+                        <p style="margin: 0; font-size: 1.1em; font-weight: bold; color: #1d3557;">รหัสยกเลิกคิว (Code):</p>
+                        <p style="margin: 5px 0 0 0; font-size: 3em; font-weight: bolder; color: #e63946; animation: codeFlash 1.5s infinite;">${cancellationCode}</p>
+                        <p style="margin: 0; font-size: 0.9em; color: #e63946;">**โปรดบันทึกรหัสนี้ไว้เพื่อใช้ในการยกเลิกคิว**</p>
+                    </div>
+                    ` 
+                    : '<p style="color: #e63946; font-weight: bold;">ไม่พบรหัสยกเลิกคิว โปรดติดต่อเจ้าหน้าที่</p>';
+                // **********************************
 
                 const successSummary = `
                     <div id="permanentSuccessSummary" class="glass-effect" style="margin: 40px auto; max-width: 600px; text-align: center; color: #1d3557; padding: 25px; border: 5px solid #2a9d8f; border-radius: 15px; background-color: rgba(230, 255, 250, 0.9); box-shadow: 0 0 20px rgba(42, 157, 143, 0.7); animation: fadeIn 0.5s;">
@@ -468,6 +558,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p style="font-size: 1.2em; font-weight: bold; margin-bottom: 20px;">
                             กรุณาบันทึกหน้านี้ไว้ และนำบัตรประชาชน/เอกสารที่เกี่ยวข้องมาด้วย
                         </p>
+                        ${codeDisplayHtml}
                         <div style="text-align: left; padding: 15px; background-color: #ffffff; border-radius: 10px; border: 1px solid #ccc;">
                             <p style="margin: 5px 0;"><strong>👤 ผู้จอง:</strong> ${fullName}</p>
                             <p style="margin: 5px 0;"><strong>🗓 วันที่นัด:</strong> ${bookingDateThai}</p>
@@ -501,10 +592,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 4. ล้างค่าในฟอร์ม (ถ้าจำเป็น) แต่ไม่ล้างชื่อ/เบอร์
                 document.getElementById('bookingReason').value = '';
 
-                // 5. ลบ setTimeout ออกเพื่อให้ผลสรุปแสดงตลอดไป (ไม่มีโค้ด timeout แล้ว)
             } else {
                 loadingSpinner.classList.add('hidden');
-                formMessage.textContent = 'เกิดข้อผิดพลาดในการจอง: ' + result;
+                // ใช้ resultStatus ซึ่งมาจาก JSON หรือข้อความ Error ธรรมดา
+                formMessage.textContent = 'เกิดข้อผิดพลาดในการจอง: ' + resultStatus; 
                 formMessage.className = 'form-message error';
                 bookingPopup.classList.remove('hidden');
                 bookingPopup.classList.add('is-active');
@@ -518,6 +609,100 @@ document.addEventListener('DOMContentLoaded', () => {
             bookingPopup.classList.add('is-active');
         }
     }
+
+    // *** ฟังก์ชันใหม่: เปิด Popup ยกเลิกคิว ***
+    function cancelBooking(dateString, slot, telNumberMasked, fullName) {
+        currentCancelDate = dateString;
+        currentCancelTimeSlot = slot;
+
+        cancelPopupDateDisplay.textContent = formatDateThai(new Date(dateString));
+        cancelPopupTimeSlotDisplay.textContent = slot;
+        cancelPopupFullNameDisplay.textContent = maskFullName(fullName);
+        
+        cancelPasswordInput.value = ''; // ล้างรหัสผ่านเก่า
+        cancelFormMessage.textContent = '';
+        cancelFormMessage.className = 'form-message';
+        
+        cancelPopup.classList.remove('hidden');
+        timeSlotDetails.classList.add('hidden'); // ซ่อน Time Slot Detail
+        
+        setTimeout(() => {
+            cancelPopup.classList.add('is-active');
+        }, 10);
+    }
+    
+    // กำหนด Event Listener ให้ปุ่มยืนยันการยกเลิก
+    confirmCancelButton.addEventListener('click', confirmCancel);
+
+    // *** ฟังก์ชันใหม่: ยืนยันการยกเลิกคิว (ส่งคำขอไป Apps Script) ***
+    async function confirmCancel() {
+        const password = cancelPasswordInput.value.trim();
+        const dateString = currentCancelDate;
+        const timeSlot = currentCancelTimeSlot;
+        
+        cancelFormMessage.textContent = '';
+        
+        // ตรวจสอบความถูกต้องของข้อมูล (สำคัญมาก)
+        if (!dateString || !timeSlot) {
+            cancelFormMessage.textContent = '❌ ข้อมูลการจองไม่สมบูรณ์ โปรดลองเปิดหน้าใหม่';
+            cancelFormMessage.className = 'form-message error';
+            return;
+        }
+
+        if (password.length !== 6 || !/^\d+$/.test(password)) {
+            cancelFormMessage.textContent = '❌ รหัสผ่านต้องเป็นตัวเลข 6 หลัก';
+            cancelFormMessage.className = 'form-message error';
+            return;
+        }
+
+        cancelFormMessage.textContent = '';
+        cancelPopup.classList.remove('is-active');
+        cancelPopup.classList.add('hidden'); // ซ่อน Popup ยกเลิกทันที
+        loadingSpinner.classList.remove('hidden');
+
+        const formData = new FormData();
+        formData.append('action', 'cancelBooking'); // Apps Script ต้องรับ action นี้
+        formData.append('bookingDate', dateString);
+        formData.append('timeSlot', timeSlot);
+        formData.append('password', password); // **ตอนนี้คือรหัส 6 หลัก (Code) ที่ถูกสร้างตอนจอง**
+
+        try {
+            const response = await fetch(WEB_APP_URL, {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.text();
+            console.log('ผลลัพธ์การยกเลิก:', result);
+
+            loadingSpinner.classList.add('hidden');
+
+            if (result.includes('Cancel successful!')) {
+                alert('✅ ยกเลิกคิวสำเร็จแล้ว! ระบบจะโหลดหน้าใหม่');
+                window.location.reload(); 
+            } else if (result.includes('Invalid code!')) { // เปลี่ยนจาก Invalid password! เป็น Invalid code!
+                alert('❌ รหัสยกเลิกคิวไม่ถูกต้อง! กรุณาตรวจสอบรหัส 6 หลักที่ได้รับตอนจอง');
+                cancelPasswordInput.value = '';
+                cancelPopup.classList.remove('hidden'); // แสดง Popup อีกครั้ง
+                cancelPopup.classList.add('is-active');
+                timeSlotDetails.classList.add('hidden'); // ให้แน่ใจว่า Time Slot Details ยังคงซ่อนอยู่
+            } else if (result.includes('Error: Missing required booking data')) {
+                // แก้ไขข้อความ Error ให้เป็นภาษาไทยที่เข้าใจง่าย
+                alert('❌ เกิดข้อผิดพลาดในการยกเลิก: ข้อมูลไม่สมบูรณ์ โปรดลองอีกครั้ง');
+                window.location.reload();
+            }
+            else {
+                alert('❌ เกิดข้อผิดพลาดในการยกเลิก: ' + result);
+                window.location.reload();
+            }
+        } catch (error) {
+            loadingSpinner.classList.add('hidden');
+            console.error('ข้อผิดพลาดในการส่งคำขอยกเลิก:', error);
+            alert('❌ เกิดข้อผิดพลาดในการเชื่อมต่อ: ' + error.message);
+            window.location.reload();
+        }
+    }
+
 
     function getMonthName(monthIndex) {
         const monthNames = [
@@ -564,6 +749,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.calendar-wrapper').classList.remove('hidden');
         selectedDate = null;
         selectedTimeSlot = null;
+        // ลบข้อความกระพริบเมื่อกลับสู่ปฏิทิน
+        document.querySelectorAll('.blinking-message').forEach(msg => msg.remove());
         renderCalendar(currentMonth, currentYear);
     });
 
@@ -572,6 +759,8 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             bookingPopup.classList.add('hidden');
         }, 300);
+        // แสดง Time Slot Details กลับมา
+        timeSlotDetails.classList.remove('hidden');
     });
 
     fetchData();
