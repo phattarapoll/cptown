@@ -5,9 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ประกาศปิดให้บริการ - ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร</title>
     <style>
+        /* นำเข้าฟอนต์ไทย */
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&family=Sukhumvit+Set:wght@300;400;600;700&display=swap');
+        
         body {
-            font-family: 'Sukhumvit Set', 'Kanit', sans-serif; /* เพิ่ม font ที่นิยมใช้ในไทย */
-            background-color: #f0f8ff; /* สีฟ้าอ่อนสบายตา */
+            font-family: 'Kanit', 'Sukhumvit Set', sans-serif;
+            background-color: #f5f7fa; /* สีพื้นหลังใหม่ที่ดูสะอาดตา */
             color: #333;
             line-height: 1.6;
             margin: 0;
@@ -16,65 +19,129 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            text-align: center;
         }
 
         .container {
             background-color: #ffffff;
-            padding: 40px 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-            max-width: 700px;
-            width: 100%;
-            border-left: 8px solid #4CAF50; /* แถบสีเขียวด้านซ้าย */
+            padding: 30px;
+            border-radius: 20px; /* ขอบโค้งมนแบบ Liquid */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 900px; /* เพิ่มความกว้างรองรับ 2 คอลัมน์ */
+            width: 95%;
+            border-top: 8px solid #007bff; /* แถบสีน้ำเงินด้านบน */
+            animation: fadeIn 1s ease-out;
+        }
+
+        .header-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header-image {
+            height: 60px;
+            margin-bottom: 15px;
+        }
+        
+        /* สไตล์สำหรับรูปภาพ (ถ้ามี) */
+        .header-image img {
+            max-height: 100%;
+            width: auto;
         }
 
         h1 {
-            color: #d9534f; /* สีแดงเข้มสำหรับข้อความสำคัญ */
-            font-size: 2.2em;
-            margin-bottom: 25px;
-            animation: fadeInDown 1s ease-out; /* แอนิเมชันตอนโหลด */
+            color: #d9534f;
+            font-size: 2.5em;
+            font-weight: 700;
+            margin: 0;
+            animation: slideInFromTop 1s ease-out;
         }
 
-        p {
-            font-size: 1.1em;
-            margin-bottom: 20px;
-            color: #555;
+        /* การจัด Layout แบบ 2 คอลัมน์ (Liquid Card) */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 2 คอลัมน์เท่ากัน */
+            gap: 30px; /* ระยะห่างระหว่างคอลัมน์ */
+            margin-top: 30px;
+        }
+        
+        /* สไตล์ Card สำหรับแต่ละคอลัมน์: เพิ่ม text-align: center; */
+        .card {
+            background-color: #f9f9f9;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center; /* <<< แก้ไข: จัดข้อความให้อยู่กึ่งกลาง */
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .notice-card {
+            border: 2px solid #ffc107; /* ขอบประกาศ */
+            background-color: #fffde7;
+        }
+        
+        .notice-card strong {
+            color: #e65100;
+            font-size: 1.3em;
+            display: block;
+            margin-top: 10px;
+        }
+
+        .location-card {
+            border: 2px solid #28a745;
+            background-color: #e6ffe6;
+            
+            /* <<< แก้ไข: ใช้ Flexbox เพื่อจัดปุ่มให้อยู่กึ่งกลาง (ในกรณีที่ปุ่มไม่ได้มี width 100%) */
+            display: flex; 
+            flex-direction: column;
+            justify-content: space-between; /* ช่วยให้เนื้อหาและปุ่มจัดเต็มความสูงของ card */
+            align-items: center; /* จัดกึ่งกลางองค์ประกอบทั้งหมดในแนวแกนตั้ง */
+        }
+
+        /* ส่วนของข้อความใน location-card ให้จัดกึ่งกลางด้วย */
+        .location-card p, .location-card h2 {
+            text-align: center;
+        }
+
+        .location-card .highlight {
+            color: #155724;
         }
 
         .highlight {
-            font-weight: bold;
-            color: #007bff; /* สีน้ำเงินสำหรับข้อความเน้น */
+            font-weight: 600;
+            color: #007bff;
         }
-
-        .notice-box {
-            background-color: #ffe0b2; /* สีส้มอ่อนสำหรับกล่องประกาศ */
-            border: 1px solid #ffcc80;
-            padding: 15px;
-            margin-top: 25px;
-            border-radius: 8px;
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #e65100; /* สีส้มเข้ม */
-            animation: pulse 1.5s infinite; /* แอนิเมชันกระพริบเบาๆ */
-        }
-
-        .location-info {
+        
+        /* ส่วนวันที่ประกาศ (ด้านล่าง 2 คอลัมน์) */
+        .date-footer {
+            grid-column: 1 / -1; /* ครอบคลุมทั้ง 2 คอลัมน์ */
             margin-top: 30px;
-            background-color: #e6ffe6; /* สีเขียวอ่อนสำหรับข้อมูลสถานที่ใหม่ */
-            padding: 20px;
+            padding: 15px;
+            background-color: #e3f2fd; /* สีฟ้าอ่อน */
             border-radius: 10px;
-            border-left: 5px solid #28a745; /* แถบสีเขียวด้านซ้าย */
+            border-left: 5px solid #007bff;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #0d47a1;
+            text-align: left; /* คงไว้ที่ 'left' เพื่อให้อ่านง่าย */
+            animation: fadeIn 2s ease-out;
         }
 
-        .location-info p {
-            margin: 10px 0;
-            font-size: 1.15em;
+        .date-footer strong {
+            color: #dc3545;
         }
 
+        /* แก้ไข: ลบ display: inline-block และใช้ margin: 0 auto; แทน เพื่อจัดกึ่งกลาง */
         .map-button {
-            display: inline-block;
-            background-color: #007bff; /* สีน้ำเงินสำหรับปุ่ม */
+            background-color: #007bff;
             color: white;
             padding: 12px 25px;
             border-radius: 8px;
@@ -84,16 +151,16 @@
             margin-top: 20px;
             transition: background-color 0.3s ease, transform 0.2s ease;
             box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+            
+            /* <<< แก้ไข: ทำให้เป็นบล็อกเพื่อให้สามารถจัดกึ่งกลางได้ */
+            display: block; 
+            width: fit-content; /* ปรับความกว้างตามเนื้อหา */
+            margin: 20px auto 0 auto; /* จัดกึ่งกลางปุ่ม */
         }
 
         .map-button:hover {
             background-color: #0056b3;
-            transform: translateY(-2px);
-        }
-
-        .map-button:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 5px rgba(0, 123, 255, 0.5);
+            transform: translateY(-3px);
         }
 
         .apology {
@@ -101,77 +168,80 @@
             font-style: italic;
             color: #777;
             font-size: 1em;
+            text-align: center;
+        }
+        
+        /* แอนิเมชัน */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        @keyframes slideInFromTop {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
-        }
-
-        /* Responsive Design */
+        /* Responsive Design: เปลี่ยนเป็น 1 คอลัมน์สำหรับหน้าจอมือถือ */
         @media (max-width: 768px) {
-            h1 {
-                font-size: 1.8em;
-            }
-            p {
-                font-size: 1em;
-            }
-            .notice-box {
-                font-size: 1em;
+            .content-grid {
+                grid-template-columns: 1fr; /* 1 คอลัมน์ */
             }
             .container {
-                padding: 25px 15px;
-            }
-            .map-button {
-                padding: 10px 20px;
-                font-size: 1em;
-            }
-        }
-
-        @media (max-width: 480px) {
-            body {
-                padding: 10px;
+                padding: 20px 15px;
             }
             h1 {
-                font-size: 1.5em;
+                font-size: 2em;
             }
         }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700&family=Sukhumvit+Set:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&family=Sukhumvit+Set:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <h1>เรียนผู้รับบริการทุกท่าน</h1>
-        <hr>
-        <div class="notice-box">
-            <p><span class="highlight">ประกาศ!</span></p>
-            <p>ขณะนี้ <strong class="highlight">งานทันตสาธารณสุข  (ตึกเก่า หลังดับเพลิง)</strong></p>
-            <p><strong class="highlight">ปิดให้บริการชั่วคราว</strong></p>
+        <div class="header-section">
+            <div class="header-image">
+                 
+                <img src="assets/images/tm.png" alt="โลโก้เทศบาลเมืองชุมพร" style="max-height: 100%; width: auto;">
+            </div>
+            
+            <h1>เรียนผู้รับบริการทุกท่าน</h1>
         </div>
 
-        <div class="location-info">
-            <p>และยังคงเปิดให้บริการตามปกติ ณ</p>
-            <p><strong class="highlight">ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร</strong></p>
-            <p>โปรดใช้ปุ่มด้านล่างเพื่อนำทาง:</p>
-            <a href="https://www.google.com/maps/dir/?api=1&destination=10.505444,99.179270" target="_blank" rel="noopener noreferrer" class="map-button">
-                คลิกเพื่อนำทาง 
-            </a>
+        <hr style="border-top: 1px solid #eee;">
+        
+        <div class="content-grid">
+            <div class="card notice-card">
+                <h2>📢 ประกาศปิดให้บริการชั่วคราว</h2>
+                <p style="font-size:1.15em;">
+                    ขณะนี้ **งานทันตสาธารณสุข** (ตึกเก่า หลังดับเพลิง)
+                </p>
+                <strong class="highlight">ปิดให้บริการชั่วคราว</strong>
+                <p>เนื่องจาก **ยูนิตทันตกรรมชำรุด** ไม่สามารถใช้งานได้</p>
+                <p style="font-style: italic; color: #555; font-size: 0.95em;">
+                    (บริการอื่นที่ไม่ใช่ทันตกรรมยังคงให้บริการตามปกติ)
+                </p>            
+            </div>
+
+            <div class="card location-card">
+                <h2>✅ เปิดให้บริการปกติ ณ</h2>
+                <p style="font-size:1.15em;">
+                    <strong class="highlight">ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร(ไตรรัตน์)</strong>
+                </p>
+                <p>โปรดตรวจสอบการให้บริการที่แน่ชัดอีกครั้ง</p>
+                <a href="https://www.google.com/maps/dir/?api=1&destination=10.505444,99.179270" target="_blank" rel="noopener noreferrer" class="map-button">
+                    คลิกเพื่อนำทาง (Google Maps)
+                </a>
+            </div>
+
+            <div class="date-footer">
+                <p style="margin: 0 0 5px 0;">📅   **ประกาศ ณ วันที่:** 03 พฤศจิกายน 2568</p>
+                <p style="margin: 0;">🛠️   **คาดว่าจะแล้วเสร็จภายในวันที่:** <strong>31 ธันวาคม 2568</strong> (ทั้งนี้ อาจมีการเปลี่ยนแปลง)</p>
+            </div>
         </div>
 
         <p class="apology">
-            <hr>
+            <hr style="border-top: 1px solid #eee;">
             ขออภัยในความไม่สะดวกที่เกิดขึ้นเป็นอย่างสูงมา ณ โอกาสนี้
         </p>
     </div>
