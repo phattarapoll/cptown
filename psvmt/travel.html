@@ -1,0 +1,315 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>การท่องเที่ยว</title><br>
+ <font color="#FFFFFF"><marquee direction="left" style="background:#660066"><H3>ขอยกเอาพรประเสริฐ ที่มีในโลกใบนี้ จงอวยชัยให้คุณโชคดี มีแต่บริวารค้ำจุน สิ่งศักดิ์สิทธิ์ทั้งหลายทั้งปวง จงอวยพรและอวยชัยให้ชีวิตคุณมีแต่ความสุขความเจริญ ไม่ว่าคุณจะคิดสิ่งใด ขอให้คุณสมในความปรารถนา มีแต่เรื่องดีๆเข้ามา สุขสันต์วันเกิดนะขอให้โชคดี</h3></marquee></font>
+<style type="text/css">
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: Arial;
+    background: dimgrey;
+  }
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    font-size: 18px;
+    overflow: hidden;
+    background-color: #333;
+  }
+
+  li {
+    float: left;
+  }
+
+  li a {
+    display: block;
+    color: white;
+    text-align: left;
+    padding: 10px 20px;
+    text-decoration: none;
+  }
+/* Header/Blog Title */
+  .header {
+    padding: 30px;
+    text-align: center;
+    background: violet;
+  }
+  .header h1 {
+    font-size: 50px;
+  }
+  header * {
+  display: inline;
+  }
+  header li {
+  margin: 10px;
+  }
+/* Change the link color to #111 (black) on hover */
+  li a:hover {
+    background-color: #111;
+  }
+/* Style the top navigation bar */
+.topnav {
+  overflow: hidden;
+  background-color: #333;
+}
+ul.menu {
+  justify-items: center;
+  margin-top: 7%;
+}
+ul.menu li{
+  list-style: none;
+}
+ul.menu li a{
+  text-decoration:none;
+  color:black;
+  text-transform: uppercase;
+  transition: .3s ease-in-out;
+  font-size: 16px;
+  font-family: Times, serif;
+}
+ul.menu li a:hover{
+  background:#40aed7;
+  pading: 5px 10px;
+  border-radius: 5px;
+}
+.container {
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+}
+.content {
+  width: 100%;
+  height: auto;
+  background:#fff;
+}
+.content-heading {
+  font-size: 80px;
+  color: #333;
+}
+.content-services {
+  margin: 60px;
+  width: 100%;
+  height: auto;
+}
+.content-services-item {
+  border: 0px solid #e4e4e4;
+  padding: 20px;
+  transition: .3s ease-in-out;
+}
+.content-services-grid {
+  display: grid;
+  width: 60%;
+  grid-template-columns:repeat(4,1fr);
+  text-align: center;
+  grid-gap: 1rem;
+}
+.content-services-item .fa {
+  font-size: 2rem;
+  background: transparent;
+}
+.content-services-item .h2 {
+  font-size: 32px;
+  text-transform: uppercase;
+  color: #333;
+  margin: 20px 0;
+}
+.content-services-item .p {
+  font-size: 12px;
+  color: #979797;
+}
+.copyright {
+  width: 100%;
+  height: 10px;
+  color: #F5F5DC;
+}
+.copyright-grid {
+  display: grid;
+  grid-template-columns:1fr 1fr;
+  height: 10px;
+  color: #F5F5DC;
+} 
+.copytext {
+  justify-self: flex-start;
+  align-self: center;
+}
+.credites {
+  justify-self: flex-end;
+  align-self: center;
+}
+
+/* Style the topnav links */
+.topnav a {
+  float: left;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+/* Change color on hover */
+.topnav a:hover {
+  background-color: lawngreen;
+  font-size: 19px;
+  color: black;
+}
+
+/* Create two unequal columns that floats next to each other */
+/* Left column */
+.leftcolumn {   
+  float: left;
+  width: 75%;
+}
+
+/* Right column */
+.rightcolumn {
+  float: left;
+  width: 25%;
+  background-color: #f1f1f1;
+  padding-left: 20px;
+}
+
+/* Fake image */
+.fakeimg {
+  background-color: #aaa;
+  width: 100%;
+  padding: 20px;
+}
+
+/* Add a card effect for articles */
+.card {
+  background-color: white;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Footer */
+.footer {
+  padding: 20px;
+  text-align: center;
+  background: #ddd;
+  margin-top: 20px;
+}
+
+/* Responsive layout - when the screen is less than 800px wide, make the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 800px) {
+  .leftcolumn, .rightcolumn {   
+    width: 100%;
+    padding: 0;
+  }
+}
+
+/* Responsive layout - when the screen is less than 400px wide, make the navigation links stack on top of each other instead of next to each other */
+@media screen and (max-width: 400px) {
+  .topnav a {
+    float: none;
+    width: 100%;
+  }
+}
+/* Change the link color on hover */
+  li a:hover {
+    background-color: #555;
+    color: goldenrod;
+  }
+  .dropbtn{
+    background-color: transparent;
+    color: white;
+    padding: 10px;
+    font-size: 18px;
+    border: none;
+  }
+  .dopdown{
+    position: relative;
+    display: inline-block;
+  }
+  .dropdown-content{
+    display: none;
+    position: absolute;
+    color: black;
+    background-color: greenyellow;
+    min-width: 10px;
+    z-index: 1;
+  }
+  .dropdown-content a{
+    color: black;
+    padding: 5px 5px;
+    text-decoration: none;
+    display: block;
+  }
+  .dropdown-content a:hover{background-color: white;}
+  .dropdown:hover .dropdown-content{display: block;}
+  .dropdown:hover .dropbtn{background-color: grey;}
+</style>
+</head>
+<body><ul>
+    <li><a href="http://psvmt.6te.net/home.html">เว็ปไซต์หลัก</a></li>
+  <li>
+    <div class="dropdown">
+<button class="dropbtn">ข้อมูลต่างๆ</button>
+<div class="dropdown-content">
+
+<a href="http://psvmt.6te.net/story.html">ความเป็นมาของสกุล</a>
+<a href="http://psvmt.6te.net/travel.html">การศึกษา(ตารางเรียน)</a> 
+<a href="http://psvmt.6te.net/FM.html">วิทยุออนไลน์</a> 
+<a href="http://psvmt.6te.net/sell1.html">ประกาศ..ขายบ้านบางหมาก</a>  
+<a href="http://psvmt.6te.net/report/id13.html">ความรู้เกี่ยวกับเลขบัตรประชาชน</a>  
+
+
+</div>
+</div>
+  </li><li><a href="http://psvmt.6te.net/login.html">เข้าสู่ระบบ</a></li>
+  <li><a href="http://psvmt.6te.net/connection.html">ติดต่อ</a></li>
+  <li style="float:right"><a class="active" href="http://psvmt.6te.net/report/about.html">About</a></li>
+</ul>
+
+<body> 
+<tr><p><center>
+
+<style>  
+table, th, td {  
+    border: 2px solid black;  
+    border-collapse: collapse;
+	text-align : center;
+}  
+th, td {  
+    padding: 20px;  
+}  
+table#alter tr:nth-child(even) {  
+    background-color: #eee;  
+}  
+table#alter tr:nth-child(odd) {  
+    background-color: #fff;  
+}  
+table#alter th {  
+    color: white;  
+    background-color: gray;  
+}  
+</style>  
+</head>
+<body>  
+<table id="alter">
+<details>
+<summary><u><b>ตารางเรียน ชั้นประถมศึกษาปีที่ 2/1</u></b></summary>
+<h2><p>คุณครูประจำชั้น นางชญาณิฐ นินทการ</h2></p><br>
+</details>
+<br>
+<tr><th>วัน</th><th>ช่วงเวลา 1</th><th>ช่วงเวลา 2</th><th>ช่วงเวลา 3</th><th>:</th><th>ช่วงเวลา 4</th><th>ช่วงเวลา 5</th><th>ช่วงเวลา 6</th></tr>  
+<tr><td><b>จันทร์</b></td><td>คณิตศาสตร์</td><td>ภาษาอังกฤษ</td><td>ภาษาพาที</td><td>:</td><td>สังคมศึกษา</td><td>วิทย์ศาสตร์</td><td>ภาษาไทย</td></tr>  
+<tr><td><b>อังคาร</b></td><td>พละศึกษา</td><td>คณิตศาสตร์</td><td>ทักษะภาษา</td><td>:</td><td>คณิตศาสตร์</td><td>ภาษาอังกฤษ</td><td>ประวัติศาสตร์</td></tr>
+<tr><td><b>พุธ</b></td><td>ภาษาอังกฤษ</td><td>คณิตศาสตร์</td><td>คอม</td><td>:</td><td>วิทยาการคำนวณ</td><td>ทักษะภาษา</td><td>อาเซียน</td></tr>
+<tr><td><b>หัส</b></td><td>คณิตศาสตร์</td><td>ศิลปะ</td><td>ภาษาไทย</td><td>:</td><td>สุขศึกษา</td><td>ภาษาอังกฤษ</td><td>สังคมศึกษา</td></tr>
+<tr><td><b>ศุกร์</b></td><td>หลักภาษา</td><td>คณิตศาสตร์</td><td>ภาษาอังกฤษ</td><td>:</td><td>ลูกเสือ</td><td>วิทย์ศาสตร์</td><td>การงานอาชีพ</td></tr>
+</table>   
+</body>
+</html>

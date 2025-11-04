@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PSVMT Family Legacy</title>
+    <style>
+        /* CSS เดิม */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
+:root {
+    --bg-color: #121212;
+    --main-color: #E6B34A;
+    --text-color: #f0f0f0;
+    --border-color: #333;
+    --chat-bg: #1c1c1c;
+}
+body {
+    font-family: 'Playfair Display', serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    height: 100vh;
+}
+#video-background {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -100;
+    filter: brightness(0.4);
+}
+.container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 1;
+}
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.5s ease; /* ปรับ transition ให้กับ main-content */
+}
+.main-content h1 {
+    font-size: 4rem;
+    color: var(--main-color);
+    margin-bottom: 1rem;
+    text-shadow: 0 0 10px rgba(230, 179, 74, 0.5);
+}
+.main-content p {
+    font-size: 1.2rem;
+    color: #ccc;
+}
+.left-menu {
+    position: fixed; /* เปลี่ยนให้เป็น fixed */
+    top: 0;
+    left: -30vw; /* เลื่อนเมนูออกจากหน้าจอ */
+    height: 100vh; /* ให้เต็มความสูงหน้าจอ */
+    width: 30vw; /* กำหนดความกว้าง */
+    background-color: rgba(0, 0, 0, 0.5); /* พื้นหลังโปร่งใส */
+    overflow-x: hidden;
+    transition: all 0.5s ease;
+    display: flex;
+    flex-direction: column;
+    padding-top: 5rem;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.left-menu.active {
+    left: 0; /* เลื่อนเมนูกลับเข้ามา */
+    padding: 2rem; /* เพิ่ม padding เมื่อเมนู active */
+}
+.left-menu a {
+    padding: 1rem 1.5rem;
+    text-decoration: none;
+    font-size: 1.2rem;
+    color: var(--text-color);
+    display: block;
+    transition: color 0.3s ease, background-color 0.3s ease;
+    border-left: 3px solid transparent;
+}
+.left-menu a:hover {
+    color: var(--main-color);
+    background-color: rgba(230, 179, 74, 0.1);
+    border-left: 3px solid var(--main-color);
+}
+.left-menu .sub-menu-item {
+    padding: 0.5rem 1.5rem 0.5rem 3rem; /* Indent sub-menu items */
+    font-size: 1rem;
+}
+.menu-icon {
+    position: fixed;
+    top: 2rem;
+    left: 2rem;
+    font-size: 2rem;
+    cursor: pointer;
+    color: var(--main-color);
+    z-index: 1000;
+}
+.right-menu {
+    position: fixed;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    z-index: 100;
+}
+.right-menu .icon-container {
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+.right-menu .icon-container:hover {
+    transform: scale(1.1);
+}
+.right-menu i {
+    font-size: 1.8rem;
+    color: var(--main-color);
+    transition: color 0.3s ease;
+}
+.right-menu .tooltip {
+    visibility: hidden;
+    width: 120px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    right: 120%;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.right-menu .icon-container:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+.chat-container {
+    width: 70%;
+    height: 80%;
+    background-color: var(--chat-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+}
+.chat-header {
+    padding: 1rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+}
+#online-status {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-color);
+    font-size: 0.9em;
+}
+#music-status {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--main-color);
+    animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+    0% { transform: translateY(-50%) scale(1); }
+    50% { transform: translateY(-50%) scale(1.1); }
+    100% { transform: translateY(-50%) scale(1); }
+}
+.chat-box {
+    flex-grow: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.message {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+.message .message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.2rem;
+}
+.message .user-name {
+    font-weight: bold;
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+.message .message-time {
+    font-size: 0.7rem;
+    color: #888;
+}
+.message .message-text {
+    background-color: #383838;
+    padding: 0.6rem 1rem;
+    border-radius: 15px;
+    max-width: 70%;
+    word-wrap: break-word;
+    align-self: flex-start;
+}
+.message.adm .user-name {
+    color: var(--main-color);
+}
+.message.adm .message-text {
+    background-color: rgba(230, 179, 74, 0.1);
+    border: 1px solid var(--main-color);
+}
+.chat-input {
+    display: flex;
+    padding: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+.chat-input input {
+    flex-grow: 1;
+    background-color: #2a2a2a;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 0.8rem 1.5rem;
+    color: var(--text-color);
+    font-family: inherit;
+}
+.chat-input button {
+    background-color: var(--main-color);
+    border: none;
+    color: var(--bg-color);
+    padding: 0.8rem 1.5rem;
+    border-radius: 20px;
+    margin-left: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+}
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.login-popup, .history-popup {
+    background-color: var(--chat-bg);
+    padding: 2rem;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    width: 300px;
+}
+.login-popup h2, .history-popup h2 {
+    margin-bottom: 1.5rem;
+    color: var(--main-color);
+}
+.login-popup input {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: #2a2a2a;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    color: var(--text-color);
+    margin-bottom: 1rem;
+}
+.login-popup button {
+    background-color: var(--main-color);
+    border: none;
+    color: var(--bg-color);
+    padding: 0.8rem 2rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.adm-icon {
+    color: var(--main-color);
+    margin-right: 5px;
+}
+.music-player-container {
+    display: none;
+    margin-top: 2rem;
+    text-align: center;
+}
+.music-player-container h3 {
+    color: var(--main-color);
+    margin-bottom: 0.5rem;
+}
+/* New popup container for iframes */
+.popup-iframe-container {
+    width: 90%;
+    height: 90%;
+    max-width: 1000px; /* กำหนดขนาดสูงสุดเพื่อความสวยงาม */
+    max-height: 800px;
+    background-color: var(--chat-bg);
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.popup-iframe-container .close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 2rem;
+    color: var(--text-color);
+    cursor: pointer;
+    z-index: 2; /* ให้ปุ่มปิดอยู่ด้านบน iframe */
+}
+
+.popup-iframe-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none; /* ลบเส้นขอบ iframe */
+    border-radius: 0 0 10px 10px; /* ทำให้มุมล่างโค้งมนเหมือนคอนเทนเนอร์ */
+}
+
+
+/* Responsive Design - Media Queries */
+@media (max-width: 768px) {
+    .main-content {
+        /* ปรับ padding เล็กน้อย */
+        padding: 1rem;
+    }
+    .main-content h1 {
+        font-size: 2.5rem;
+    }
+    .main-content p {
+        font-size: 1rem;
+    }
+    .menu-icon {
+        top: 1rem;
+        left: 1rem;
+        font-size: 1.5rem;
+    }
+    .left-menu.active {
+        width: 100%;
+        padding: 1rem;
+    }
+    .right-menu {
+        right: 1rem;
+        top: auto;
+        bottom: 1rem;
+        transform: none;
+        flex-direction: row;
+        gap: 1rem;
+    }
+    .right-menu .tooltip {
+        display: none; /* Hide tooltips on mobile */
+    }
+    .chat-container {
+        width: 90%;
+        height: 90%;
+    }
+    .chat-header h2 {
+        font-size: 1.2rem;
+    }
+    .chat-input {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .chat-input input, .chat-input button {
+        width: 100%;
+        margin: 0;
+    }
+    .message .message-text {
+        max-width: 85%;
+    }
+    .login-popup, .history-popup {
+        padding: 1rem;
+    }
+	
+	
+}
+</style>
+</head>
+<body>
+    <video autoplay muted loop id="video-background">
+        <source src="https://assets.mixkit.co/videos/abstract-cosmic-glow-1634-small.mp4" type="video/mp4">
+    </video>
+    <div class="menu-icon" id="menu-icon">
+        <i class="fas fa-bars"></i>
+    </div>
+    <div class="left-menu" id="left-menu">
+        <a href="#" id="login-link">เข้าสู่ระบบ</a>
+        <a href="#" id="info-link">เรียนรู้</a>
+        <div id="info-sub-menu" style="display:none;">
+            <a href="https://script.google.com/macros/s/AKfycbzJvkr9wM-lXhi9G-2DZ45qgwwH1d3-D0AlueoZWdPIjuVzRdOPl0GDc9GGAJfJ8AYi/exec" class="sub-menu-item" target="_blank">คณิตศาสตร์/ตารางธาตุ</a>
+            <a href="https://www.youtube.com/embed/hVk75NYAFLI" class="sub-menu-item learning-link" data-url="https://www.youtube.com/embed/hVk75NYAFLI">🎉"สังคมศึกษา : ตะลุยโจทย์ เข้า ม.1</a>
+            <a href="https://www.youtube.com/embed/WNFhxN8gL8o" class="sub-menu-item learning-link" data-url="https://www.youtube.com/embed/WNFhxN8gL8o">🔴 ติวสอบโค้งสุดท้าย ภาษาไทย เข้า ม.1/ครูฟ้าใสสอนภาษาไทย</a>
+            <a href="https://www.youtube.com/embed/Beuh1CfXiM4" class="sub-menu-item learning-link" data-url="https://www.youtube.com/embed/Beuh1CfXiM4">🔴 ติวคณิตศาสตร์ ป.6 สอบเข้า ม.1 By พี่เอ๋ | WE BY THE BRAIN</a>
+            <a href="https://www.youtube.com/embed/3Q5_R2E_UM0" class="sub-menu-item learning-link" data-url="https://www.youtube.com/embed/3Q5_R2E_UM0">🔴 ติวลัด วิทยาศาสตร์ สอบเข้าม.1 จุฬาภรณ์</a>
+            <a href="https://www.youtube.com/embed/2XbYNX9Anp0" class="sub-menu-item learning-link" data-url="https://www.youtube.com/embed/2XbYNX9Anp0">🔴 ภาษาอังกฤษ เตรียมสอบเข้า ม.1</a>
+            <a href="/science/thai.html" class="sub-menu-item learning-link" data-url="/science/thai.html">ภาษาไทย</a>
+            <a href="/science/ENG.html" class="sub-menu-item learning-link" data-url="/science/ENG.html">ภาษาอังกฤษ</a>
+            <a href="/science/PES.html" class="sub-menu-item learning-link" data-url="/science/PES.html">ฝึกพูดประโยค</a>
+            <a href="/science/society.html" class="sub-menu-item learning-link" data-url="/science/society.html">สังคม</a>
+        </div>
+        <a href="#" id="related-link">เว็บไซต์ที่เกี่ยวข้อง</a>
+        <div id="related-sub-menu" style="display:none;">
+            <a href="https://script.google.com/macros/s/AKfycbxXQFmmVBtiZ5UjMNm2kEngaZHiXFnoZ9YsZBNNnekOr1vRtf7CtBFA9dxz4F1D8DR01A/exec" class="sub-menu-item" target="_blank">รับ-จ่าย งานต่างๆ</a>
+            <a href="https://pym-support.ntplc.co.th/QR/" class="sub-menu-item" target="_blank">NT 7751J4218</a>
+            <a href="https://epay.nc.ntplc.co.th/app/" class="sub-menu-item" target="_blank">NT 9200272466 </a>
+            <a href="https://ufundportal.com/" class="sub-menu-item" target="_blank">UFUND</a>
+            <a href="https://cmpo.thaicoop.org/" class="sub-menu-item" target="_blank">สหกรณ์</a>
+        </div>
+        <a href="download.html" id="login-link">สำหรับผู้ดูแล</a>
+        <div style="margin-top: 2rem; padding: 1rem; border-top: 1px solid var(--border-color); color: #888;">
+            <p style="margin: 0; font-size: 0.9rem;">ติดต่อตระกูล PSVMT</p>
+            <p style="margin: 0; font-size: 0.9rem;">phattarapoll@gmail.com</p>
+        </div>
+    </div>
+    <div class="main-content" id="main-content">
+        <h1 id="main-title">PAISANWUTCHARAMETEA</h1>
+        <p id="main-subtitle">ยินดีต้อนรับสู่พื้นที่ส่วนตัวของตระกูล PSVMT</p>
+        <div class="chat-container" id="chat-container">
+            <div class="chat-header">
+                <p id="online-status">ออนไลน์: 0</p>
+                <h2>ช่องแชท ฝากข้อความ</h2>
+                <span id="music-status" style="display: none;"><i class="fas fa-music"></i> <span id="current-song-info"></span></span>
+            </div>
+            <div class="chat-box" id="chat-box"></div>
+            <div class="chat-input">
+                <input type="text" id="chat-message" placeholder="พิมพ์ข้อความของคุณ...">
+                <button id="send-btn">Transmit</button>
+            </div>
+        </div>
+        <div class="music-player-container" id="adm-music-player">
+            <h3>ADM Music Controls</h3>
+            <select id="song-select"></select>
+            <button id="play-song-btn">Play Song</button>
+        </div>
+    </div>
+    <div class="right-menu">
+        <div class="icon-container">
+            <a href="#" id="history-link"><i class="fas fa-book-reader"></i></a>
+            <span class="tooltip">ความเป็นมาของสกุล</span>
+        </div>
+        <div class="icon-container">
+            <a href="#" id="family-link"><i class="fas fa-sitemap"></i></a>
+            <span class="tooltip">ผังครอบครัว</span>
+        </div>
+        <div class="icon-container">
+            <a href="#" id="phattarapoll-link"><i class="fas fa-medal"></i></a>
+            <span class="tooltip">ภัทรพล</span>
+        </div>
+        <div class="icon-container">
+            <a href="#" id="tin-link"><i class="fas fa-compass"></i></a>
+            <span class="tooltip">ติณณ์</span>
+        </div>
+    </div>
+    <div class="overlay" id="login-overlay">
+        <div class="login-popup">
+            <h2 id="login-title">กรุณาใส่ชื่อของคุณ</h2>
+            <input type="text" id="username-input" placeholder="ชื่อผู้ใช้งาน">
+            <input type="password" id="password-input" placeholder="รหัสผ่าน" style="display: none;">
+            <button id="login-btn">เข้าสู่ระบบ</button>
+        </div>
+    </div>
+    <div class="overlay" id="history-overlay" style="display: none;">
+        <div class="history-popup">
+            <span class="close-btn" id="history-close-btn">&times;</span>
+            <h2>ความเป็นมาของสกุล</h2>
+            <p>จดทะเบียนสกุล เมื่อวันที่ 2 สิงหาคม 2562</p>
+            <p><strong>เลขศาสตร์ 65 "คู่ทรัพย์ คู่โชค"</strong></p>
+            <p>ให้ความหมายในตัวเลขนี้ว่า ส่งเสริมความเจริญก้าวหน้า ความราบรื่นในชีวิต ชะตาชีวิตรุ่งเรือง มีบุพเพวาสนาส่ง หาเงินเก่งและมีเสน่ห์ เป็นที่รัก</p>
+        </div>
+    </div>
+    <div class="overlay" id="family-overlay" style="display: none;">
+        <div class="popup-iframe-container">
+            <span class="close-btn" id="family-close-btn">&times;</span>
+            <iframe id="family-iframe" src="" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <div class="overlay" id="phattarapoll-overlay" style="display: none;">
+        <div class="popup-iframe-container">
+            <span class="close-btn" id="phattarapoll-close-btn">&times;</span>
+            <iframe id="phattarapoll-iframe" src="" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <div class="overlay" id="tin-overlay" style="display: none;">
+        <div class="popup-iframe-container">
+            <span class="close-btn" id="tin-close-btn">&times;</span>
+            <iframe id="tin-iframe" src="" frameborder="0"></iframe>
+        </div>
+    </div>
+    <div class="overlay" id="learning-overlay" style="display: none;">
+        <div class="popup-iframe-container">
+            <span class="close-btn" id="learning-close-btn">&times;</span>
+            <iframe id="learning-iframe" src="" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <audio id="audio-player"></audio>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const menuIcon = document.getElementById('menu-icon');
+        const leftMenu = document.getElementById('left-menu');
+        const mainContent = document.getElementById('main-content');
+        const loginLink = document.getElementById('login-link');
+        const loginOverlay = document.getElementById('login-overlay');
+        const loginBtn = document.getElementById('login-btn');
+        const usernameInput = document.getElementById('username-input');
+        const passwordInput = document.getElementById('password-input');
+        const chatContainer = document.getElementById('chat-container');
+        const mainTitle = document.getElementById('main-title');
+        const mainSubtitle = document.getElementById('main-subtitle');
+        const chatBox = document.getElementById('chat-box');
+        const chatMessage = document.getElementById('chat-message');
+        const sendBtn = document.getElementById('send-btn');
+        const loginTitle = document.getElementById('login-title');
+        const onlineStatus = document.getElementById('online-status');
+        const historyLink = document.getElementById('history-link');
+        const historyOverlay = document.getElementById('history-overlay');
+        const historyCloseBtn = document.getElementById('history-close-btn');
+        const infoLink = document.getElementById('info-link');
+        const infoSubMenu = document.getElementById('info-sub-menu');
+        
+        // New elements for related links
+        const relatedLink = document.getElementById('related-link');
+        const relatedSubMenu = document.getElementById('related-sub-menu');
+
+        // New popup elements
+        const familyLink = document.getElementById('family-link');
+        const familyOverlay = document.getElementById('family-overlay');
+        const familyCloseBtn = document.getElementById('family-close-btn');
+        const familyIframe = document.getElementById('family-iframe');
+
+        const phattarapollLink = document.getElementById('phattarapoll-link');
+        const phattarapollOverlay = document.getElementById('phattarapoll-overlay');
+        const phattarapollCloseBtn = document.getElementById('phattarapoll-close-btn');
+        const phattarapollIframe = document.getElementById('phattarapoll-iframe');
+
+        const tinLink = document.getElementById('tin-link');
+        const tinOverlay = document.getElementById('tin-overlay');
+        const tinCloseBtn = document.getElementById('tin-close-btn');
+        const tinIframe = document.getElementById('tin-iframe');
+
+        // *************** เพิ่ม Learning Popup Elements ***************
+        const learningOverlay = document.getElementById('learning-overlay');
+        const learningCloseBtn = document.getElementById('learning-close-btn');
+        const learningIframe = document.getElementById('learning-iframe');
+        const learningLinks = document.querySelectorAll('.learning-link');
+        // *************************************************************
+
+
+        let currentUser = null;
+        const ADM_USERNAME = 'adm';
+        const ADM_PASSWORD = '3946';
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw15w3AUwkNJG2Wb02XLc2eNImBR6WJ0IWzXJgoD7UXfVfnx4rhobjdX6uCLPxSAuqJ/exec';
+
+        // Toggle menu visibility
+        menuIcon.addEventListener('click', () => {
+            leftMenu.classList.toggle('active');
+            // mainContent.style.flexGrow = leftMenu.classList.contains('active') ? '0' : '1'; // ลบโค้ดนี้ออก
+            // mainContent.style.width = leftMenu.classList.contains('active') ? '70%' : '100%'; // ลบโค้ดนี้ออก
+        });
+        
+        infoLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Toggle visibility of the sub-menu
+            infoSubMenu.style.display = infoSubMenu.style.display === 'none' ? 'block' : 'none';
+        });
+
+        // Toggle related sub-menu visibility
+        relatedLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            relatedSubMenu.style.display = relatedSubMenu.style.display === 'none' ? 'block' : 'none';
+        });
+
+        loginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginTitle.textContent = 'กรุณาใส่ชื่อของคุณ';
+            passwordInput.style.display = 'none';
+            usernameInput.value = '';
+            passwordInput.value = '';
+            loginOverlay.style.display = 'flex';
+        });
+
+        historyLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            historyOverlay.style.display = 'flex';
+        });
+
+        historyCloseBtn.addEventListener('click', () => {
+            historyOverlay.style.display = 'none';
+        });
+
+        usernameInput.addEventListener('input', () => {
+            if (usernameInput.value.toLowerCase() === ADM_USERNAME) {
+                passwordInput.style.display = 'block';
+                loginTitle.textContent = 'กรุณาใส่รหัสผ่าน ADM';
+            } else {
+                passwordInput.style.display = 'none';
+                loginTitle.textContent = 'กรุณาใส่ชื่อของคุณ';
+            }
+        });
+
+        loginBtn.addEventListener('click', () => {
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+            if (!username) {
+                alert('กรุณาใส่ชื่อผู้ใช้งาน');
+                return;
+            }
+            if (username.toLowerCase() === ADM_USERNAME) {
+                if (password === ADM_PASSWORD) {
+                    performLogin(username);
+                } else {
+                    alert('รหัสผ่านไม่ถูกต้อง');
+                }
+            } else {
+                performLogin(username);
+            }
+        });
+
+        const performLogin = async (username) => {
+            currentUser = username;
+            loginOverlay.style.display = 'none';
+            loginLink.textContent = `ยินดีต้อนรับ, ${currentUser}`;
+            loginLink.style.pointerEvents = 'none';
+            loginLink.style.color = 'var(--main-color)';
+            mainTitle.style.display = 'none';
+            mainSubtitle.style.display = 'none';
+            chatContainer.style.display = 'flex';
+            mainContent.style.justifyContent = 'flex-start'; // ปรับการจัดตำแหน่งของเนื้อหาหลัก
+
+            await fetch(WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'userLogin', username: currentUser }),
+                headers: { 'Content-Type': 'text/plain' }
+            }).catch(err => console.error('Error logging in user:', err));
+
+            fetchChatHistory();
+            fetchOnlineUsers();
+            setInterval(() => {
+                fetchChatHistory();
+                fetchOnlineUsers();
+            }, 3000);
+
+            window.addEventListener('beforeunload', () => {
+                navigator.sendBeacon(WEB_APP_URL, JSON.stringify({ action: 'userLogout', username: currentUser }));
+            });
+        };
+
+        const isADM = (username) => username && username.toLowerCase() === ADM_USERNAME;
+
+        const fetchChatHistory = async () => {
+            try {
+                const response = await fetch(`${WEB_APP_URL}?action=getChat`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                
+                if (Array.isArray(data.chat)) {
+                    chatBox.innerHTML = '';
+                    data.chat.forEach(msg => {
+                        displayMessage(msg.username, msg.message, msg.timestamp);
+                    });
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                } else {
+                    console.warn("Chat data is not an array:", data);
+                }
+            } catch (error) {
+                console.error('Error fetching chat history:', error);
+            }
+        };
+
+        const fetchOnlineUsers = async () => {
+            try {
+                const response = await fetch(`${WEB_APP_URL}?action=getOnlineUsers`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                
+                if (Array.isArray(data.onlineUsers)) {
+                    onlineStatus.textContent = `ออนไลน์: ${data.onlineUsers.join(', ')}`;
+                } else {
+                    onlineStatus.textContent = `ออนไลน์: 0`;
+                }
+            } catch (error) {
+                console.error('Error fetching online users:', error);
+            }
+        };
+
+        const sendMessage = async () => {
+            const messageText = chatMessage.value.trim();
+            if (messageText && currentUser) {
+                try {
+                    const response = await fetch(WEB_APP_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            action: 'postMessage',
+                            username: currentUser,
+                            message: messageText
+                        }),
+                        headers: { 'Content-Type': 'text/plain' }
+                    });
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const result = await response.json();
+                    if (result.status === "success") {
+                        chatMessage.value = '';
+                        setTimeout(fetchChatHistory, 500); 
+                    } else {
+                        console.error("Error from server:", result.message);
+                        alert("มีข้อผิดพลาดในการส่งข้อความ: " + result.message);
+                    }
+                } catch (error) {
+                    console.error('Error sending message:', error);
+                    alert("มีข้อผิดพลาดในการส่งข้อความ");
+                }
+            }
+        };
+
+        const deleteMessage = async (timestamp) => {
+            if (!isADM(currentUser)) {
+                alert("คุณไม่มีสิทธิ์ลบข้อความ");
+                return;
+            }
+            if (confirm("คุณต้องการลบข้อความนี้ใช่หรือไม่?")) {
+                try {
+                    const response = await fetch(WEB_APP_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            action: 'deleteMessage',
+                            timestamp: timestamp
+                        }),
+                        headers: { 'Content-Type': 'text/plain' }
+                    });
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const result = await response.json();
+                    if (result.status === "success") {
+                        setTimeout(fetchChatHistory, 500);
+                    } else {
+                        console.error("Error from server:", result.message);
+                        alert("มีข้อผิดพลาดในการลบข้อความ: " + result.message);
+                    }
+                } catch (error) {
+                    console.error('Error deleting message:', error);
+                    alert("มีข้อผิดพลาดในการลบข้อความ");
+                }
+            }
+        };
+
+        const displayMessage = (username, message, timestamp) => {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+            let nameClass = '';
+            if (isADM(username)) {
+                messageElement.classList.add('adm');
+                nameClass = '<span class="adm-icon"><i class="fas fa-shield-alt"></i> ADM</span> ';
+            }
+            
+            const time = new Date(timestamp);
+            const formattedTime = time.toLocaleDateString('th-TH') + ' ' + time.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+
+            messageElement.innerHTML = `
+                <div class="message-header">
+                    <span class="user-name">${nameClass}${username}</span>
+                    <span class="message-time">${formattedTime}</span>
+                </div>
+                <div class="message-text">${message}</div>
+            `;
+            if (isADM(currentUser)) {
+                const deleteIcon = document.createElement('i');
+                deleteIcon.classList.add('fas', 'fa-trash');
+                deleteIcon.style.color = '#e74c3c';
+                deleteIcon.style.cursor = 'pointer';
+                deleteIcon.style.marginLeft = '5px';
+                deleteIcon.title = 'ลบข้อความ';
+                deleteIcon.addEventListener('click', () => {
+                    deleteMessage(timestamp);
+                });
+                messageElement.querySelector('.message-header').appendChild(deleteIcon);
+            }
+            chatBox.appendChild(messageElement);
+        };
+
+        sendBtn.addEventListener('click', sendMessage);
+        chatMessage.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Function to show an overlay with a specific URL
+        const showIframeOverlay = (overlayElement, iframeElement, url) => {
+            // ปรับ URL สำหรับวิดีโอ YouTube เพื่อให้สามารถฝังและเต็มจอได้
+            let finalUrl = url;
+            if (url.includes('youtube.com/watch?v=')) {
+                const videoId = url.split('v=')[1].split('&')[0];
+                finalUrl = `https://www.youtube.com/embed/${videoId}?rel=0&autoplay=1`;
+            }
+            
+            iframeElement.src = finalUrl;
+            overlayElement.style.display = 'flex';
+        };
+
+        // Function to hide an overlay
+        const hideOverlay = (overlayElement) => {
+            overlayElement.style.display = 'none';
+            // Optionally, clear the iframe source to stop video/audio
+            const iframe = overlayElement.querySelector('iframe');
+            if (iframe) {
+                iframe.src = 'about:blank';
+            }
+        };
+
+        // Add event listeners to the new links
+        familyLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showIframeOverlay(familyOverlay, familyIframe, 'family.html');
+        });
+
+        phattarapollLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showIframeOverlay(phattarapollOverlay, phattarapollIframe, 'Phattarapoll/index.html');
+        });
+
+        tinLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showIframeOverlay(tinOverlay, tinIframe, 'TIN/mainTIN.html');
+        });
+
+        // *************** เพิ่ม Event Listeners สำหรับเมนูเรียนรู้ ***************
+        learningLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const url = link.getAttribute('data-url');
+                showIframeOverlay(learningOverlay, learningIframe, url);
+            });
+        });
+
+        learningCloseBtn.addEventListener('click', () => {
+            hideOverlay(learningOverlay);
+        });
+        // *************************************************************
+
+        // Add event listeners to the close buttons
+        familyCloseBtn.addEventListener('click', () => {
+            hideOverlay(familyOverlay);
+        });
+
+        phattarapollCloseBtn.addEventListener('click', () => {
+            hideOverlay(phattarapollOverlay);
+        });
+
+        tinCloseBtn.addEventListener('click', () => {
+            hideOverlay(tinOverlay);
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === loginOverlay) {
+                loginOverlay.style.display = 'none';
+            }
+            if (event.target === historyOverlay) {
+                historyOverlay.style.display = 'none';
+            }
+            if (event.target === familyOverlay) {
+                hideOverlay(familyOverlay);
+            }
+            if (event.target === phattarapollOverlay) {
+                hideOverlay(phattarapollOverlay);
+            }
+            if (event.target === tinOverlay) {
+                hideOverlay(tinOverlay);
+            }
+            // *************** เพิ่มเงื่อนไขปิด Learning Overlay ***************
+            if (event.target === learningOverlay) {
+                hideOverlay(learningOverlay);
+            }
+            // *************************************************************
+        });
+    });
+</script>
+</body>
+</html>

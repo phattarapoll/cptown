@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ฝึกภาษาอังกฤษรายวัน</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #555;
+        }
+        .sentence {
+            font-size: 2em;
+            text-align: center;
+            margin: 40px 0;
+        }
+        .word {
+            position: relative;
+            cursor: pointer;
+            border-bottom: 2px dashed #999;
+            padding-bottom: 2px;
+            transition: color 0.3s;
+        }
+        .word:hover {
+            color: #007bff;
+        }
+        .tooltip {
+            visibility: hidden;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .word:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>ฝึกภาษาอังกฤษ</h1>
+    <div class="sentence" id="english-sentence">
+        กำลังโหลด...
+    </div>
+</div>
+
+<script>
+    // **สำคัญ:** อย่าลืมเปลี่ยน YOUR_WEB_APP_URL เป็น Web app URL ที่ได้จาก Google Apps Script
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxYtkc2QOj0q9vgJuKepiQP97KbNyb7iFW6JLfjVjJdInhMShThLz4PQIgbbrXQTL1t/exec';
+
+    async function fetchWordData() {
+        try {
+            const response = await fetch(API_URL);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            renderSentence(data);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            document.getElementById('english-sentence').innerHTML = 'เกิดข้อผิดพลาดในการโหลดข้อมูล';
+        }
+    }
+
+    function renderSentence(words) {
+        const sentenceContainer = document.getElementById('english-sentence');
+        sentenceContainer.innerHTML = '';
+
+        words.forEach(word => {
+            const wordSpan = document.createElement('span');
+            wordSpan.className = 'word';
+
+            const textSpan = document.createElement('span');
+            textSpan.className = 'text';
+            textSpan.textContent = word.english;
+
+            const tooltipSpan = document.createElement('span');
+            tooltipSpan.className = 'tooltip';
+            tooltipSpan.textContent = word.thai;
+
+            wordSpan.appendChild(textSpan);
+            wordSpan.appendChild(tooltipSpan);
+            sentenceContainer.appendChild(wordSpan);
+            sentenceContainer.appendChild(document.createTextNode(' '));
+        });
+    }
+
+    fetchWordData();
+</script>
+
+</body>
+</html>

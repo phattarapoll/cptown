@@ -1,0 +1,374 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>PSVMT TALK</title>
+<style type="text/css">
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: Arial;
+    background: dimgrey;
+    text-align: center;
+  }
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    font-size: 18px;
+    overflow: hidden;
+    background-color: #333;
+  }
+
+  li {
+    float: left;
+  }
+
+  li a {
+    display: block;
+    color: white;
+    text-align: left;
+    padding: 10px 20px;
+    text-decoration: none;
+  }
+/* Header/Blog Title */
+  .header {
+    padding: 30px;
+    text-align: center;
+    background: violet;
+  }
+  .header h1 {
+    font-size: 50px;
+  }
+  header * {
+  display: inline;
+  }
+  header li {
+  margin: 10px;
+  }
+/* Change the link color to #111 (black) on hover */
+  li a:hover {
+    background-color: #111;
+  }
+/* Style the top navigation bar */
+.topnav {
+  overflow: hidden;
+  background-color: #333;
+}
+ul.menu {
+  justify-items: center;
+  margin-top: 7%;
+}
+ul.menu li{
+  list-style: none;
+}
+ul.menu li a{
+  text-decoration:none;
+  color:black;
+  text-transform: uppercase;
+  transition: .3s ease-in-out;
+  font-size: 16px;
+  font-family: Times, serif;
+}
+ul.menu li a:hover{
+  background:#40aed7;
+  pading: 5px 10px;
+  border-radius: 5px;
+}
+.container {
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+}
+.content {
+  width: 100%;
+  height: auto;
+  background:#fff;
+}
+.content-heading {
+  font-size: 80px;
+  color: #333;
+}
+.content-services {
+  margin: 60px;
+  width: 100%;
+  height: auto;
+}
+.content-services-item {
+  border: 0px solid #e4e4e4;
+  padding: 20px;
+  transition: .3s ease-in-out;
+}
+.content-services-grid {
+  display: grid;
+  width: 60%;
+  grid-template-columns:repeat(4,1fr);
+  text-align: center;
+  grid-gap: 1rem;
+}
+.content-services-item .fa {
+  font-size: 2rem;
+  background: transparent;
+}
+.content-services-item .h2 {
+  font-size: 32px;
+  text-transform: uppercase;
+  color: #333;
+  margin: 20px 0;
+}
+.content-services-item .p {
+  font-size: 12px;
+  color: #979797;
+}
+.copyright {
+  width: 100%;
+  height: 10px;
+  color: #F5F5DC;
+}
+.copyright-grid {
+  display: grid;
+  grid-template-columns:1fr 1fr;
+  height: 10px;
+  color: #F5F5DC;
+} 
+.copytext {
+  justify-self: flex-start;
+  align-self: center;
+}
+.credites {
+  justify-self: flex-end;
+  align-self: center;
+}
+
+/* Style the topnav links */
+.topnav a {
+  float: left;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+/* Change color on hover */
+.topnav a:hover {
+  background-color: lawngreen;
+  font-size: 19px;
+  color: black;
+}
+
+/* Create two unequal columns that floats next to each other */
+/* Left column */
+.leftcolumn {   
+  float: left;
+  width: 75%;
+}
+
+/* Right column */
+.rightcolumn {
+  float: left;
+  width: 25%;
+  background-color: #f1f1f1;
+  padding-left: 20px;
+}
+
+/* Fake image */
+.fakeimg {
+  background-color: #aaa;
+  width: 100%;
+  padding: 20px;
+}
+
+/* Add a card effect for articles */
+.card {
+  background-color: white;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Footer */
+.footer {
+  padding: 20px;
+  text-align: center;
+  background: #ddd;
+  margin-top: 20px;
+}
+
+/* Responsive layout - when the screen is less than 800px wide, make the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 800px) {
+  .leftcolumn, .rightcolumn {   
+    width: 100%;
+    padding: 0;
+  }
+}
+
+/* Responsive layout - when the screen is less than 400px wide, make the navigation links stack on top of each other instead of next to each other */
+@media screen and (max-width: 400px) {
+  .topnav a {
+    float: none;
+    width: 100%;
+  }
+}
+/* Change the link color on hover */
+  li a:hover {
+    background-color: #555;
+    color: goldenrod;
+  }
+  .dropbtn{
+    background-color: transparent;
+    color: white;
+    padding: 10px;
+    font-size: 18px;
+    border: none;
+  }
+  .dopdown{
+    position: relative;
+    display: inline-block;
+  }
+  .dropdown-content{
+    display: none;
+    position: absolute;
+    color: black;
+    background-color: greenyellow;
+    min-width: 10px;
+    z-index: 1;
+  }
+  .dropdown-content a{
+    color: black;
+    padding: 5px 5px;
+    text-decoration: none;
+    display: block;
+  }
+  .dropdown-content a:hover{background-color: white;}
+  .dropdown:hover .dropdown-content{display: block;}
+  .dropdown:hover .dropbtn{background-color: grey;}
+</style>
+</head>
+<body><ul>
+    <li><a href="http://psvmt.6te.net/home.html">เว็ปไซต์หลัก</a></li>
+  <li>
+    <div class="dropdown">
+<button class="dropbtn">ข้อมูลต่างๆ</button>
+<div class="dropdown-content">
+
+<a href="http://psvmt.6te.net/story.html">ความเป็นมาของสกุล</a>
+<a href="http://psvmt.6te.net/Phattarapoll/index.html">เว็ปไซต์ส่วนตัวภัทรพล</a>
+<a href="http://psvmt.6te.net/travel.html">การศึกษา(ตารางเรียน)</a>	
+<a href="http://psvmt.6te.net/FM.html">วิทยุออนไลน์</a>	
+<a href="http://psvmt.6te.net/sell1.html">ประกาศ..ขายบ้านบางหมาก</a>	
+<a href="http://psvmt.6te.net/report/id13.html">ความรู้เกี่ยวกับเลขบัตรประชาชน</a>	
+<a href="http://psvmt.6te.net/TIN/index.html">งานนำเสนอติณณ์</a> 
+
+
+</div>
+</div>
+  </li><li><a href="http://psvmt.6te.net/download.html">เข้าสู่ระบบ</a></li>
+  <li><a href="http://psvmt.6te.net/connection.html">ติดต่อ</a></li>
+  <li style="float:right"><a class="active" href="http://psvmt.6te.net/report/about.html">About</a></li>
+</ul>
+
+</header> 
+
+<script type="text/javascript">
+function MM_preloadImages() { //v3.0
+  var d=document; if(d.images){ if(!d.MM_p) d.MM_p=new Array();
+    var i,j=d.MM_p.length,a=MM_preloadImages.arguments; for(i=0; i<a.length; i++)
+    if (a[i].indexOf("#")!=0){ d.MM_p[j]=new Image; d.MM_p[j++].src=a[i];}}
+}
+function MM_swapImgRestore() { //v3.0
+  var i,x,a=document.MM_sr; for(i=0;a&&i<a.length&&(x=a[i])&&x.oSrc;i++) x.src=x.oSrc;
+}
+function MM_findObj(n, d) { //v4.01
+  var p,i,x;  if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
+    d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}
+  if(!(x=d[n])&&d.all) x=d.all[n]; for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n];
+  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=MM_findObj(n,d.layers[i].document);
+  if(!x && d.getElementById) x=d.getElementById(n); return x;
+}
+
+function MM_swapImage() { //v3.0
+  var i,j=0,x,a=MM_swapImage.arguments; document.MM_sr=new Array; for(i=0;i<(a.length-2);i+=3)
+   if ((x=MM_findObj(a[i]))!=null){document.MM_sr[j++]=x; if(!x.oSrc) x.oSrc=x.src; x.src=a[i+2];}
+}
+</script>
+</head>
+
+<body> 
+<!-- Start of  Zendesk Widget script -->
+<script id="ze-snippet" src="https://static.zdassets.com/ekr/snippet.js?key=f73d9a58-f1ce-4cda-9fcd-6b341b998374"> </script>
+<!-- End of  Zendesk Widget script -->
+</head>
+    <br>
+  <tr><center>
+    <iframe src="https://www6.cbox.ws/box/?boxid=831769&boxtag=ub08e7" width="780px" height="500px" allowtransparency="yes" allow="autoplay" frameborder="1" marginheight="0" marginwidth="0" scrolling="auto"></iframe></center></tr>
+    <br>
+
+    <tr>
+      <td>ฝากข้อความไว้เพื่อ ADMIN จะเข้ามาตอบคำถาม</td>
+    </tr>
+<td colspan="3" rowspan="2"> <center>     <script type="text/javascript" src="https://hosted.muses.org/mrp.js"></script>
+<script type="text/javascript">
+MRP.insert({
+'url':'http://27.254.142.208:8100/stream',
+'codec':'mp3',
+'volume':100,
+'autoplay':true,
+'forceHTML5':true,
+'jsevents':true,
+'buffering':0,
+'title':'สตริง',
+'wmode':'transparent',
+'skin':'wmp',
+'width':400,
+'height':47
+});
+    </script>  
+</td>
+    <td colspan="3" rowspan="2">      <script type="text/javascript" src="https://hosted.muses.org/mrp.js"></script>
+      <script type="text/javascript">
+MRP.insert({
+'url':'http://27.254.142.208:8300/stream',
+'codec':'mp3',
+'volume':100,
+'autoplay':false,
+'forceHTML5':true,
+'jsevents':true,
+'buffering':0,
+'title':'เพื่อชีวิต',
+'wmode':'transparent',
+'skin':'wmp',
+'width':400,
+'height':47
+});
+          </script>
+</td>
+    <td colspan="3" rowspan="2">      <script type="text/javascript" src="https://hosted.muses.org/mrp.js"></script>
+      <script type="text/javascript">
+MRP.insert({
+'url':'http://27.254.142.208:8200/stream',
+'codec':'mp3',
+'volume':100,
+'autoplay':false,
+'forceHTML5':true,
+'jsevents':true,
+'buffering':0,
+'title':'ลูกทุ่ง',
+'wmode':'transparent',
+'skin':'wmp',
+'width':400,
+'height':47
+});
+          </script>
+</td>
+    
+</table>
+</body>
+</html>

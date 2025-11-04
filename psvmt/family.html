@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ผังครอบครัว PSVMT</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
+        body {
+            font-family: 'Playfair Display', serif;
+            background-color: #121212;
+            color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1, h2 {
+            color: #E6B34A;
+            text-align: center;
+        }
+        .container-wrapper {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1400px;
+        }
+        .main-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 50px;
+            flex: 1;
+        }
+        .ancestors-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            border-right: 1px solid #333;
+        }
+        .ancestors-container.right-side {
+            border-left: 1px solid #333;
+            border-right: none;
+        }
+        .column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+            text-align: center;
+            flex: 1;
+        }
+        .person {
+            position: relative;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .person-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #E6B34A;
+            box-shadow: 0 0 10px rgba(230, 179, 74, 0.5);
+            transition: transform 0.3s ease;
+        }
+        .person-photo:hover {
+            transform: scale(1.05);
+        }
+        .person-symbol {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            font-weight: bold;
+            color: #121212;
+            box-shadow: 0 0 8px rgba(230, 179, 74, 0.5);
+        }
+        .male {
+            background-color: #3498db;
+        }
+        .female {
+            background-color: #e74c3c;
+        }
+        .person-name {
+            margin-top: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #E6B34A;
+        }
+        .person-role {
+            font-size: 0.9em;
+            color: #ccc;
+        }
+        .couple-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+        }
+        .children-line {
+            width: 2px;
+            height: 40px;
+            background-color: #E6B34A;
+            margin: 0 auto;
+        }
+        .couple-line {
+            position: absolute;
+            width: 20px;
+            height: 2px;
+            background-color: #E6B34A;
+            z-index: 1;
+        }
+        .couple-group .couple-line {
+            width: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        /* Popup Styles */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .popup-content {
+            background-color: #1c1c1c;
+            padding: 30px;
+            border-radius: 10px;
+            width: 400px;
+            max-width: 90%;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            position: relative;
+        }
+        .popup-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #E6B34A;
+            margin-bottom: 20px;
+        }
+        .popup-name {
+            font-size: 2em;
+            color: #E6B34A;
+            margin-bottom: 5px;
+        }
+        .popup-role {
+            font-size: 1.2em;
+            color: #ccc;
+            margin-bottom: 10px;
+        }
+        .popup-bio {
+            font-size: 1em;
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5em;
+            color: #f0f0f0;
+            cursor: pointer;
+        }
+        
+        /* Responsive Design - Media Queries */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .container-wrapper {
+                flex-direction: column;
+                align-items: center;
+            }
+            .main-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 30px;
+            }
+            .column {
+                width: 100%;
+                gap: 20px;
+            }
+            .ancestors-container {
+                border-right: none;
+                border-bottom: 1px solid #333;
+                width: 100%;
+                margin-bottom: 20px;
+            }
+            .ancestors-container.right-side {
+                border-left: none;
+                border-top: 1px solid #333;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+            .person-photo {
+                width: 80px;
+                height: 80px;
+            }
+            .person-symbol {
+                width: 30px;
+                height: 30px;
+                font-size: 1.5em;
+            }
+            .couple-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .couple-group .couple-line {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>ผังครอบครัว PSVMT</h1>
+    <div class="container-wrapper">
+        <div class="ancestors-container">
+            <h2>บรรพบุรุษ</h2>
+            <div id="father-ancestors-container"></div>
+        </div>
+
+        <div class="main-container">
+            <div class="column">
+                <h2>สายสกุลฝั่งพ่อ</h2>
+                <div class="couple-group">
+                    <div id="father-person1"></div>
+                    <div id="father-person2"></div>
+                </div>
+                <div class="children-line"></div>
+                <div id="father-children-group"></div>
+            </div>
+            
+            <div class="column">
+                <h2>สายหลัก</h2>
+                <div class="couple-group">
+                    <div id="main-couple-person1"></div>
+                    <div id="main-couple-person2"></div>
+                </div>
+                <div class="children-line"></div>
+                <div id="main-child-group"></div>
+            </div>
+    
+            <div class="column">
+                <h2>สายสกุลฝั่งแม่</h2>
+                <div class="couple-group">
+                    <div id="mother-person1"></div>
+                    <div id="mother-person2"></div>
+                </div>
+                <div class="children-line"></div>
+                <div id="mother-child-group"></div>
+            </div>
+        </div>
+
+        <div class="ancestors-container right-side">
+            <h2>บรรพบุรุษ</h2>
+            <div id="mother-ancestors-container"></div>
+        </div>
+    </div>
+    
+    <div class="popup-overlay" id="popup-overlay">
+        <div class="popup-content">
+            <span class="close-btn" id="close-btn">&times;</span>
+            <img src="" id="popup-photo" class="popup-photo">
+            <h2 id="popup-name" class="popup-name"></h2>
+            <p id="popup-role" class="popup-role"></p>
+            <p id="popup-birthdate" class="popup-birthdate"></p>
+            <p id="popup-bio" class="popup-bio"></p>
+        </div>
+    </div>
+    
+    <script>
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw15w3AUwkNJG2Wb02XLc2eNImBR6WJ0IWzXJgoD7UXfVfnx4rhobjdX6uCLPxSAuqJ/exec';
+        const fatherAncestorsContainer = document.getElementById('father-ancestors-container');
+        const motherAncestorsContainer = document.getElementById('mother-ancestors-container');
+        const fatherPerson1Container = document.getElementById('father-person1');
+        const fatherPerson2Container = document.getElementById('father-person2');
+        const fatherChildrenContainer = document.getElementById('father-children-group');
+        const motherPerson1Container = document.getElementById('mother-person1');
+        const motherPerson2Container = document.getElementById('mother-person2');
+        const motherChildContainer = document.getElementById('mother-child-group');
+        const mainCouple1Container = document.getElementById('main-couple-person1');
+        const mainCouple2Container = document.getElementById('main-couple-person2');
+        const mainChildContainer = document.getElementById('main-child-group');
+        const popupOverlay = document.getElementById('popup-overlay');
+        const closeBtn = document.getElementById('close-btn');
+        const popupPhoto = document.getElementById('popup-photo');
+        const popupName = document.getElementById('popup-name');
+        const popupRole = document.getElementById('popup-role');
+        const popupBirthdate = document.getElementById('popup-birthdate');
+        const popupBio = document.getElementById('popup-bio');
+        let peopleMap = {};
+
+        const fetchFamilyTreeData = async () => {
+            try {
+                const response = await fetch(`${WEB_APP_URL}?action=getFamilyTree`);
+                const data = await response.json();
+                if (data.people) {
+                    peopleMap = data.people.filter(p => p.Name).reduce((map, person) => {
+                        map[person.ID] = person;
+                        return map;
+                    }, {});
+                    renderFamilyTree();
+                }
+            } catch (error) {
+                console.error('Error fetching family tree data:', error);
+            }
+        };
+
+        const createPersonBlock = (person, mode = 'photo') => {
+            if (!person) return null;
+            const div = document.createElement('div');
+            div.classList.add('person');
+            div.dataset.id = person.ID;
+            
+            if (mode === 'symbol') {
+                const symbolDiv = document.createElement('div');
+                symbolDiv.classList.add('person-symbol');
+                if (person.Gender && person.Gender.toLowerCase() === 'male') {
+                    symbolDiv.classList.add('male');
+                } else if (person.Gender && person.Gender.toLowerCase() === 'female') {
+                    symbolDiv.classList.add('female');
+                }
+                div.appendChild(symbolDiv);
+            } else {
+                const img = document.createElement('img');
+                img.classList.add('person-photo');
+                img.src = person.PhotoURL || 'https://via.placeholder.com/120';
+                img.alt = person.Name;
+                div.appendChild(img);
+            }
+
+            const nameDiv = document.createElement('div');
+            nameDiv.classList.add('person-name');
+            nameDiv.textContent = person.Name;
+            div.appendChild(nameDiv);
+
+            const roleDiv = document.createElement('div');
+            roleDiv.classList.add('person-role');
+            roleDiv.textContent = person.Role || '';
+            div.appendChild(roleDiv);
+
+            div.addEventListener('click', () => showPopup(person));
+            return div;
+        };
+
+        const renderFamilyTree = () => {
+            // Father's Ancestors (using symbols)
+            const fatherAncestors = Object.values(peopleMap).filter(p => p.Group === 'Ancestor' && p.Side === 'Father');
+            fatherAncestors.forEach(person => {
+                fatherAncestorsContainer.appendChild(createPersonBlock(person, 'symbol'));
+            });
+            
+            // Mother's Ancestors (using symbols)
+            const motherAncestors = Object.values(peopleMap).filter(p => p.Group === 'Ancestor' && p.Side === 'Mother');
+            motherAncestors.forEach(person => {
+                motherAncestorsContainer.appendChild(createPersonBlock(person, 'symbol'));
+            });
+
+            // Father's Side (using symbols)
+            fatherPerson1Container.appendChild(createPersonBlock(peopleMap['p1'], 'symbol'));
+            fatherPerson2Container.appendChild(createPersonBlock(peopleMap['p2'], 'symbol'));
+            
+            const children1 = document.createElement('div');
+            children1.style.display = 'flex';
+            children1.style.gap = '20px';
+            children1.appendChild(createPersonBlock(peopleMap['p3'], 'symbol'));
+            children1.appendChild(createPersonBlock(peopleMap['p4'], 'symbol'));
+            fatherChildrenContainer.appendChild(children1);
+
+            // Mother's Side (using symbols)
+            motherPerson1Container.appendChild(createPersonBlock(peopleMap['p7'], 'symbol'));
+            motherPerson2Container.appendChild(createPersonBlock(peopleMap['p8'], 'symbol'));
+            motherChildContainer.appendChild(createPersonBlock(peopleMap['p5'], 'symbol'));
+            
+            // Main Lineage (using photos)
+            mainCouple1Container.appendChild(createPersonBlock(peopleMap['p4']));
+            mainCouple2Container.appendChild(createPersonBlock(peopleMap['p5']));
+            mainChildContainer.appendChild(createPersonBlock(peopleMap['p6']));
+        };
+
+        const showPopup = (person) => {
+            popupPhoto.src = person.PhotoURL || 'https://via.placeholder.com/150';
+            popupName.textContent = person.Name;
+            popupRole.textContent = person.Role || '';
+            popupBirthdate.textContent = `วันเกิด: ${person.Birthdate || 'ไม่มีข้อมูล'}`;
+            popupBio.textContent = person.Bio || '';
+            popupOverlay.style.display = 'flex';
+        };
+
+        closeBtn.addEventListener('click', () => {
+            popupOverlay.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === popupOverlay) {
+                popupOverlay.style.display = 'none';
+            }
+        });
+
+        fetchFamilyTreeData();
+    </script>
+</body>
+</html>

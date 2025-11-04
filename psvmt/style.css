@@ -1,0 +1,243 @@
+* {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: Arial;
+    background: dimgrey;
+  }
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    font-size: 18px;
+    overflow: hidden;
+    background-color: #333;
+  }
+
+  li {
+    float: left;
+  }
+
+  li a {
+    display: block;
+    color: white;
+    text-align: left;
+    padding: 10px 20px;
+    text-decoration: none;
+  }
+/* Header/Blog Title */
+  .header {
+    padding: 30px;
+    text-align: center;
+    background: violet;
+  }
+  .header h1 {
+    font-size: 50px;
+  }
+  header * {
+  display: inline;
+  }
+  header li {
+  margin: 10px;
+  }
+/* Change the link color to #111 (black) on hover */
+  li a:hover {
+    background-color: #111;
+  }
+/* Style the top navigation bar */
+.topnav {
+  overflow: hidden;
+  background-color: #333;
+}
+ul.menu {
+  justify-items: center;
+  margin-top: 7%;
+}
+ul.menu li{
+  list-style: none;
+}
+ul.menu li a{
+  text-decoration:none;
+  color:black;
+  text-transform: uppercase;
+  transition: .3s ease-in-out;
+  font-size: 16px;
+  font-family: Times, serif;
+}
+ul.menu li a:hover{
+  background:#40aed7;
+  pading: 5px 10px;
+  border-radius: 5px;
+}
+.container {
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+}
+.content {
+  width: 100%;
+  height: auto;
+  background:#fff;
+}
+.content-heading {
+  font-size: 80px;
+  color: #333;
+}
+.content-services {
+  margin: 60px;
+  width: 100%;
+  height: auto;
+}
+.content-services-item {
+  border: 0px solid #e4e4e4;
+  padding: 20px;
+  transition: .3s ease-in-out;
+}
+.content-services-grid {
+  display: grid;
+  grid-template-columns:repeat(2,1fr);
+  text-align: center;
+}
+.content-services-item .fa {
+  font-size: 2rem;
+  background: transparent;
+}
+.content-services-item .h2 {
+  font-size: 32px;
+  text-transform: uppercase;
+  color: #333;
+  margin: 20px 0;
+}
+.content-services-item .p {
+  font-size: 12px;
+  color: #979797;
+}
+.copyright {
+  width: 100%;
+  height: 10px;
+  color: #F5F5DC;
+}
+.copyright-grid {
+  display: grid;
+  grid-template-columns:1fr 1fr;
+  height: 10px;
+  color: #F5F5DC;
+} 
+.copytext {
+  justify-self: flex-start;
+  align-self: center;
+}
+.credites {
+  justify-self: flex-end;
+  align-self: center;
+}
+
+/* Style the topnav links */
+.topnav a {
+  float: left;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+/* Change color on hover */
+.topnav a:hover {
+  background-color: lawngreen;
+  font-size: 19px;
+  color: black;
+}
+
+/* Create two unequal columns that floats next to each other */
+/* Left column */
+.leftcolumn {   
+  float: left;
+  width: 75%;
+}
+
+/* Right column */
+.rightcolumn {
+  float: left;
+  width: 25%;
+  background-color: #f1f1f1;
+  padding-left: 20px;
+}
+
+/* Fake image */
+.fakeimg {
+  background-color: #aaa;
+  width: 100%;
+  padding: 20px;
+}
+
+/* Add a card effect for articles */
+.card {
+  background-color: white;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Footer */
+.footer {
+  padding: 20px;
+  text-align: center;
+  background: #ddd;
+  margin-top: 20px;
+}
+
+/* Responsive layout - when the screen is less than 800px wide, make the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 800px) {
+  .leftcolumn, .rightcolumn {   
+    width: 100%;
+    padding: 0;
+  }
+}
+
+/* Responsive layout - when the screen is less than 400px wide, make the navigation links stack on top of each other instead of next to each other */
+@media screen and (max-width: 400px) {
+  .topnav a {
+    float: none;
+    width: 100%;
+  }
+}
+/* Change the link color on hover */
+  li a:hover {
+    background-color: #555;
+    color: goldenrod;
+  }
+  .dropbtn{
+    background-color: transparent;
+    color: white;
+    padding: 10px;
+    font-size: 18px;
+    border: none;
+  }
+  .dopdown{
+    position: relative;
+    display: inline-block;
+  }
+  .dropdown-content{
+    display: none;
+    position: absolute;
+    color: black;
+    background-color: greenyellow;
+    min-width: 10px;
+    z-index: 1;
+  }
+  .dropdown-content a{
+    color: black;
+    padding: 5px 5px;
+    text-decoration: none;
+    display: block;
+  }
+  .dropdown-content a:hover{background-color: white;}
+  .dropdown:hover .dropdown-content{display: block;}
+  .dropdown:hover .dropbtn{background-color: grey;}
