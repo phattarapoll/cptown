@@ -1,0 +1,156 @@
+/* เพิ่มสไตล์สำหรับปุ่ม Bulk */
+.bulk-btn {
+    padding: 10px 15px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    margin: 5px;
+}
+
+/* ใช้สีเดิมกับปุ่มย่อย */
+.bulk-btn.mp3-btn {
+    background-color: #e62117; /* แดง */
+}
+
+.bulk-btn.flac-btn {
+    background-color: #000; /* ดำ */
+}
+
+.bulk-btn.mp3-btn:hover {
+    background-color: #cc1e15;
+}
+
+.bulk-btn.flac-btn:hover {
+    background-color: #333;
+}
+
+/* ... โค้ด CSS เดิมทั้งหมด (ด้านล่างนี้) ... */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f7f6;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; 
+    min-height: 100vh;
+    padding: 30px 15px;
+    margin: 0;
+}
+
+.container {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 700px;
+    text-align: center;
+}
+
+h1 {
+    color: #007bff; 
+    margin-bottom: 10px;
+}
+
+#urlInput {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    box-sizing: border-box;
+    margin: 15px 0;
+}
+
+#downloadButton {
+    padding: 12px 25px;
+    background-color: #28a745; 
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    width: 100%;
+}
+
+#downloadButton:hover {
+    background-color: #1e7e34;
+}
+
+.message {
+    padding: 10px;
+    margin: 15px 0;
+    border-radius: 4px;
+    font-weight: bold;
+    display: none;
+}
+
+.message.error {
+    background-color: #fdd;
+    color: #d00;
+    border: 1px solid #d00;
+}
+
+#resultList {
+    margin-top: 30px;
+    text-align: left;
+}
+
+#resultList h2 {
+    border-bottom: 2px solid #eee;
+    padding-bottom: 5px;
+    margin-bottom: 20px;
+    color: #444;
+}
+
+.result-item {
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fafafa;
+}
+
+.result-item p {
+    margin: 5px 0;
+}
+
+.format-buttons {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.download-btn {
+    padding: 8px 15px;
+    color: white;
+    text-decoration: none;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.mp3-btn {
+    background-color: #e62117; 
+}
+
+.flac-btn {
+    background-color: #000; 
+}
+
+.mp3-btn:hover {
+    background-color: #cc1e15;
+}
+
+.flac-btn:hover {
+    background-color: #333;
+}
