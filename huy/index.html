@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โปรแกรมวิเคราะห์สถิติหวย (Liquid Card Design)</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>🎰 ระบบวิเคราะห์สถิติหวยย้อนหลัง</h1>
+        <p>วิเคราะห์ข้อมูลในอดีตเพื่อหาแนวโน้มความถี่การออกรางวัลทุกรางวัล</p>
+    </header>
+
+    <main>
+        <section class="card new-data-input">
+            <h2>📝 ป้อนผลรางวัลล่าสุด (หวยรัฐบาล)</h2>
+            <p>กรอกข้อมูลเพื่อให้สถิติของงวดต่อไปมีความแม่นยำ</p>
+            <div class="input-group">
+                <label for="lastLottoDate">งวดล่าสุด (วันที่ออก):</label>
+                <input type="text" id="lastLottoDate" placeholder="ตัวอย่าง: 16 พ.ย. 2568" value="16 พ.ย. 2568">
+            </div>
+            <div class="input-group">
+                <label for="r1Result">รางวัลที่ 1 (6 ตัว):</label>
+                <input type="number" id="r1Result" placeholder="ตัวอย่าง: 987654" min="0" max="999999" maxlength="6">
+            </div>
+            <div class="input-group">
+                <label for="lastLottoResult">เลขท้าย 2 ตัว:</label>
+                <input type="number" id="lastLottoResult" placeholder="ตัวอย่าง: 58" min="0" max="99" maxlength="2">
+            </div>
+            <button id="submitNewData">✅ เพิ่มข้อมูลและคำนวณใหม่</button>
+            <p id="submissionStatus" class="summary-line" style="color:var(--highlight-color); margin-top:10px;"></p>
+        </section>
+
+        <div class="control-area card analyze-control">
+            <h2>เลือกชุดข้อมูลและรางวัลที่ต้องการวิเคราะห์</h2>
+            <select id="lottoTypeSelector">
+                <option value="government">สลากกินแบ่งรัฐบาล (รัฐบาล)</option>
+                <option value="stock">หวยหุ้นไทย (SET Index) - (วิเคราะห์ 2 ตัวเท่านั้น)</option>
+            </select>
+            <select id="prizeSelector">
+                <option value="R1">🏆 รางวัลที่ 1 (3 ตัวท้าย)</option>
+                <option value="F3">เลขหน้า 3 ตัว (รวม 2 ครั้ง)</option>
+                <option value="B3">เลขท้าย 3 ตัว (รวม 2 ครั้ง)</option>
+                <option value="B2" selected>เลขท้าย 2 ตัว</option>
+            </select>
+            <div class="input-group" style="width: 100%; max-width: 400px; margin-top: 10px;">
+                <label for="nextLottoDate" style="flex-basis: 50%; font-weight: normal;">งวดที่จะถึง:</label>
+                <input type="date" id="nextLottoDate" style="flex-basis: 45%;">
+            </div>
+            <button id="analyzeButton">กดเพื่อเริ่มวิเคราะห์ข้อมูลสถิติ</button>
+        </div>
+
+        <div id="loading-status" class="status-box hidden">
+            <div class="spinner"></div>
+            <p>กำลังประมวลผลสถิติ... กรุณารอสักครู่</p>
+        </div>
+
+        <section id="recommendation-section" class="card hidden">
+            <h2>🔮 สรุปผลวิเคราะห์ความถี่ตัวเลข</h2>
+            <p class="summary-line">การวิเคราะห์นี้ใช้สำหรับงวด <strong style="color:var(--highlight-color);" id="currentAnalysisDate">N/A</strong></p>
+            <div class="analysis-grid">
+                <div class="analysis-item top-5">
+                    <h3>🔥 เลขที่ออกบ่อยที่สุด (Top 5)</h3>
+                    <div id="top-numbers-display" class="number-list">...</div>
+                </div>
+                <div class="analysis-item bottom-5">
+                    <h3>⚠️ เลขที่ไม่เคยออกนานที่สุด (Bottom 5)</h3>
+                    <div id="bottom-numbers-display" class="number-list">...</div>
+                </div>
+            </div>
+            
+            <div class="guideline-card">
+                <h3>💰 ตัวเลขเด่นที่สุดที่ควรพิจารณา</h3>
+                <p>เลขเด่นที่สุดตามสถิติความถี่คือ:</p>
+                <div class="highlight-number-box">
+                    <strong class="highlight-number" id="should-play-display">N/A</strong>
+                </div>
+                <p class="summary-line">ผลรวมเด่นที่สุด (สำหรับเลข 2 ตัว): <span id="top-sums-display">N/A</span></p>
+            </div>
+        </section>
+        
+        <section id="history-section" class="card hidden">
+            <h2>📜 ข้อมูลสถิติการออกรางวัลย้อนหลัง</h2>
+            <div class="table-container">
+                <table id="history-table">
+                    <thead>
+                        <tr></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>ข้อควรระวัง: การวิเคราะห์นี้เป็นเพียงการศึกษาความถี่ทางสถิติในอดีตเท่านั้น การออกรางวัลยังคงเป็นแบบสุ่ม</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
