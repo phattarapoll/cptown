@@ -6,32 +6,45 @@
     <title>แสดง 1 page งานทันตสาธารณสุข ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร</title>
     <meta property="og:title" content="งานทันตสาธารณสุข ศูนย์บริการสาธารณสุข เทศบาลเมืองชุมพร">
     
-    <meta property="og:description" content="เอกสาร 1 Page">
+    <meta property="og:description" content="เอกสาร 1 Page สรุปแผนงานและผลการดำเนินงานทันตสาธารณสุข">
+    
+    <meta property="og:image" content="https://phattarapoll.github.io/cptown/show/img/1.jpg">
+    
     <meta property="og:url" content="https://phattarapoll.github.io/cptown/show/index.html">
 
     <meta property="og:type" content="article">
     <style>
-        /* CSS เพื่อให้แสดงผลเต็มหน้าจอ */
+        /* CSS เพื่อให้แสดงผลเต็มหน้าจอ (เก็บไว้เผื่อใช้ในอนาคต แต่ตอนนี้ไม่มีผลกับ iframe ที่ว่างเปล่า) */
         body, html {
             margin: 0;
             padding: 0;
-            overflow: hidden; /* ซ่อน scrollbar หลักของหน้าเว็บ */
             height: 100%;
             width: 100%;
             background-color: #f4f4f4;
         }
         
-        /* องค์ประกอบ iframe ที่ใช้แสดง PDF */
-        #pdf-display {
-            width: 100%;
-            height: 100%; /* ใช้ความสูงเต็มพื้นที่ของ viewport */
-            border: none;
-            box-shadow: none;
-            display: block; /* ให้แน่ใจว่าแสดงผลแบบบล็อก */
+        /* ซ่อนข้อความ "one page งานทันตสาธารณสุข" */
+        .hidden-text {
+            display: none;
+        }
+
+        /* จัดตำแหน่งข้อความหลักให้อยู่กลางหน้าจอ เพื่อให้ดูดีขึ้น */
+        .main-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* ใช้ความสูงเต็ม viewport */
+            font-family: sans-serif;
         }
     </style>
 </head>
 <body>
-    <p>รายงานกิจกรรม งานทันตสาธารณสุข ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร</p>
-</body>
+
+    <h1 class="hidden-text">one page งานทันตสาธารณสุข</h1>
+
+    <div class="main-display">
+        <h2>งานทันตสาธารณสุข ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร</h2>
+    </div>
+    
+    </body>
 </html>
