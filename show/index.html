@@ -3,21 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>แสดงไฟล์ PDF ต้นฉบับ (ซูมได้ชัดเจน)</title>
+    <title>แสดงไฟล์ 1.pdf (คมชัด)</title>
     
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pdfjs-dist/web/pdf_viewer.css">
-    
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /* CSS เพื่อให้แสดงผลเต็มหน้าจอ */
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* ซ่อน scrollbar หลักของหน้าเว็บ */
+            height: 100%;
+            width: 100%;
+            background-color: #f4f4f4;
+        }
+        
+        /* องค์ประกอบ iframe ที่ใช้แสดง PDF */
+        #pdf-display {
+            width: 100%;
+            height: 100%; /* ใช้ความสูงเต็มพื้นที่ของ viewport */
+            border: none;
+            box-shadow: none;
+            display: block; /* ให้แน่ใจว่าแสดงผลแบบบล็อก */
+        }
+    </style>
 </head>
 <body>
 
-    <div id="pdf-viewer-container">
-        </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.379/build/pdf.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.379/web/pdf_viewer.js"></script>
-    
-    <script src="script.js"></script>
+    <iframe id="pdf-display" src="img/1.pdf">
+        <p>เบราว์เซอร์ของคุณไม่รองรับการแสดง PDF โดยตรง กรุณา <a href="img/1.pdf">คลิกเพื่อดาวน์โหลดไฟล์ 1.pdf</a></p>
+    </iframe>
 
 </body>
 </html>
