@@ -1,0 +1,23 @@
+/* style.css */
+
+/* กำหนดให้ HTML และ Body ใช้พื้นที่เต็มหน้าจอ */
+body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden; 
+    height: 100%;
+    width: 100%;
+    background-color: #eee; /* ให้เห็นขอบชัดเจนขึ้น */
+}
+
+/* กำหนดให้ Container ของ PDF ใช้พื้นที่เต็มหน้าจอ */
+#pdf-viewer-container {
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* ต้องมี scrollbar เพราะ PDF อาจจะยาวกว่าจอ */
+}
+
+/* PDF.js จะสร้าง div ที่มี class เป็น pdfViewer */
+.pdfViewer {
+    margin: 0 auto; /* จัดให้อยู่ตรงกลางหน้าจอ */
+}
