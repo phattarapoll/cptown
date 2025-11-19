@@ -557,9 +557,7 @@ body {
     padding: 30px;
     text-align: center;
     color: var(--secondary-color);
-    border-top: 1px solid #e2e8f0;
     width: 100%;
-    background: white;
 }
 
 /* Utility Classes */
