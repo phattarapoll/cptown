@@ -24,9 +24,8 @@
 
 body {
     font-family: var(--font-body);
-    /* เปลี่ยนพื้นหลังเป็นสีน้ำเงินเข้ม-ดำ (Dark Slate/Navy) */
-    background: #0f172a; 
-    background: radial-gradient(circle at 50% 0%, #1e293b, #0f172a, #020617);
+    background: #f1f5f9; /* Fallback */
+    background: radial-gradient(at top left, #e0f2fe, #f1f5f9, #e2e8f0);
     color: var(--primary-color);
     margin: 0;
     padding: 20px;
@@ -42,23 +41,23 @@ body {
 .bg-shape {
     position: fixed;
     border-radius: 50%;
-    filter: blur(100px); /* เพิ่มความเบลอให้ฟุ้งๆ */
+    filter: blur(80px);
     z-index: -1;
-    opacity: 0.5; /* ลดความจ้าลง */
+    opacity: 0.6;
 }
 .shape-1 {
     top: -10%;
     left: -10%;
-    width: 600px;
-    height: 600px;
-    background: #172554; /* เปลี่ยนเป็นสีน้ำเงินเข้ม */
+    width: 500px;
+    height: 500px;
+    background: #bae6fd;
 }
 .shape-2 {
     bottom: -10%;
     right: -10%;
-    width: 500px;
-    height: 500px;
-    background: #312e81; /* เปลี่ยนเป็นสีม่วงครามเข้ม */
+    width: 400px;
+    height: 400px;
+    background: #ddd6fe;
 }
 
 .container {
@@ -205,7 +204,7 @@ body {
 }
 
 .calendar-day {
-    background: #abbaad;
+    background: #f8fafc;
     border-radius: var(--radius-sm);
     min-height: 90px;
     padding: 10px;
@@ -293,7 +292,7 @@ body {
 }
 
 .time-slot {
-    background: #4bcf27;
+    background: white;
     border: 1px solid #e2e8f0;
     color: var(--primary-color);
     padding: 20px 10px;
@@ -501,6 +500,7 @@ body {
 
 /* --- LOADING SPINNER --- */
 .loading-spinner {
+    background: rgba(255,255,255,0.9);
     backdrop-filter: blur(5px);
     color: var(--accent-color);
 }
@@ -520,6 +520,7 @@ body {
 }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 @keyframes blink-red { 0%, 100% { background-color: #fee2e2; } 50% { background-color: #fecaca; } }
+
 
 /* 1. สร้าง Animation การกระพริบสีฟ้า */
 @keyframes blinkBlue {
@@ -556,7 +557,9 @@ body {
     padding: 30px;
     text-align: center;
     color: var(--secondary-color);
+    border-top: 1px solid #e2e8f0;
     width: 100%;
+    background: white;
 }
 
 /* Utility Classes */
