@@ -248,10 +248,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     dayDiv.style.cursor = 'not-allowed';
                 } else if (availableSlots > 0) {
                     slotCountSpan.classList.add('available');
-                    slotCountSpan.textContent = `ว่าง ${availableSlots}/${totalSlots}`;
+                    slotCountSpan.textContent = `ว่าง ${availableSlots}`;
                 } else {
                     slotCountSpan.classList.add('full');
-                    slotCountSpan.textContent = `เต็ม ${availableSlots}/${totalSlots}`;
+                    slotCountSpan.textContent = `เต็ม `;
                     dayDiv.title = 'คิวเต็ม (คลิกเพื่อดูรายละเอียด)';
                 }
                 dayDiv.appendChild(slotCountSpan);

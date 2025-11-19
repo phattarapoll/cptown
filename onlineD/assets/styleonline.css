@@ -1,923 +1,573 @@
-/* Fonts */
+/* --- VARIABLES & SETUP --- */
+:root {
+    --primary-color: #0f172a;    /* Navy Blue - สีหลักเข้มหรู */
+    --secondary-color: #334155;  /* Slate - สีรอง */
+    --accent-color: #0ea5e9;     /* Sky Blue - สีสดใสสำหรับจุดเด่น */
+    --accent-hover: #0284c7;
+    --danger-color: #ef4444;     /* Red - สีแจ้งเตือน/ยกเลิก */
+    --success-color: #10b981;    /* Green - สีสำเร็จ/ว่าง */
+    --warning-color: #f59e0b;    /* Amber - สีเต็ม/รอ */
+    
+    --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); /* พื้นหลังหน้าเว็บ */
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.6);
+    --shadow-soft: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+    --shadow-hover: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+    
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 10px;
+    
+    --font-head: 'Kanit', sans-serif;
+    --font-body: 'Sarabun', sans-serif;
+}
+
 body {
-    font-family: 'Sarabun', sans-serif;
+    font-family: var(--font-body);
+    /* เปลี่ยนพื้นหลังเป็นสีน้ำเงินเข้ม-ดำ (Dark Slate/Navy) */
+    background: #0f172a; 
+    background: radial-gradient(circle at 50% 0%, #1e293b, #0f172a, #020617);
+    color: var(--primary-color);
     margin: 0;
-    padding: 0;
-    background: linear-gradient(135deg, #a8dadc, #457b9d); /* สีพื้นหลังไล่ระดับเดิม */
-    color: #333; /* เปลี่ยนสีข้อความหลักเป็นสีดำ */
+    padding: 20px;
     display: flex;
-    flex-direction: column; /* เปลี่ยนเป็น column เพื่อให้ footer อยู่ด้านล่าง */
-    justify-content: flex-start;
+    flex-direction: column;
     align-items: center;
     min-height: 100vh;
-    padding: 20px;
-    box-sizing: border-box;
-    overflow-y: auto;
-    position: relative; /* สำคัญ: ตั้งค่า position relative ให้ body เพื่อให้ปุ่ม absolute วางอิงจาก body */
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Background Shapes Decoration */
+.bg-shape {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(100px); /* เพิ่มความเบลอให้ฟุ้งๆ */
+    z-index: -1;
+    opacity: 0.5; /* ลดความจ้าลง */
+}
+.shape-1 {
+    top: -10%;
+    left: -10%;
+    width: 600px;
+    height: 600px;
+    background: #172554; /* เปลี่ยนเป็นสีน้ำเงินเข้ม */
+}
+.shape-2 {
+    bottom: -10%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: #312e81; /* เปลี่ยนเป็นสีม่วงครามเข้ม */
 }
 
 .container {
     width: 100%;
-    max-width: 900px;
-    margin: 20px auto;
-    text-align: center;
-    flex-grow: 1; /* ทำให้ container ขยายเต็มพื้นที่ที่เหลือ */
+    max-width: 850px;
+    margin: 40px auto;
+    z-index: 1;
 }
 
-/* Glass Effect */
+/* --- GLASS MORPHISM CARD --- */
 .glass-effect {
-    background: rgba(255, 255, 255, 0.2); /* เพิ่มความเข้มขึ้นเล็กน้อย */
-    backdrop-filter: blur(12px); /* เพิ่มความเบลอ */
-    border: 1px solid rgba(255, 255, 255, 0.3); /* ขอบชัดขึ้น */
-    border-radius: 20px; /* ขอบโค้งมนขึ้น */
-    box-shadow: 0 10px 40px 0 rgba(31, 38, 135, .37); /* เงาเข้มขึ้น */
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: var(--glass-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    padding: 30px;
+    margin-bottom: 25px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Header Enhancements */
+/* --- HEADER --- */
 .header {
-    margin-bottom: 30px;
-    position: relative; /* เพื่อรองรับอนิเมชั่น */
+    text-align: center;
+    margin-bottom: 40px;
+    animation: slideDown 0.8s ease-out;
 }
 
-/* Keyframes for fade-in animation */
-@keyframes fadeInSlideUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.header-content {
-    animation: fadeInSlideUp 1s ease-out forwards; /* Apply animation to header content */
-    padding: 20px 0;
+.logo-icon {
+    font-size: 3rem;
+    color: var(--accent-color);
+    margin-bottom: 10px;
+    filter: drop-shadow(0 4px 6px rgba(14, 165, 233, 0.3));
 }
 
 .title {
-    font-size: 2.1em;
-    font-weight: 700;
-    color: #1d3557; /* สีน้ำเงินเข้ม */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* เพิ่มเงาให้ข้อความ */
-    margin-bottom: 10px;
-    letter-spacing: 1px; /* เพิ่มระยะห่างตัวอักษรเล็กน้อย */
+    font-family: var(--font-head);
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin: 0;
+    letter-spacing: -0.5px;
 }
 
 .subtitle {
-    font-size: 1.3em;
-    color: #457b9d; /* สีน้ำเงินกลาง */
+    font-size: 1.1rem;
+    color: var(--secondary-color);
+    margin-top: 10px;
     line-height: 1.6;
-    margin-top: 0;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-/* Navigation Button */
+/* --- BUTTONS --- */
+.back-to-previous-button, .navigation-button {
+    position: absolute;
+    top: 20px;
+    padding: 10px 20px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-head);
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    z-index: 100;
+}
+
+.back-to-previous-button {
+    left: 20px;
+    background: white;
+    color: var(--secondary-color);
+}
+
 .navigation-button {
-    position: absolute; /* กำหนดตำแหน่งแบบสัมบูรณ์ */
-    top: 20px; /* ระยะห่างจากขอบบน */
-    right: 20px; /* ระยะห่างจากขอบขวา */
-    background-color: #e63946; /* สีแดงสำหรับปุ่ม */
-    color: #fff;
-    padding: 15px 30px;
-    border-radius: 10px;
+    right: 20px;
+    background: var(--accent-color);
+    color: white;
     text-decoration: none;
-    font-size: 1.1em;
-    font-weight: bold;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-    z-index: 100; /* ให้ปุ่มอยู่ด้านบนสุด */
 }
 
-.navigation-button:hover {
-    background-color: #d12c3c; /* สีแดงเข้มขึ้นเมื่อ hover */
-    transform: translateY(-2px); /* ยกขึ้นเล็กน้อย */
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+.back-to-previous-button:hover, .navigation-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
 }
+.navigation-button:hover { background: var(--accent-hover); }
 
-/* Calendar Wrapper */
-.calendar-wrapper {
-    background: rgba(255, 255, 255, 0.9); /* พื้นหลังขาวขุ่น */
-    border-radius: 15px;
-    padding: 20px;
-    margin-bottom: 20px;
-}
-
+/* --- CALENDAR --- */
 .calendar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    padding: 0 10px;
-}
-
-.nav-button {
-    background-color: #457b9d;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1.2em;
-    transition: background-color 0.3s ease;
-}
-
-.nav-button:hover {
-    background-color: #1d3557;
+    margin-bottom: 25px;
 }
 
 .month-year-display {
-    font-size: 2em;
-    color: #1d3557;
-    margin: 0 20px;
+    font-family: var(--font-head);
+    font-size: 1.8rem;
+    color: var(--primary-color);
+    margin: 0;
+}
+
+.nav-button {
+    background: white;
+    border: 1px solid #e2e8f0;
+    color: var(--secondary-color);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.nav-button:hover {
+    background: var(--primary-color);
+    color: white;
 }
 
 .calendar-grid-container {
-    background-color: #f1faee; /* สีพื้นหลังอ่อนๆ สำหรับกริด */
-    border-radius: 10px;
-    padding: 15px;
+    background: white;
+    border-radius: var(--radius-md);
+    padding: 20px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
 }
 
 .day-names {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    font-weight: bold;
-    color: #1d3557;
-    margin-bottom: 10px;
     text-align: center;
-    font-size: 1.1em;
-}
-
-.day-names div {
-    padding: 8px 0;
+    font-family: var(--font-head);
+    color: #94a3b8;
+    margin-bottom: 15px;
+    font-weight: 500;
 }
 
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 8px; /* ลด gap เพื่อให้ดูแน่นขึ้น */
+    gap: 10px;
 }
 
 .calendar-day {
-    background-color: #a8dadc; /* สีฟ้าอ่อน */
-    color: #1d3557;
-    padding: 10px 0;
-    border-radius: 3px;
+    background: #abbaad;
+    border-radius: var(--radius-sm);
+    min-height: 90px;
+    padding: 10px;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    min-height: 80px; /* เพิ่ม min-height */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* เปลี่ยนจาก center เป็น flex-start */
     align-items: center;
-    text-align: center;
-    font-size: 0.8em; /* ลดขนาด font สำหรับ day-number และ slot-count */
-    position: relative; /* สำหรับ relative positioning ของ slot-count */
-    overflow: hidden; /* ซ่อนส่วนเกินเมื่อมีข้อความยาว */
-    padding-top: 10px; /* เพิ่ม padding ด้านบนเล็กน้อย */
+    justify-content: flex-start;
+    position: relative;
+    border: 1px solid transparent;
 }
 
 .calendar-day:hover:not(.disabled):not(.unavailable) {
-    background-color: #457b9d; /* สีน้ำเงินเข้มขึ้นเมื่อ hover */
-    color: red;
-    transform: translateY(-3px); /* ยกขึ้นเล็กน้อย */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.calendar-day.empty {
-    background-color: #f1faee; /* สีขาวนวลสำหรับช่องว่าง */
-    cursor: default;
-}
-
-.calendar-day.disabled {
-    background-color: #e0e0e0; /* สีเทาสำหรับวันที่ไม่สามารถเลือกได้ */
-    color: #a0a0a0;
-    cursor: not-allowed;
-    opacity: 0.7;
-}
-
-.calendar-day.unavailable {
-    background-color: #f7a8a8; /* สีแดงอ่อนสำหรับวันที่ไม่ว่าง */
-    color: #8c0000;
-    cursor: not-allowed;
-    opacity: 0.9;
-    font-weight: bold;
-}
-
-/* Keyframes for blink animation on current-day */
-@keyframes blinkCurrentDay {
-    0% {
-        transform: scale(1);
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-        background-color: #ffffff; /* สีขาว (ขยายเข้า) */
-    }
-    50% {
-        transform: scale(1.05); /* ขยายออกเล็กน้อย */
-        box-shadow: 0 0 15px rgba(153, 255, 0, 0.5);
-        background-color: #d8ffb8; /* สีเขียวอ่อน (ขยายออก) */
-    }
-    100% {
-        transform: scale(1);
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-        background-color: #ffffff; /* สีขาว (ขยายเข้า) */
-    }
-}
-
-.calendar-day.current-day {
-    border: 3px solid #99FF00; /* กรอบสีเขียวสำหรับวันปัจจุบัน */
-    animation: blinkCurrentDay 2s infinite ease-in-out; /* ใช้ animation ใหม่ */
+    background: white;
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(14, 165, 233, 0.15);
+    border-color: var(--accent-color);
 }
 
 .calendar-day .day-number {
-    font-size: 1.6em;
-    font-weight: bold;
+    font-family: var(--font-head);
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--secondary-color);
     margin-bottom: 5px;
-    margin-top: 0; /* ตรวจสอบให้แน่ใจว่าไม่มี margin ด้านบน */
 }
 
-.calendar-day small {
-    font-size: 0.8em; /* ขนาดข้อความ "ปิดทำการ", "ออกหน่วย" */
-    color: #8c0000;
-    font-weight: bold;
-    margin-top: 5px;
+.calendar-day.current-day {
+    background: #f0f9ff;
+    border: 2px solid var(--accent-color);
+}
+.calendar-day.current-day .day-number {
+    color: var(--accent-color);
 }
 
+/* Status Labels in Calendar */
 .slot-count {
-    font-size: 0.9em;
-    font-weight: bold;
-    margin-top: 5px;
-    padding: 2px 5px;
-    border-radius: 5px;
-    white-space: nowrap; /* ไม่ให้ข้อความขึ้นบรรทัดใหม่ */
-}
-
-.slot-count.available {
-    background-color: #2a9d8f; /* สีเขียวสำหรับว่าง */
-    color: white;
-}
-
-.slot-count.full {
-    background-color: #e76f51; /* สีส้มสำหรับเต็ม */
-    color: white;
-}
-
-/* Time Slot Details */
-.time-slot-details {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 15px;
-    padding: 20px;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-weight: 600;
+    width: 90%;
     text-align: center;
 }
 
+.slot-count.available {
+    background: #d1fae5;
+    color: #059669;
+}
+
+.slot-count.full {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+/* Unavailable / Disabled Days */
+.calendar-day.unavailable, .calendar-day.disabled {
+    background: #f1f5f9;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+.calendar-day.unavailable small {
+    color: var(--danger-color);
+    font-weight: 500;
+}
+.calendar-day.day-weekend {
+    background-color: #f8fafc; /* Subtle different shade */
+}
+
+/* --- TIME SLOTS --- */
 .time-slot-details h3 {
-    font-size: 2em;
-    color: #1d3557;
-    margin-bottom: 20px;
+    font-family: var(--font-head);
+    color: var(--primary-color);
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 30px;
 }
 
 .time-slots-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 15px;
-    margin-bottom: 20px;
+    padding: 10px;
 }
 
-/* --- Time Slot Enhancements for Cancellation Button --- */
 .time-slot {
-    background-color: #a8dadc;
-    color: #1d3557;
-    padding: 18px; /* Slightly reduced padding to accommodate button */
-    border-radius: 10px;
+    background: #4bcf27;
+    border: 1px solid #e2e8f0;
+    color: var(--primary-color);
+    padding: 20px 10px;
+    border-radius: var(--radius-md);
+    text-align: center;
+    font-weight: 600;
     cursor: pointer;
-    font-size: 1.1em;
-    font-weight: bold;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    
-    /* *** New Flexbox Styles for Button Layout *** */
+    transition: all 0.3s;
+    position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    text-align: center; /* Ensure text is centered */
-    min-height: 80px; /* Ensure sufficient height */
+    min-height: 100px;
 }
 
-
 .time-slot:hover:not(.unavailable-slot) {
-    background-color: #457b9d;
+    background: var(--accent-color);
     color: white;
+    box-shadow: 0 8px 16px rgba(14, 165, 233, 0.25);
     transform: translateY(-3px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border-color: var(--accent-color);
 }
 
 .time-slot.unavailable-slot {
-    /* Base style for unavailable/booked slots */
-    background-color: #e0e0e0;
-    color: #a0a0a0;
+    background: #f1f5f9;
+    color: #94a3b8;
     cursor: default;
-    opacity: 0.8;
-    text-decoration: none;
     box-shadow: none;
-    
-    pointer-events: auto; /* Re-enable pointer events for the button inside */
-    cursor: default;
-    opacity: 1;
 }
 
-/* Ensure booked slots display correctly when not marked as no-show */
-.time-slot.unavailable-slot:not(.blink-red):not(.blink-orange):not(.blink-yellow) {
-    /* Default booked slot color (if no No-Show warning) */
-    background-color: #f1faee; 
-    color: #1d3557;
-}
-
-/* --- New CSS for the Cancel Button inside time slots (ตกแต่งสวยงาม) --- */
+/* Cancel Button Style */
 .cancel-button {
-    background-color: #e63946; /* สีแดงเด่นชัด */
+    background: var(--danger-color);
     color: white;
     border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    margin-top: 10px;
+    width: 100%;
     cursor: pointer;
-    font-size: 0.8em;
-    font-weight: bold;
-    margin-top: 8px; /* เว้นระยะจากชื่อ */
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-    transition: background-color 0.2s ease, transform 0.2s ease;
-    width: 90%; 
-    text-align: center;
+    transition: background 0.2s;
 }
+.cancel-button:hover { background: #dc2626; }
 
-.cancel-button:hover {
-    background-color: #c0392b; /* สีแดงเข้มขึ้นเมื่อ hover */
-    transform: translateY(-1px);
-}
-/* ---------------------------------------------------------------------- */
-
-
-.back-button {
-    background-color: #f4a261;
-    color: white;
-    border: none;
-    padding: 12px 25px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.3s ease;
-    margin-top: 20px;
-}
-
-.back-button:hover {
-    background-color: #e76f51;
-}
-
-/* Blinking message style */
-.blinking-message {
-    font-size: 1.1em;
-    font-weight: bold;
-    color: #e63946; /* สีแดง */
-    margin-top: 10px; /* เพิ่มระยะห่างด้านบน */
-    margin-bottom: 15px; /* เพิ่มระยะห่างด้านล่าง */
-    animation: blinker 1s linear infinite;
-    text-shadow: 0 0 5px rgba(230, 57, 70, 0.5); /* เพิ่มเงาให้ข้อความกระพริบ */
-}
-
-@keyframes blinker {
-    50% {
-        opacity: 0;
-    }
-}
-
-/* Popup Overlay */
+/* --- FORMS & POPUPS --- */
 .popup-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.6); /* Darker overlay */
+    backdrop-filter: blur(5px);
+    z-index: 1000;
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
-    opacity: 0; /* เริ่มต้นซ่อน */
-    visibility: hidden; /* เริ่มต้นซ่อน */
-    transition: opacity 0.3s ease, visibility 0.3s ease; /* อนิเมชั่นการแสดงผล */
+    opacity: 0; visibility: hidden;
+    transition: all 0.3s;
 }
-
-.popup-overlay.is-active {
-    opacity: 1;
-    visibility: visible;
-}
-
+.popup-overlay.is-active { opacity: 1; visibility: visible; }
 
 .popup-content {
-    background: rgba(255, 255, 255, 0.95); /* ขาวขุ่น */
-    padding: 30px;
-    border-radius: 20px;
-    width: 90%;
-    max-width: 500px;
-    text-align: left;
+    background: white;
+    width: 90%; max-width: 450px;
+    padding: 40px 30px;
+    border-radius: var(--radius-lg);
+    text-align: center;
     position: relative;
-    transform: scale(0.9); /* เริ่มต้นเล็กกว่าปกติ */
-    transition: transform 0.3s ease; /* อนิเมชั่นการขยาย */
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
-.popup-overlay.is-active .popup-content {
-    transform: scale(1); /* ขยายเมื่อแสดง */
+.popup-header-icon {
+    width: 60px; height: 60px;
+    background: #e0f2fe;
+    color: var(--accent-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin: 0 auto 20px;
+}
+.popup-header-icon.delete { background: #fee2e2; color: var(--danger-color); }
+
+.popup-title {
+    font-family: var(--font-head);
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+}
+
+/* Booking Summary Card inside Popup */
+.booking-summary-card {
+    background: #f8fafc;
+    border-radius: var(--radius-sm);
+    padding: 15px;
+    margin-bottom: 25px;
+    text-align: left;
+    border-left: 4px solid var(--accent-color);
+}
+.booking-summary-card.warning { border-color: var(--danger-color); }
+.booking-summary-card p { margin: 8px 0; font-size: 0.95rem; color: var(--secondary-color); }
+.booking-summary-card i { width: 20px; color: var(--accent-color); text-align: center; margin-right: 8px; }
+
+/* Modern Inputs */
+.form-group { margin-bottom: 20px; text-align: left; position: relative; }
+
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-family: var(--font-body);
+    transition: all 0.3s;
+    background: #f8fafc;
+    box-sizing: border-box;
+    color: var(--primary-color);
+}
+
+.form-group input:focus, .form-group select:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+}
+
+/* Floating Label Effect */
+.floating-label { position: relative; }
+.floating-label label {
+    position: absolute;
+    left: 14px; top: 16px;
+    color: #94a3b8;
+    transition: all 0.2s;
+    pointer-events: none;
+    background: transparent;
+}
+.floating-label input:focus + label,
+.floating-label input:not(:placeholder-shown) + label {
+    top: -10px; left: 10px;
+    font-size: 0.8rem;
+    background: white;
+    padding: 0 5px;
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+/* Code Input Special Style */
+.code-input {
+    text-align: center;
+    letter-spacing: 8px;
+    font-size: 1.5rem !important;
+    font-family: monospace !important;
+}
+
+.submit-button {
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+    color: white;
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+    transition: all 0.3s;
+    margin-top: 10px;
+}
+.submit-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+}
+.submit-button.btn-danger {
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 .close-button {
     position: absolute;
-    top: 15px;
-    right: 15px;
-    background: none;
+    top: 15px; right: 15px;
+    background: transparent;
     border: none;
-    font-size: 2em;
-    color: #e63946;
+    font-size: 1.2rem;
+    color: #94a3b8;
     cursor: pointer;
+    transition: color 0.2s;
 }
+.close-button:hover { color: var(--danger-color); }
 
-.popup-title {
-    text-align: center;
-    color: #1d3557;
-    margin-bottom: 20px;
-    font-size: 2.2em;
-    font-weight: bold;
+/* --- INFO BUBBLE --- */
+.info-bubble {
+    background: linear-gradient(135deg, #4f46e5, #818cf8); /* Indigo Gradient */
+    color: white;
+    padding: 20px;
+    border-radius: var(--radius-md);
+    box-shadow: 0 10px 20px rgba(79, 70, 229, 0.25);
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    max-width: 90%;
 }
+.info-icon { font-size: 1.5rem; opacity: 0.8; margin-top: 2px; }
+.info-text { font-size: 0.9rem; line-height: 1.5; }
 
-.booking-form .form-group {
+/* --- LOADING SPINNER --- */
+.loading-spinner {
+    backdrop-filter: blur(5px);
+    color: var(--accent-color);
+}
+.spinner-ring {
+    width: 50px; height: 50px;
+    border: 4px solid #e2e8f0;
+    border-top: 4px solid var(--accent-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
     margin-bottom: 15px;
 }
 
-.booking-form label {
-    display: block;
-    margin-bottom: 5px;
-    color: #457b9d;
-    font-weight: bold;
+/* --- ANIMATIONS --- */
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes blink-red { 0%, 100% { background-color: #fee2e2; } 50% { background-color: #fecaca; } }
 
-.booking-form input[type="text"],
-.booking-form input[type="tel"],
-.booking-form select,
-#cancelPassword { /* เพิ่ม #cancelPassword เพื่อให้มีสไตล์เหมือนกัน */
-    width: calc(100% - 20px);
-    padding: 10px;
-    border: 1px solid #a8dadc;
-    border-radius: 5px;
-    font-size: 1.1em;
-    box-sizing: border-box; /* รวม padding ใน width */
-}
-/* สไตล์พิเศษสำหรับรหัสผ่าน */
-#cancelPassword {
-    font-size: 1.5em; 
-    letter-spacing: 2px;
-    text-align: center;
-}
-
-.booking-form input:focus,
-.booking-form select:focus {
-    border-color: #457b9d;
-    outline: none;
-    box-shadow: 0 0 5px rgba(69, 123, 157, 0.5);
-}
-
-.booking-form small {
-    display: block;
-    font-size: 0.8em;
-    color: #666;
-    margin-top: 5px;
-}
-
-.submit-button {
-    background-color: #e63946;
-    color: white;
-    border: none;
-    padding: 15px 30px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 1.3em;
-    font-weight: bold;
-    margin-top: 20px;
-    width: 100%;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.submit-button:hover {
-    background-color: #d12c3c;
-    transform: translateY(-2px);
-}
-
-.form-message {
-    text-align: center;
-    margin-top: 15px;
-    padding: 10px;
-    border-radius: 5px;
-    font-weight: bold;
-}
-
-.form-message.success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-
-.form-message.error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-
-.form-message.loading {
-    background-color: #e0f7fa;
-    color: #007bff;
-    border: 1px solid #b2ebf2;
-}
-
-/* Loading Spinner */
-.loading-spinner {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 1001;
-    color: white;
-    font-size: 1.2em;
-}
-
-.spinner {
-    border: 4px solid rgba(255, 255, 255, 0.3);
-    border-top: 4px solid #fff;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-    margin-bottom: 10px;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Custom Styles for Info Card and Bubble */
-.info-bubble {
-    background: #e63946; /* สีแดงเดิม */
-    color: white;
-    padding: 1.25rem 2.5rem; /* ปรับ padding ให้เว้นขอบ 1 เคาะ */
-    border-radius: 20px; /* ทำให้มนอย่างโดดเด่น */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    display: flex;
-    align-items: center;
-    text-align: center;
-    animation: blink-soft 2s infinite ease-in-out; /* ใช้ animation ใหม่ */
-}
-
-@keyframes blink-soft {
-    0% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.02); opacity: 0.85; }
-    100% { transform: scale(1); opacity: 1; }
-}
-
-/* ปรับแก้ CSS เดิมเพื่อให้รองรับการปรับเปลี่ยนใหม่ */
-.blinking-container, .centered-no-radius {
-    /* ลบ CSS ที่ทำให้เป็นสี่เหลี่ยมออก */
-    border-radius: 20px !important;
-    animation: none; /* ลบ animation เดิมออกเพื่อป้องกันการซ้ำซ้อน */
-}
-
-/* ลบ pseudo-element เดิมที่ไม่จำเป็นออก */
-.blinking-container::before, .centered-no-radius::before {
-    display: none;
-}
-
-.small-readable-text {
-    line-height: 1.5;
-}
-
-/* ปรับแก้ CSS เดิมเพื่อให้รองรับการปรับเปลี่ยนใหม่ */
-.blinking-container, .centered-no-radius {
-    /* ลบ CSS ที่ทำให้เป็นสี่เหลี่ยมออก */
-    border-radius: 20px !important;
-    animation: none; /* ลบ animation เดิมออกเพื่อป้องกันการซ้ำซ้อน */
-}
-
-/* ลบ pseudo-element เดิมที่ไม่จำเป็นออก */
-.blinking-container::before, .centered-no-radius::before {
-    display: none;
-}
-
-.small-readable-text {
-    line-height: 1.5;
-}
-
-/* New CSS for smaller profile picture */
-.profile-pic-small {
-    width: 64px; /* กำหนดความกว้าง */
-    height: 64px; /* กำหนดความสูง */
-    border: 3px solid #fff; /* ขอบสีขาวรอบรูป */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* ปรับเงาเล็กน้อย */
-}
-
-/* Ensure text is left-aligned within its container */
-.text-left {
-    text-align: left;
-}
-
-/* Adjust the original profile-section for proper alignment */
-.profile-section {
-    justify-content: center; /* จัดให้เนื้อหากลาง */
-    align-items: center; /* จัดให้รูปและข้อความอยู่กึ่งกลางแนวตั้ง */
-}
-
-/* Back to previous button (new addition) */
-.back-to-previous-button {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    background-color: #457b9d;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.3s ease;
-    z-index: 100; /* Make sure it's above other content */
-}
-
-.back-to-previous-button:hover {
-    background-color: #1d3557;
-}
-
-/* Footer Style */
-.footer {
-    width: 100%;
-    text-align: center;
-    padding: 20px;
-    margin-top: 30px; /* เพิ่มระยะห่างจากเนื้อหาด้านบน */
-    color: #1d3557; /* สีเดียวกับ title */
-    font-size: 0.9em;
-    background: rgba(255, 255, 255, 0.1); /* พื้นหลังโปร่งแสงเล็กน้อย */
-    border-top: 1px solid rgba(255, 255, 255, 0.2); /* เส้นแบ่งด้านบน */
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1); /* เงาด้านบน */
-}
-
-.footer p {
-    margin: 5px 0;
-    line-height: 1.5;
-}
-
- /* CSS สำหรับการกระพริบเบาๆ ของพื้นหลังเท่านั้น */
-    @keyframes blink-background {
-        0% { background-color: rgba(220, 38, 38, 1); } /* แดงเข้มเต็มที่ */
-        50% { background-color: rgba(220, 38, 38, 0.7); } /* แดงจางลงเล็กน้อย */
-        100% { background-color: rgba(220, 38, 38, 1); }
+/* 1. สร้าง Animation การกระพริบสีฟ้า */
+@keyframes blinkBlue {
+    0% {
+        background-color: #e0f2fe; /* ฟ้าอ่อน */
+        box-shadow: 0 0 0 rgba(14, 165, 233, 0.2);
     }
-
-    .blinking-container {
-        position: relative;
-        overflow: hidden;
+    50% {
+        background-color: #7dd3fc; /* ฟ้าเข้มขึ้น */
+        box-shadow: 0 0 20px rgba(14, 165, 233, 0.6); /* เรืองแสงสีฟ้า */
+        transform: scale(1.02); /* ขยายขึ้นนิดนึง */
     }
-
-    .blinking-container::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgb(220, 38, 38); /* สีแดงเริ่มต้น (bg-red-600) */
-        border-radius: 9999px; 
-        z-index: -1;
-        animation: blink-background 2s infinite ease-in-out;
+    100% {
+        background-color: #e0f2fe; /* กลับมาฟ้าอ่อน */
+        box-shadow: 0 0 0 rgba(14, 165, 233, 0.2);
     }
+}
 
-    /* New CSS for centering and sharp corners */
-    .centered-no-radius {
-        margin-left: auto;
-        margin-right: auto;
-        border-radius: 0; /* Ensures sharp corners */
-    }
-
-    /* Override the before pseudo-element for sharp corners as well */
-    .centered-no-radius::before {
-        border-radius: 0 !important; /* Important to override the more specific rule */
-    }
-
-    /* ปรับขนาดตัวอักษรสำหรับข้อความนี้ */
-    .small-readable-text {
-        font-size: 0.85rem;
-        line-height: 1.3;
-    }
-
-    /* ปฏิทิน: พื้นหลังสีม่วงอ่อน */
-    .calendar-grid-container {
-        background-color: #E6E6FA; /* Lavender - ม่วงอ่อน */
-        border-radius: 10px; /* เพิ่มมนมุมเล็กน้อย */
-        padding: 10px; /* เพิ่ม padding ให้ดูโปร่งขึ้น */
-    }
-
-    /* วันในสัปดาห์ (จันทร์-อาทิตย์) */
-    .day-names div {
-        font-weight: bold;
-        color: #555;
-        text-align: center;
-        padding: 8px 0;
-    }
+/* 2. เรียกใช้ Animation กับวันปัจจุบัน */
+.calendar-day.current-day {
+    /* เส้นขอบสีฟ้าสด */
+    border: 2px solid #0ea5e9; 
     
-    /* วันเสาร์และอาทิตย์ (พื้นหลังสีเทา) */
-    .day-names div:nth-child(1), /* อาทิตย์ */
-    .day-names div:nth-child(7), /* เสาร์ */
-    .calendar-grid .day.day-weekend { /* สำหรับวันที่ใน grid */
-        background-color: #696969; /* สีดำอ่อน */
-        border-radius: 5px; /* ทำให้มุมมนเล็กน้อย */
-    }
-
-    /* ปรับปรุงช่องวันในปฏิทิน */
-    .calendar-grid .day {
-        padding: 15px 5px; /* เพิ่ม padding ให้ช่องกว้างขึ้น */
-        border-radius: 8px; /* ทำให้มุมมนสวยงาม */
-        transition: background-color 0.3s ease; /* เพิ่ม transition ให้ดูนุ่มนวลเวลา hover/active */
-        margin: 2px; /* เพิ่มระยะห่างระหว่างช่อง */
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* เพิ่มเงาเล็กน้อย */
-        background-color: #FFF; /* ให้วันธรรมดามีพื้นหลังสีขาว */
-        cursor: pointer;
-    }
-
-    /* เมื่อเลื่อนเมาส์ไปบนวัน */
-    .calendar-grid .day:hover:not(.day-empty):not(.day-selected) {
-        background-color: #DDA0DD; /* สีม่วงกลางเมื่อ hover */
-    }
-
-    /* วันที่ถูกเลือก */
-    .calendar-grid .day.day-selected {
-        background-color: #BA55D3; /* สีม่วงเข้มเมื่อถูกเลือก */
-        color: white;
-        font-weight: bold;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-
-    /* --- CSS สำหรับการกระพริบเมื่อผิดนัด (No-Show Warning) --- */
-    @keyframes blink-yellow {
-        0%, 100% { background-color: #FFFACD; } /* Lemon Chiffon (สีเหลืองอ่อน) */
-        50% { background-color: #FFD700; } /* Gold (สีเหลืองเข้ม) */
-    }
-
-    @keyframes blink-orange {
-        0%, 100% { background-color: #FFDAB9; } /* Peach Puff (สีส้มอ่อน) */
-        50% { background-color: #FFA500; } /* Orange (สีส้มเข้ม) */
-    }
-
-    @keyframes blink-red {
-        0%, 100% { background-color: #F08080; } /* Light Coral (สีแดงอ่อน) */
-        50% { background-color: #DC143C; } /* Crimson (สีแดงเข้ม) */
-    }
-
-    .time-slot.blink-yellow {
-        animation: blink-yellow 1.5s infinite;
-    }
-
-    .time-slot.blink-orange {
-        animation: blink-orange 1s infinite;
-    }
-
-    .time-slot.blink-red {
-        animation: blink-red 0.5s infinite; /* กระพริบเร็วขึ้นเพื่อเตือน */
-    }
-
-    .time-slot.unavailable-slot {
-        pointer-events: auto; /* เพื่อให้แน่ใจว่าคลิกไม่ได้ */
-    }
-
-    .time-slot .no-show-count-text {
-        display: block;
-        font-size: 0.75em;
-        font-weight: bold;
-        color: #333; /* สีตัวอักษรให้อ่านง่าย */
-        margin-top: 2px;
-    }
+    /* สั่งให้เล่น Animation ชื่อ blinkBlue วนไปเรื่อยๆ */
+    animation: blinkBlue 2s infinite ease-in-out; 
+    
+    /* ให้แน่ใจว่าตัวเลขยังมองเห็นชัด */
+    font-weight: bold;
+    z-index: 1; /* ให้อยู่เหนือวันอื่นๆ เล็กน้อยเวลาขยาย */
+}
+/* --- FOOTER --- */
+.footer {
+    margin-top: auto;
+    padding: 30px;
+    text-align: center;
+    color: var(--secondary-color);
+    width: 100%;
+}
 
 /* Utility Classes */
-.hidden {
-    display: none !important;
-}
+.hidden { display: none !important; }
 
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .title {
-        font-size: 2.5em;
-    }
-    .subtitle {
-        font-size: 1.1em; /* Adjusted for smaller screens */
-    }
-    .month-year-display {
-        font-size: 1.8em;
-    }
-    .calendar-day {
-        padding: 15px 0;
-        min-height: 70px;
-    }
-    .calendar-day .day-number {
-        font-size: 1.4em;
-    }
-    .slot-count {
-        font-size: 0.8em;
-    }
-    .time-slot {
-        padding: 15px;
-        font-size: 1em;
-    }
-    .cancel-button {
-        padding: 5px 8px; /* ปรับขนาดปุ่มสำหรับมือถือ */
-        font-size: 0.75em;
-        width: 95%;
-    }
-    .popup-content {
-        padding: 25px;
-    }
-    .popup-title {
-        font-size: 2em;
-    }
-    .booking-form input {
-        font-size: 1em;
-        padding: 12px;
-    }
-    .submit-button {
-        font-size: 1.2em;
-        padding: 15px 25px;
-    }
-    /* Adjust button positions for smaller screens */
-    .back-to-previous-button {
-        top: 15px;
-        left: 15px;
-        padding: 8px 12px;
-        font-size: 0.9em;
-    }
-    .navigation-button {
-        top: 15px;
-        right: 15px;
-        padding: 12px 25px;
-        font-size: 1em;
-    }
-    .footer {
-        padding: 15px;
-        font-size: 0.8em;
-    }
-}
-
-@media (max-width: 480px) {
-    .title {
-        font-size: 2em;
-    }
-    .subtitle {
-        font-size: 0.9em; /* Further adjusted for very small screens */
-    }
-    .navigation-button {
-        font-size: 0.9em;
-        padding: 10px 20px;
-        top: 10px;
-        right: 10px;
-    }
-    .month-year-display {
-        font-size: 1.5em;
-    }
-    .calendar-grid {
-        gap: 5px;
-    }
-    .calendar-day {
-        min-height: 60px;
-    }
-    .calendar-day .day-number {
-        font-size: 1.2em;
-    }
-    .slot-count {
-        font-size: 0.7em;
-    }
-    .time-slots-grid {
-        grid-template-columns: 1fr;
-    }
-    .time-slot {
-        padding: 12px;
-        font-size: 0.9em;
-    }
-    .back-to-previous-button {
-        top: 10px;
-        left: 10px;
-        padding: 8px 12px;
-        font-size: 0.9em;
-    }
-    .footer {
-        padding: 10px;
-        font-size: 0.75em;
-    }
+/* Responsive Adjustments */
+@media (max-width: 600px) {
+    .title { font-size: 1.8rem; }
+    .calendar-day { min-height: 70px; padding: 5px; }
+    .calendar-day .day-number { font-size: 1rem; }
+    .slot-count { font-size: 0.65rem; padding: 2px 4px; }
+    .container { width: 95%; padding: 0 10px; }
+    .time-slots-grid { grid-template-columns: 1fr; }
 }
