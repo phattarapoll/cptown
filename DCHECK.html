@@ -170,7 +170,7 @@
         <div class="left-column">
           <div class="section gray1">
             <label>วันที่
-              <input type="text" id="date" name="date" readonly> </label>
+              <input type="date" id="date" name="date"> </label>
             <label>รหัส
               <input type="number" id="code" name="id"> </label>
             <label>ชั้น
@@ -309,7 +309,9 @@
     const submitButton = document.querySelector('.submit-button-container .submit-btn');
     const codeInput = document.getElementById("code");
     const submissionHistoryContainer = document.getElementById('submission-history'); // Changed ID
+    const dateInput = document.getElementById("date"); // เพิ่มตัวแปรสำหรับช่องวันที่
 
+    // เพิ่ม "date" ในรายการฟิลด์ที่ต้องการจำค่า
     const fieldsToRemember = ["date", "grade", "school", "NP", "NM", "CM"];
 
     let submissionHistory = []; // Array to hold history objects {code: '...', time: '...'}
@@ -367,6 +369,16 @@
       saveSubmissionHistory(); // Save updated history to localStorage
       updateSubmissionHistoryDisplay(); // Update the UI
     }
+    
+    // Function to load and set remembered fields (รวมถึง date)
+    function loadAndSetRememberedFields() {
+        fieldsToRemember.forEach(field => {
+            const savedValue = localStorage.getItem(field);
+            if (savedValue) {
+                document.querySelector(`[name="${field}"]`).value = savedValue;
+            }
+        });
+    }
 
     // Function to reset the form inputs (not the history display)
     function resetFormForNewEntry() {
@@ -377,14 +389,9 @@
       });
       selectedButtons.clear();
       updateCpCount(); // Reset CP count
-      // Reload remembered fields
-      document.getElementById("date").value = new Date().toLocaleDateString("th-TH");
-      fieldsToRemember.forEach(field => {
-        const savedValue = localStorage.getItem(field);
-        if (savedValue) {
-          document.querySelector(`[name="${field}"]`).value = savedValue;
-        }
-      });
+      
+      // โหลดค่าฟิลด์ที่จำไว้ (รวมถึงวันที่)
+      loadAndSetRememberedFields(); 
     }
 
     // --- Existing Form Logic (mostly unchanged) ---
@@ -470,6 +477,7 @@
       })
       .then(res => res.text())
       .then(() => {
+        // บันทึกค่าฟิลด์ที่จำไว้ทั้งหมด รวมถึงวันที่
         fieldsToRemember.forEach(field => {
           localStorage.setItem(field, document.querySelector(`[name="${field}"]`).value);
         });
@@ -499,17 +507,17 @@
         });
         form.addEventListener("submit", handleFormSubmit);
 
+        // ตั้งค่า Event Listener สำหรับ Date Picker เพื่อบันทึกค่าทุกครั้งที่มีการเลือก
+        dateInput.addEventListener('change', function() {
+            localStorage.setItem('date', this.value);
+        });
+
         // ตั้งค่าเริ่มต้นของหน้าหลัก
         loadSubmissionHistory(); // โหลดประวัติการส่ง
         updateSubmissionHistoryDisplay(); // แสดงประวัติ
 
-        document.getElementById("date").value = new Date().toLocaleDateString("th-TH");
-        fieldsToRemember.forEach(field => {
-            const savedValue = localStorage.getItem(field);
-            if (savedValue) {
-                document.querySelector(`[name="${field}"]`).value = savedValue;
-            }
-        });
+        // โหลดค่าฟิลด์ที่จำไว้ (รวมถึงวันที่)
+        loadAndSetRememberedFields();
     }
 
     // เมื่อโหลดหน้าเว็บเสร็จ (แต่ยังไม่ผ่านล็อกอิน)
