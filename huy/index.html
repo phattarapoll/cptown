@@ -3,102 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>โปรแกรมวิเคราะห์สถิติหวย (Liquid Card Design)</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>โปรแกรมสุ่มเลขนำโชค 6 ตัว - Slot Machine Effect</title>
+    <style>
+        /* --- สไตล์พื้นฐาน (คงเดิม) --- */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; color: #333; text-align: center; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h1 { color: #1a73e8; }
+        label { display: block; margin-top: 15px; font-weight: bold; }
+        input[type="date"] { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        input[disabled] { background-color: #e9ecef; color: #6c757d; } /* สไตล์สำหรับช่องที่ถูกล็อค */
+        button { background-color: #4CAF50; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px; font-size: 16px; transition: background-color 0.3s; }
+        button:hover { background-color: #45a049; }
+        #result-area { margin-top: 30px; padding: 15px; border: 2px dashed #1a73e8; border-radius: 8px; background-color: #e8f0fe; }
+
+        /* --- สไตล์สำหรับ Slot Wheel --- */
+        #lucky-number {
+            display: flex; 
+            justify-content: center; 
+            margin: 10px 0;
+            user-select: none; 
+        }
+        .digit-container {
+            width: 55px; 
+            height: 65px; 
+            margin: 0 4px;
+            overflow: hidden; 
+            border: 3px solid #1a73e8; 
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .digit-wheel {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #d90000;
+            line-height: 65px; 
+            transition: transform 0s linear; 
+        }
+        .digit-wheel span {
+            display: block;
+            height: 65px;
+        }
+
+        /* --- สไตล์สำหรับสรุปผลลัพธ์ (หลังหยุดหมุน) --- */
+        #final-result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #1a73e8;
+            font-style: italic;
+            height: 20px; 
+        }
+
+        /* --- สไตล์การอธิบาย (คงเดิม) --- */
+        .explanation { text-align: left; margin-top: 20px; font-size: 0.9em; color: #666; }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>🎰 ระบบวิเคราะห์สถิติหวยย้อนหลัง</h1>
-        <p>วิเคราะห์ข้อมูลในอดีตเพื่อหาแนวโน้มความถี่การออกรางวัลทุกรางวัล</p>
-    </header>
 
-    <main>
-        <section class="card new-data-input">
-            <h2>📝 ป้อนผลรางวัลล่าสุด (หวยรัฐบาล)</h2>
-            <p>กรอกข้อมูลเพื่อให้สถิติของงวดต่อไปมีความแม่นยำ</p>
-            <div class="input-group">
-                <label for="lastLottoDate">งวดล่าสุด (วันที่ออก):</label>
-                <input type="text" id="lastLottoDate" placeholder="ตัวอย่าง: 16 พ.ย. 2568" value="16 พ.ย. 2568">
-            </div>
-            <div class="input-group">
-                <label for="r1Result">รางวัลที่ 1 (6 ตัว):</label>
-                <input type="number" id="r1Result" placeholder="ตัวอย่าง: 987654" min="0" max="999999" maxlength="6">
-            </div>
-            <div class="input-group">
-                <label for="lastLottoResult">เลขท้าย 2 ตัว:</label>
-                <input type="number" id="lastLottoResult" placeholder="ตัวอย่าง: 58" min="0" max="99" maxlength="2">
-            </div>
-            <button id="submitNewData">✅ เพิ่มข้อมูลและคำนวณใหม่</button>
-            <p id="submissionStatus" class="summary-line" style="color:var(--highlight-color); margin-top:10px;"></p>
-        </section>
+<div class="container">
+    <h1>🔮 โปรแกรมสุ่มเลขนำโชค 6 ตัว ศาสตร์ตัวเลข</h1>
+    <p>ใส่ข้อมูลเพื่อคำนวณ "เลขเด่น" ตามหลักการทางโหราศาสตร์/ตัวเลขศาสตร์เบื้องต้น</p>
 
-        <div class="control-area card analyze-control">
-            <h2>เลือกชุดข้อมูลและรางวัลที่ต้องการวิเคราะห์</h2>
-            <select id="lottoTypeSelector">
-                <option value="government">สลากกินแบ่งรัฐบาล (รัฐบาล)</option>
-                <option value="stock">หวยหุ้นไทย (SET Index) - (วิเคราะห์ 2 ตัวเท่านั้น)</option>
-            </select>
-            <select id="prizeSelector">
-                <option value="R1">🏆 รางวัลที่ 1 (3 ตัวท้าย)</option>
-                <option value="F3">เลขหน้า 3 ตัว (รวม 2 ครั้ง)</option>
-                <option value="B3">เลขท้าย 3 ตัว (รวม 2 ครั้ง)</option>
-                <option value="B2" selected>เลขท้าย 2 ตัว</option>
-            </select>
-            <div class="input-group" style="width: 100%; max-width: 400px; margin-top: 10px;">
-                <label for="nextLottoDate" style="flex-basis: 50%; font-weight: normal;">งวดที่จะถึง:</label>
-                <input type="date" id="nextLottoDate" style="flex-basis: 45%;">
-            </div>
-            <button id="analyzeButton">กดเพื่อเริ่มวิเคราะห์ข้อมูลสถิติ</button>
+    <label for="birthDate">วันเดือนปีเกิด (ค.ศ./พ.ศ.) (กำหนดตายตัว: 16 ก.พ. 1987)</label>
+    <input type="date" id="birthDate" value="1987-02-16" required disabled>
+    <label for="drawDate">วันที่ออกรางวัล (งวดที่จะถึงนี้)</label>
+    <input type="date" id="drawDate" required>
+
+    <button id="calculateButton" onclick="generateLuckyNumber()">คำนวณและสุ่มเลข 6 ตัว</button>
+
+    <div id="result-area">
+        <h2>ผลลัพธ์เลขนำโชค 6 ตัว</h2>
+        <div id="lucky-number">
+             <div class="digit-container"><div class="digit-wheel">0</div></div>
+             <div class="digit-container"><div class="digit-wheel">0</div></div>
+             <div class="digit-container"><div class="digit-wheel">0</div></div>
+             <div class="digit-container"><div class="digit-wheel">0</div></div>
+             <div class="digit-container"><div class="digit-wheel">0</div></div>
+             <div class="digit-container"><div class="digit-wheel">0</div></div>
         </div>
+        <div id="final-result"></div>
+    </div>
 
-        <div id="loading-status" class="status-box hidden">
-            <div class="spinner"></div>
-            <p>กำลังประมวลผลสถิติ... กรุณารอสักครู่</p>
-        </div>
+    <div class="explanation">
+        <h3>หลักการที่ใช้ (จำลองศาสตร์ตัวเลข)</h3>
+        <ul>
+            <li>**เลขตัวตน:** คำนวณผลรวมของวันเดือนปีเกิดจนเหลือเลขเดียว (ตามหลัก Numerology เบื้องต้น)</li>
+            <li>**เลขกำลังวัน:** คำนวณเลขกำลังวันของวันที่ออกรางวัล (ตามหลักโหราศาสตร์ไทย)</li>
+            <li>**การสุ่ม:** นำเลขเด่นที่ได้จากทั้งสองส่วนมาผสมกับการสุ่มเลข 0-9 เพื่อสร้างเป็นเลข 6 หลัก</li>
+        </ul>
+        <p><strong>โปรดทราบ:</strong> การออกรางวัลเป็นการสุ่มที่แท้จริงตามหลักสถิติ โค้ดนี้สร้างขึ้นเพื่อความบันเทิงและเพื่อจำลองศาสตร์ตัวเลขตามคำขอเท่านั้น และไม่มีผลต่อการถูกรางวัลจริง</p>
+    </div>
+</div>
 
-        <section id="recommendation-section" class="card hidden">
-            <h2>🔮 สรุปผลวิเคราะห์ความถี่ตัวเลข</h2>
-            <p class="summary-line">การวิเคราะห์นี้ใช้สำหรับงวด <strong style="color:var(--highlight-color);" id="currentAnalysisDate">N/A</strong></p>
-            <div class="analysis-grid">
-                <div class="analysis-item top-5">
-                    <h3>🔥 เลขที่ออกบ่อยที่สุด (Top 5)</h3>
-                    <div id="top-numbers-display" class="number-list">...</div>
-                </div>
-                <div class="analysis-item bottom-5">
-                    <h3>⚠️ เลขที่ไม่เคยออกนานที่สุด (Bottom 5)</h3>
-                    <div id="bottom-numbers-display" class="number-list">...</div>
-                </div>
-            </div>
+<script>
+    // ความสูงของตัวเลขแต่ละตัว (ต้องตรงกับ .digit-container height และ .digit-wheel line-height ใน CSS)
+    const DIGIT_HEIGHT = 65; 
+    const NUM_DIGITS = 6;
+    let finalNumberStr = "";
+    
+    // --- ฟังก์ชันคำนวณจากไฟล์เดิม (คงไว้) ---
+    function reduceToSingleDigit(number) {
+        let sum = 0;
+        while (number > 0 || sum > 9) {
+            if (number === 0) {
+                number = sum;
+                sum = 0;
+            }
+            sum += number % 10;
+            number = Math.floor(number / 10);
+        }
+        return sum;
+    }
+
+    const powerOfDay = [0, 6, 15, 8, 17, 19, 21, 10];
+    
+    // --- ฟังก์ชันสร้างเนื้อหาในวงล้อ (0-9 ซ้ำหลายรอบ) ---
+    function createDigitWheelContent() {
+        let content = '';
+        for (let j = 0; j < 30; j++) {
+            for (let i = 0; i < 10; i++) {
+                content += `<span>${i}</span>`;
+            }
+        }
+        return content;
+    }
+
+    // --- ฟังก์ชันเตรียมการก่อนเริ่มคำนวณ ---
+    function prepareWheel() {
+        const digitWheels = document.querySelectorAll('.digit-wheel');
+        document.getElementById('final-result').textContent = '';
+        document.getElementById('calculateButton').disabled = true;
+
+        digitWheels.forEach((wheel, index) => {
+            wheel.innerHTML = createDigitWheelContent();
             
-            <div class="guideline-card">
-                <h3>💰 ตัวเลขเด่นที่สุดที่ควรพิจารณา</h3>
-                <p>เลขเด่นที่สุดตามสถิติความถี่คือ:</p>
-                <div class="highlight-number-box">
-                    <strong class="highlight-number" id="should-play-display">N/A</strong>
-                </div>
-                <p class="summary-line">ผลรวมเด่นที่สุด (สำหรับเลข 2 ตัว): <span id="top-sums-display">N/A</span></p>
-            </div>
-        </section>
+            let initialPosition = 0; 
+            wheel.style.transform = `translateY(-${initialPosition}px)`;
+            wheel.style.transition = 'transform 0s linear';
+        });
+    }
+
+    // --- ฟังก์ชันเริ่มหมุน (Scramble) ---
+    function startSpin() {
+        const digitWheels = document.querySelectorAll('.digit-wheel');
+        const totalDuration = 3500; 
+
+        digitWheels.forEach((wheel, index) => {
+            const finalDigit = parseInt(finalNumberStr[index]); 
+            
+            const targetIndex = (25 * 10) + finalDigit;
+            
+            let finalTranslateY;
+            
+            // ช่องคู่ (0, 2, 4) และช่องคี่ (1, 3, 5) ถูกควบคุมให้เคลื่อนที่ลง (translateY ค่าลบ) 
+            // แต่เนื่องจากเนื้อหาถูกสร้างซ้ำ การใช้ค่าลบเพียงพอที่จะสร้างภาพลวงตาของการหมุนขึ้น/ลงเมื่อใช้ cubic-bezier
+            finalTranslateY = -(targetIndex * DIGIT_HEIGHT);
+            
+            // เวลาที่ใช้ในการหยุด (หยุดตามลำดับ)
+            const stopDuration = totalDuration + (index * 300); 
+            
+            // ตั้งค่า Transition (ใช้ cubic-bezier เพื่อให้มีการชะลอที่ดี)
+            wheel.style.transition = `transform ${stopDuration / 1000}s cubic-bezier(0.1, 0.7, 0.4, 1.0)`;
+            
+            // กำหนดตำแหน่งหยุดสุดท้าย
+            wheel.style.transform = `translateY(${finalTranslateY}px)`;
+        });
         
-        <section id="history-section" class="card hidden">
-            <h2>📜 ข้อมูลสถิติการออกรางวัลย้อนหลัง</h2>
-            <div class="table-container">
-                <table id="history-table">
-                    <thead>
-                        <tr></tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </section>
+        // แสดงผลสรุปหลังจากทุกหลักหยุดหมุนแล้ว
+        setTimeout(() => {
+            document.getElementById('final-result').textContent = `🎉 เลขนำโชคของคุณคือ: ${finalNumberStr}`;
+            document.getElementById('calculateButton').disabled = false;
+        }, totalDuration + (NUM_DIGITS * 300) + 500); 
+    }
+    
+    // --- ฟังก์ชันหลัก (รวมการคำนวณและการแสดงผล) ---
+    async function generateLuckyNumber() {
+        // Birth Date ถูกกำหนดตายตัวจาก HTML value="1987-02-16"
+        const birthDateInput = document.getElementById('birthDate').value; 
+        const drawDateInput = document.getElementById('drawDate').value;
 
-    </main>
+        if (!birthDateInput || !drawDateInput) {
+            alert('กรุณาเลือกวันที่ออกรางวัลให้ครบถ้วน');
+            return;
+        }
 
-    <footer>
-        <p>ข้อควรระวัง: การวิเคราะห์นี้เป็นเพียงการศึกษาความถี่ทางสถิติในอดีตเท่านั้น การออกรางวัลยังคงเป็นแบบสุ่ม</p>
-    </footer>
+        const birthDate = new Date(birthDateInput);
+        const drawDate = new Date(drawDateInput);
+        
+        // 1. คำนวณเลข
+        const day = birthDate.getDate(); // 16
+        const month = birthDate.getMonth() + 1; // 2
+        const year = birthDate.getFullYear(); // 1987
+        
+        const totalBirthSum = reduceToSingleDigit(day) + reduceToSingleDigit(month) + reduceToSingleDigit(year);
+        const selfNumber = reduceToSingleDigit(totalBirthSum); 
 
-    <script src="script.js"></script>
+        const dayOfWeek = drawDate.getDay(); 
+        const rawPower = powerOfDay[dayOfWeek + 1]; 
+        const dayPowerNumber = reduceToSingleDigit(rawPower); 
+
+        const allDominantNumbers = [
+            selfNumber, 
+            dayPowerNumber, 
+            reduceToSingleDigit(drawDate.getMonth() + 1), 
+            reduceToSingleDigit(drawDate.getFullYear())  
+        ];
+        
+        finalNumberStr = "";
+        for (let i = 0; i < NUM_DIGITS; i++) {
+            let digit;
+            if (i < allDominantNumbers.length || Math.random() < 0.4) {
+                const dominantIndex = Math.floor(Math.random() * allDominantNumbers.length);
+                digit = allDominantNumbers[dominantIndex];
+            } else {
+                digit = Math.floor(Math.random() * 10);
+            }
+            finalNumberStr += digit.toString();
+        }
+
+        // 2. เตรียมวงล้อและเริ่มการหมุน
+        prepareWheel();
+        startSpin(); 
+    }
+</script>
+
 </body>
 </html>
