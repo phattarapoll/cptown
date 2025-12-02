@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สรุปรายงานผลกิจกรรมรณรงค์</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body { 
+            background-color: #f8f9fa; 
+            padding: 20px; 
+            font-family: 'Sarabun', sans-serif;
+        }
+        .container-fluid { 
+            max-width: 1400px;
+            margin-top: 30px; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+        }
+        h2 { color: #2c3e50; font-weight: bold; }
+        
+        table { font-size: 0.9rem; }
+        thead th { 
+            background-color: #e9ecef !important;
+            text-align: center;
+            vertical-align: middle;
+            border: 1px solid #dee2e6;
+        }
+        tbody td {
+            vertical-align: middle;
+        }
+        /* จัดให้อำเภอและโรงเรียนชิดซ้าย ที่เหลือจัดกลาง */
+        tbody td:not(:nth-child(2)):not(:nth-child(3)) {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container-fluid">
+        <h2 class="text-center mb-4">สรุปรายงานผลกิจกรรมรณรงค์ "ฟันสะอาด เหงือกแข็งแรง"</h2>
+        
+        <div id="loading" class="text-center my-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2">กำลังโหลดข้อมูลจาก Google Sheet...</p>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover d-none" id="data-table">
+                <thead>
+                    <tr>
+                        <th rowspan="2" width="5%">ลำดับ<br>ที่</th>
+                        <th rowspan="2" width="10%">อำเภอ</th>
+                        <th rowspan="2" width="15%">โรงเรียน</th>
+                        <th rowspan="2" width="10%">จำนวนนักเรียน<br>ม.1 ทั้งหมด<br>(คน)</th>
+                        <th colspan="4">จำนวนนักเรียนที่เข้าร่วมกิจกรรม</th>
+                        <th rowspan="2" width="10%">นักเรียนที่มี<br>หินน้ำลายหรือ<br>เหงือกอักเสบ<br>(คน)</th>
+                        <th rowspan="2" width="10%">ขาดเรียน/<br>ไม่ร่วม<br>กิจกรรม<br>(คน)</th>
+                    </tr>
+                    <tr>
+                        <th>ฟันไม่ติดสี<br>(คน)</th>
+                        <th>ฟันติดสี 1-5 ซี่<br>(คน)</th>
+                        <th>ฟันติดสี<br>เกิน 5 ซี่ (คน)</th>
+                        <th>รวม<br>(คน)</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    
+    <script>
+        // *** ลิงก์ CSV ที่แปลงมาจากลิงก์เผยแพร่ของคุณ ***
+        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRG13hmk9VPDlyXieo8Msgf0bSpkSkm7UrB5RlZTE6Q7bT-N-JaajlcDu-0vYjnmg/pub?gid=1801181500&single=true&output=csv';
+        
+        // ตำแหน่งที่ข้อมูลจริงเริ่มใน CSV (บรรทัดที่ 9 ใน Sheet = Index 8 ใน Array)
+        const START_ROW_INDEX = 8; 
+
+        function fetchData() {
+            Papa.parse(CSV_URL, {
+                download: true,
+                header: false, // สำคัญ: ต้องเป็น false เพราะหัวตารางมีหลายแถว
+                complete: function(results) {
+                    if (results.data && results.data.length > START_ROW_INDEX) {
+                        processData(results.data);
+                    } else {
+                        displayError('ดึงข้อมูลมาได้แต่ข้อมูลไม่สมบูรณ์ หรือรูปแบบไม่ตรงตามที่คาดหวัง');
+                    }
+                },
+                error: function(err) {
+                    console.error("Error:", err);
+                    displayError('เกิดข้อผิดพลาดในการโหลดข้อมูล (อาจเป็นปัญหา CORS หากเปิดไฟล์โดยตรง)');
+                }
+            });
+        }
+
+        function displayError(message) {
+            document.getElementById('loading').innerHTML = `<span class="text-danger">${message}</span>`;
+        }
+
+        function processData(data) {
+            const table = document.getElementById('data-table');
+            const tbody = document.getElementById('table-body');
+            const loading = document.getElementById('loading');
+
+            loading.style.display = 'none';
+            table.classList.remove('d-none');
+
+            // ตัดส่วนหัวตารางทิ้ง
+            const realData = data.slice(START_ROW_INDEX); 
+            let bodyRows = '';
+            
+            realData.forEach(row => {
+                // เช็คว่าแถวนั้นมีข้อมูลจริง (เช่นมี ลำดับที่ และมีจำนวนคอลัมน์ที่เพียงพอ)
+                if (row[0] && row[0].trim() !== '' && row.length >= 10) {
+                    bodyRows += `
+                        <tr>
+                            <td>${row[0]}</td> <td>${row[1]}</td> <td class="text-start">${row[2]}</td> <td>${row[3] || 0}</td> <td>${row[4] || 0}</td> <td>${row[5] || 0}</td> <td>${row[6] || 0}</td> <td class="fw-bold table-light">${row[7] || 0}</td> <td>${row[8] || 0}</td> <td class="text-danger">${row[9] || 0}</td> </tr>
+                    `;
+                }
+            });
+
+            tbody.innerHTML = bodyRows;
+        }
+
+        // เริ่มดึงข้อมูลเมื่อเว็บโหลดเสร็จ
+        fetchData();
+    </script>
+</body>
+</html>
