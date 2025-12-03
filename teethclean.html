@@ -37,6 +37,32 @@
         tbody td:not(:nth-child(2)):not(:nth-child(3)) {
             text-align: center;
         }
+
+        /* ******* ส่วนเพิ่มเติมสำหรับกราฟและปุ่มซ่อน ******* */
+        #chart-container {
+            display: none; /* ซ่อนเริ่มต้น */
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+        #chart-toggle-button {
+            position: fixed;
+            top: 50%; /* กลางจอ */
+            right: 20px;
+            transform: translateY(-50%);
+            z-index: 1000;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            font-size: 1.2rem;
+            line-height: 50px;
+            text-align: center;
+        }
+        /* ******* สิ้นสุดส่วนเพิ่มเติม ******* */
     </style>
 </head>
 <body>
@@ -49,6 +75,10 @@
             <p class="mt-2">กำลังโหลดข้อมูลจาก Google Sheet...</p>
         </div>
 
+        <div id="chart-container" class="mb-5">
+            <h3 class="text-center mb-4">สรุปผลรวมการตรวจสุขภาพช่องปาก (นักเรียนที่เข้าร่วม)</h3>
+            <canvas id="summaryChart"></canvas>
+        </div>
         <div class="table-responsive">
             <table class="table table-bordered table-hover d-none" id="data-table">
                 <thead>
@@ -74,22 +104,26 @@
         </div>
     </div>
 
+    <button id="chart-toggle-button" class="btn btn-primary" title="แสดง/ซ่อนกราฟ">
+        📊
+    </button>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script>
-        // *** ลิงก์ CSV ที่แปลงมาจากลิงก์เผยแพร่ของคุณ ***
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRG13hmk9VPDlyXieo8Msgf0bSpkSkm7UrB5RlZTE6Q7bT-N-JaajlcDu-0vYjnmg/pub?gid=1801181500&single=true&output=csv';
-        
-        // ตำแหน่งที่ข้อมูลจริงเริ่มใน CSV (บรรทัดที่ 9 ใน Sheet = Index 8 ใน Array)
         const START_ROW_INDEX = 8; 
+
+        let allData = []; // เก็บข้อมูลทั้งหมดไว้สำหรับสร้างกราฟ
 
         function fetchData() {
             Papa.parse(CSV_URL, {
                 download: true,
-                header: false, // สำคัญ: ต้องเป็น false เพราะหัวตารางมีหลายแถว
+                header: false, 
                 complete: function(results) {
                     if (results.data && results.data.length > START_ROW_INDEX) {
+                        allData = results.data.slice(START_ROW_INDEX);
                         processData(results.data);
+                        initChart(allData); // เรียกสร้างกราฟหลังจากดึงข้อมูลแล้ว
                     } else {
                         displayError('ดึงข้อมูลมาได้แต่ข้อมูลไม่สมบูรณ์ หรือรูปแบบไม่ตรงตามที่คาดหวัง');
                     }
@@ -113,12 +147,10 @@
             loading.style.display = 'none';
             table.classList.remove('d-none');
 
-            // ตัดส่วนหัวตารางทิ้ง
             const realData = data.slice(START_ROW_INDEX); 
             let bodyRows = '';
             
             realData.forEach(row => {
-                // เช็คว่าแถวนั้นมีข้อมูลจริง (เช่นมี ลำดับที่ และมีจำนวนคอลัมน์ที่เพียงพอ)
                 if (row[0] && row[0].trim() !== '' && row.length >= 10) {
                     bodyRows += `
                         <tr>
@@ -130,8 +162,117 @@
             tbody.innerHTML = bodyRows;
         }
 
+        // ******* ฟังก์ชันเพิ่มเติมสำหรับกราฟและปุ่ม *******
+
+        // ฟังก์ชันคำนวณผลรวม
+        function calculateSummary(data) {
+            let totalNoStain = 0; // ฟันไม่ติดสี (คอลัมน์ 4 หรือ Index 4)
+            let totalStain1_5 = 0; // ฟันติดสี 1-5 ซี่ (คอลัมน์ 5 หรือ Index 5)
+            let totalStainOver5 = 0; // ฟันติดสี เกิน 5 ซี่ (คอลัมน์ 6 หรือ Index 6)
+            let totalPlaque = 0; // นักเรียนที่มีหินน้ำลาย/เหงือกอักเสบ (คอลัมน์ 8 หรือ Index 8)
+            let totalParticipated = 0; // รวมทั้งหมดที่เข้าร่วม (คอลัมน์ 7 หรือ Index 7)
+
+            data.forEach(row => {
+                // เช็คว่าแถวนั้นมีข้อมูลจริงและจำนวนคอลัมน์เพียงพอ
+                if (row[0] && row[0].trim() !== '' && row.length >= 10) {
+                    totalNoStain += parseInt(row[4] || 0);
+                    totalStain1_5 += parseInt(row[5] || 0);
+                    totalStainOver5 += parseInt(row[6] || 0);
+                    totalParticipated += parseInt(row[7] || 0);
+                    totalPlaque += parseInt(row[8] || 0);
+                }
+            });
+
+            return { totalNoStain, totalStain1_5, totalStainOver5, totalPlaque, totalParticipated };
+        }
+
+        // ฟังก์ชันสร้าง/อัปเดตกราฟ
+        function initChart(data) {
+            const summary = calculateSummary(data);
+            const ctx = document.getElementById('summaryChart').getContext('2d');
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['ฟันไม่ติดสี', 'ติดสี 1-5 ซี่', 'ติดสี > 5 ซี่', 'มีหินน้ำลาย/เหงือกอักเสบ'],
+                    datasets: [{
+                        label: 'จำนวนนักเรียน (คน)',
+                        data: [
+                            summary.totalNoStain, 
+                            summary.totalStain1_5, 
+                            summary.totalStainOver5,
+                            summary.totalPlaque
+                        ],
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.6)', // ไม่ติดสี (เขียว)
+                            'rgba(255, 206, 86, 0.6)', // 1-5 ซี่ (เหลือง)
+                            'rgba(255, 99, 132, 0.6)', // > 5 ซี่ (แดง)
+                            'rgba(54, 162, 235, 0.6)'  // หินน้ำลาย/เหงือก (น้ำเงิน)
+                        ],
+                        borderColor: [
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: `ผลรวมนักเรียนที่เข้าร่วมทั้งหมด ${summary.totalParticipated} คน`
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'จำนวนนักเรียน (คน)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ฟังก์ชันสลับการแสดงผลกราฟ
+        function toggleChart() {
+            const chartContainer = document.getElementById('chart-container');
+            const button = document.getElementById('chart-toggle-button');
+            
+            if (chartContainer.style.display === 'none') {
+                chartContainer.style.display = 'block';
+                button.classList.remove('btn-primary');
+                button.classList.add('btn-danger');
+                button.innerHTML = '❌'; // ปิด
+                button.title = 'ซ่อนกราฟ';
+            } else {
+                chartContainer.style.display = 'none';
+                button.classList.remove('btn-danger');
+                button.classList.add('btn-primary');
+                button.innerHTML = '📊'; // เปิด
+                button.title = 'แสดงกราฟ';
+            }
+        }
+
+        // เพิ่ม Event Listener สำหรับปุ่ม
+        document.addEventListener('DOMContentLoaded', () => {
+            const button = document.getElementById('chart-toggle-button');
+            if (button) {
+                button.addEventListener('click', toggleChart);
+            }
+        });
+        
         // เริ่มดึงข้อมูลเมื่อเว็บโหลดเสร็จ
         fetchData();
+        // ******* สิ้นสุดฟังก์ชันเพิ่มเติม *******
     </script>
 </body>
 </html>
