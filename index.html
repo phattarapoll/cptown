@@ -55,6 +55,8 @@
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/th_TH/sdk.js#xfbml=1&version=v21.0"></script>
 
     <header id="mainHeader" >
         <div class="text-center mb-2"> <h1 class="font-bold text-lg text-shadow">งานทันตสาธารณสุข ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร 333 ตำบลท่าตะเภา อำเภอเมืองชุมพร จังหวัดชุมพร 86000</h1><br>
@@ -68,8 +70,8 @@
                     เพิ่มเติม <i class="fas fa-caret-down ml-2"></i>
                 </button>
                 <div class="dropdown-content">
-                    <a href="workReport/index.html"" target="_blank">แผนออกหน่วย</a>
-                    <a href="https://script.google.com/macros/s/AKfycbyGNVCUL7_F1uOXUw_2wWd9izqYzdD_MEpkJSSDzXsoCDADvS00fHX_KPP3BcsO7AVP/exec"" target="_blank">โปรแกรมตรวจสุขภาพช่องปากเบื้องต้น</a>
+                    <a href="workReport/index.html" target="_blank">แผนออกหน่วย</a>
+                    <a href="https://script.google.com/macros/s/AKfycbyGNVCUL7_F1uOXUw_2wWd9izqYzdD_MEpkJSSDzXsoCDADvS00fHX_KPP3BcsO7AVP/exec" target="_blank">โปรแกรมตรวจสุขภาพช่องปากเบื้องต้น</a>
                     <a href="personnal.html" target="_blank">ผังบุคลากร</a>
                     <a href="sick/intro.html" target="_blank">ระบบวันลา</a>
 					<a href="https://phattarapoll.github.io/cptown/DCHECK" target="_blank">DENT-CHECK V.5</a>
@@ -100,63 +102,57 @@
                     <a href="https://eclaim.nhso.go.th/Client/login?url=%2Fhome" target="_blank">E-CLAME</a>
                     <a href="https://www.facebook.com/tasaban.tai" target="_blank">ศูนย์ฟอกไต ทม.ชพ.</a>
                     <a href="http://fctmc.6te.net/TARA/Tara.html" target="_blank">ศูนย์ธาราบำบัด ทม.ชพ.</a>
-
-
-
-					 <button id="adminLoginBtn" onclick="window.location.href='ADM.html'">    </button>
+                    <button id="adminLoginBtn" onclick="window.location.href='ADM.html'">    </button>
                 </div>
             </div>
 			
 			<div class="relative dropdown">
-    <button id="staffDropdownBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out mt-2 md:mt-0">
-        สำหรับผู้ดูแล <i class="fas fa-caret-down ml-2"></i>
-    </button>
-	
-<div id="staffDropdownContent" class="dropdown-content password-input-container">
-    <div id="passwordForm">
-        <input type="password" id="passwordField" class="password-field" maxlength="10" placeholder="รหัสผ่าน" readonly>
-        <div class="keypad">
-            <button class="keypad-btn">1</button>
-            <button class="keypad-btn">2</button>
-            <button class="keypad-btn">3</button>
-            <button class="keypad-btn">4</button>
-            <button class="keypad-btn">5</button>
-            <button class="keypad-btn">6</button>
-            <button class="keypad-btn">7</button>
-            <button class="keypad-btn">8</button>
-            <button class="keypad-btn">9</button>
-            <button class="keypad-btn clear-btn">C</button>
-            <button class="keypad-btn">0</button>
-            <button class="keypad-btn backspace-btn"><i class="fas fa-backspace"></i></button>
-        </div>
-        <div class="flex justify-center mt-2 space-x-2">
-            <button id="loginButton" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-full transition duration-300 ease-in-out">
-                ตกลง
-            </button>
-            <button id="cancelButton" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-full transition duration-300 ease-in-out">
-                ยกเลิก
-            </button>
-        </div>
-    </div>
-    <div id="staffLinks" class="hidden">
-            <a href="sick/check.html" target="_blank">อนุมัติวันลา</a>
-            <a href="https://script.google.com/macros/s/AKfycbz-KyfMlBmMXBCghrHh1Honicz4Uyzu_v8WWZ7oujKgVafC9awo3fDHcX4fKxgQDjsE/exec" target="_blank">P4P</a>
-            <a href="https://script.google.com/macros/s/AKfycbxeOMezPucQWmQ2Vr2AY7eON5-Nz_UINtfrj4JKdhs11ysy5oZnrSE-FC_EXfKatF4mxg/exec" target="_blank">ระบบเบิกวัสดุ/แผนรายปี/ประวัติเบิกวัสดุ</a>
-            <a href="https://script.google.com/macros/s/AKfycbyyTxludbp-RSYTsaxwfKktkFpU8WwdDwBFOphwaDpvw2NURo-5ZMefu-IFijLMZODt/exec" target="_blank">ระบบครุภัณฑ์</a>
-            <a href="https://docs.google.com/spreadsheets/d/1QDfC-3C27R1wUHn9rSdtL9snvfIYcBImSbeeIrfWeaU/edit?gid=539353542#gid=539353542" target="_blank">แผนออกตรวจ รร.</a>
-            <a href="https://docs.google.com/spreadsheets/d/1IVop9cME3hdy8xhH0PTdrYOXUXlOJG4DRQ98evbEl1c/edit?gid=0#gid=0" target="_blank">ข่าวเว็ปไซต์</a>
-            <a href="https://docs.google.com/spreadsheets/d/1bv8lFK1RGLfFfX-FK5VOIPPSvJUiyPRK/edit?gid=1801181500#gid=1801181500" target="_blank">รายงานผลกิจกรรมฟันสะอาด</a>
-            <a href="https://script.google.com/macros/s/AKfycbw11z6gRmdR9ZkuMOmRUandzo94lLkwSxsJYcabjMeUU3FMgQDCnrdtgymktEQ_j6ALKg/exec" target="_blank">สอบ ผู้ช่วยทันต</a>
-            <a href="https://script.google.com/macros/s/AKfycbw11z6gRmdR9ZkuMOmRUandzo94lLkwSxsJYcabjMeUU3FMgQDCnrdtgymktEQ_j6ALKg/exec?page=index2" target="_blank">ผลสอบ ผู้ช่วยทันต</a>
-            <a href="https://pic.in.th/cptown" target="_blank">ฝากรูปเว็ปไซต์</a>
-            <a href="https://docs.google.com/spreadsheets/d/1St7sf2m2WD4S44wLNAo2dbvggASggmHcBwbk725bZ-w/edit?gid=512483600#gid=512483600" target="_blank">ฐานข้อมูล PSVMT</a>
-            <a href="hora/index.html" target="_blank">สุ่มคำทำนาย</a>
-            <a href="ADM.html" target="_blank">ADMIN ONLY</a>
-        </div>
-    </div>
-</div>
-
-            </a>
+                <button id="staffDropdownBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out mt-2 md:mt-0">
+                    สำหรับผู้ดูแล <i class="fas fa-caret-down ml-2"></i>
+                </button>
+                <div id="staffDropdownContent" class="dropdown-content password-input-container">
+                    <div id="passwordForm">
+                        <input type="password" id="passwordField" class="password-field" maxlength="10" placeholder="รหัสผ่าน" readonly>
+                        <div class="keypad">
+                            <button class="keypad-btn">1</button>
+                            <button class="keypad-btn">2</button>
+                            <button class="keypad-btn">3</button>
+                            <button class="keypad-btn">4</button>
+                            <button class="keypad-btn">5</button>
+                            <button class="keypad-btn">6</button>
+                            <button class="keypad-btn">7</button>
+                            <button class="keypad-btn">8</button>
+                            <button class="keypad-btn">9</button>
+                            <button class="keypad-btn clear-btn">C</button>
+                            <button class="keypad-btn">0</button>
+                            <button class="keypad-btn backspace-btn"><i class="fas fa-backspace"></i></button>
+                        </div>
+                        <div class="flex justify-center mt-2 space-x-2">
+                            <button id="loginButton" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-full transition duration-300 ease-in-out">
+                                ตกลง
+                            </button>
+                            <button id="cancelButton" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-full transition duration-300 ease-in-out">
+                                ยกเลิก
+                            </button>
+                        </div>
+                    </div>
+                    <div id="staffLinks" class="hidden">
+                        <a href="sick/check.html" target="_blank">อนุมัติวันลา</a>
+                        <a href="https://script.google.com/macros/s/AKfycbz-KyfMlBmMXBCghrHh1Honicz4Uyzu_v8WWZ7oujKgVafC9awo3fDHcX4fKxgQDjsE/exec" target="_blank">P4P</a>
+                        <a href="https://script.google.com/macros/s/AKfycbxeOMezPucQWmQ2Vr2AY7eON5-Nz_UINtfrj4JKdhs11ysy5oZnrSE-FC_EXfKatF4mxg/exec" target="_blank">ระบบเบิกวัสดุ/แผนรายปี/ประวัติเบิกวัสดุ</a>
+                        <a href="https://script.google.com/macros/s/AKfycbyyTxludbp-RSYTsaxwfKktkFpU8WwdDwBFOphwaDpvw2NURo-5ZMefu-IFijLMZODt/exec" target="_blank">ระบบครุภัณฑ์</a>
+                        <a href="https://docs.google.com/spreadsheets/d/1QDfC-3C27R1wUHn9rSdtL9snvfIYcBImSbeeIrfWeaU/edit?gid=539353542#gid=539353542" target="_blank">แผนออกตรวจ รร.</a>
+                        <a href="https://docs.google.com/spreadsheets/d/1IVop9cME3hdy8xhH0PTdrYOXUXlOJG4DRQ98evbEl1c/edit?gid=0#gid=0" target="_blank">ข่าวเว็ปไซต์</a>
+                        <a href="https://docs.google.com/spreadsheets/d/1bv8lFK1RGLfFfX-FK5VOIPPSvJUiyPRK/edit?gid=1801181500#gid=1801181500" target="_blank">รายงานผลกิจกรรมฟันสะอาด</a>
+                        <a href="https://script.google.com/macros/s/AKfycbw11z6gRmdR9ZkuMOmRUandzo94lLkwSxsJYcabjMeUU3FMgQDCnrdtgymktEQ_j6ALKg/exec" target="_blank">สอบ ผู้ช่วยทันต</a>
+                        <a href="https://script.google.com/macros/s/AKfycbw11z6gRmdR9ZkuMOmRUandzo94lLkwSxsJYcabjMeUU3FMgQDCnrdtgymktEQ_j6ALKg/exec?page=index2" target="_blank">ผลสอบ ผู้ช่วยทันต</a>
+                        <a href="https://pic.in.th/cptown" target="_blank">ฝากรูปเว็ปไซต์</a>
+                        <a href="https://docs.google.com/spreadsheets/d/1St7sf2m2WD4S44wLNAo2dbvggASggmHcBwbk725bZ-w/edit?gid=512483600#gid=512483600" target="_blank">ฐานข้อมูล PSVMT</a>
+                        <a href="hora/index.html" target="_blank">สุ่มคำทำนาย</a>
+                        <a href="ADM.html" target="_blank">ADMIN ONLY</a>
+                    </div>
+                </div>
+            </div>
         </nav>
     </header>
 
@@ -285,30 +281,24 @@
                     </div>
             </div>
 
-            <div class="lg:w-1/3 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-gray-50 p-4 rounded-xl shadow-md border border-gray-200 text-center cursor-pointer image-gallery-item" onclick="openModal('assets/images/meeting/meeting-01.jpg')">
-                    <img src="assets/images/meeting/meeting-01.jpg" alt="กิจกรรมทันตกรรม 1" class="w-full h-auto rounded-lg mb-3 object-cover">
-                    <p class="font-semibold text-blue-700">QR CODE LINE</p>
-                    <p class="text-sm text-gray-600">ท่านสามารถเพิ่มเพื่อน</p>
-                    <p class="text-xs text-gray-500">หมายเหตุ: ระบบจองคิว</p>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-xl shadow-md border border-gray-200 text-center cursor-pointer image-gallery-item" onclick="openModal('assets/images/meeting/meeting-02.jpg')">
-                    <img src="assets/images/meeting/meeting-02.jpg" alt="กิจกรรมทันตกรรม 2" class="w-full h-auto rounded-lg mb-3 object-cover">
-                    <p class="font-semibold text-blue-700">รณรงค์ตรวจฟัน</p>
-                    <p class="text-sm text-gray-600">ทุกวันเวลาราชการ</p>
-                    <p class="text-xs text-gray-500">หมายเหตุ: เฉพาะตรวจฟัน</p>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-xl shadow-md border border-gray-200 text-center cursor-pointer image-gallery-item" onclick="openModal('Image/old.gif')">
-                    <img src="Image/old.gif" alt="ภาพกิจกรรม 1" class="w-full h-auto rounded-lg mb-3 object-cover">
-                    <p class="font-semibold text-blue-700">ประมวลภาพ#1</p>
-                    <p class="text-sm text-gray-600"></p>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-xl shadow-md border border-gray-200 text-center cursor-pointer image-gallery-item" onclick="openModal('Image/new.gif')">
-                    <img src="Image/new.gif" alt="ภาพกิจกรรม 1" class="w-full h-auto rounded-lg mb-3 object-cover">
-                    <p class="font-semibold text-blue-700">ประมวลภาพ#2</p>
-                    <p class="text-sm text-gray-600"></p>
-                </div>
-            </div>
+            <div class="lg:w-1/3">
+    <div class="bg-white p-4 rounded-xl shadow-md border border-gray-200 sticky top-32">
+        
+        <div class="fb-page" 
+             data-href="https://www.facebook.com/100069716646737" 
+             data-tabs="timeline,events,messages" 
+             data-width="370" 
+             data-height="500" 
+             data-small-header="false" 
+             data-adapt-container-width="true" 
+             data-hide-cover="false" 
+             data-show-facepile="true">
+            <blockquote cite="https://www.facebook.com/100069716646737" class="fb-xfbml-parse-ignore">
+                <a href="https://www.facebook.com/100069716646737">งานทันตสาธารณสุข เทศบาลเมืองชุมพร</a>
+            </blockquote>
+        </div>
+    </div>
+</div>
         </section>
 
         <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden" onclick="closeModal(event)">
@@ -545,13 +535,10 @@
         
         // ฟังก์ชันปิด Modal (คลิกที่พื้นหลังหรือปุ่ม X)
         function closeModal(event) {
-            // ตรวจสอบว่าคลิกที่ตัว Modal เอง หรือปุ่มปิด
             if (event.target === modal || event.target.tagName === 'SPAN') {
                 modal.style.display = "none";
             }
         }
-        
-        // **หมายเหตุ:** ฟังก์ชัน openModalQR() และ closeModalQR(event) ถูกนำออกแล้ว
     </script>
     
     <script src="assets/js/custom.js"></script>
