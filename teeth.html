@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจำลองการขึ้นของฟัน DPH_PHATTARAPOLL</title>
+    <style>
+        :root {
+            --gum-color: #ffb7c5;
+            --tooth-milk: #ffffff; /* ฟันน้ำนมสีขาวบริสุทธิ์ */
+            --tooth-perm: #ffd54f; /* ฟันแท้สีเหลืองชัดเจน */
+            --primary-blue: #006699;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            max-width: 850px;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h2 { color: var(--primary-blue); margin: 0 0 20px 0; }
+
+        /* ส่วนควบคุมและแสดงผลตัวเลข */
+        .dashboard {
+            display: flex;
+            justify-content: space-around;
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            border: 2px solid #bbdefb;
+        }
+
+        .stat-box { text-align: center; }
+        .stat-label { font-size: 14px; color: #555; display: block; }
+        .stat-value { font-size: 28px; font-weight: bold; color: var(--primary-blue); }
+        .stat-value.milk { color: #d63384; } /* สีชมพูสำหรับฟันน้ำนม */
+        .stat-value.perm { color: #f57f17; } /* สีเหลืองเข้มสำหรับฟันแท้ */
+
+        .slider-section {
+            margin: 20px 0;
+            padding: 10px;
+        }
+
+        input[type=range] { width: 100%; cursor: pointer; height: 10px; }
+
+        .age-display { font-size: 32px; font-weight: bold; color: #333; margin: 10px 0; }
+
+        /* การจัดวางขากรรไกร */
+        .mouth-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: var(--gum-color);
+            padding: 50px 30px;
+            border-radius: 150px;
+            border: 12px solid #f8bbd0;
+            margin: 20px auto;
+            max-width: fit-content;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
+        }
+
+        .jaw { display: flex; justify-content: center; gap: 6px; }
+        .upper { margin-bottom: 40px; }
+
+        .tooth {
+            width: 34px;
+            height: 45px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px 8px 15px 15px;
+            transition: all 0.3s ease;
+            border: 1px dashed rgba(0,0,0,0.05);
+        }
+
+        .lower .tooth { border-radius: 15px 15px 8px 8px; }
+
+        /* ตกแต่งสีฟันให้ชัดเจนตามที่สั่ง */
+        .tooth.milk-active {
+            background: var(--tooth-milk) !important;
+            border: 1.5px solid #999;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .tooth.perm-active {
+            background: var(--tooth-perm) !important;
+            border: 1.5px solid #e65100;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .badge { 
+            padding: 8px 15px; 
+            border-radius: 10px; 
+            font-size: 14px; 
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #fff;
+        }
+
+        /* Footer */
+        footer {
+            width: 100%;
+            max-width: 850px;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #ccc;
+            margin-top: 20px;
+        }
+
+        .footer-name { font-size: 18px; font-weight: bold; color: var(--primary-blue); }
+        .footer-pos { color: #444; margin: 5px 0; }
+        .footer-work { font-size: 14px; color: #666; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>🦷 โปรแกรมจำลองการขึ้นของฟัน</h2>
+    
+    <div class="age-display">อายุ: <span id="ageVal">0</span> ปี</div>
+
+    <div class="slider-section">
+        <input type="range" id="ageSlider" min="0" max="23" step="0.5" value="0">
+    </div>
+
+    <div class="dashboard">
+        <div class="stat-box">
+            <span class="stat-label">ฟันน้ำนม</span>
+            <div id="milkCount" class="stat-value milk">0</div>
+            <span class="stat-label">ซี่</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-label">ฟันแท้</span>
+            <div id="permCount" class="stat-value perm">0</div>
+            <span class="stat-label">ซี่</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-label">รวมทั้งหมด</span>
+            <div id="totalCount" class="stat-value">0</div>
+            <span class="stat-label">ซี่</span>
+        </div>
+    </div>
+
+    <div class="mouth-area">
+        <div class="jaw upper" id="upperJaw"></div>
+        <div class="jaw lower" id="lowerJaw"></div>
+    </div>
+
+    <div class="legend">
+        <div class="badge"><div style="width:15px; height:15px; background:white; border:1px solid #999;"></div> ฟันน้ำนม (สีขาว)</div>
+        <div class="badge"><div style="width:15px; height:15px; background:#ffd54f; border:1px solid #e65100;"></div> ฟันแท้ (สีเหลือง)</div>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-name">สร้างและพัฒนาโดย นายภัทรพล ไพศาลวัชรเมธี</div>
+    <div class="footer-pos">ตำแหน่ง เจ้าพนักงานทันตสาธารณสุขอาวุโส</div>
+    <div class="footer-work">งานทันตสาธารณสุข ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร</div>
+</footer>
+
+<script>
+    // การตั้งค่าช่วงเวลาการขึ้น/หลุด (อ้างอิงค่าเฉลี่ยทางทันตกรรม)
+    const teethConfig = [
+        { permAge: 18, hasMilk: false }, 
+        { permAge: 12, hasMilk: false }, 
+        { permAge: 6, hasMilk: false },
+        { permAge: 11, milkIn: 2.5, milkOut: 11, hasMilk: true },
+        { permAge: 10, milkIn: 1.5, milkOut: 10, hasMilk: true },
+        { permAge: 11, milkIn: 1.5, milkOut: 11, hasMilk: true },
+        { permAge: 8, milkIn: 0.8, milkOut: 8, hasMilk: true },
+        { permAge: 7, milkIn: 0.7, milkOut: 7, hasMilk: true },
+        // กึ่งกลาง
+        { permAge: 7, milkIn: 0.7, milkOut: 7, hasMilk: true },
+        { permAge: 8, milkIn: 0.8, milkOut: 8, hasMilk: true },
+        { permAge: 11, milkIn: 1.5, milkOut: 11, hasMilk: true },
+        { permAge: 10, milkIn: 1.5, milkOut: 10, hasMilk: true },
+        { permAge: 11, milkIn: 2.5, milkOut: 11, hasMilk: true },
+        { permAge: 6, hasMilk: false },
+        { permAge: 12, hasMilk: false },
+        { permAge: 18, hasMilk: false }
+    ];
+
+    // ฟันล่าง (ฟันหน้าขึ้นเร็วกว่านิดหน่อย)
+    const lowerConfig = JSON.parse(JSON.stringify(teethConfig));
+    lowerConfig[7].permAge = 6; lowerConfig[7].milkIn = 0.5; lowerConfig[7].milkOut = 6;
+    lowerConfig[8].permAge = 6; lowerConfig[8].milkIn = 0.5; lowerConfig[8].milkOut = 6;
+
+    function init() {
+        const u = document.getElementById('upperJaw');
+        const l = document.getElementById('lowerJaw');
+        for(let i=0; i<16; i++) {
+            u.innerHTML += `<div class="tooth" id="U${i}"></div>`;
+            l.innerHTML += `<div class="tooth" id="L${i}"></div>`;
+        }
+    }
+
+    function update(age) {
+        let mCount = 0;
+        let pCount = 0;
+
+        const process = (config, prefix) => {
+            config.forEach((t, i) => {
+                const el = document.getElementById(prefix + i);
+                el.className = 'tooth';
+                
+                if (age >= t.permAge) {
+                    el.classList.add('perm-active');
+                    pCount++;
+                } else if (t.hasMilk && age >= t.milkIn && age < t.milkOut) {
+                    el.classList.add('milk-active');
+                    mCount++;
+                }
+            });
+        };
+
+        process(teethConfig, 'U');
+        process(lowerConfig, 'L');
+
+        // แสดงผลตัวเลข
+        document.getElementById('milkCount').innerText = mCount;
+        document.getElementById('permCount').innerText = pCount;
+        document.getElementById('totalCount').innerText = mCount + pCount;
+        document.getElementById('ageVal').innerText = age;
+    }
+
+    const slider = document.getElementById('ageSlider');
+    slider.oninput = function() { update(parseFloat(this.value)); };
+
+    init();
+    update(0);
+</script>
+
+</body>
+</html>
