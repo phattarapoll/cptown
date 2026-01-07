@@ -292,20 +292,24 @@ document.addEventListener('DOMContentLoaded', () => {
         existingBlinkingMessages.forEach(msg => msg.remove());
 
         const dateString = formatDateForComparison(date);
+        
+        // 1. ดึงเวลาปัจจุบัน (อ้างอิงเวลาเครื่องผู้ใช้)
         const now = new Date();
-        const isToday = (date.getDate() === now.getDate() && date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear());
+        
+        // 2. ตั้งเวลาขั้นต่ำที่จองได้คือ "ตอนนี้ + 1 ชั่วโมง"
+        const minBookingTime = new Date(now.getTime() + (60 * 60 * 1000));
 
         const dayOfWeek = date.getDay();
         const dayOfMonth = date.getDate();
 
-        if (dayOfWeek === 5) { // วันศุกร์
+        if (dayOfWeek === 5) {
             const fridayWarning = document.createElement('div');
             fridayWarning.classList.add('blinking-message');
             fridayWarning.innerHTML = 'ให้บริการเฉพาะกลุ่ม 60 ปีขึ้นไป';
             selectedDateDisplay.insertAdjacentElement('afterend', fridayWarning);
         }
 
-        if (dayOfWeek === 2 && dayOfMonth >= 8 && dayOfMonth <= 14) { // วันอังคาร ระหว่างวันที่ 8 ถึง 14
+        if (dayOfWeek === 2 && dayOfMonth >= 8 && dayOfMonth <= 14) {
             const tuesdayWarning = document.createElement('div');
             tuesdayWarning.classList.add('blinking-message');
             tuesdayWarning.innerHTML = 'เฉพาะกลุ่มคลินิกเด็กดี';
@@ -318,8 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
             configData.timeSlots.forEach(slot => {
                 const timeSlotDiv = document.createElement('div');
                 timeSlotDiv.classList.add('time-slot');
-                timeSlotDiv.textContent = slot;
-
+                
                 let isSlotBooked = false;
                 let userFullName = '';
                 
@@ -330,68 +333,49 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
-                let isPastTime = false;
-                if (isToday) {
-                    const [startHour, startMinute] = slot.split(' - ')[0].split(':').map(Number);
-                    const slotStartDateTime = new Date(date.getFullYear(), date.getMonth(), date.getDate(), startHour, startMinute, 0);
-                    if (now > slotStartDateTime) {
-                        isPastTime = true;
-                    }
-                }
+                // --- ส่วนที่แก้ไข: ตรวจสอบเงื่อนไขเวลาอย่างละเอียด ---
+                // แยกชั่วโมงและนาทีจากข้อความ เช่น "09:00 - 10:00" -> ดึง "09" และ "00"
+                const timePart = slot.split('-')[0].trim(); // ได้ "09:00"
+                const [startHour, startMinute] = timePart.split(':').map(Number);
+                
+                // สร้าง Object วันที่ของคิวนั้นๆ เพื่อนำมาเปรียบเทียบ
+                const slotStartDateTime = new Date(date.getFullYear(), date.getMonth(), date.getDate(), startHour, startMinute, 0);
+                
+                // ตรวจสอบ: ถ้าเวลาคิวน้อยกว่าเวลาปัจจุบัน + 1 ชม. = จองไม่ได้ (isTooLate)
+                const isTooLate = slotStartDateTime < minBookingTime;
 
-                if (isSlotBooked || isPastTime) {
+                if (isSlotBooked) {
+                    // สถานะ: จองแล้ว (สีขาว)
+                    timeSlotDiv.classList.add('booked-slot');
+                    timeSlotDiv.textContent = maskFullName(userFullName);
+                    
+                    const cancelButton = document.createElement('button');
+                    cancelButton.classList.add('cancel-button'); 
+                    cancelButton.innerHTML = 'ยกเลิก';
+                    const telNumberMasked = bookingData[dateString][slot].telNumber || '**********';
+                    cancelButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        cancelBooking(dateString, slot, telNumberMasked, userFullName); 
+                    });
+                    timeSlotDiv.appendChild(cancelButton);
+
+                    const noShowCountForUser = getNoShowCountByPartialName(userFullName, noShowCount);
+                    if (noShowCountForUser > 0) {
+                        timeSlotDiv.classList.add('no-show-warning');
+                        timeSlotDiv.innerHTML += `<small class="no-show-count-text">⚠️ ${noShowCountForUser} ครั้ง</small>`;
+                    }
+                } else if (isTooLate) {
+                    // สถานะ: จองไม่ได้/ต่ำกว่า 1 ชม. (สีแดง)
                     timeSlotDiv.classList.add('unavailable-slot');
-                    timeSlotDiv.title = isSlotBooked ? 'ช่วงเวลานี้ถูกจองแล้ว' : 'ช่วงเวลานี้ผ่านไปแล้ว';
-
-                    if (isSlotBooked) {
-                        // *** ใช้ฟังก์ชัน maskFullName เพื่อซ่อนนามสกุลบางส่วน ***
-                        timeSlotDiv.textContent = maskFullName(userFullName); 
-                        
-                        if (userFullName) {
-                            
-                            // *** โค้ดใหม่: เพิ่มปุ่มยกเลิก (Start) ***
-                            const cancelButton = document.createElement('button');
-                            cancelButton.classList.add('cancel-button'); 
-                            cancelButton.innerHTML = 'ยกเลิก';
-                            
-                            // ดึงเบอร์โทรศัพท์ที่ถูก Mask
-                            const telNumberMasked = bookingData[dateString][slot].telNumber || '**********';
-
-                            // กำหนด Event Listener สำหรับเปิด Popup ยกเลิก
-                            cancelButton.addEventListener('click', (e) => {
-                                e.stopPropagation(); // หยุดไม่ให้คลิกวันแล้วเกิดการกระทำอื่นๆ
-                                // **สำคัญ:** เราไม่ใช้ telNumberMasked อีกต่อไป แต่ส่ง fullName และ date/slot
-                                cancelBooking(dateString, slot, telNumberMasked, userFullName); 
-                            });
-
-                            timeSlotDiv.appendChild(cancelButton); 
-                            // *** โค้ดใหม่: เพิ่มปุ่มยกเลิก (End) ***
-                            
-                            const noShowCountForUser = getNoShowCountByPartialName(userFullName, noShowCount); 
-                            
-                            if (noShowCountForUser > 0) {
-                                timeSlotDiv.classList.add('no-show-warning'); 
-                                
-                                if (noShowCountForUser === 1) {
-                                    timeSlotDiv.classList.add('blink-yellow');
-                                } else if (noShowCountForUser === 2) {
-                                    timeSlotDiv.classList.add('blink-orange');
-                                } else if (noShowCountForUser >= 3) {
-                                    timeSlotDiv.classList.add('blink-red');
-                                }
-                                
-                                timeSlotDiv.title += ` (ผู้จองมีประวัติผิดนัด ${noShowCountForUser} ครั้ง! ควรติดต่อเจ้าหน้าที่)`;
-								timeSlotDiv.innerHTML += `<small class="no-show-count-text">⚠️  ${noShowCountForUser} ครั้ง</small>`;                            
-								} else {
-                                timeSlotDiv.title += ` (ผู้จอง: ${userFullName})`;
-                            }
-                        }
-                    } else if (isPastTime) {
-                         // หากเป็นเวลาที่ผ่านไปแล้ว ให้คงข้อความเวลาไว้
-                    }
-
+                    timeSlotDiv.textContent = slot;
+                    timeSlotDiv.title = 'ต้องจองล่วงหน้าอย่างน้อย 1 ชั่วโมง หรือช่วงเวลานี้ผ่านไปแล้ว';
                     timeSlotDiv.style.cursor = 'not-allowed';
+                    // ป้องกันการคลิกจองในระดับโค้ด
+                    timeSlotDiv.onclick = (e) => { e.preventDefault(); e.stopPropagation(); };
                 } else {
+                    // สถานะ: ว่าง (สีฟ้า)
+                    timeSlotDiv.classList.add('available-slot');
+                    timeSlotDiv.textContent = slot;
                     timeSlotDiv.addEventListener('click', () => openBookingPopup(date, slot));
                 }
                 timeSlotsContainer.appendChild(timeSlotDiv);
@@ -400,6 +384,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.calendar-wrapper').classList.add('hidden');
         timeSlotDetails.classList.remove('hidden');
     }
+	
+	
 
     function openBookingPopup(date, slot) {
         const fullNameInput = document.getElementById('fullName');

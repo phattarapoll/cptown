@@ -543,6 +543,49 @@ body {
     margin-bottom: 15px;
 }
 
+/* --- TIME SLOTS COLORS --- */
+
+/* 1. คิวที่ว่างและจองได้ (สีฟ้า) */
+.time-slot.available-slot {
+    background-color: #0ea5e9 !important; /* Sky Blue */
+    color: white !important;
+    border: 1px solid #0284c7;
+}
+.time-slot.available-slot:hover {
+    background-color: #0284c7 !important;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(14, 165, 233, 0.3);
+}
+
+/* 2. คิวที่จองไม่ได้ / ต่ำกว่า 1 ชม. / ผ่านไปแล้ว (สีแดง) */
+.time-slot.unavailable-slot {
+    background-color: #fee2e2 !important; /* พื้นแดงอ่อน */
+    color: #ef4444 !important;            /* ตัวอักษรแดง */
+    border: 1px solid #fecaca !important;
+    cursor: not-allowed;
+    opacity: 1; /* ปรับให้สีชัดเจนไม่จาง */
+}
+
+/* 3. คิวที่มีผู้จองแล้ว (สีขาว) */
+.time-slot.booked-slot {
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+    border: 1px solid #e2e8f0 !important;
+    cursor: default;
+}
+
+/* ปรับแต่งปุ่มยกเลิกภายในช่องสีขาว */
+.booked-slot .cancel-button {
+    background-color: #ef4444;
+    color: white;
+    margin-top: 5px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+}
+
+/* ลบสไตล์เดิมที่อาจทับซ้อน */
+.time-slot.unavailable-slot::before { content: none; }
+
 /* --- ANIMATIONS --- */
 @keyframes slideDown {
     from { opacity: 0; transform: translateY(-20px); }
