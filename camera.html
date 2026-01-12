@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio Camera with Text</title>
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #121212;
+            color: white;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #camera-container {
+            position: relative;
+            width: 100vw;
+            height: 70vh;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        video {
+            height: 100%;
+            width: 100%;
+            object-fit: contain;
+        }
+
+        .controls-panel {
+            width: 100%;
+            padding: 25px;
+            background: #1e1e1e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            border-top: 1px solid #333;
+        }
+
+        .input-group {
+            width: 85%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .row { display: flex; align-items: center; gap: 15px; }
+        
+        input[type=range] { flex-grow: 1; }
+        input[type=text] { 
+            padding: 10px; 
+            border-radius: 8px; 
+            border: 1px solid #444; 
+            background: #2c2c2c; 
+            color: white;
+            flex-grow: 1;
+        }
+
+        button {
+            padding: 18px 60px;
+            border-radius: 50px;
+            border: none;
+            font-weight: bold;
+            font-size: 1.3rem;
+            cursor: pointer;
+            background: linear-gradient(135deg, #00dbde, #fc00ff);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: 0.2s;
+        }
+
+        button:active { transform: scale(0.95); }
+        canvas { display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="camera-container">
+        <video id="webcam" autoplay playsinline></video>
+    </div>
+
+    <div class="controls-panel">
+        <div class="input-group">
+            <div class="row">
+                <span>🔅 แสง</span>
+                <input type="range" id="brightness" min="0.8" max="2.0" step="0.1" value="1.2">
+            </div>
+            <div class="row">
+                <span>✍️ ข้อความ</span>
+                <input type="text" id="overlay-text" placeholder="พิมพ์ข้อความที่จะใส่ในภาพ..." value="">
+            </div>
+        </div>
+
+        <button id="capture-btn">📸 ถ่ายภาพ</button>
+    </div>
+
+    <canvas id="out-canvas"></canvas>
+
+    <script>
+        const video = document.getElementById('webcam');
+        const canvas = document.getElementById('out-canvas');
+        const brightnessSlider = document.getElementById('brightness');
+        const textInput = document.getElementById('overlay-text');
+        const captureBtn = document.getElementById('capture-btn');
+
+        // เริ่มกล้อง (ใช้ความละเอียดสูงสุด)
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { width: { ideal: 3840 }, height: { ideal: 2160 } },
+                    audio: false
+                });
+                video.srcObject = stream;
+            } catch (err) {
+                alert("เข้าถึงกล้องไม่ได้: " + err);
+            }
+        }
+
+        // ปรับแสง Preview
+        brightnessSlider.oninput = () => {
+            video.style.filter = `brightness(${brightnessSlider.value})`;
+        };
+
+        // ถ่ายภาพ แต่งผิว และใส่ข้อความ
+        captureBtn.onclick = () => {
+            const ctx = canvas.getContext('2d');
+            const w = video.videoWidth;
+            const h = video.videoHeight;
+            canvas.width = w;
+            canvas.height = h;
+
+            // 1. วาดเลเยอร์หลัก (ปรับแสง)
+            ctx.filter = `brightness(${brightnessSlider.value})`;
+            ctx.drawImage(video, 0, 0, w, h);
+
+            // 2. เกลี่ยผิว (Studio Soft Filter)
+            ctx.globalAlpha = 0.2;
+            ctx.filter = `blur(${w/200}px) brightness(${brightnessSlider.value})`; // ปรับความเบลอตามขนาดภาพ
+            ctx.drawImage(video, 0, 0, w, h);
+            ctx.globalAlpha = 1.0;
+            ctx.filter = "none";
+
+            // 3. วาดข้อความ (ล่างกึ่งกลาง)
+            const fontSize = Math.floor(h / 25); // ปรับขนาดตัวอักษรตามความสูงภาพ
+            ctx.font = `bold ${fontSize}px Kanit, sans-serif`;
+            ctx.fillStyle = "white";
+            ctx.textAlign = "center";
+            ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
+            ctx.shadowBlur = 10;
+            
+            // ใส่ข้อความห่างจากขอบล่างประมาณ 5% ของความสูงภาพ
+            ctx.fillText(textInput.value, w / 2, h - (h * 0.05));
+
+            // ดาวน์โหลดภาพอัตโนมัติ
+            const link = document.createElement('a');
+            link.download = `Studio_Capture_${Date.now()}.jpg`;
+            link.href = canvas.toDataURL('image/jpeg', 0.95);
+            link.click();
+        };
+
+        startCamera();
+    </script>
+</body>
+</html>
