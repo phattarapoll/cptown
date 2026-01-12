@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studio Camera with Text</title>
+    <title>Studio Camera & Recorder</title>
     <style>
         body {
             font-family: 'Kanit', sans-serif;
@@ -20,7 +20,7 @@
         #camera-container {
             position: relative;
             width: 100vw;
-            height: 70vh;
+            height: 65vh;
             background: #000;
             display: flex;
             justify-content: center;
@@ -35,12 +35,12 @@
 
         .controls-panel {
             width: 100%;
-            padding: 25px;
+            padding: 20px;
             background: #1e1e1e;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
             border-top: 1px solid #333;
         }
 
@@ -64,17 +64,41 @@
             flex-grow: 1;
         }
 
+        .button-group {
+            display: flex;
+            gap: 15px;
+        }
+
         button {
-            padding: 18px 60px;
+            padding: 15px 40px;
             border-radius: 50px;
             border: none;
             font-weight: bold;
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             cursor: pointer;
-            background: linear-gradient(135deg, #00dbde, #fc00ff);
             color: white;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             transition: 0.2s;
+        }
+
+        #capture-btn {
+            background: linear-gradient(135deg, #00dbde, #fc00ff);
+        }
+
+        #record-btn {
+            background: #444;
+        }
+
+        /* เอฟเฟกต์ตอนกำลังบันทึก */
+        #record-btn.recording {
+            background: #ff4b2b;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); }
         }
 
         button:active { transform: scale(0.95); }
@@ -84,7 +108,7 @@
 <body>
 
     <div id="camera-container">
-        <video id="webcam" autoplay playsinline></video>
+        <video id="webcam" autoplay playsinline muted></video>
     </div>
 
     <div class="controls-panel">
@@ -95,11 +119,14 @@
             </div>
             <div class="row">
                 <span>✍️ ข้อความ</span>
-                <input type="text" id="overlay-text" placeholder="พิมพ์ข้อความที่จะใส่ในภาพ..." value="">
+                <input type="text" id="overlay-text" placeholder="พิมพ์ข้อความใส่ภาพถ่าย..." value="">
             </div>
         </div>
 
-        <button id="capture-btn">📸 ถ่ายภาพ</button>
+        <div class="button-group">
+            <button id="capture-btn">📸 ถ่ายภาพ</button>
+            <button id="record-btn">⏺️ บันทึกวิดีโอ</button>
+        </div>
     </div>
 
     <canvas id="out-canvas"></canvas>
@@ -110,13 +137,18 @@
         const brightnessSlider = document.getElementById('brightness');
         const textInput = document.getElementById('overlay-text');
         const captureBtn = document.getElementById('capture-btn');
+        const recordBtn = document.getElementById('record-btn');
 
-        // เริ่มกล้อง (ใช้ความละเอียดสูงสุด)
+        let mediaRecorder;
+        let recordedChunks = [];
+        let stream;
+
+        // เริ่มกล้อง
         async function startCamera() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: { width: { ideal: 3840 }, height: { ideal: 2160 } },
-                    audio: false
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: { width: { ideal: 1920 }, height: { ideal: 1080 } },
+                    audio: true 
                 });
                 video.srcObject = stream;
             } catch (err) {
@@ -129,7 +161,7 @@
             video.style.filter = `brightness(${brightnessSlider.value})`;
         };
 
-        // ถ่ายภาพ แต่งผิว และใส่ข้อความ
+        // --- ถ่ายภาพ ---
         captureBtn.onclick = () => {
             const ctx = canvas.getContext('2d');
             const w = video.videoWidth;
@@ -137,34 +169,62 @@
             canvas.width = w;
             canvas.height = h;
 
-            // 1. วาดเลเยอร์หลัก (ปรับแสง)
             ctx.filter = `brightness(${brightnessSlider.value})`;
             ctx.drawImage(video, 0, 0, w, h);
 
-            // 2. เกลี่ยผิว (Studio Soft Filter)
             ctx.globalAlpha = 0.2;
-            ctx.filter = `blur(${w/200}px) brightness(${brightnessSlider.value})`; // ปรับความเบลอตามขนาดภาพ
+            ctx.filter = `blur(${w/200}px) brightness(${brightnessSlider.value})`;
             ctx.drawImage(video, 0, 0, w, h);
             ctx.globalAlpha = 1.0;
             ctx.filter = "none";
 
-            // 3. วาดข้อความ (ล่างกึ่งกลาง)
-            const fontSize = Math.floor(h / 25); // ปรับขนาดตัวอักษรตามความสูงภาพ
+            const fontSize = Math.floor(h / 25);
             ctx.font = `bold ${fontSize}px Kanit, sans-serif`;
             ctx.fillStyle = "white";
             ctx.textAlign = "center";
             ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
             ctx.shadowBlur = 10;
-            
-            // ใส่ข้อความห่างจากขอบล่างประมาณ 5% ของความสูงภาพ
             ctx.fillText(textInput.value, w / 2, h - (h * 0.05));
 
-            // ดาวน์โหลดภาพอัตโนมัติ
             const link = document.createElement('a');
             link.download = `PIC_DENT_${Date.now()}.jpg`;
             link.href = canvas.toDataURL('image/jpeg', 0.95);
             link.click();
         };
+
+        // --- บันทึกวิดีโอ ---
+        recordBtn.onclick = () => {
+            if (mediaRecorder && mediaRecorder.state === "recording") {
+                mediaRecorder.stop();
+            } else {
+                startRecording();
+            }
+        };
+
+        function startRecording() {
+            recordedChunks = [];
+            mediaRecorder = new MediaRecorder(stream);
+
+            mediaRecorder.ondataavailable = (e) => {
+                if (e.data.size > 0) recordedChunks.push(e.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `VIDEO_DENT_${Date.now()}.webm`;
+                link.click();
+                
+                recordBtn.innerText = "⏺️ บันทึกวิดีโอ";
+                recordBtn.classList.remove('recording');
+            };
+
+            mediaRecorder.start();
+            recordBtn.innerText = "⏹️ หยุดบันทึก";
+            recordBtn.classList.add('recording');
+        }
 
         startCamera();
     </script>
