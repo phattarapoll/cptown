@@ -369,19 +369,26 @@ th {
       box-shadow: 0 6px 15px rgba(0,0,0,0.2);
       z-index: 1000;
     }
-    .floating-panel {
-      position: fixed;
-      top: 0;
-      right: -100%;
-      width: 400px;
-      height: 100%;
-      background: #fff;
-      box-shadow: -5px 0 20px rgba(0,0,0,0.1);
-      transition: right 0.4s ease;
-      display: flex;
-      flex-direction: column;
-      z-index: 999;
-    }
+.floating-panel {
+    position: fixed;
+    left: 0;
+    bottom: -100%; /* ซ่อนไว้ใต้ขอบจอ */
+    width: 100%; /* เต็มความกว้าง */
+    height: 100%; /* เต็มความสูง */
+    max-width: none; /* ยกเลิกการจำกัดความกว้าง */
+    max-height: 100vh; /* เต็มความสูงหน้าจอ */
+    background-color: #fff; /* หรือสีที่คุณต้องการ เช่น #495057 */
+    border-radius: 20px 20px 0 0; /* ทำมุมมนเฉพาะด้านบน */
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.2);
+    z-index: 2000; /* ให้อยู่เหนือทุกอย่าง */
+    transition: bottom 0.5s cubic-bezier(0.4, 0, 0.2, 1); /* แอนิเมชันเลื่อนขึ้น */
+    display: flex;
+    flex-direction: column;
+}
+.floating-panel.visible {
+    bottom: 0;
+    transform: none; /* ยกเลิก translateX เดิม */
+}
     .floating-panel.open { right: 0; }
     .floating-panel-header {
       display: flex;
@@ -394,6 +401,11 @@ th {
       font-size: 1.5rem;
       cursor: pointer;
     }
+	.table-scroll-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 20px 20px 20px;
+}
 
     /* ===== Modal ===== */
     .modal {
