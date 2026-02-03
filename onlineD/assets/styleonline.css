@@ -276,6 +276,35 @@ body {
     color: #dc2626;
 }
 
+/* สร้าง Animation การกระพริบ */
+@keyframes emergencyFlash {
+    0%, 100% {
+        background-color: #ef4444; /* สีแดง */
+        color: white;
+        box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+    }
+    50% {
+        background-color: white; /* สีขาว */
+        color: #ef4444; /* ข้อความแดง */
+        box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
+        transform: scale(1.05); /* ขยายขนาดขึ้นเล็กน้อยขณะกระพริบ */
+    }
+}
+
+/* นำ Animation ไปใช้กับปุ่ม navigation-button */
+.navigation-button {
+    animation: emergencyFlash 0.6s infinite; /* กระพริบเร็วๆ ทุก 0.6 วินาที */
+    border: 2px solid #ef4444; /* เพิ่มขอบให้ชัดเจน */
+    font-weight: bold;
+}
+
+/* ปรับให้หยุดขยายเวลาเอาเมาส์ไปวาง (Hover) เพื่อให้กดง่าย */
+.navigation-button:hover {
+    animation-play-state: paused; /* หยุดกระพริบชั่วคราวเวลาจะกด */
+    background: #dc2626;
+    color: white;
+}
+
 /* Unavailable / Disabled Days */
 .calendar-day.unavailable, .calendar-day.disabled {
     background: #f1f5f9;
