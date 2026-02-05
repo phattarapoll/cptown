@@ -137,7 +137,7 @@ button:hover {
 
 .cancel-button {
     background-color: var(--secondary-color);
-    font-size: 5px; /* ปรับขนาดตัวอักษรในปุ่ม Cancel */
+    font-size: 10px; /* ปรับขนาดตัวอักษรในปุ่ม Cancel */
     padding: 7px 9px;
 }
 .cancel-button:hover {
@@ -147,13 +147,13 @@ button:hover {
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 15px;
-    font-size: 9px; /* ปรับขนาดตัวอักษรในตาราง */
+    margin-top: 10px;
+    font-size: 14px; /* ปรับขนาดตัวอักษรในตาราง */
 }
 
 th, td {
     border: 1px solid #6c757d;
-    padding: 10px; /* เพิ่ม padding ใน cell ของตาราง */
+    padding: 14px; /* เพิ่ม padding ใน cell ของตาราง */
     text-align: left;
 }
 
@@ -171,7 +171,7 @@ th {
 .floating-button {
     position: fixed;
     bottom: 15px;
-    font-size: 16px;
+    font-size: 14px;
     padding: 12px 18px;
     border-radius: 50px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
