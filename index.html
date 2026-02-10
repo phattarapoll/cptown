@@ -87,6 +87,51 @@
         margin: 0 auto;
         border-radius: 8px; /* ความมนของขอบภาพ */
     }
+	
+	/* คอนเทนเนอร์หลัก (ส่วนที่เหลือจะเป็นสีเขียว) */
+.progress-bar-container {
+    width: 100%;
+    background-color: #22c55e; /* สีเขียวตามที่ต้องการ */
+    border-radius: 9999px;
+    height: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* แถบสีฟ้าแสดงคะแนน */
+.progress-bar-fill {
+    background-color: #3b82f6; /* สีฟ้า */
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 12px;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: bold;
+    border-radius: 9999px 0 0 9999px;
+    position: relative;
+    transition: width 1s ease-in-out;
+}
+
+/* เอฟเฟกต์กระพริบที่ปลายแถบสีฟ้า */
+.progress-bar-fill::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 15px;
+    height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.6));
+    animation: pulse-end 1.5s infinite;
+}
+
+@keyframes pulse-end {
+    0% { opacity: 0.3; }
+    50% { opacity: 1; }
+    100% { opacity: 0.3; }
+}
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -215,7 +260,7 @@
                         </div>
                         <div id="queueError" class="absolute inset-0 flex flex-col items-center justify-center bg-white bg-opacity-80 z-10 hidden text-red-600 text-center p-4">
                             <i class="fas fa-exclamation-triangle text-3xl mb-2"></i>
-                            <p>ไม่สามารถโหลดคิวได้ กรุณาตรวจสอบ URL หรือการตั้งค่า Apps Script</p>
+                            <p>ไม่สามารถโหลดคิวได้ </p>
                         </div>
                         </div>
 						<div class="fullscreen-info-right hidden">
@@ -497,37 +542,44 @@
             <div class="w-full space-y-4">
                 
                 <div class="mb-4">
-                    <label class="block text-lg font-medium text-gray-700 mb-2">กริยามารยาทและการแต่งกาย</label>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: 99%;">4.99 / 5</div>
-                    </div>
-                </div>
-                
-                <div class="mb-4">
                     <label class="block text-lg font-medium text-gray-700 mb-2">ความสุภาพอ่อนโยน อ่อนน้อม ยิ้มแย้มแจ่มใส วาจาสุภาพ</label>
                     <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: 100%;">5 / 5</div>
+                        <div class="progress-bar-fill" style="width: 99.18%;">99.18%</div>
                     </div>
                 </div>
                 
                 <div class="mb-4">
                     <label class="block text-lg font-medium text-gray-700 mb-2">ความสนใจเอาใจใส่ เต็มใจช่วยเหลือ</label>
                     <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: 100%;">5 / 5</div>
+                        <div class="progress-bar-fill" style="width: 99.38%;">99.38%</div>
                     </div>
                 </div>
                 
                 <div class="mb-4">
-                    <label class="block text-lg font-medium text-gray-700 mb-2">ตอบข้อสงสัยด้วยความเต็มใจ</label>
+                    <label class="block text-lg font-medium text-gray-700 mb-2">การตอบข้อสงสัยแก่ท่านและญาติด้วยความเต็มใจ</label>
                     <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: 100%;">5 / 5</div>
+                        <div class="progress-bar-fill" style="width: 99.28%;">99.28%</div>
                     </div>
                 </div>
                 
                 <div class="mb-4">
-                    <label class="block text-lg font-medium text-gray-700 mb-2">ความรู้ความสามารถ</label>
+                    <label class="block text-lg font-medium text-gray-700 mb-2">ความรู้ความสามารถในการให้บริการ</label>
                     <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: 100%;">5 / 5</div>
+                        <div class="progress-bar-fill" style="width: 99.18%;">99.18%</div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-lg font-medium text-gray-700 mb-2">กริยามารยาทและการแต่งกายของผู้ให้บริการ</label>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: 99.18%;">99.18%</div>
+                    </div>
+                </div>
+				
+                <div class="mb-4">
+                    <label class="block text-lg font-medium text-gray-700 mb-2">ความรวดเร็วและความพร้อมในการให้บริการ</label>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: 99.28%;">99.28%</div>
                     </div>
                 </div>
             </div>
