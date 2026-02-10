@@ -88,19 +88,19 @@
         border-radius: 8px; /* ความมนของขอบภาพ */
     }
 	
-	/* คอนเทนเนอร์หลัก (ส่วนที่เหลือจะเป็นสีเขียว) */
+/* คอนเทนเนอร์หลัก (ส่วนที่เหลือจะเป็นสีเขียว) */
 .progress-bar-container {
     width: 100%;
-    background-color: #22c55e; /* สีเขียวตามที่ต้องการ */
+    background-color: #22c55e; /* สีเขียว */
     border-radius: 9999px;
     height: 1.5rem;
     position: relative;
     overflow: hidden;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
 }
 
 /* แถบสีฟ้าแสดงคะแนน */
 .progress-bar-fill {
+    width: 0%; 
     background-color: #3b82f6; /* สีฟ้า */
     height: 100%;
     display: flex;
@@ -112,7 +112,8 @@
     font-weight: bold;
     border-radius: 9999px 0 0 9999px;
     position: relative;
-    transition: width 1s ease-in-out;
+    /* ความเร็ว 10% ต่อวินาที (ถ้า 100% จะใช้ 10 วินาทีพอดี) */
+    transition: width 10s linear; 
 }
 
 /* เอฟเฟกต์กระพริบที่ปลายแถบสีฟ้า */
@@ -123,14 +124,13 @@
     top: 0;
     width: 15px;
     height: 100%;
-    background: linear-gradient(to right, transparent, rgba(255,255,255,0.6));
-    animation: pulse-end 1.5s infinite;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.7));
+    animation: blink-end 1s infinite;
 }
 
-@keyframes pulse-end {
-    0% { opacity: 0.3; }
+@keyframes blink-end {
+    0%, 100% { opacity: 0.3; }
     50% { opacity: 1; }
-    100% { opacity: 0.3; }
 }
     </style>
 </head>
@@ -537,49 +537,49 @@
             </p>
         </section>
 		
-<section class="glassy-section p-8 rounded-xl shadow-lg mb-8">
+<section id="satisfaction-section" class="glassy-section p-8 rounded-xl shadow-lg mb-8">
             <h2 class="text-3xl font-bold text-blue-800 mb-6 border-b-2 border-blue-300 pb-2">ความพึงพอใจของผู้รับบริการ</h2>
             <div class="w-full space-y-4">
                 
                 <div class="mb-4">
                     <label class="block text-lg font-medium text-gray-700 mb-2">ความสุภาพอ่อนโยน อ่อนน้อม ยิ้มแย้มแจ่มใส วาจาสุภาพ</label>
                     <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: 99.18%;">99.18%</div>
+                        <div class="progress-bar-fill" data-percent="99.18">0.00%</div>
                     </div>
                 </div>
                 
                 <div class="mb-4">
                     <label class="block text-lg font-medium text-gray-700 mb-2">ความสนใจเอาใจใส่ เต็มใจช่วยเหลือ</label>
                     <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: 99.38%;">99.38%</div>
+                        <div class="progress-bar-fill" data-percent="99.38">0.00%</div>
                     </div>
                 </div>
                 
                 <div class="mb-4">
                     <label class="block text-lg font-medium text-gray-700 mb-2">การตอบข้อสงสัยแก่ท่านและญาติด้วยความเต็มใจ</label>
                     <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: 99.28%;">99.28%</div>
+                        <div class="progress-bar-fill" data-percent="99.28">0.00%</div>
                     </div>
                 </div>
                 
                 <div class="mb-4">
                     <label class="block text-lg font-medium text-gray-700 mb-2">ความรู้ความสามารถในการให้บริการ</label>
                     <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: 99.18%;">99.18%</div>
+                        <div class="progress-bar-fill" data-percent="99.18">0.00%</div>
                     </div>
                 </div>
                 
                 <div class="mb-4">
                     <label class="block text-lg font-medium text-gray-700 mb-2">กริยามารยาทและการแต่งกายของผู้ให้บริการ</label>
                     <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: 99.18%;">99.18%</div>
+                        <div class="progress-bar-fill" data-percent="99.18">0.00%</div>
                     </div>
                 </div>
 				
                 <div class="mb-4">
                     <label class="block text-lg font-medium text-gray-700 mb-2">ความรวดเร็วและความพร้อมในการให้บริการ</label>
                     <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: 99.28%;">99.28%</div>
+                        <div class="progress-bar-fill" data-percent="99.28">0.00%</div>
                     </div>
                 </div>
             </div>
@@ -611,10 +611,52 @@
 
     <footer class="bg-blue-800 text-white p-6 text-center rounded-t-xl shadow-inner">
         <p class="text-sm">Build & Develop : Phattarapoll PSVMT.</p>
-        <p class="text-sm">1 ตุลาคม 2562 เวลา 19:09 นาที</p>
+        <p class="text-sm">ตั้งแต่วันที่ 1 ตุลาคม 2562 เวลา 19:09 นาที</p>
     </footer>
 
-    <script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const observerOptions = { threshold: 0.5 }; // ทำงานเมื่อเห็นส่วนนี้ 50%
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const progressBars = entry.target.querySelectorAll('.progress-bar-fill');
+                
+                progressBars.forEach(bar => {
+                    const targetPercent = parseFloat(bar.getAttribute('data-percent'));
+                    
+                    // 1. สั่งให้แถบ CSS เริ่มขยับ (ใช้เวลา 10 วินาทีสำหรับ 100%)
+                    bar.style.width = targetPercent + '%';
+                    
+                    // 2. สั่งให้ตัวเลขวิ่งเพิ่มขึ้นทีละนิดอย่างสมูท
+                    let startTimestamp = null;
+                    const duration = (targetPercent / 10) * 1000; // คำนวณเวลาตามจริง (10% ต่อ 1 วินาที)
+
+                    function step(timestamp) {
+                        if (!startTimestamp) startTimestamp = timestamp;
+                        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                        const currentVal = (progress * targetPercent).toFixed(2);
+                        
+                        bar.innerText = currentVal + '%';
+
+                        if (progress < 1) {
+                            window.requestAnimationFrame(step);
+                        }
+                    }
+                    window.requestAnimationFrame(step);
+                });
+                
+                observer.unobserve(entry.target); // ทำงานครั้งเดียวแล้วหยุด
+            }
+        });
+    }, observerOptions);
+
+    const section = document.querySelector('#satisfaction-section');
+    if (section) observer.observe(section);
+});
+
         // 1. Script สำหรับการขยาย/ยุบ Card
         function toggleCard(cardElement) {
             cardElement.classList.toggle('expanded');
@@ -636,7 +678,8 @@
                 modal.style.display = "none";
             }
         }
-    </script>
+
+</script>
     
     <script src="assets/js/custom.js"></script>
     <script src="assets/js/imageRotator.js"></script> 
