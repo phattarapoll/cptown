@@ -532,6 +532,36 @@
             }
         });
     });
+	
+	// --- ส่วนที่เพิ่มใหม่: รองรับการกดรหัสผ่านด้วยแป้นพิมพ์ ---
+document.addEventListener("keydown", function(event) {
+    // ตรวจสอบว่าหน้าจอ Login ยังแสดงอยู่หรือไม่
+    if (!loginOverlay.classList.contains("hidden")) {
+        
+        // 1. ตรวจสอบการกดปุ่มตัวเลข 0-9 (รวมถึง Numpad)
+        if (event.key >= "0" && event.key <= "9") {
+            currentPasscode += event.key;
+            updatePasscodeDisplay();
+        } 
+        
+        // 2. ตรวจสอบการกดปุ่ม Enter
+        else if (event.key === "Enter") {
+            enterButton.click(); // จำลองการคลิกปุ่ม "ตกลง"
+        } 
+        
+        // 3. ตรวจสอบการกดปุ่ม Backspace
+        else if (event.key === "Backspace") {
+            currentPasscode = currentPasscode.slice(0, -1);
+            updatePasscodeDisplay();
+        }
+        
+        // 4. ตรวจสอบการกดปุ่ม Escape (ใช้สำหรับล้างค่าทั้งหมด - Optional)
+        else if (event.key === "Escape") {
+            currentPasscode = "";
+            updatePasscodeDisplay();
+        }
+    }
+});
   </script>
 </body>
 </html>

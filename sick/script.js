@@ -604,6 +604,39 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+	// --- เพิ่มส่วนการรองรับการกดจากคีย์บอร์ด (Physical Keyboard) ---
+    document.addEventListener('keydown', function(event) {
+        // ให้ทำงานเฉพาะเมื่อ Modal การเข้าสู่ระบบเปิดอยู่เท่านั้น
+        if (!loginModal.classList.contains('visible')) return;
+
+        const key = event.key;
+
+        // ตรวจสอบว่าเป็นตัวเลข 0-9
+        if (/^[0-9]$/.test(key)) {
+            if (currentPassword.length < 4) {
+                currentPassword += key;
+                passwordDisplay.textContent = '*'.repeat(currentPassword.length);
+                passwordModalInput.value = currentPassword;
+
+                if (currentPassword.length === 4) {
+                    // ส่งฟอร์มอัตโนมัติเมื่อครบ 4 หลัก
+                    loginFormModal.dispatchEvent(new Event('submit'));
+                }
+            }
+        } 
+        // ตรวจสอบปุ่ม Backspace สำหรับลบ
+        else if (key === 'Backspace') {
+            currentPassword = currentPassword.slice(0, -1);
+            passwordDisplay.textContent = '*'.repeat(currentPassword.length);
+            passwordModalInput.value = currentPassword;
+        }
+        // ตรวจสอบปุ่ม Escape เพื่อปิด Modal
+        else if (key === 'Escape') {
+            loginModal.classList.remove('visible');
+            currentPassword = '';
+            passwordDisplay.textContent = '';
+        }
+    });
 
     // Event Listener สำหรับการเข้าสู่ระบบใน Modal พร้อมสถานะโหลด (แก้ไขแล้ว)
     loginFormModal.addEventListener('submit', async function(event) {
@@ -645,3 +678,4 @@ document.addEventListener('DOMContentLoaded', function() {
     // เมื่อหน้าเว็บโหลดเสร็จ ให้ดึงรายชื่อเจ้าหน้าที่มาแสดงทันที
     fetchOfficerList();
 });
+

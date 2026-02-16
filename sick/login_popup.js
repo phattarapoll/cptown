@@ -112,4 +112,30 @@ document.addEventListener('DOMContentLoaded', function() {
     pendingRequestsSection.style.display = 'none';
     loginInfo.style.display = 'none';
     fetchAdmins();
+	
+	// เพิ่มการรองรับการกดปุ่มจากคีย์บอร์ด (Physical Keyboard)
+    document.addEventListener('keydown', function(event) {
+        // ทำงานเฉพาะเมื่อ Modal ล็อกอินกำลังแสดงอยู่
+        if (loginModal.style.display === 'flex') {
+            const key = event.key;
+
+            // ตรวจสอบว่ากดตัวเลข 0-9 หรือไม่
+            if (key >= '0' && key <= '9') {
+                if (currentPassword.length < 4) {
+                    currentPassword += key;
+                    updatePasswordDisplay();
+                    
+                    // เมื่อครบ 4 หลัก ให้ตรวจสอบการเข้าสู่ระบบทันที
+                    if (currentPassword.length === 4) {
+                        handleLogin();
+                    }
+                }
+            } 
+            // ตรวจสอบการกดปุ่ม Backspace เพื่อลบ
+            else if (key === 'Backspace') {
+                currentPassword = currentPassword.slice(0, -1);
+                updatePasswordDisplay();
+            }
+        }
+    });
 });
