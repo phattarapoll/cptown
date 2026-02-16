@@ -587,6 +587,76 @@ function updateClock() {
 
 setInterval(updateClock, 1000);
 updateClock();
+
+// เพิ่ม Event Listener สำหรับการกดปุ่มบนคีย์บอร์ด
+document.addEventListener("keydown", function(event) {
+    // ตรวจสอบว่าหน้าจอใส่รหัสผ่านยังแสดงอยู่หรือไม่
+    if (passwordOverlay.style.display !== "none") {
+        const key = event.key;
+
+        // ถ้ากดตัวเลข 0-9
+        if (/^[0-9]$/.test(key)) {
+            handleNumberInput(key);
+            
+            // เพิ่ม Effect สีแดงที่ปุ่มบนหน้าจอเวลาเรากดคีย์บอร์ด (เพื่อให้ดูเหมือนเรากดปุ่มจริงๆ)
+            const button = document.querySelector(`.keypad-button[data-num="${key}"]`);
+            if (button) {
+                button.classList.add("pressed");
+                setTimeout(() => button.classList.remove("pressed"), 100);
+            }
+        } 
+        // ถ้ากด Backspace หรือ Delete ให้ล้างค่า (Clear)
+        else if (key === "Backspace" || key === "Delete" || key.toLowerCase() === "c") {
+            resetKeypad();
+        }
+    }
+});
+
+// แยก Logic การรับตัวเลขออกมาเป็น Function เพื่อให้ใช้ร่วมกันได้ทั้ง Click และ Keyboard
+function handleNumberInput(num) {
+    if (enteredPassword.length < 4) {
+        enteredPassword += num;
+        updatePinDisplay();
+
+        if (enteredPassword.length === 4) {
+            setTimeout(() => {
+                if (enteredPassword === correctPassword) {
+                    errorMessage.textContent = "รหัสผ่านถูกต้อง!";
+                    errorMessage.style.color = "green";
+                    errorMessage.style.display = "block";
+                    setTimeout(() => {
+                        passwordOverlay.style.display = "none";
+                        content.style.display = "block";
+                        resetKeypad();
+                    }, 500);
+                } else {
+                    errorMessage.textContent = "รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่";
+                    errorMessage.style.color = "red";
+                    errorMessage.style.display = "block";
+                    setTimeout(() => {
+                        resetKeypad();
+                    }, 1500);
+                }
+            }, 200);
+        }
+    }
+}
+
+// ปรับปรุง Event Listener เดิมของปุ่มกด (Click) ให้ไปเรียกใช้ handleNumberInput แทน
+keypadButtons.forEach(button => {
+    button.addEventListener("click", function() {
+        const num = this.getAttribute("data-num");
+
+        if (num === "clear") {
+            resetKeypad();
+            return;
+        }
+
+        this.classList.add("pressed");
+        setTimeout(() => this.classList.remove("pressed"), 100);
+        handleNumberInput(num);
+    });
+});
     </script>
 </body>
 </html>
