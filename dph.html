@@ -16,6 +16,9 @@
             --color-success: #10B981;
             --color-error: #EF4444;
             --color-footer-bg: #1E1E2E;
+			--fs-base: clamp(14px, 1.2vw + 10px, 18px);
+			--fs-h2: clamp(1.5rem, 3vw + 1rem, 2.5rem);
+			--fs-h3: clamp(1.25rem, 2vw + 1rem, 2rem);
         }
 
         html, body {
@@ -28,10 +31,20 @@
         body {
             display: flex;
             flex-direction: column;
+			font-size: var(--fs-base); /* ตัวหนังสือเนื้อหาจะปรับตามจออัตโนมัติ */
+			line-height: 1.6;
             /* ระยะห่างจากขอบหน้าต่างหลักประมาณ 1 ซม. */
             padding: 1rem; 
             box-sizing: border-box;
         }
+		
+		h2 {
+			font-size: var(--fs-h2) !important; /* หัวข้อหลัก */
+		}
+
+		h3 {
+			font-size: var(--fs-h3) !important; /* หัวข้อย่อย */
+}
 
         main {
             flex: 1;
@@ -56,8 +69,8 @@
 
         /* กรอบเนื้อหาหลัก (White Card) */
         .glassy-section {
-            background-color: #FFFFFF;
-            border-radius: 1.5rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
             border: 1px solid rgba(0, 0, 0, 0.05);
             overflow: hidden;
@@ -67,7 +80,7 @@
 
         /* แผงลอยด้านข้างแบบโมเดิร์น */
         .glassy-panel {
-            background-color: rgba(255, 255, 255, 0.95);
+            background-color: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 20px 40px rgba(10, 25, 49, 0.15);
@@ -116,7 +129,7 @@
         }
 
         #queueDisplay {
-            background: #F8FAFC;
+            background-color: rgba(255, 255, 255, 0.1);
             border-radius: 1rem;
             border: 1px inset rgba(0,0,0,0.02);
         }
@@ -288,7 +301,7 @@
                 <i class="fas fa-hospital-user text-xl"></i>
             </div>
             <p class="text-sm sm:text-base leading-relaxed text-gray-700">
-                <strong class="text-primary-navy">ขอบเขตการให้บริการ:</strong> ให้บริการผู้ป่วยในเขตตำบลท่าตะเภา, สิทธิ์ข้าราชการ, พนักงานเทศบาลเมืองชุมพร, ครูและนักเรียนในเขตพื้นที่ (รร.สหศึกษา, รร.ฝวาหมินกงลิ, รร.อนุบาลเมืองชุมพร, รร.สอาดเผดิมวิทยา, รร.ศรียาภัย, รร.เทศบาล 1 บ้านท่าตะเภา)
+                <strong class="text-primary-navy">พื้นที่ให้บริการ:</strong> ให้บริการผู้ป่วยในเขตตำบลท่าตะเภา, สิทธิ์ข้าราชการ, พนักงานเทศบาลเมืองชุมพร, ครูและนักเรียนในเขตพื้นที่ (รร.สหศึกษา, รร.ฝวาหมินกงลิ, รร.อนุบาลเมืองชุมพร, รร.สอาดเผดิมวิทยา, รร.ศรียาภัย, รร.เทศบาล 1 บ้านท่าตะเภา)
             </p>
         </div>
     </main>

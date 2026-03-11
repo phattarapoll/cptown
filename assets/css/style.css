@@ -2,11 +2,33 @@
 
 /* Basic body styles for font and background */
 body {
-    font-family: 'Sarabun', sans-serif; /* Changed font to Sarabun */
-    background: linear-gradient(135deg, #a060a0, #c080c0, #e0a0e0); /* Gradient of purple shades */
-    background-size: 200% 200%; /* Adjust size for animation */
-    animation: waveAnimation 15s ease infinite alternate; /* Wave animation */
-    background-attachment: fixed; /* Ensures background stays fixed during scroll */
+    font-family: 'Sarabun', sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    /* ใช้เฉดสีม่วงเข้ม #4B0082 และม่วงอ่อน #E0B0FF ผสมกัน */
+    background: radial-gradient(circle at 20% 30%, #4b0082 0%, transparent 40%),
+                radial-gradient(circle at 80% 20%, #8a2be2 0%, transparent 40%),
+                radial-gradient(circle at 50% 80%, #e0b0ff 0%, transparent 50%),
+                radial-gradient(circle at 10% 80%, #6a5acd 0%, transparent 30%),
+                #3a0066; /* สีพื้นฐานม่วงเข้มสุด */
+    background-size: 200% 200%;
+    animation: meshAnimation 12s ease infinite alternate;
+    background-attachment: fixed;
+}
+
+/* เพิ่มเติม: ใส่ Overlay ลายตารางจางๆ (Glassy look) เพื่อให้ดูโมเดิร์นขึ้น */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+    pointer-events: none;
+    z-index: -1;
 }
 
 /* Header and Main section spacing */
@@ -28,36 +50,48 @@ main.container {
     }
 }
 
-/* Service Status Animations */
-.service-status-open {
-    background-color: #d1fae5; /* Green light */
-    color: #065f46; /* Dark green */
-    border: 2px solid #34d399; /* Green border */
-    animation: pulse-open 1.5s infinite alternate;
-}
-.service-status-closed {
-    background-color: #fee2e2; /* Red light */
-    color: #991b1b; /* Dark red */
-    border: 2px solid #ef4444; /* Red border */
-    animation: pulse-closed 1.5s infinite alternate;
-}
-@keyframes pulse-open {
-    0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
-    100% { box-shadow: 0 0 0 10px rgba(52, 211, 153, 0); }
-}
-@keyframes pulse-closed {
-    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-    100% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+/* Keyframes สำหรับการเคลื่อนที่ของกลุ่มสีแบบนุ่มนวล */
+@keyframes meshAnimation {
+    0% {
+        background-position: 0% 0%;
+    }
+    50% {
+        background-position: 50% 100%;
+    }
+    100% {
+        background-position: 100% 0%;
+    }
 }
 
-/* Chat Message Colors */
-.chat-message-admin {
-    background-color: #fcd34d; /* Yellow */
-    color: #333;
+/* เอฟเฟกต์กระพริบเบาๆ ตลอดเวลาสำหรับสถานะ OPEN */
+.service-status-open {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 2px solid #34d399;
+    /* เปลี่ยนจาก pulse-open เดิม เป็นอันใหม่ที่ดูนุ่มนวลขึ้น */
+    animation: statusGlowOpen 2s infinite ease-in-out;
+    cursor: default; /* เปลี่ยน cursor เป็นแบบปกติเพื่อให้รู้ว่ากดไม่ได้ */
 }
-.chat-message-user {
-    background-color: #dbeafe; /* Light blue */
-    color: #333;
+
+/* เอฟเฟกต์กระพริบเบาๆ ตลอดเวลาสำหรับสถานะ CLOSED */
+.service-status-closed {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 2px solid #ef4444;
+    animation: statusGlowClosed 2s infinite ease-in-out;
+    cursor: default;
+}
+
+@keyframes statusGlowOpen {
+    0% { transform: scale(1); box-shadow: 0 0 5px rgba(52, 211, 153, 0.5); }
+    50% { transform: scale(1.03); box-shadow: 0 0 15px rgba(52, 211, 153, 0.8); }
+    100% { transform: scale(1); box-shadow: 0 0 5px rgba(52, 211, 153, 0.5); }
+}
+
+@keyframes statusGlowClosed {
+    0% { transform: scale(1); box-shadow: 0 0 5px rgba(239, 68, 68, 0.5); }
+    50% { transform: scale(1.03); box-shadow: 0 0 15px rgba(239, 68, 68, 0.8); }
+    100% { transform: scale(1); box-shadow: 0 0 5px rgba(239, 68, 68, 0.5); }
 }
 
 /* Dropdown styles */
@@ -666,23 +700,53 @@ section.glassy-section > div.lg\:w-1\/2.bg-gray-50.p-6.rounded-xl.shadow-inner.r
     display: block;
     max-width: 90%;
     max-height: 90%;
-    -webkit-animation-name: zoom;
-    -webkit-animation-duration: 0.6s;
-    animation-name: zoom;
-    animation-duration: 0.6s;
+    animation: zoom 0.6s;
 }
 
-/* Animation */
-@-webkit-keyframes zoom {
-    from {-webkit-transform:scale(0)} 
-    to {-webkit-transform:scale(1)}
-	
-/* Progress Bar (ปรับให้เป็น Neumorphism) */
-.progress-bar-fill {
-    background-color: #3b82f6; /* Blue */
-    box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); /* เพิ่ม glow เล็กน้อย */
-    border-radius: 9999px;
-    /* *** เพิ่มบรรทัดนี้เพื่อให้การลด/เพิ่มความกว้างมีความลื่นไหล *** */
-    transition: width 0.8s ease-in-out; 
-    /* ****************************************************** */
+/* Animation สำหรับ Modal */
+@keyframes zoom {
+    from { transform: scale(0); } 
+    to { transform: scale(1); }
 }
+
+/* ปรับแต่ง Progress Bar ให้มีความลื่นไหล */
+.progress-bar-fill {
+    background-color: #3b82f6;
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+    border-radius: 9999px;
+    transition: width 0.8s ease-in-out; 
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 0.5rem;
+    color: white;
+    font-weight: 600;
+}
+
+/* สำหรับปุ่ม Scroll To Top */
+#scrollToTopBtn::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    background: conic-gradient(
+        #ff9900, 
+        #ffffff, 
+        #ff9900, 
+        #ffffff, 
+        #ff9900
+    );
+    border-radius: 50%;
+    z-index: -1;
+    animation: rotateSunlight 4s linear infinite;
+    opacity: 0.5;
+    filter: blur(5px);
+}
+
+/* เจาะจงเฉพาะตัวที่มีคลาส readonly-section */
+.readonly-section {
+    pointer-events: none;
+}
+
