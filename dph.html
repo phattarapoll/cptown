@@ -19,32 +19,40 @@
 			--fs-base: clamp(14px, 1.2vw + 10px, 18px);
 			--fs-h2: clamp(1.5rem, 3vw + 1rem, 2.5rem);
 			--fs-h3: clamp(1.25rem, 2vw + 1rem, 2rem);
-        }
+			}
 
         html, body {
+			font-size: var(--fs-base); /* ตัวหนังสือเนื้อหาจะปรับตามจออัตโนมัติ */
+			line-height: 0.5;
             height: 100%;
             margin: 0;
             font-family: 'Sarabun', sans-serif;
-            background-color: var(--color-light);
         }
-
-        body {
-            display: flex;
-            flex-direction: column;
-			font-size: var(--fs-base); /* ตัวหนังสือเนื้อหาจะปรับตามจออัตโนมัติ */
-			line-height: 1.6;
-            /* ระยะห่างจากขอบหน้าต่างหลักประมาณ 1 ซม. */
-            padding: 1rem; 
-            box-sizing: border-box;
-        }
-		
 		h2 {
 			font-size: var(--fs-h2) !important; /* หัวข้อหลัก */
 		}
 
 		h3 {
 			font-size: var(--fs-h3) !important; /* หัวข้อย่อย */
-}
+		}
+        body {
+            display: flex;
+            flex-direction: column;
+            padding: 1rem; 
+            box-sizing: border-box;
+        }
+		.service-area-box {
+			background-color: rgba(255, 255, 255, 0.2); /* พื้นหลังขาวจางๆ */
+			backdrop-filter: blur(12px) brightness(1.1); /* เบลอพื้นหลังและเพิ่มความสว่าง */
+			border: 1px solid rgba(255, 255, 255, 0.3);
+			box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+			transition: all 0.3s ease;
+		}
+
+		.service-text {
+			color: #0A1931; /* สีน้ำเงินเข้มที่เป็น Primary */
+			text-shadow: 0px 0px 1px rgba(255, 255, 255, 0.5); /* เพิ่มเงาขาวบางๆ รอบตัวอักษรช่วยให้อ่านง่ายขึ้นบนพื้นหลังทุกแบบ */
+		}
 
         main {
             flex: 1;
@@ -296,14 +304,17 @@
             </div>
         </section>
 
-        <div class="mt-6 bg-primary-navy/5 border border-primary-navy/10 p-5 rounded-2xl flex items-start gap-4">
-            <div class="bg-primary-navy text-accent-gold p-3 rounded-xl shadow-md">
-                <i class="fas fa-hospital-user text-xl"></i>
-            </div>
-            <p class="text-sm sm:text-base leading-relaxed text-gray-700">
-                <strong class="text-primary-navy">พื้นที่ให้บริการ:</strong> ให้บริการผู้ป่วยในเขตตำบลท่าตะเภา, สิทธิ์ข้าราชการ, พนักงานเทศบาลเมืองชุมพร, ครูและนักเรียนในเขตพื้นที่ (รร.สหศึกษา, รร.ฝวาหมินกงลิ, รร.อนุบาลเมืองชุมพร, รร.สอาดเผดิมวิทยา, รร.ศรียาภัย, รร.เทศบาล 1 บ้านท่าตะเภา)
-            </p>
-        </div>
+        <div class="mt-6 service-area-box p-5 rounded-2xl flex items-start gap-4">
+    <div class="bg-primary-navy text-accent-gold p-3 rounded-xl shadow-md shrink-0">
+        <i class="fas fa-hospital-user text-xl"></i>
+    </div>
+    <p class="service-text text-sm sm:text-base leading-relaxed font-medium">
+        <strong class="text-primary-navy font-bold border-b-2 border-accent-gold/30 pb-0.5">
+            พื้นที่ให้บริการ:
+        </strong> 
+        ให้บริการผู้ป่วยในเขตตำบลท่าตะเภา, สิทธิ์ข้าราชการ, พนักงานเทศบาลเมืองชุมพร, ครูและนักเรียนในเขตพื้นที่ (รร.สหศึกษา, รร.ฝวาหมินกงลิ, รร.อนุบาลเมืองชุมพร, รร.สอาดเผดิมวิทยา, รร.ศรียาภัย, รร.เทศบาล 1 บ้านท่าตะเภา)
+    </p>
+</div>
     </main>
 
     <footer class="text-white flex flex-col sm:flex-row items-center justify-between gap-6">
