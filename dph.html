@@ -119,7 +119,26 @@
             90% { opacity: 1; transform: translateX(0); }
             100% { opacity: 0; transform: translateX(20px); }
         }
+		
+		/* service-card ให้ดูยกสูงและอ่านง่ายขึ้น */
+.service-card {
+    background-color: rgba(255, 255, 255, 0.4); /* เพิ่มความขาวให้เกือบชัด 90% */
+    border: 1px solid rgba(255, 255, 255, 1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* เพิ่มเงาให้ดูมีมิติยกสูง */
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    transition: transform 0.2s ease;
+}
 
+.service-card:hover {
+    transform: translateY(-2px); /* เวลาเอาเมาส์วางจะดูยกตัวขึ้นอีก */
+}
+
+/* ปรับสีตัวหนังสือให้เข้มชัดเจน */
+.service-card .font-medium {
+    color: #0A1931 !important; /* ใช้สีน้ำเงิน Navy เข้มเพื่อให้ตัดกับพื้นขาว */
+    font-weight: 600;
+}
         /* สไตล์สถานะบริการ */
         .service-status-open { background-color: var(--color-success); color: white; }
         .service-status-closed { background-color: var(--color-error); color: white; }
@@ -258,10 +277,7 @@
         <section class="glassy-section p-6 sm:p-10 flex flex-col">
             <div class="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
                 <div class="flex items-center">
-                    <div class="bg-accent-gold/10 p-3 rounded-2xl mr-4">
-                        <i class="fas fa-users-viewfinder text-2xl text-accent-gold"></i>
-                    </div>
-                    <h2 class="text-3xl font-extrabold text-primary-navy tracking-tight">คิวบริการ</h2>
+                    <h2 class="text-3xl font-extrabold text-primary-navy tracking-tight">แสดงคิวบริการ</h2>
                 </div>
                 
                 <div class="flex items-center gap-3">
@@ -341,8 +357,9 @@
             <i class="fas fa-id-card text-primary-navy"></i>
         </div>
         <div>
-            <p class="font-bold text-sm">เตรียมตัวรับบริการ</p>
-            <p class="text-xs opacity-90">กรุณามารอนัดล่วงหน้า 5-10 นาที และนำบัตรประชาชนติดตัวมาด้วย</p>
+            <p class="font-bold text-sm">คำเตือน</p>
+            <p class="text-xs opacity-90">กรุณาะนำบัตรประชาชนมาด้วย</p>
+            <p class="text-xs opacity-90">และมาก่อนเวลา 5-10 นาที </p>
         </div>
     </div>
     
