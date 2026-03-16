@@ -13,8 +13,8 @@
             --bg: #f1f5f9;
         }
 
-        body { font-family: 'Sarabun', sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .card { background: white; padding: 35px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); width: 100%; max-width: 480px; text-align: center; }
+        body { font-family: 'Sarabun', sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .card { background: white; padding: 35px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); width: 100%; max-width: 480px; text-align: center; margin-bottom: 20px; }
         
         /* ประเภท QR */
         .type-selector { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 25px; justify-content: center; }
@@ -38,6 +38,17 @@
         #display-area { margin-top: 25px; padding: 15px; background: #fff; border-radius: 12px; border: 1px dashed #cbd5e1; display: none; }
         #display-area canvas { max-width: 100%; height: auto; }
 
+        /* Footer Credit Style */
+        .creator-info {
+            text-align: center;
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-top: 10px;
+            padding: 15px;
+        }
+        .creator-name { font-weight: bold; color: #1e293b; }
+
         /* Print Style */
         #print-wrapper { display: none; }
         @media print {
@@ -48,7 +59,7 @@
                 transform: translateX(-50%); padding: 0.5cm; border: 2pt dashed #000 !important;
             }
             #print-image { width: 3in !important; height: auto !important; display: block; }
-            .card { display: none !important; }
+            .card, .creator-info { display: none !important; }
         }
     </style>
 </head>
@@ -96,6 +107,12 @@
         <canvas id="main-canvas"></canvas>
         <p style="font-size: 11px; color: #64748b; margin-top: 8px;">ตัวอย่างขนาด 3x3 นิ้ว</p>
     </div>
+</div>
+
+<div class="creator-info">
+    ผู้สร้างและพัฒนา: <span class="creator-name">นายภัทรพล ไพศาลวัชรเมธี</span><br>
+    ตำแหน่ง: เจ้าพนักงานทันตสาธารณสุขอาวุโส<br>
+    งานทันตสาธารณสุข เทศบาลเมืองชุมพร
 </div>
 
 <div id="print-wrapper"><img id="print-image" src=""></div>
