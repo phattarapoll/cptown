@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>QR Code พร้อมโลโก้และข้อความ</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body { font-family: 'Sarabun', sans-serif; background: #eceff1; display: flex; justify-content: center; padding: 40px; }
+        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 400px; text-align: center; }
+        input, .file-input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        button:hover { background: #218838; }
+        #canvas-container { margin-top: 25px; border: 1px dashed #ccc; padding: 10px; background: #fff; }
+        canvas { max-width: 100%; height: auto; }
+        .label { text-align: left; font-size: 14px; color: #666; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>QR PHAT</h2>
+    
+    <div class="label">1. ใส่ลิงก์หรือข้อความ:</div>
+    <input type="text" id="qr-text" placeholder="https://www.google.com">
+
+    <div class="label">2. เลือกภาพโลโก้ (PNG/JPG):</div>
+    <input type="file" id="logo-input" class="file-input" accept="image/*">
+
+    <div class="label">3. ข้อความใต้ภาพ QR:</div>
+    <input type="text" id="footer-text" placeholder="Scan Me / สแกนเลย">
+
+    <button onclick="generateCustomQR()">สร้าง QR Code</button>
+
+    <div id="canvas-container">
+        <canvas id="main-canvas"></canvas>
+        <p style="font-size: 12px; color: #999;">(คลิกขวาที่ภาพเพื่อบันทึก)</p>
+    </div>
+</div>
+
+<div id="temp-qrcode" style="display:none;"></div>
+
+<script>
+    function generateCustomQR() {
+        const qrText = document.getElementById('qr-text').value;
+        const footerText = document.getElementById('footer-text').value;
+        const logoInput = document.getElementById('logo-input');
+        const canvas = document.getElementById('main-canvas');
+        const ctx = canvas.getContext('2d');
+        const tempDiv = document.getElementById('temp-qrcode');
+
+        if (!qrText) return alert("กรุณาใส่ข้อความ QR");
+
+        // 1. ล้างค่าเก่าและสร้าง QR Code พื้นฐาน
+        tempDiv.innerHTML = "";
+        const qrSize = 800; // กำหนดความละเอียดสูงไว้ก่อน
+        new QRCode(tempDiv, {
+            text: qrText,
+            width: qrSize,
+            height: qrSize,
+            correctLevel: QRCode.CorrectLevel.H // ใช้ Level H เพื่อให้ QR ยังอ่านได้แม้โดนโลโก้ทับ
+        });
+
+        // รอให้ภาพ QR เจนเสร็จ
+        setTimeout(() => {
+            const qrImg = tempDiv.querySelector('img');
+            
+            // ตั้งค่าขนาด Canvas (QR + พื้นที่ข้อความด้านล่าง)
+            canvas.width = qrSize;
+            canvas.height = qrSize + 150; 
+
+            // วาดพื้นหลังสีขาว
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 2. วาดตัว QR Code
+            ctx.drawImage(qrImg, 0, 0, qrSize, qrSize);
+
+            // 3. ใส่ข้อความด้านล่าง
+            ctx.fillStyle = "black";
+            ctx.font = "bold 50px Sarabun, sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText(footerText, qrSize / 2, qrSize + 80);
+
+            // 4. ใส่โลโก้ตรงกลาง (ถ้ามี)
+            if (logoInput.files && logoInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const logo = new Image();
+                    logo.onload = function() {
+                        const logoSize = qrSize * 0.2; // โโลโก้ขนาด 20% ของ QR
+                        const x = (qrSize - logoSize) / 2;
+                        const y = (qrSize - logoSize) / 2;
+                        
+                        // วาดกรอบขาวหลังโลโก้นิดนึงเพื่อให้ดูเด่น
+                        ctx.fillStyle = "white";
+                        ctx.fillRect(x - 5, y - 5, logoSize + 10, logoSize + 10);
+                        
+                        ctx.drawImage(logo, x, y, logoSize, logoSize);
+                    };
+                    logo.src = e.target.result;
+                };
+                reader.readAsDataURL(logoInput.files[0]);
+            }
+        }, 100);
+    }
+</script>
+
+</body>
+</html>
