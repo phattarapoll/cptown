@@ -2,108 +2,203 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>QR Code พร้อมโลโก้และข้อความ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Type QR Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;500&family=Sarabun:wght@300;400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        body { font-family: 'Sarabun', sans-serif; background: #eceff1; display: flex; justify-content: center; padding: 40px; }
-        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 400px; text-align: center; }
-        input, .file-input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; }
-        button:hover { background: #218838; }
-        #canvas-container { margin-top: 25px; border: 1px dashed #ccc; padding: 10px; background: #fff; }
-        canvas { max-width: 100%; height: auto; }
-        .label { text-align: left; font-size: 14px; color: #666; margin-top: 10px; }
+        :root {
+            --primary: #4f46e5;
+            --secondary: #10b981;
+            --bg: #f1f5f9;
+        }
+
+        body { font-family: 'Sarabun', sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .card { background: white; padding: 35px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); width: 100%; max-width: 480px; text-align: center; }
+        
+        /* ประเภท QR */
+        .type-selector { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 25px; justify-content: center; }
+        .type-btn { 
+            padding: 8px 16px; border: 1px solid #e2e8f0; border-radius: 20px; background: white; 
+            cursor: pointer; font-size: 13px; font-family: 'Kanit'; transition: 0.3s;
+        }
+        .type-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        
+        .info-box { font-size: 12px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid var(--primary); text-align: left; }
+
+        .input-group { text-align: left; margin-bottom: 12px; }
+        .label { font-size: 14px; font-weight: bold; color: #1e293b; margin-bottom: 5px; display: block; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; font-size: 14px; }
+        
+        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        button { padding: 14px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-family: 'Kanit'; transition: 0.3s; }
+        .btn-gen { background: var(--primary); color: white; }
+        .btn-print { background: var(--secondary); color: white; display: none; }
+
+        #display-area { margin-top: 25px; padding: 15px; background: #fff; border-radius: 12px; border: 1px dashed #cbd5e1; display: none; }
+        #display-area canvas { max-width: 100%; height: auto; }
+
+        /* Print Style */
+        #print-wrapper { display: none; }
+        @media print {
+            @page { size: A4; margin: 0; }
+            body { background: white; padding: 0; margin: 0; visibility: hidden; }
+            #print-wrapper { 
+                display: block !important; visibility: visible; position: absolute; top: 2cm; left: 50%; 
+                transform: translateX(-50%); padding: 0.5cm; border: 2pt dashed #000 !important;
+            }
+            #print-image { width: 3in !important; height: auto !important; display: block; }
+            .card { display: none !important; }
+        }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>QR PHAT</h2>
+    <h2 style="font-family: 'Kanit'; margin-top:0;">Premium QR Generator</h2>
     
-    <div class="label">1. ใส่ลิงก์หรือข้อความ:</div>
-    <input type="text" id="qr-text" placeholder="https://www.google.com">
+    <div class="label">เลือกประเภทข้อมูล:</div>
+    <div class="type-selector" id="type-selector">
+        <button class="type-btn active" onclick="changeType('url', this)">🔗 ลิงก์/เว็บ</button>
+        <button class="type-btn" onclick="changeType('wifi', this)">📶 WiFi</button>
+        <button class="type-btn" onclick="changeType('tel', this)">📞 เบอร์โทร</button>
+        <button class="type-btn" onclick="changeType('sms', this)">💬 SMS</button>
+        <button class="type-btn" onclick="changeType('text', this)">📄 ข้อความ</button>
+    </div>
 
-    <div class="label">2. เลือกภาพโลโก้ (PNG/JPG):</div>
-    <input type="file" id="logo-input" class="file-input" accept="image/*">
+    <div class="info-box" id="info-text">
+        เหมาะสำหรับ: เว็บไซต์, Facebook, Line OA หรือลิงก์ Google Maps เพื่อให้คนเข้าถึงง่าย
+    </div>
 
-    <div class="label">3. ข้อความใต้ภาพ QR:</div>
-    <input type="text" id="footer-text" placeholder="Scan Me / สแกนเลย">
+    <div id="dynamic-inputs">
+        <div class="input-group">
+            <span class="label" id="main-label">URL เว็บไซต์</span>
+            <input type="text" id="data-input" placeholder="https://www.example.com">
+        </div>
+    </div>
 
-    <button onclick="generateCustomQR()">สร้าง QR Code</button>
+    <div class="input-group">
+        <span class="label">ข้อความใต้ภาพ (Footer)</span>
+        <input type="text" id="footer-text" placeholder="Scan Me / สแกนเลย">
+    </div>
 
-    <div id="canvas-container">
+    <div class="input-group">
+        <span class="label">โลโก้ตรงกลาง</span>
+        <input type="file" id="logo-input" accept="image/*">
+    </div>
+
+    <div class="actions">
+        <button class="btn-gen" onclick="generateQR()">สร้างภาพ QR</button>
+        <button class="btn-print" id="btn-print" onclick="window.print()">สั่งพิมพ์ A4</button>
+    </div>
+
+    <div id="display-area">
         <canvas id="main-canvas"></canvas>
-        <p style="font-size: 12px; color: #999;">(คลิกขวาที่ภาพเพื่อบันทึก)</p>
+        <p style="font-size: 11px; color: #64748b; margin-top: 8px;">ตัวอย่างขนาด 3x3 นิ้ว</p>
     </div>
 </div>
 
+<div id="print-wrapper"><img id="print-image" src=""></div>
 <div id="temp-qrcode" style="display:none;"></div>
 
 <script>
-    function generateCustomQR() {
-        const qrText = document.getElementById('qr-text').value;
-        const footerText = document.getElementById('footer-text').value;
-        const logoInput = document.getElementById('logo-input');
-        const canvas = document.getElementById('main-canvas');
-        const ctx = canvas.getContext('2d');
+    let currentType = 'url';
+    const infoData = {
+        url: "เหมาะสำหรับ: เว็บไซต์, Facebook, Line OA หรือ Google Maps",
+        wifi: "เหมาะสำหรับ: คาเฟ่หรือออฟฟิศ เพื่อให้ลูกค้าเชื่อมต่อ WiFi ได้ทันทีโดยไม่ต้องพิมพ์รหัส",
+        tel: "เหมาะสำหรับ: นามบัตร หรือป้ายติดต่อฉุกเฉิน เมื่อสแกนแล้วจะเด้งไปที่หน้าปุ่มโทรออก",
+        sms: "เหมาะสำหรับ: การรับสมัครงาน หรือแจ้งปัญหา เมื่อสแกนจะเตรียมข้อความ SMS ให้กดส่ง",
+        text: "เหมาะสำหรับ: รหัสสินค้า, ข้อความสั้นๆ หรือรหัสลับที่ไม่ต้องใช้อินเทอร์เน็ต"
+    };
+
+    function changeType(type, btn) {
+        currentType = type;
+        document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('info-text').innerText = infoData[type];
+        
+        const inputArea = document.getElementById('dynamic-inputs');
+        if(type === 'wifi') {
+            inputArea.innerHTML = `
+                <div class="input-group"><span class="label">ชื่อ WiFi (SSID)</span><input type="text" id="wifi-ssid"></div>
+                <div class="input-group"><span class="label">รหัสผ่าน</span><input type="text" id="wifi-pass"></div>
+            `;
+        } else {
+            const labels = {url: "URL เว็บไซต์", tel: "เบอร์โทรศัพท์", sms: "เบอร์ผู้รับ", text: "ข้อความทั่วไป"};
+            const placeholders = {url: "https://...", tel: "0812345678", sms: "0812345678", text: "กรอกข้อความที่ต้องการ..."};
+            inputArea.innerHTML = `
+                <div class="input-group">
+                    <span class="label">${labels[type]}</span>
+                    <input type="text" id="data-input" placeholder="${placeholders[type]}">
+                </div>
+            `;
+        }
+    }
+
+    function generateQR() {
+        let finalData = "";
+        if(currentType === 'wifi') {
+            const ssid = document.getElementById('wifi-ssid').value;
+            const pass = document.getElementById('wifi-pass').value;
+            finalData = `WIFI:S:${ssid};T:WPA;P:${pass};;`;
+        } else if(currentType === 'tel') {
+            finalData = `tel:${document.getElementById('data-input').value}`;
+        } else if(currentType === 'sms') {
+            finalData = `smsto:${document.getElementById('data-input').value}`;
+        } else {
+            finalData = document.getElementById('data-input').value;
+        }
+
+        if(!finalData) return alert("กรุณากรอกข้อมูล");
+
         const tempDiv = document.getElementById('temp-qrcode');
-
-        if (!qrText) return alert("กรุณาใส่ข้อความ QR");
-
-        // 1. ล้างค่าเก่าและสร้าง QR Code พื้นฐาน
         tempDiv.innerHTML = "";
-        const qrSize = 800; // กำหนดความละเอียดสูงไว้ก่อน
-        new QRCode(tempDiv, {
-            text: qrText,
-            width: qrSize,
-            height: qrSize,
-            correctLevel: QRCode.CorrectLevel.H // ใช้ Level H เพื่อให้ QR ยังอ่านได้แม้โดนโลโก้ทับ
-        });
+        new QRCode(tempDiv, { text: finalData, width: 1000, height: 1000, correctLevel: QRCode.CorrectLevel.H });
 
-        // รอให้ภาพ QR เจนเสร็จ
         setTimeout(() => {
+            const canvas = document.getElementById('main-canvas');
+            const ctx = canvas.getContext('2d');
+            const footerText = document.getElementById('footer-text').value;
             const qrImg = tempDiv.querySelector('img');
             
-            // ตั้งค่าขนาด Canvas (QR + พื้นที่ข้อความด้านล่าง)
-            canvas.width = qrSize;
-            canvas.height = qrSize + 150; 
-
-            // วาดพื้นหลังสีขาว
+            canvas.width = 1000;
+            canvas.height = footerText ? 1150 : 1000;
             ctx.fillStyle = "white";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(qrImg, 0, 0, 1000, 1000);
 
-            // 2. วาดตัว QR Code
-            ctx.drawImage(qrImg, 0, 0, qrSize, qrSize);
+            if(footerText) {
+                ctx.fillStyle = "black";
+                ctx.font = "bold 50px Sarabun";
+                ctx.textAlign = "center";
+                ctx.fillText(footerText, 500, 1080);
+            }
 
-            // 3. ใส่ข้อความด้านล่าง
-            ctx.fillStyle = "black";
-            ctx.font = "bold 50px Sarabun, sans-serif";
-            ctx.textAlign = "center";
-            ctx.fillText(footerText, qrSize / 2, qrSize + 80);
-
-            // 4. ใส่โลโก้ตรงกลาง (ถ้ามี)
-            if (logoInput.files && logoInput.files[0]) {
+            const logoInput = document.getElementById('logo-input');
+            if(logoInput.files && logoInput.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const logo = new Image();
-                    logo.onload = function() {
-                        const logoSize = qrSize * 0.2; // โโลโก้ขนาด 20% ของ QR
-                        const x = (qrSize - logoSize) / 2;
-                        const y = (qrSize - logoSize) / 2;
-                        
-                        // วาดกรอบขาวหลังโลโก้นิดนึงเพื่อให้ดูเด่น
+                    const img = new Image();
+                    img.onload = function() {
+                        const size = 220;
+                        const p = (1000 - size) / 2;
                         ctx.fillStyle = "white";
-                        ctx.fillRect(x - 5, y - 5, logoSize + 10, logoSize + 10);
-                        
-                        ctx.drawImage(logo, x, y, logoSize, logoSize);
+                        ctx.fillRect(p-10, p-10, size+20, size+20);
+                        ctx.drawImage(img, p, p, size, size);
+                        renderDone();
                     };
-                    logo.src = e.target.result;
+                    img.src = e.target.result;
                 };
                 reader.readAsDataURL(logoInput.files[0]);
+            } else { renderDone(); }
+
+            function renderDone() {
+                document.getElementById('display-area').style.display = "block";
+                document.getElementById('btn-print').style.display = "block";
+                document.getElementById('print-image').src = canvas.toDataURL("image/png");
             }
-        }, 100);
+        }, 300);
     }
 </script>
-
 </body>
 </html>
