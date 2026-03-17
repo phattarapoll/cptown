@@ -1,6 +1,3 @@
-/* style.css */
-
-/* Basic body styles for font and background */
 body {
     font-family: 'Sarabun', sans-serif;
     margin: 0;
@@ -674,6 +671,58 @@ section.glassy-section > div.lg\:w-1\/2.bg-gray-50.p-6.rounded-xl.shadow-inner.r
     cursor: pointer;
 }
 
+/* สไตล์ปุ่มแบบคีย์เปียโน */
+.piano-btn {
+    background: linear-gradient(to bottom, #ffffff 0%, #f0f0f0 100%);
+    color: #1e40af !important; 
+    border: 1px solid #d1d5db;
+    border-top: 4px solid #3b82f6; /* เริ่มต้นเป็นสีฟ้า */
+    border-radius: 0 0 6px 6px;
+    box-shadow: 0 4px 0 #cbd5e1, 0 8px 10px rgba(0,0,0,0.1);
+    padding: 3px 14px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s ease; /* ปรับให้สีเปลี่ยนแบบนุ่มนวลขึ้น */
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    top: 0;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+/* เมื่อเอาเมาส์ไปชี้ (Hover) -> เปลี่ยนเป็นสีเขียว */
+.piano-btn:hover {
+    background: linear-gradient(to bottom, #ffffff 0%, #f0fff4 100%); /* พื้นหลังขาวอมเขียวนิดๆ */
+    border-top: 4px solid #22c55e; /* เปลี่ยนแถบสีฟ้าเป็นสีเขียว (Green-500) */
+    color: #15803d !important; /* เปลี่ยนสีตัวอักษรเป็นเขียวเข้ม */
+    top: 1px;
+    box-shadow: 0 3px 0 #bbf7d0, 0 5px 8px rgba(0,0,0,0.1);
+}
+
+/* เมื่อกดปุ่ม (Active) */
+.piano-btn:active {
+    top: 4px;
+    box-shadow: 0 0 0 #bbf7d0, 0 2px 4px rgba(0,0,0,0.1);
+    background: #f0fdf4;
+}
+
+/* ไอคอนลูกศร */
+.piano-btn i {
+    margin-left: 8px;
+    font-size: 0.8rem;
+}
+
+/* ปรับแต่ง Dropdown ให้เข้ากับปุ่มใหม่ */
+.dropdown .piano-btn {
+    margin-top: 0;
+}
+
+/* ปรับระยะห่างระหว่างปุ่ม */
+nav.flex {
+    gap: 10px;
+}
+
 /* Close Button (X) */
 #imageModal > span {
     position: absolute;
@@ -749,4 +798,82 @@ section.glassy-section > div.lg\:w-1\/2.bg-gray-50.p-6.rounded-xl.shadow-inner.r
 .readonly-section {
     pointer-events: none;
 }
+/* สไตล์สำหรับปุ่มผู้ดูแลที่มุมขวาบน */
+.admin-corner {
+    position: fixed;
+    top: 5px;
+    right: -10px;
+    z-index: 1000;
+}
 
+.admin-icon-btn {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+    font-size: 20px;
+}
+
+.admin-icon-btn:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+    transform: rotate(90deg); /* หมุนเฟืองเวลา hover */
+}
+
+/* ปรับให้ dropdown แสดงผลชิดขวาเพื่อให้ไม่หลุดขอบจอ */
+.right-align {
+    right: 0;
+    left: auto;
+    margin-top: 0px;
+}
+
+/* เอฟเฟกต์กระพริบสีเขียวเป็นประกาย */
+.sparkle-green-btn {
+    position: relative;
+    background-color: #10b981; /* สีเขียวหลัก */
+    overflow: hidden;
+    animation: green-glow 2s infinite ease-in-out;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* อนิเมชันการกระพริบของแสงรอบๆ ปุ่ม */
+@keyframes green-glow {
+    0%, 100% {
+        box-shadow: 0 0 5px rgba(16, 185, 129, 0.4);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 20px 10px rgba(52, 211, 153, 0.7);
+        transform: scale(1.05); /* ขยายเล็กน้อยให้ดูมีพลัง */
+    }
+}
+
+/* เพิ่มประกายแสงวิ่งผ่านปุ่ม (Shine effect) */
+.sparkle-green-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    transform: rotate(45deg);
+    animation: shine-move 3s infinite;
+}
+
+@keyframes shine-move {
+    0% { left: -100%; }
+    20% { left: 100%; }
+    100% { left: 100%; }
+}
