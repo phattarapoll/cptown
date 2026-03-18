@@ -520,16 +520,17 @@
                 </div>
                 
                 <div class="benefit-card bg-white p-4 rounded-xl shadow-md border-t-4 border-yellow-500 text-center !cursor-default">
-                    <div class="flex items-start justify-center flex-col w-full">
-                        <h3 class="font-bold text-lg text-yellow-700 w-full">🎬 วีดิทัศน์</h3>
-                        <p class="text-sm text-gray-500 mt-1 w-full">ประชาสัมพันธ์</p>
-                    </div>
-                    <div class="image-rotator-content w-full h-48 mt-3 relative">
-                        <div class="relative w-full h-full">
-                            <iframe id="youtubeFrameCard" class="absolute inset-0 w-full h-full rounded-lg" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                        </div>
-                    </div>
-                    </div>
+					<div class="flex items-start justify-center flex-col w-full">
+						<h3 class="font-bold text-lg text-yellow-700 w-full">🎬 วีดิทัศน์</h3>
+							<p class="text-sm text-gray-500 mt-1 w-full">ประชาสัมพันธ์</p>
+					</div>
+    
+					<div class="flex items-center justify-center w-full h-32 mt-3">
+						<button onclick="playVideo()" class="sparkle-green-btn px-6 py-3 rounded-full text-white font-bold flex items-center gap-2 hover:scale-105 transition-transform">
+							<i class="fas fa-play-circle text-xl"></i> คลิกเพื่อชมวิดีโอ
+						</button>
+					</div>
+				</div>
 
             </div>
             
@@ -668,6 +669,19 @@ document.addEventListener("DOMContentLoaded", function() {
         const modal = document.getElementById("imageModal");
         const modalImg = document.getElementById("modalImage");
         
+		// 3. Script ควบคุมวิดีโอ
+		function playVideo() {
+    const videoUrl = "https://www.youtube.com/embed/รหัสวิดีโอของคุณ?autoplay=1";
+    // เลือกวิธีที่ต้องการ:
+    
+    // แบบที่ 1: เปิดในแท็บใหม่
+    window.open("https://youtu.be/PQ78kRLGD_U", "_blank");
+    
+    // แบบที่ 2: ถ้าคุณมี Modal อยู่แล้ว ให้สั่งเปิด Modal และยัด URL ใส่ Iframe ใน Modal
+    // document.getElementById('modalIframe').src = videoUrl;
+    // document.getElementById('videoModal').style.display = 'block';
+}
+
         // ฟังก์ชันเปิด Modal
         function openModal(imageSrc) {
             modal.style.display = "flex";
@@ -710,7 +724,8 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 });
-		
+
+
 
 </script>
     

@@ -676,19 +676,20 @@ section.glassy-section > div.lg\:w-1\/2.bg-gray-50.p-6.rounded-xl.shadow-inner.r
     background: linear-gradient(to bottom, #ffffff 0%, #f0f0f0 100%);
     color: #1e40af !important; 
     border: 1px solid #d1d5db;
-    border-top: 4px solid #3b82f6; /* เริ่มต้นเป็นสีฟ้า */
+    border-top: 3px solid #3b82f6; /* เริ่มต้นเป็นสีฟ้า */
     border-radius: 0 0 6px 6px;
     box-shadow: 0 4px 0 #cbd5e1, 0 8px 10px rgba(0,0,0,0.1);
-    padding: 3px 14px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    transition: all 0.2s ease; /* ปรับให้สีเปลี่ยนแบบนุ่มนวลขึ้น */
-    display: inline-flex;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.8s ease; /* ปรับให้สีเปลี่ยนแบบนุ่มนวลขึ้น */
     align-items: center;
     position: relative;
     top: 0;
-    cursor: pointer;
     text-decoration: none;
+	flex: 0 1 auto;      /* ยอมให้ปุ่มหดตัวได้ แต่ไม่ขยายเกินจำเป็น */
+    min-width: 0;        /* อนุญาตให้หดตัวได้เล็กกว่าเนื้อหาด้านใน */
+    white-space: nowrap; /* ป้องกันข้อความในปุ่มขึ้นบรรทัดใหม่ */
+    padding: 0.3rem 1rem; /* ระยะห่างภายในปุ่ม */
 }
 
 /* เมื่อเอาเมาส์ไปชี้ (Hover) -> เปลี่ยนเป็นสีเขียว */
@@ -806,26 +807,6 @@ nav.flex {
     z-index: 1000;
 }
 
-.admin-icon-btn {
-    background-color: rgba(255, 255, 255, 0.2);
-    color: white;
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    transition: all 0.3s ease;
-    font-size: 20px;
-}
-
-.admin-icon-btn:hover {
-    background-color: rgba(255, 255, 255, 0.4);
-    transform: rotate(90deg); /* หมุนเฟืองเวลา hover */
-}
-
 /* ปรับให้ dropdown แสดงผลชิดขวาเพื่อให้ไม่หลุดขอบจอ */
 .right-align {
     right: 0;
@@ -839,7 +820,8 @@ nav.flex {
     background-color: #10b981; /* สีเขียวหลัก */
     overflow: hidden;
     animation: green-glow 2s infinite ease-in-out;
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    border: 3px solid rgba(255, 255, 255, 0.4);
+	margin-top: 4px;
 }
 
 /* อนิเมชันการกระพริบของแสงรอบๆ ปุ่ม */
@@ -869,7 +851,7 @@ nav.flex {
         transparent
     );
     transform: rotate(45deg);
-    animation: shine-move 3s infinite;
+    animation: shine-move 20s infinite;
 }
 
 @keyframes shine-move {
