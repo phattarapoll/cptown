@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderQueueCard(appt, isCurrent, now) {
-        const isDup = appt.isDuplicate;
+        const isDup = appt.isDuplicate; // เช็คจากข้อมูลว่า "ไม่ปกติ" (ซ้ำ) หรือไม่
         const apptTimestamp = appt.parsedDate;
         const fullBookingDate = apptTimestamp.toLocaleDateString('th-TH', {
             day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
@@ -108,18 +108,31 @@ document.addEventListener('DOMContentLoaded', () => {
         card.className = `queue-card mb-4 p-4 rounded-lg border shadow-sm ${isCurrent ? 'bg-blue-50 border-blue-400' : 'bg-white border-gray-200'}`;
         card.style.borderLeft = `6px solid ${isDup ? '#EF4444' : (isCurrent ? '#3B82F6' : '#10B981')}`;
 
+        // ส่วนของการตัดสินใจเลือกข้อความสถานะ
+        let statusText = '';
+        if (isDup) {
+            // 1. ถ้าไม่ปกติ
+            statusText = '<span class="text-red-500 font-bold">กรุณาลงทะเบียนใหม่</span>';
+        } else if (isCurrent) {
+            // 2. ถ้าปกติ และอยู่ในช่วงเวลา
+            statusText = 'กำลังรับบริการ';
+        } else {
+            // 3. ถ้าปกติ และยังไม่ถึงเวลา (หรือเลยเวลามาแล้วในรายการ upcoming)
+            statusText = 'รอเรียก';
+        }
+
         card.innerHTML = `
             <div class="flex justify-between items-start mb-2">
                 <p class="text-xl font-bold text-gray-800">${maskLastName(appt.patientName)}</p>
-                ${isDup ? '<span class="text-red-600 font-bold text-[10px] border border-red-600 px-2 py-0.5 rounded-full bg-red-50">รอตรวจสอบ (คิวซ้ำ)</span>' 
+                ${isDup ? '<span class="text-red-600 font-bold text-[10px] border border-red-600 px-2 py-0.5 rounded-full bg-red-50">สถานะ : ไม่ปกติ</span>' 
                         : '<span class="text-green-600 font-bold text-[10px] border border-green-600 px-2 py-0.5 rounded-full bg-green-50">สถานะ : ปกติ</span>'}
             </div>
             <p class="text-blue-800 font-bold text-base">เวลานัด: ${appt.timeSlot}</p>
             <p class="text-gray-500 text-[11px] mt-1">วันนัดบริการ: ${fullBookingDate} น.</p>
             <div class="mt-3 pt-2 border-t border-dashed border-gray-200 flex justify-between items-center text-xs">
-                <span class="text-gray-400">สถานะ: ${isCurrent ? 'กำลังรับบริการ' : 'รอเรียก'}</span>
+                <span class="text-gray-400">สถานะ: ${statusText}</span>
                 <span class="time-remaining font-bold ${isCurrent ? 'text-blue-600' : 'text-green-600'}" data-timestamp="${apptTimestamp.getTime()}">
-                    ${isCurrent ? 'เข้าพบเจ้าหน้าที่' : 'ในอีก: ' + formatTimeRemaining(apptTimestamp - now)}
+                    ${isCurrent ? 'เข้าห้องตรวจ2' : 'ในอีก: ' + formatTimeRemaining(apptTimestamp - now)}
                 </span>
             </div>
         `;
