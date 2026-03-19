@@ -237,44 +237,10 @@
 
     <main class="container mx-auto p-6 mt-28 lg:mt-32">
         <section class="glassy-section p-8 rounded-xl shadow-lg mb-8 flex flex-col lg:flex-row gap-8">
-            <div class="lg:w-1/3 bg-gray-50 p-6 rounded-xl shadow-inner flex flex-col">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-2xl font-bold text-blue-800 pb-2">แสดงคิว</h2>
-                    <button id="queueFullscreenToggle" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-3 rounded-full shadow-md transition duration-300 ease-in-out text-sm">
-                        <i class="fas fa-expand-alt mr-1"></i>
-                    </button>
-                </div>
-
-                <div id="scrollingQueueContainer" class="scrolling-queue-container flex-grow relative">
-                    <div id="queueDisplay" class="flex-grow overflow-y-auto bg-white p-4 rounded-lg border border-gray-200 mb-4 h-96 relative" tabindex="0">
-                        <div id="queueLoading" class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 z-10">
-                            <i class="fas fa-spinner fa-spin text-blue-500 text-3xl"></i>
-                            <p class="ml-2 text-gray-600">กำลังโหลดคิว...</p>
-                        </div>
-                        <div id="queueError" class="absolute inset-0 flex flex-col items-center justify-center bg-white bg-opacity-80 z-10 hidden text-red-600 text-center p-4">
-                            <i class="fas fa-exclamation-triangle text-3xl mb-2"></i>
-                            <p>ไม่สามารถโหลดคิวได้ </p>
-                        </div>
-                        </div>
-						<div class="fullscreen-info-right hidden">
-                            <img src="assets/images/tm.png" alt="ตราเทศบาลเมืองชุมพร">
-                            <p>งานทันตสาธารณสุข</p>
-                            <p>ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร(ตึกเก่า)</p>
-
-                            <p class="mt-8 mb-4 text-xl font-bold">ผู้ให้บริการ</p>
-                            <div class="flex items-center admin-info-wrapper">
-                                <img src="assets/images/admin.jpg" alt="เจ้าหน้าที่ปฏิบัติงาน" class="admin-profile-img">
-                                <div class="admin-text-content">
-                                    <p class="admin-name">นายภัทรพล ไพศาลวัชรเมธี</p>
-                                    <p class="admin-position">ทันตสาธารณสุขอาวุโส</p>
-                                </div>
-                            </div>
-                        </div>
-                </div>
-            </div>
+            
 
 
-            <div class="lg:w-2/3">
+            <div class="w-full">
                 <h2 class="text-3xl font-bold text-blue-800 mb-6 border-b-2 border-blue-300 pb-2">แนวทางการปฏิบัติงานทันตสาธารณสุขเชิงรุก</h2>
                 <div class="prose max-w-none text-gray-700 leading-relaxed">
                     <p><strong>ด้านการส่งเสริมสุขภาพและการป้องกันโรคในช่องปาก</strong></p>
