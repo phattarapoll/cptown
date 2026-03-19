@@ -1,69 +1,62 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- 1. การตั้งค่า API URLs ---
     const BOOKING_API_URL = 'https://script.google.com/macros/s/AKfycbw8wDGyZWTmG3DLWRwt8_k9x3iYKSxkTl3Rulyll5ObGxOTkJrw3xwB-xBSwBBeOhVE/exec';
+    const NEWS_API_URL = 'https://script.google.com/macros/s/AKfycbzHy1NyAVT3fOQzQpgeKf0L4duDNr94evxd-h-AUkYPKJYhfkQMN7T_iFwjJVtlQlLN/exec';
+
+    // Elements สำหรับระบบคิว
     const queueDisplay = document.getElementById('queueDisplay');
     const queueLoading = document.getElementById('queueLoading');
 
-    // --- 1. ฟังก์ชันจัดการวันที่แบบครอบจักรวาล ---
+    // Elements สำหรับกระดานข่าว
+    const newsBoard = document.getElementById('newsBoard');
+    const newsLoading = document.getElementById('newsLoading');
+    const newsError = document.getElementById('newsError');
+
+    // --- 2. ฟังก์ชันจัดการวันที่ (Date Helper) ---
     function parseDateSafe(dateStr) {
         if (!dateStr) return new Date();
-        
-        // พยายามสร้าง Date Object แบบปกติก่อน
         let d = new Date(dateStr);
-        
-        // ถ้าสร้างไม่ได้ หรือปีเพี้ยน (เช่น ปี 2026 กลายเป็น 2569) ให้แยกส่วนเอง
         if (isNaN(d.getTime()) || d.getFullYear() > 2500) {
             const parts = String(dateStr).split(/[\/\s,:]+/);
             if (parts.length >= 3) {
                 let day = parseInt(parts[0]);
                 let month = parseInt(parts[1]) - 1;
                 let year = parseInt(parts[2]);
-                
-                if (year > 2500) year -= 543; // แปลง พ.ศ. เป็น ค.ศ.
-                
+                if (year > 2500) year -= 543;
                 let hr = parseInt(parts[3]) || 0;
                 let min = parseInt(parts[4]) || 0;
                 let sec = parseInt(parts[5]) || 0;
-                
                 d = new Date(year, month, day, hr, min, sec);
             }
         }
         return isNaN(d.getTime()) ? new Date() : d;
     }
 
+    // --- 3. ระบบจัดการคิว (Queue System) ---
     async function fetchBookingData() {
         if (queueLoading) queueLoading.classList.remove('hidden');
         try {
             const response = await fetch(BOOKING_API_URL);
             const data = await response.json();
             if (queueLoading) queueLoading.classList.add('hidden');
-            
-            // ตรวจสอบว่ามีข้อมูลส่งมาจริงไหม
             if (Array.isArray(data)) {
                 updateQueueDisplay(data);
-            } else {
-                console.error("Data is not an array:", data);
             }
         } catch (error) {
-            console.error('Fetch Error:', error);
+            console.error('Fetch Queue Error:', error);
             if (queueLoading) queueLoading.classList.add('hidden');
-            queueDisplay.innerHTML = '<p class="text-center text-red-500">เกิดข้อผิดพลาดในการโหลดข้อมูล</p>';
+            queueDisplay.innerHTML = '<p class="text-center text-red-500">เกิดข้อผิดพลาดในการโหลดข้อมูลคิว</p>';
         }
     }
 
     function updateQueueDisplay(bookings) {
         queueDisplay.innerHTML = '';
         const now = new Date();
-
-        // 2. จัดกลุ่มเช็คคิวซ้ำ
         const grouped = {};
-        const processedBookings = bookings.map(b => {
-            const bDate = parseDateSafe(b.date);
-            return { ...b, parsedDate: bDate };
-        });
+        const processedBookings = bookings.map(b => ({ ...b, parsedDate: parseDateSafe(b.date) }));
 
         processedBookings.forEach(b => {
-            const dateKey = b.parsedDate.toDateString();
-            const key = `${dateKey}_${b.timeSlot}`;
+            const key = `${b.parsedDate.toDateString()}_${b.timeSlot}`;
             if (!grouped[key]) grouped[key] = [];
             grouped[key].push(b);
         });
@@ -77,7 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // 3. แยกคิว
         let currentAppt = null;
         const upcoming = [];
 
@@ -89,7 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const [h, m] = timeParts[1].split(':').map(Number);
                 bEnd.setHours(h || 0, m || 0, 0, 0);
             }
-
             if (now >= bStart && now < bEnd && !booking.isDuplicate) {
                 currentAppt = booking;
             } else if (bStart > now) {
@@ -97,26 +88,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // 4. วาดการแสดงผล
-        if (currentAppt) renderCard(currentAppt, true, now);
-
+        if (currentAppt) renderQueueCard(currentAppt, true, now);
         if (upcoming.length > 0) {
             queueDisplay.innerHTML += `<div class="text-lg font-bold text-blue-700 mt-6 mb-3 border-b pb-1 px-3">คิวรอรับบริการ</div>`;
-            upcoming.forEach(appt => renderCard(appt, false, now));
+            upcoming.forEach(appt => renderQueueCard(appt, false, now));
         } else if (!currentAppt) {
             queueDisplay.innerHTML = '<p class="text-center text-gray-500 py-10">ไม่มีรายการนัดหมายในขณะนี้</p>';
         }
-        
-        if (typeof handleAutoScroll === 'function') handleAutoScroll();
     }
 
-    function renderCard(appt, isCurrent, now) {
+    function renderQueueCard(appt, isCurrent, now) {
         const isDup = appt.isDuplicate;
         const apptTimestamp = appt.parsedDate;
-        
         const fullBookingDate = apptTimestamp.toLocaleDateString('th-TH', {
-            day: '2-digit', month: 'long', year: 'numeric',
-            hour: '2-digit', minute: '2-digit', second: '2-digit'
+            day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
         });
 
         const card = document.createElement('div');
@@ -126,8 +111,8 @@ document.addEventListener('DOMContentLoaded', () => {
         card.innerHTML = `
             <div class="flex justify-between items-start mb-2">
                 <p class="text-xl font-bold text-gray-800">${maskLastName(appt.patientName)}</p>
-                ${isDup ? '<span class="blink-red text-red-600 font-bold text-[10px] border border-red-600 px-2 py-0.5 rounded-full bg-red-50">รอตรวจสอบ (คิวซ้ำ)</span>' 
-                        : '<span class="text-green-600 font-bold text-[10px] border border-green-600 px-2 py-0.5 rounded-full bg-green-50">ผ่านการตรวจสอบ</span>'}
+                ${isDup ? '<span class="text-red-600 font-bold text-[10px] border border-red-600 px-2 py-0.5 rounded-full bg-red-50">รอตรวจสอบ (คิวซ้ำ)</span>' 
+                        : '<span class="text-green-600 font-bold text-[10px] border border-green-600 px-2 py-0.5 rounded-full bg-green-50">ตรวจแล้ว</span>'}
             </div>
             <p class="text-blue-800 font-bold text-base">เวลานัด: ${appt.timeSlot}</p>
             <p class="text-gray-500 text-[11px] mt-1">วันนัดบริการ: ${fullBookingDate} น.</p>
@@ -141,25 +126,82 @@ document.addEventListener('DOMContentLoaded', () => {
         queueDisplay.appendChild(card);
     }
 
-    // --- Helper Functions ---
+    // --- 4. ระบบกระดานข่าว (News System) ---
+    async function fetchNewsFromGoogleSheet() {
+        if (!newsBoard) return;
+        if (newsLoading) newsLoading.classList.remove('hidden');
+        if (newsError) newsError.classList.add('hidden');
+        newsBoard.innerHTML = ''; 
+
+        try {
+            const response = await fetch(NEWS_API_URL);
+            const data = await response.json();
+            if (newsLoading) newsLoading.classList.add('hidden');
+
+            if (!data || data.length === 0) {
+                newsBoard.innerHTML = '<p class="text-center text-gray-600">ไม่มีข่าวสารในขณะนี้</p>';
+                return;
+            }
+
+            data.forEach(newsItem => {
+                const newsDiv = document.createElement('div');
+                newsDiv.className = 'bg-white/50 backdrop-blur-sm p-4 rounded-xl shadow-sm border border-gray-100 mb-3';
+                const date = new Date(newsItem.date).toLocaleDateString('th-TH', {
+                    year: 'numeric', month: 'long', day: 'numeric'
+                });
+
+                let linkHtml = '';
+                if (newsItem.link && newsItem.link !== '') {
+                    linkHtml = `<a href="${newsItem.link}" target="_blank" class="text-blue-600 hover:underline text-xs mt-2 block font-medium">อ่านเพิ่มเติม <i class="fas fa-external-link-alt ml-1"></i></a>`;
+                }
+
+                newsDiv.innerHTML = `
+                    <p class="font-bold text-primary-navy mb-1">${newsItem.title}</p>
+                    <p class="text-[11px] text-gray-500"><i class="far fa-calendar-alt mr-1"></i> ${date}</p>
+                    ${linkHtml}
+                `;
+                newsBoard.appendChild(newsDiv);
+            });
+        } catch (error) {
+            console.error('Fetch News Error:', error);
+            if (newsLoading) newsLoading.classList.add('hidden');
+            if (newsError) newsError.classList.remove('hidden');
+        }
+    }
+
+    // --- 5. Helper Functions ---
     function maskLastName(name) {
         if (!name) return 'ไม่ระบุชื่อ';
         let parts = name.trim().split(/\s+/);
         return parts.length > 1 ? `${parts[0]} ${parts[1][0]}***` : name;
     }
 
+    // แก้ไขฟังก์ชันแสดงผลเวลานับถอยหลังตามคำขอ
     function formatTimeRemaining(ms) {
         if (ms < 0) return "ถึงเวลานัด";
+        
         const totalMinutes = Math.floor(ms / 60000);
         const days = Math.floor(totalMinutes / 1440);
         const hours = Math.floor((totalMinutes % 1440) / 60);
         const mins = totalMinutes % 60;
-        return `${days > 0 ? days + ' วัน ' : ''}${hours > 0 ? hours + ' ชม. ' : ''}${mins} นาที`;
+
+        let result = "";
+        if (days > 0) result += `${days} วัน `;
+        if (hours > 0) result += `${hours} ชม. `;
+        result += `${mins} นาที`;
+        
+        return result.trim();
     }
 
-    // เริ่มทำงาน
+    // --- 6. เริ่มการทำงาน ---
     fetchBookingData();
-    setInterval(fetchBookingData, 60000);
+    fetchNewsFromGoogleSheet(); // เรียกใช้ระบบข่าว
+
+    // ตั้งเวลาอัปเดตข้อมูลอัตโนมัติ
+    setInterval(fetchBookingData, 60000); // อัปเดตคิวทุก 1 นาที
+    setInterval(fetchNewsFromGoogleSheet, 300000); // อัปเดตข่าวทุก 5 นาที
+    
+    // อัปเดตเวลานับถอยหลังทุก 10 วินาที
     setInterval(() => {
         const currentTime = new Date().getTime();
         document.querySelectorAll('.time-remaining').forEach(span => {
