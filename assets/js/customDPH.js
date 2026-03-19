@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let statusText = '';
         if (isDup) {
             // 1. ถ้าไม่ปกติ
-            statusText = '<span class="text-red-500 font-bold">กรุณาลงทะเบียนใหม่</span>';
+            statusText = '<span class="text-red-500 font-bold">ลงทะเบียนใหม่</span>';
         } else if (isCurrent) {
             // 2. ถ้าปกติ และอยู่ในช่วงเวลา
             statusText = 'กำลังรับบริการ';
@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <p class="text-blue-800 font-bold text-base">เวลานัด: ${appt.timeSlot}</p>
             <p class="text-gray-500 text-[11px] mt-1">วันนัดบริการ: ${fullBookingDate} น.</p>
             <div class="mt-3 pt-2 border-t border-dashed border-gray-200 flex justify-between items-center text-xs">
-                <span class="text-gray-400">สถานะ: ${statusText}</span>
+                <span class="text-gray-400">กรุณา: ${statusText}</span>
                 <span class="time-remaining font-bold ${isCurrent ? 'text-blue-600' : 'text-green-600'}" data-timestamp="${apptTimestamp.getTime()}">
                     ${isCurrent ? 'เข้าห้องตรวจ2' : 'ในอีก: ' + formatTimeRemaining(apptTimestamp - now)}
                 </span>
