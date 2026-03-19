@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="flex justify-between items-start mb-2">
                 <p class="text-xl font-bold text-gray-800">${maskLastName(appt.patientName)}</p>
                 ${isDup ? '<span class="text-red-600 font-bold text-[10px] border border-red-600 px-2 py-0.5 rounded-full bg-red-50">รอตรวจสอบ (คิวซ้ำ)</span>' 
-                        : '<span class="text-green-600 font-bold text-[10px] border border-green-600 px-2 py-0.5 rounded-full bg-green-50">ตรวจแล้ว</span>'}
+                        : '<span class="text-green-600 font-bold text-[10px] border border-green-600 px-2 py-0.5 rounded-full bg-green-50">สถานะ : ปกติ</span>'}
             </div>
             <p class="text-blue-800 font-bold text-base">เวลานัด: ${appt.timeSlot}</p>
             <p class="text-gray-500 text-[11px] mt-1">วันนัดบริการ: ${fullBookingDate} น.</p>
