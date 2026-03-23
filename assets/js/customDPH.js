@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
             statusText = '<span class="text-red-500 font-bold">ลงทะเบียนใหม่</span>';
         } else if (isCurrent) {
             // 2. ถ้าปกติ และอยู่ในช่วงเวลา
-            statusText = 'กำลังรับบริการ';
+            statusText = 'เข้ารับบริการ';
         } else {
             // 3. ถ้าปกติ และยังไม่ถึงเวลา (หรือเลยเวลามาแล้วในรายการ upcoming)
             statusText = 'รอเรียก';
