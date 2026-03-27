@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar Cell Calculator for EV & Home</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; background-color: #f4f7f6; color: #333; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { color: #2c3e50; border-bottom: 2px solid #27ae60; padding-bottom: 10px; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { background-color: #27ae60; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px; margin-top: 10px; }
+        button:hover { background-color: #219150; }
+        .result { margin-top: 25px; padding: 20px; background-color: #e8f5e9; border-left: 5px solid #27ae60; display: none; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #ddd; }
+        th { background-color: #f8f9fa; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>☀️ เครื่องมือคำนวณโซล่าเซลล์ (On-Grid + TOU)</h2>
+    
+    <div class="input-group">
+        <label>กระแสชาร์จรถไฟฟ้า (Amp):</label>
+        <input type="number" id="evAmp" value="8">
+    </div>
+
+    <div class="input-group">
+        <label>เลือกขนาดแอร์ (BTU):</label>
+        <select id="acSize">
+            <option value="9000">9,000 BTU (กินไฟ ~800W)</option>
+            <option value="12000" selected>12,000 BTU (กินไฟ ~1,200W)</option>
+            <option value="18000">18,000 BTU (กินไฟ ~1,600W)</option>
+        </select>
+    </div>
+
+    <div class="input-group">
+        <label>ขนาดแผงโซล่าเซลล์ที่ต้องการใช้ (Watts):</label>
+        <select id="panelWatt">
+            <option value="550">550W (มาตรฐานยอดนิยม)</option>
+            <option value="580">580W</option>
+            <option value="600">600W</option>
+        </select>
+    </div>
+
+    <button onclick="calculateSolar()">วิเคราะห์ระบบและจัดชุดอุปกรณ์</button>
+
+    <div id="result" class="result">
+        <h3>📊 ผลการวิเคราะห์ระบบ</h3>
+        <p id="summaryText"></p>
+        
+        <h4>🛠️ รายการอุปกรณ์ที่แนะนำ (BOM)</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>อุปกรณ์</th>
+                    <th>ขนาด/สเปกที่แนะนำ</th>
+                </tr>
+            </thead>
+            <tbody id="bomTable">
+                </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function calculateSolar() {
+        // 1. Get Inputs
+        const evAmp = parseFloat(document.getElementById('evAmp').value);
+        const acWatt = parseFloat(document.getElementById('acSize').value === "9000" ? 800 : (document.getElementById('acSize').value === "12000" ? 1200 : 1600));
+        const panelWatt = parseFloat(document.getElementById('panelWatt').value);
+
+        // 2. Calculations
+        const evWatt = evAmp * 230; // P = V * I
+        const otherLoad = 500; // ตู้เย็น + ไฟ + อื่นๆ
+        const totalLoad = evWatt + acWatt + otherLoad;
+        
+        // แนะนำให้ติดตั้งเผื่อเมฆหรือแดดอ่อน (Safety Factor 1.2)
+        const recommendedSystemSize = (totalLoad * 1.2) / 1000; 
+        const panelCount = Math.ceil((recommendedSystemSize * 1000) / panelWatt);
+
+        // 3. Update Results
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('summaryText').innerHTML = `
+            กระแสไฟรวมที่ใช้ขณะชาร์จรถและเปิดแอร์: <strong>${totalLoad.toLocaleString()} วัตต์</strong><br>
+            ขนาดระบบที่แนะนำ: <strong>${recommendedSystemSize.toFixed(2)} kW</strong><br>
+            จำนวนแผงที่ต้องใช้: <strong>${panelCount} แผง</strong> (รวมประมาณ ${(panelCount * panelWatt / 1000).toFixed(2)} kW)
+        `;
+
+        // 4. Build BOM Table
+        const bom = [
+            { item: "มิเตอร์ไฟฟ้า (PEA/MEA)", spec: "Digital TOU Meter (1 Phase 30/100A)" },
+            { item: "Inverter (On-Grid)", spec: "5kW Single Phase (เช่น Huawei SUN2000-5KTL-L1 หรือ Sungrow)" },
+            { item: "แผงโซล่าเซลล์", spec: `Mono-Half Cut ${panelWatt}W จำนวน ${panelCount} แผง` },
+            { item: "DC Breaker", spec: "2 Pole 1000V 20-32A" },
+            { item: "AC Breaker", spec: "2 Pole 32A - 40A" },
+            { item: "Surge Protection", spec: "ทั้งฝั่ง DC และ AC" },
+            { item: "Zero Export (กันย้อน)", spec: "Smart Power Sensor (CT) ตรงรุ่นกับ Inverter" }
+        ];
+
+        let tableHtml = "";
+        bom.forEach(row => {
+            tableHtml += `<tr><td>${row.item}</td><td>${row.item === "DC Breaker" && panelCount > 10 ? "32A (แบ่ง 2 String)" : row.spec}</td></tr>`;
+        });
+        document.getElementById('bomTable').innerHTML = tableHtml;
+    }
+</script>
+
+</body>
+</html>

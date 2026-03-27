@@ -302,12 +302,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const dayOfWeek = date.getDay();
         const dayOfMonth = date.getDate();
 
-        if (dayOfWeek === 5) {
-            const fridayWarning = document.createElement('div');
-            fridayWarning.classList.add('blinking-message');
-            fridayWarning.innerHTML = 'ให้บริการเฉพาะกลุ่ม 60 ปีขึ้นไป';
-            selectedDateDisplay.insertAdjacentElement('afterend', fridayWarning);
-        }
 
         if (dayOfWeek === 2 && dayOfMonth >= 8 && dayOfMonth <= 14) {
             const tuesdayWarning = document.createElement('div');
@@ -315,6 +309,21 @@ document.addEventListener('DOMContentLoaded', () => {
             tuesdayWarning.innerHTML = 'เฉพาะกลุ่มคลินิกเด็กดี';
             selectedDateDisplay.insertAdjacentElement('afterend', tuesdayWarning);
         }
+		
+			// ค้นหาส่วนนี้ในฟังก์ชัน showTimeSlots(date)
+		if (dayOfWeek === 5) {
+			const fridayWarning = document.createElement('div');
+			fridayWarning.classList.add('blinking-message');
+			// เพิ่ม id เพื่อให้อ้างอิงสำหรับการ Scroll
+			fridayWarning.id = 'friday-special-warning'; 
+			fridayWarning.innerHTML = 'ให้บริการเฉพาะกลุ่ม 60 ปีขึ้นไป และผู้ป่วยฉุกเฉิน';
+			selectedDateDisplay.insertAdjacentElement('afterend', fridayWarning);
+
+    // เพิ่มส่วนนี้เพื่อให้หน้าจอเลื่อนมาที่คำเตือนโดยอัตโนมัติ
+    setTimeout(() => {
+        fridayWarning.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+}
 
         if (!configData.timeSlots || configData.timeSlots.length === 0) {
             timeSlotsContainer.innerHTML += '<div style="text-align: center; color: #e63946; font-weight: bold; font-size: 1.2em; padding: 20px;">ไม่มีช่วงเวลาให้เลือก โปรดติดต่อผู้ดูแลระบบ</div>';
