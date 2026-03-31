@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>งานแผนไทย - ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร</title>
+    
+    <style>
+        /* นำเข้าฟอนต์สารบรรณเพื่อให้ดูเป็นทางการ */
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Sarabun', sans-serif;
+            background-color: #f9fbf9; /* สีพื้นหลังเขียวอ่อนๆ สะอาดตา */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center; /* จัดกึ่งกลางตัวอักษรและองค์ประกอบ */
+            margin: 20px;
+        }
+
+        /* จัดการรูปภาพโลโก้ */
+        .logo {
+            width: 100px; /* ปรับขนาดโลโก้ตามต้องการ */
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #1a5e3a; /* สีเขียวเข้ม */
+            margin: 10px 0;
+        }
+
+        h2 {
+            font-size: 20px;
+            color: #2d8a56;
+            margin-top: 0;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eef2f0;
+            padding-bottom: 15px;
+            display: inline-block;
+        }
+
+        /* ส่วนแสดงรูปภาพจากลิงก์ */
+        .image-section {
+            margin: 2px 0;
+        }
+
+        .main-photo {
+            max-width: 100%;
+            height: auto;
+            border-radius: 1px;
+            border: 5px solid #fff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* ส่วนข้อมูลเจ้าหน้าที่ */
+        .staff-details {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f1f8f4;
+            border-radius: 2px;
+            display: inline-block; /* เพื่อให้กรอบกว้างเท่าเนื้อหาและอยู่กึ่งกลาง */
+            text-align: left; /* ให้หัวข้อชิดซ้ายภายในบล็อกที่อยู่กึ่งกลาง */
+        }
+
+        .staff-details p {
+            font-size: 18px;
+            color: #333;
+            margin: 8px 0;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #1a5e3a;
+        }
+
+        /* ปรับแต่งให้รองรับมือถือ */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            h1 { font-size: 20px; }
+            h2 { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <img src="assets/images/tm.png" alt="โลโก้เทศบาลเมืองชุมพร" class="logo">
+
+        <header>
+            <h1>ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร</h1>
+            <h2>งานแผนไทย</h2>
+        </header>
+
+        <div class="image-section">
+            <img src="https://lh3.googleusercontent.com/d/1aVi54pfxdE7A5egF7b9VV8lUWEyZZgbr" alt="งานแผนไทย" class="main-photo">
+        </div>
+
+        <div class="staff-details">
+            <p><span class="label">เจ้าหน้าที่ปฏิบัติงาน :</span> นางสาวจิรฐาน เก่งอนันตานนท์</p>
+            <p><span class="label">ตำแหน่ง :</span>แพทย์แผนไทยปฏิบัติการ</p>
+            <p><span class="label">งาน :</span> แพทย์แผนไทย</p>
+        </div>
+    </div>
+
+</body>
+</html>
