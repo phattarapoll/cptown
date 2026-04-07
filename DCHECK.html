@@ -3,144 +3,86 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>งานทันตสาธารณสุข - ล็อกอิน</title>
+  <title>Dent_ChecK V.5.1</title>
   <link rel="stylesheet" href="assets/css/styleDcheck.css">
   <link href="https://fonts.googleapis.com/css2?family=Sarabun&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    /* ---------------------------------------------------------------------------------- */
-    /* ส่วนของ Style สำหรับหน้าจอ Login ที่เพิ่มเข้ามา */
-    /* ---------------------------------------------------------------------------------- */
-    #login-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: #f4f7f6; /* สีพื้นหลังอ่อน ๆ */
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 2000; /* ให้ทับหน้าจออื่น ๆ ทั้งหมด */
-      font-family: 'Sarabun', sans-serif;
-      flex-direction: column;
-    }
+    /* --- Style ส่วน Login --- */
+    #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; z-index: 2000; font-family: 'Sarabun', sans-serif; flex-direction: column; }
+    #login-box { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); text-align: center; width: 90%; max-width: 350px; }
+    #passcode-display { height: 40px; margin-bottom: 20px; border: 2px solid #ccc; border-radius: 8px; font-size: 24px; line-height: 36px; color: #333; text-align: center; letter-spacing: 5px; background-color: #e9ecef; }
+    #keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
+    .keypad-button { background-color: #007bff; color: white; border: none; border-radius: 8px; padding: 20px 10px; font-size: 24px; cursor: pointer; transition: background-color 0.2s; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+    .keypad-button:hover { background-color: #0056b3; }
+    .keypad-button.action { background-color: #6c757d; font-size: 18px; }
+    #enter-button { grid-column: span 3; background-color: #28a745; font-size: 20px; padding: 15px 10px; margin-top: 10px; border: none; border-radius: 8px; color: white; cursor: pointer; }
+    #message { color: red; font-weight: bold; min-height: 20px; }
 
-    #login-box {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      width: 90%;
-      max-width: 350px;
-    }
-
-    #passcode-display {
-      height: 40px;
-      margin-bottom: 20px;
-      border: 2px solid #ccc;
-      border-radius: 8px;
-      font-size: 24px;
-      line-height: 36px;
+    /* --- Style ส่วน Sync Progress Bar (ปรับปรุงใหม่) --- */
+    #offline-sync-bar {
+      display: none;
+      background: #ffffff;
       color: #333;
+      padding: 20px;
       text-align: center;
-      letter-spacing: 5px; /* Spacing between digits for better look */
-      background-color: #e9ecef;
+      position: sticky;
+      top: 0;
+      z-index: 1500;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      border-bottom: 5px solid #ff9800;
     }
-
-    #keypad {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-      margin-top: 20px;
+    .progress-wrapper {
+      width: 100%;
+      max-width: 500px;
+      margin: 15px auto;
+      display: none;
     }
-
-    .keypad-button {
-      background-color: #007bff; /* สีน้ำเงินหลัก */
+    .progress-container {
+      width: 100%;
+      background-color: #e0e0e0;
+      border-radius: 15px;
+      height: 25px;
+      overflow: hidden;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #ff9800, #ffc107);
+      transition: width 0.4s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    }
+    #sync-status-detail { font-size: 14px; margin-bottom: 8px; color: #555; }
+    #sync-btn {
+      background: #28a745;
       color: white;
       border: none;
-      border-radius: 8px;
-      padding: 20px 10px;
-      font-size: 24px;
+      padding: 10px 25px;
+      border-radius: 25px;
       cursor: pointer;
-      transition: background-color 0.2s;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .keypad-button:hover {
-      background-color: #0056b3;
-    }
-
-    .keypad-button:active {
-      background-color: #004085;
-      box-shadow: none;
-      transform: translateY(1px);
-    }
-
-    .keypad-button.action {
-      background-color: #6c757d; /* สีเทาสำหรับปุ่ม Clear/Backspace */
-      font-size: 18px;
-    }
-    /* กำหนดขนาดไอคอน Backspace */
-    .keypad-button.action i {
-        font-size: 24px;
-    }
-
-    .keypad-button.action:hover {
-      background-color: #5a6268;
-    }
-
-    #enter-button {
-      grid-column: span 3;
-      background-color: #28a745; /* สีเขียวสำหรับปุ่มตกลง */
-      font-size: 20px;
-      padding: 15px 10px;
-      margin-top: 10px;
-    }
-
-    #enter-button:hover {
-      background-color: #218838;
-    }
-
-    #message {
-        color: red;
-        font-weight: bold;
-        min-height: 20px; /* กันการกระโดดขององค์ประกอบอื่น */
-    }
-
-    /* Updated styles for the submission history display (from original file) */
-    #submission-history {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      color: #333; /* Dark gray text color */
-      padding: 10px 15px;
       font-weight: bold;
-      z-index: 1000;
-      display: none; /* Hidden by default, will be shown if history exists */
-      line-height: 1.6; /* Spacing between lines */
-      text-align: right; /* Align text to the right */
+      font-size: 16px;
+      transition: background 0.3s;
     }
-    #submission-history p {
-      margin: 0; /* Remove default paragraph margins */
-      padding: 3px 0;
-      border-bottom: 1px dotted #ccc; /* Subtle separator */
-    }
-    #submission-history p:last-child {
-      border-bottom: none; /* No border for the last item */
-    }
-    #submission-history p strong {
-      color: #0056b3; /* A bit more prominent color for the code */
-    }
+    #sync-btn:hover { background: #218838; }
+    #sync-btn:disabled { background: #ccc; cursor: not-allowed; }
 
-    /* เมื่อล็อกอินสำเร็จ ให้ซ่อน overlay */
-    .hidden {
-      display: none !important;
-    }
+    /* --- Style ส่วน History --- */
+    #submission-history { position: fixed; top: 120px; right: 20px; color: #333; padding: 10px 15px; font-weight: bold; z-index: 1000; display: none; line-height: 1.6; text-align: right; pointer-events: none; }
+    #submission-history p { margin: 0; padding: 3px 0; border-bottom: 1px dotted #ccc; background: rgba(255,255,255,0.8); }
+    
+    .hidden { display: none !important; }
+    .blinking { opacity: 0.5; cursor: not-allowed; }
   </style>
 </head>
 <body>
+
   <div id="login-overlay">
     <div id="login-box">
         <h2>กรุณาป้อนรหัสผ่าน</h2>
@@ -155,33 +97,42 @@
             <button type="button" class="keypad-button" data-key="6">6</button>
             <button type="button" class="keypad-button" data-key="7">7</button>
             <button type="button" class="keypad-button" data-key="8">8</button>
-            <button type="button" class="keypad-button" data-key="9">9</button> <button type="button" class="keypad-button action" id="clear-button">ล้าง</button> <button type="button" class="keypad-button" data-key="0">0</button>
-            <button type="button" class="keypad-button action" id="backspace-button"><i class="fas fa-backspace"></i></button> <button type="button" class="keypad-button action" id="enter-button">ตกลง</button>
+            <button type="button" class="keypad-button" data-key="9">9</button>
+            <button type="button" class="keypad-button action" id="clear-button">ล้าง</button>
+            <button type="button" class="keypad-button" data-key="0">0</button>
+            <button type="button" class="keypad-button action" id="backspace-button"><i class="fas fa-backspace"></i></button>
+            <button type="button" class="keypad-button action" id="enter-button">ตกลง</button>
         </div>
     </div>
   </div>
 
+  <div id="offline-sync-bar">
+    <div id="sync-info-text">⚠️ มีข้อมูลค้างในเครื่อง <span id="offline-count">0</span> รายการ</div>
+    <div class="progress-wrapper" id="prog-wrapper">
+      <div id="sync-status-detail">กำลังเตรียมการส่งข้อมูล...</div>
+      <div class="progress-container">
+        <div class="progress-bar" id="prog-bar">0%</div>
+      </div>
+    </div>
+    <button id="sync-btn" onclick="syncOfflineData()">ส่งข้อมูลเข้าเซิร์ฟเวอร์</button>
+  </div>
+
   <div id="submission-history"></div> 
-  <div class="container" id="main-content">
-    <h1> PROGRAM DENTCHECK V.5 </h1>
+
+  <div class="container" id="main-content" style="display:none;">
+    <h1> PROGRAM DENTCHECK V.5.1 </h1>
     
     <form id="dataForm">
       <div class="main-content-grid">
         <div class="left-column">
           <div class="section gray1">
-            <label>วันที่
-              <input type="date" id="date" name="date"> </label>
-            <label>รหัส
-              <input type="number" id="code" name="id"> </label>
-            <label>ชั้น
-              <input type="text" id="class" name="grade" list="gradeOptions"> <datalist id="gradeOptions">
-                <option value="ป.1">
-                <option value="ป.2">
-                <option value="ป.3">
-                <option value="ป.4">
-                <option value="ป.5">
-                <option value="ป.6">
-                <option value="ม.1">
+            <label>วันที่ <input type="date" id="date" name="date"> </label>
+            <label>รหัส <input type="number" id="code" name="id" required> </label>
+            <label>ชั้น 
+              <input type="text" id="class" name="grade" list="gradeOptions">
+              <datalist id="gradeOptions">
+                <option value="ป.1"><option value="ป.2"><option value="ป.3">
+                <option value="ป.4"><option value="ป.5"><option value="ป.6"><option value="ม.1">
               </datalist>
             </label>
             <label>โรงเรียน
@@ -202,7 +153,9 @@
             <label>จำนวนฟันน้ำนม <input type="number" min="0" max="20" id="nm" name="NM"></label>
             <label>ฟันน้ำนมต้องอุด <input type="number" min="0" max="20" id="cm" name="CM"></label>
           </div>
-        </div> <div class="right-column">
+        </div>
+
+        <div class="right-column">
           <div class="section gray05 center-buttons">
             <button type="button" class="action-button special" id="scButton" data-name="sc"><span>แนะนำขูดหินปูน</span></button>
             <button type="button" class="action-button special" id="exButton" data-name="ex"><span>แนะนำถอน</span></button>
@@ -210,7 +163,7 @@
 
           <div class="section gray076">
             <h2>เคลือบหลุมร่องฟัน (Sealants)</h2>
-            <div class="button-group" id="slButtonGroup">
+            <div class="button-group">
               <button type="button" class="action-button" data-name="sl27"><span>27</span></button>
               <button type="button" class="action-button" data-name="sl26"><span>26</span></button>
               <button type="button" class="action-button" data-name="sl17"><span>17</span></button>
@@ -227,341 +180,355 @@
           <div class="section gray05">
             <h2>ให้การรักษา (Treatment)</h2>
             <div class="tooth-treatment-grid">
-              <button type="button" class="action-button" data-name="t27"><span>27</span></button> <button type="button" class="action-button" data-name="t26"><span>26</span></button> <button type="button" class="action-button" data-name="t25"><span>25</span></button> <button type="button" class="action-button" data-name="t24"><span>24</span></button> <button type="button" class="action-button" data-name="t23"><span>23</span></button> <button type="button" class="action-button" data-name="t22"><span>22</span></button> <button type="button" class="action-button" data-name="t21"><span>21</span></button> <button type="button" class="action-button" data-name="t11"><span>11</span></button> <button type="button" class="action-button" data-name="t12"><span>12</span></button> <button type="button" class="action-button" data-name="t13"><span>13</span></button> <button type="button" class="action-button" data-name="t14"><span>14</span></button> <button type="button" class="action-button" data-name="t15"><span>15</span></button> <button type="button" class="action-button" data-name="t16"><span>16</span></button> <button type="button" class="action-button" data-name="t17"><span>17</span></button>
-              <div class="grid-row-break"></div> <button type="button" class="action-button" data-name="t37"><span>37</span></button> <button type="button" class="action-button" data-name="t36"><span>36</span></button> <button type="button" class="action-button" data-name="t35"><span>35</span></button> <button type="button" class="action-button" data-name="t34"><span>34</span></button> <button type="button" class="action-button" data-name="t33"><span>33</span></button> <button type="button" class="action-button" data-name="t32"><span>32</span></button> <button type="button" class="action-button" data-name="t31"><span>31</span></button> <button type="button" class="action-button" data-name="t41"><span>41</span></button> <button type="button" class="action-button" data-name="t42"><span>42</span></button> <button type="button" class="action-button" data-name="t43"><span>43</span></button> <button type="button" class="action-button" data-name="t44"><span>44</span></button> <button type="button" class="action-button" data-name="t45"><span>45</span></button> <button type="button" class="action-button" data-name="t46"><span>46</span></button> <button type="button" class="action-button" data-name="t47"><span>47</span></button>
+              <button type="button" class="action-button" data-name="t27"><span>27</span></button>
+              <button type="button" class="action-button" data-name="t26"><span>26</span></button>
+              <button type="button" class="action-button" data-name="t25"><span>25</span></button>
+              <button type="button" class="action-button" data-name="t24"><span>24</span></button>
+              <button type="button" class="action-button" data-name="t23"><span>23</span></button>
+              <button type="button" class="action-button" data-name="t22"><span>22</span></button>
+              <button type="button" class="action-button" data-name="t21"><span>21</span></button>
+              <button type="button" class="action-button" data-name="t11"><span>11</span></button>
+              <button type="button" class="action-button" data-name="t12"><span>12</span></button>
+              <button type="button" class="action-button" data-name="t13"><span>13</span></button>
+              <button type="button" class="action-button" data-name="t14"><span>14</span></button>
+              <button type="button" class="action-button" data-name="t15"><span>15</span></button>
+              <button type="button" class="action-button" data-name="t16"><span>16</span></button>
+              <button type="button" class="action-button" data-name="t17"><span>17</span></button>
+              <div class="grid-row-break"></div>
+              <button type="button" class="action-button" data-name="t37"><span>37</span></button>
+              <button type="button" class="action-button" data-name="t36"><span>36</span></button>
+              <button type="button" class="action-button" data-name="t35"><span>35</span></button>
+              <button type="button" class="action-button" data-name="t34"><span>34</span></button>
+              <button type="button" class="action-button" data-name="t33"><span>33</span></button>
+              <button type="button" class="action-button" data-name="t32"><span>32</span></button>
+              <button type="button" class="action-button" data-name="t31"><span>31</span></button>
+              <button type="button" class="action-button" data-name="t41"><span>41</span></button>
+              <button type="button" class="action-button" data-name="t42"><span>42</span></button>
+              <button type="button" class="action-button" data-name="t43"><span>43</span></button>
+              <button type="button" class="action-button" data-name="t44"><span>44</span></button>
+              <button type="button" class="action-button" data-name="t45"><span>45</span></button>
+              <button type="button" class="action-button" data-name="t46"><span>46</span></button>
+              <button type="button" class="action-button" data-name="t47"><span>47</span></button>
             </div>
           </div>
+
           <div class="submit-button-container">
-            <button type="submit" class="submit-btn">ส่งข้อมูล</button>
+            <button type="submit" class="submit-btn" id="main-submit-btn">ส่งข้อมูล</button>
           </div>
-        </div> </div> </form>
-	<br><br><br><br><br><br>
-	<h6>ผู้สร้างและพัฒนา...นายภัทรพล ไพศาลวัชรเมธี ทันตสาธารณสุขอาวุโส </h6>
+        </div> 
+      </div> 
+    </form>
+    <br><br>
+    <h6 style="text-align:center;">ผู้สร้างและพัฒนา...นายภัทรพล ไพศาลวัชรเมธี ทันตสาธารณสุขอาวุโส</h6>
   </div>
 
   <script>
-    // ----------------------------------------------------------------------------------
-    // ส่วนของ Login Script
-    // ----------------------------------------------------------------------------------
+    // --- ตั้งค่าระบบ ---
     const CORRECT_PASSCODE = "122333";
-    const passcodeDisplay = document.getElementById("passcode-display");
-    const loginOverlay = document.getElementById("login-overlay");
-    const keypadButtons = document.querySelectorAll(".keypad-button[data-key]");
-    const enterButton = document.getElementById("enter-button");
-    const clearButton = document.getElementById("clear-button");
-    const backspaceButton = document.getElementById("backspace-button"); // เพิ่มตัวแปรสำหรับปุ่ม Backspace
-    const messageElement = document.getElementById("message");
-    let currentPasscode = "";
-
-    // ฟังก์ชันอัปเดตการแสดงผลรหัสผ่าน
-    function updatePasscodeDisplay() {
-        // แทนที่ตัวเลขด้วยเครื่องหมายดอกจัน (*)
-        passcodeDisplay.textContent = "*".repeat(currentPasscode.length);
-        messageElement.textContent = ""; // ล้างข้อความแจ้งเตือน
-    }
-
-    // เพิ่ม Event Listener ให้กับปุ่มตัวเลข (1-9, 0)
-    keypadButtons.forEach(button => {
-        button.addEventListener("click", function() {
-            const key = this.dataset.key;
-            currentPasscode += key;
-            updatePasscodeDisplay();
-        });
-    });
-
-    // Event Listener สำหรับปุ่ม "ล้าง" (Clear All)
-    clearButton.addEventListener("click", function() {
-        currentPasscode = "";
-        updatePasscodeDisplay();
-    });
-
-    // Event Listener สำหรับปุ่ม "ลบทีละตัว" (Backspace)
-    backspaceButton.addEventListener("click", function() {
-        // ลบตัวอักษรตัวสุดท้ายออก
-        currentPasscode = currentPasscode.slice(0, -1);
-        updatePasscodeDisplay();
-    });
-
-    // Event Listener สำหรับปุ่ม "ตกลง"
-    enterButton.addEventListener("click", function() {
-        if (currentPasscode === CORRECT_PASSCODE) {
-            // ล็อกอินสำเร็จ
-            loginOverlay.classList.add("hidden");
-            // เรียกฟังก์ชันตั้งค่าเริ่มต้นของหน้าหลัก (ซึ่งอยู่ในส่วนด้านล่าง)
-            initialSetup(); 
-        } else {
-            // ล็อกอินไม่สำเร็จ
-            messageElement.textContent = "รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง";
-            currentPasscode = ""; // ล้างรหัสผ่านที่ป้อน
-            passcodeDisplay.textContent = ""; // แสดงผลเป็นค่าว่าง
-        }
-    });
-
-    // ----------------------------------------------------------------------------------
-    // ส่วนของ Script เดิม
-    // ----------------------------------------------------------------------------------
     const scriptURL = "https://script.google.com/macros/s/AKfycbwgNSARmEVj9bZU9euDyAkkuOb8PeJOtsHKHVjFcUR0AhP1ZQcOKcs4f4JmKk3H_fv-xg/exec";
-    const form = document.getElementById("dataForm");
-    const classInput = document.getElementById("class");
-    const npInput = document.getElementById("np");
-    const nmInput = document.getElementById("nm");
-    const cpInput = document.getElementById("cp");
-    const submitButton = document.querySelector('.submit-button-container .submit-btn');
-    const codeInput = document.getElementById("code");
-    const submissionHistoryContainer = document.getElementById('submission-history'); // Changed ID
-    const dateInput = document.getElementById("date"); // เพิ่มตัวแปรสำหรับช่องวันที่
-
-    // เพิ่ม "date" ในรายการฟิลด์ที่ต้องการจำค่า
+    const OFFLINE_STORAGE_KEY = 'dentcheck_offline_queue';
+    const HISTORY_STORAGE_KEY = 'dentalSubmissionHistory';
+    const DRAFT_STORAGE_KEY = 'dentcheck_form_draft';
     const fieldsToRemember = ["date", "grade", "school", "NP", "NM", "CM"];
 
-    let submissionHistory = []; // Array to hold history objects {code: '...', time: '...'}
-    const MAX_HISTORY_ITEMS = 2;
-    const HISTORY_STORAGE_KEY = 'dentalSubmissionHistory'; // Key for localStorage
-
-    // Function to load history from localStorage
-    function loadSubmissionHistory() {
-      const saved = localStorage.getItem(HISTORY_STORAGE_KEY);
-      if (saved) {
-        try {
-          submissionHistory = JSON.parse(saved);
-          // Ensure it's an array and trim if somehow it got too big
-          if (!Array.isArray(submissionHistory)) {
-            submissionHistory = [];
-          } else if (submissionHistory.length > MAX_HISTORY_ITEMS) {
-            submissionHistory = submissionHistory.slice(-MAX_HISTORY_ITEMS); // Take last MAX_HISTORY_ITEMS
-          }
-        } catch (e) {
-          console.error("Error parsing submission history from localStorage:", e);
-          submissionHistory = []; // Reset on error
-        }
-      }
-    }
-
-    // Function to save history to localStorage
-    function saveSubmissionHistory() {
-      localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(submissionHistory));
-    }
-
-    // Function to update the display of history on the page
-    function updateSubmissionHistoryDisplay() {
-      submissionHistoryContainer.innerHTML = ''; // Clear current display
-      if (submissionHistory.length === 0) {
-        submissionHistoryContainer.style.display = 'none'; // Hide if no history
-        return;
-      }
-      submissionHistoryContainer.style.display = 'block'; // Show if there is history
-
-      // Iterate from most recent to oldest for display order (newest at top)
-      for (let i = submissionHistory.length - 1; i >= 0; i--) {
-        const entry = submissionHistory[i];
-        const p = document.createElement('p');
-        p.innerHTML = `ข้อมูลล่าสุด : <strong>${entry.code}</strong><br>ส่งสำเร็จเมื่อ: ${entry.time}`;
-        submissionHistoryContainer.appendChild(p);
-      }
-    }
-
-    // Function to add a new entry to history and manage array size
-    function addSubmissionToHistory(code, timestamp) {
-      submissionHistory.push({ code: code, time: timestamp });
-      if (submissionHistory.length > MAX_HISTORY_ITEMS) {
-        submissionHistory.shift(); // Remove the oldest entry
-      }
-      saveSubmissionHistory(); // Save updated history to localStorage
-      updateSubmissionHistoryDisplay(); // Update the UI
-    }
-    
-    // Function to load and set remembered fields (รวมถึง date)
-    function loadAndSetRememberedFields() {
-        fieldsToRemember.forEach(field => {
-            const savedValue = localStorage.getItem(field);
-            if (savedValue) {
-                document.querySelector(`[name="${field}"]`).value = savedValue;
-            }
-        });
-    }
-
-    // Function to reset the form inputs (not the history display)
-    function resetFormForNewEntry() {
-      form.reset(); // Reset form fields
-      // Clear selected buttons
-      actionButtons.forEach(button => {
-        button.classList.remove('selected');
-      });
-      selectedButtons.clear();
-      updateCpCount(); // Reset CP count
-      
-      // โหลดค่าฟิลด์ที่จำไว้ (รวมถึงวันที่)
-      loadAndSetRememberedFields(); 
-    }
-
-    // --- Existing Form Logic (mostly unchanged) ---
-    function handleClassChange() {
-      const grade = this.value;
-      let npValue, nmValue;
-
-      if (grade === "ป.1") {
-        npValue = getRandomInt(4, 6);
-        nmValue = getRandomInt(18, 20);
-      } else if (grade === "ป.3") {
-        npValue = getRandomInt(12, 16);
-        nmValue = getRandomInt(12, 14);
-      } else if (grade === "ป.6") {
-        npValue = getRandomInt(24, 26);
-        nmValue = getRandomInt(2, 6);
-      } else if (grade === "ม.1") {
-        npValue = 28;
-        nmValue = 0;
-      }
-      else {
-        npValue = '';
-        nmValue = '';
-      }
-
-      npInput.value = npValue;
-      nmInput.value = nmValue;
-    }
-
-    function getRandomInt(min, max) {
-      min = Math.ceil(min);
-      max = Math.floor(max);
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-
-    const actionButtons = document.querySelectorAll('.action-button');
+    // --- DOM Elements ---
+    const loginOverlay = document.getElementById("login-overlay");
+    const mainContent = document.getElementById("main-content");
+    const passcodeDisplay = document.getElementById("passcode-display");
+    const form = document.getElementById("dataForm");
+    const submitButton = document.getElementById("main-submit-btn");
+    const offlineBar = document.getElementById("offline-sync-bar");
+    const offlineCountSpan = document.getElementById("offline-count");
+    const progWrapper = document.getElementById("prog-wrapper");
+    const progBar = document.getElementById("prog-bar");
+    const syncStatusDetail = document.getElementById("sync-status-detail");
     const selectedButtons = new Set();
+    const actionButtons = document.querySelectorAll('.action-button');
 
-    function updateCpCount() {
-      let cpCount = 0;
-      document.querySelectorAll('.tooth-treatment-grid .action-button.selected').forEach(button => {
-        if (button.dataset.name.startsWith('t') && parseInt(button.dataset.name.substring(1)) >= 11 && parseInt(button.dataset.name.substring(1)) <= 48) {
-          cpCount++;
-        }
-      });
-      cpInput.value = cpCount;
-    }
-    
-    function handleActionButtonClick() {
-      const buttonName = this.dataset.name;
-      
-      if (this.classList.contains('selected')) {
-        this.classList.remove('selected');
-        selectedButtons.delete(buttonName);
-      } else {
-        this.classList.add('selected');
-        selectedButtons.add(buttonName);
-      }
-      updateCpCount();
+    let currentPasscode = "";
+    let submissionHistory = [];
+
+    // ----------------------------------------------------------------------------------
+    // ระบบ PERSISTENCE: ข้อมูลไม่หายเมื่อรีเฟรช/ปิดโปรแกรม
+    // ----------------------------------------------------------------------------------
+    function saveFormDraft() {
+        const formData = new FormData(form);
+        const data = {};
+        formData.forEach((val, key) => data[key] = val);
+        data.selectedButtons = Array.from(selectedButtons);
+        localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(data));
     }
 
-    // เมื่อผู้ใช้ส่งฟอร์ม
-    function handleFormSubmit(e) {
-      e.preventDefault();
-      
-      submitButton.classList.add('blinking');
-      submitButton.disabled = true;
-
-      const formData = new FormData(form);
-      formData.append('CP', cpInput.value);
-
-      selectedButtons.forEach(name => {
-        formData.append(name, 'on');
-      });
-
-      const submittedCode = codeInput.value;
-      // Get current time with full date and time for better history
-      const submissionDateTime = new Date().toLocaleDateString("th-TH") + " " + new Date().toLocaleTimeString("th-TH", { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-
-      fetch(scriptURL, {
-        method: "POST",
-        body: formData,
-      })
-      .then(res => res.text())
-      .then(() => {
-        // บันทึกค่าฟิลด์ที่จำไว้ทั้งหมด รวมถึงวันที่
-        fieldsToRemember.forEach(field => {
-          localStorage.setItem(field, document.querySelector(`[name="${field}"]`).value);
-        });
-
-        // Add to history and update display
-        addSubmissionToHistory(submittedCode, submissionDateTime);
+    function loadFormDraft() {
+        const saved = localStorage.getItem(DRAFT_STORAGE_KEY);
+        if (!saved) return;
+        const data = JSON.parse(saved);
         
-        // Reset form fields for the next entry AFTER successful submission
-        resetFormForNewEntry(); 
+        Object.keys(data).forEach(key => {
+            const el = document.getElementsByName(key)[0];
+            if (el && key !== 'selectedButtons') el.value = data[key];
+        });
 
-      })
-      .catch(() => {
-        alert("❌ เกิดข้อผิดพลาดในการส่งข้อมูล");
-      })
-      .finally(() => {
-        submitButton.classList.remove('blinking');
-        submitButton.disabled = false;
-      });
+        if (data.selectedButtons) {
+            data.selectedButtons.forEach(name => {
+                const btn = document.querySelector(`[data-name="${name}"]`);
+                if (btn) {
+                    btn.classList.add('selected');
+                    selectedButtons.add(name);
+                }
+            });
+        }
+        updateCpCount();
     }
 
-    // ฟังก์ชันสำหรับตั้งค่าเริ่มต้นของหน้าหลัก
-    function initialSetup() {
-        // เพิ่ม Event Listeners ของหน้าหลัก
-        classInput.addEventListener('change', handleClassChange);
-        actionButtons.forEach(button => {
-            button.addEventListener('click', handleActionButtonClick);
-        });
-        form.addEventListener("submit", handleFormSubmit);
-
-        // ตั้งค่า Event Listener สำหรับ Date Picker เพื่อบันทึกค่าทุกครั้งที่มีการเลือก
-        dateInput.addEventListener('change', function() {
-            localStorage.setItem('date', this.value);
-        });
-
-        // ตั้งค่าเริ่มต้นของหน้าหลัก
-        loadSubmissionHistory(); // โหลดประวัติการส่ง
-        updateSubmissionHistoryDisplay(); // แสดงประวัติ
-
-        // โหลดค่าฟิลด์ที่จำไว้ (รวมถึงวันที่)
-        loadAndSetRememberedFields();
+    // ----------------------------------------------------------------------------------
+    // ระบบ LOGIN & KEYBOARD SUPPORT
+    // ----------------------------------------------------------------------------------
+    function updatePasscodeDisplay() {
+        passcodeDisplay.textContent = "*".repeat(currentPasscode.length);
     }
 
-    // เมื่อโหลดหน้าเว็บเสร็จ (แต่ยังไม่ผ่านล็อกอิน)
-    document.addEventListener("DOMContentLoaded", function() {
-        // ซ่อนเนื้อหาหลักจนกว่าจะล็อกอินสำเร็จ
-        document.getElementById("main-content").style.display = 'none';
-
-        // เมื่อล็อกอินสำเร็จ ค่อยแสดงเนื้อหาหลัก
-        enterButton.addEventListener("click", function() {
-            if (currentPasscode === CORRECT_PASSCODE) {
-                document.getElementById("main-content").style.display = ''; // แสดงเนื้อหาหลัก
-            }
-        });
+    document.querySelectorAll(".keypad-button[data-key]").forEach(btn => {
+        btn.addEventListener("click", () => { currentPasscode += btn.dataset.key; updatePasscodeDisplay(); });
     });
-	
-	// --- ส่วนที่เพิ่มใหม่: รองรับการกดรหัสผ่านด้วยแป้นพิมพ์ ---
-document.addEventListener("keydown", function(event) {
-    // ตรวจสอบว่าหน้าจอ Login ยังแสดงอยู่หรือไม่
-    if (!loginOverlay.classList.contains("hidden")) {
-        
-        // 1. ตรวจสอบการกดปุ่มตัวเลข 0-9 (รวมถึง Numpad)
-        if (event.key >= "0" && event.key <= "9") {
-            currentPasscode += event.key;
-            updatePasscodeDisplay();
-        } 
-        
-        // 2. ตรวจสอบการกดปุ่ม Enter
-        else if (event.key === "Enter") {
-            enterButton.click(); // จำลองการคลิกปุ่ม "ตกลง"
-        } 
-        
-        // 3. ตรวจสอบการกดปุ่ม Backspace
-        else if (event.key === "Backspace") {
-            currentPasscode = currentPasscode.slice(0, -1);
-            updatePasscodeDisplay();
-        }
-        
-        // 4. ตรวจสอบการกดปุ่ม Escape (ใช้สำหรับล้างค่าทั้งหมด - Optional)
-        else if (event.key === "Escape") {
+
+    document.getElementById("clear-button").addEventListener("click", () => { currentPasscode = ""; updatePasscodeDisplay(); });
+    document.getElementById("backspace-button").addEventListener("click", () => { currentPasscode = currentPasscode.slice(0, -1); updatePasscodeDisplay(); });
+
+    document.getElementById("enter-button").addEventListener("click", () => {
+        if (currentPasscode === CORRECT_PASSCODE) {
+            loginOverlay.classList.add("hidden");
+            mainContent.style.display = 'block';
+            initialSetup();
+        } else {
+            document.getElementById("message").textContent = "รหัสผ่านไม่ถูกต้อง";
             currentPasscode = "";
             updatePasscodeDisplay();
         }
+    });
+
+    // คีย์บอร์ดซัพพอร์ต (Login Only)
+    document.addEventListener("keydown", (e) => {
+        if (!loginOverlay.classList.contains("hidden")) {
+            if (e.key >= "0" && e.key <= "9") { currentPasscode += e.key; updatePasscodeDisplay(); }
+            else if (e.key === "Enter") document.getElementById("enter-button").click();
+            else if (e.key === "Backspace") { currentPasscode = currentPasscode.slice(0, -1); updatePasscodeDisplay(); }
+            else if (e.key === "Escape") { currentPasscode = ""; updatePasscodeDisplay(); }
+        }
+    });
+
+    // ----------------------------------------------------------------------------------
+    // ระบบจัดการข้อมูล OFFLINE & PROGRESS BAR
+    // ----------------------------------------------------------------------------------
+    function getOfflineQueue() { return JSON.parse(localStorage.getItem(OFFLINE_STORAGE_KEY) || "[]"); }
+    
+    function updateOfflineUI() {
+        const queue = getOfflineQueue();
+        if (queue.length > 0) {
+            offlineBar.style.display = 'block';
+            offlineCountSpan.textContent = queue.length;
+        } else {
+            offlineBar.style.display = 'none';
+        }
     }
-});
+
+    async function syncOfflineData() {
+        const queue = getOfflineQueue();
+        if (queue.length === 0) return;
+
+        const syncBtn = document.getElementById("sync-btn");
+        syncBtn.disabled = true;
+        progWrapper.style.display = 'block';
+        
+        let successCount = 0;
+        const remainingQueue = [];
+        const total = queue.length;
+
+        for (let i = 0; i < total; i++) {
+            const item = queue[i];
+            const percent = Math.round(((i) / total) * 100);
+            
+            // อัปเดตแถบความคืบหน้า
+            progBar.style.width = percent + "%";
+            progBar.textContent = percent + "%";
+            syncStatusDetail.innerHTML = `กำลังส่งข้อมูลรหัส: <strong>${item.data.id}</strong> (ลำดับที่ ${i+1}/${total})`;
+
+            const formData = new FormData();
+            for (const key in item.data) formData.append(key, item.data[key]);
+
+            try {
+                const response = await fetch(scriptURL, { method: 'POST', body: formData });
+                if (response.ok) {
+                    successCount++;
+                } else {
+                    remainingQueue.push(item);
+                }
+            } catch (e) {
+                remainingQueue.push(item);
+            }
+        }
+
+        // จบการทำงาน
+        progBar.style.width = "100%";
+        progBar.textContent = "100%";
+        localStorage.setItem(OFFLINE_STORAGE_KEY, JSON.stringify(remainingQueue));
+        
+        setTimeout(() => {
+            alert(`✅ ดำเนินการเสร็จสิ้น! ส่งสำเร็จ ${successCount} รายการ`);
+            progWrapper.style.display = 'none';
+            syncBtn.disabled = false;
+            updateOfflineUI();
+        }, 800);
+    }
+
+    // ----------------------------------------------------------------------------------
+    // ระบบฟอร์มหลัก
+    // ----------------------------------------------------------------------------------
+    function initialSetup() {
+        loadSubmissionHistory();
+        updateSubmissionHistoryDisplay();
+        loadAndSetRememberedFields();
+        loadFormDraft(); // โหลดร่างที่ค้างไว้
+        updateOfflineUI();
+
+        document.getElementById("class").addEventListener('change', handleClassChange);
+        actionButtons.forEach(btn => btn.addEventListener('click', handleActionButtonClick));
+        form.addEventListener("submit", handleFormSubmit);
+        
+        // ติดตามการพิมพ์เพื่อเซฟ Draft ตลอดเวลา
+        form.querySelectorAll('input, select').forEach(el => {
+            el.addEventListener('input', saveFormDraft);
+        });
+    }
+
+    function handleActionButtonClick() {
+        const name = this.dataset.name;
+        this.classList.toggle('selected');
+        this.classList.contains('selected') ? selectedButtons.add(name) : selectedButtons.delete(name);
+        updateCpCount();
+        saveFormDraft();
+    }
+
+    function updateCpCount() {
+        let count = 0;
+        document.querySelectorAll('.tooth-treatment-grid .action-button.selected').forEach(btn => {
+            const num = parseInt(btn.dataset.name.substring(1));
+            if (btn.dataset.name.startsWith('t') && num >= 11 && num <= 48) count++;
+        });
+        document.getElementById("cp").value = count;
+    }
+
+    function handleClassChange() {
+        const grade = this.value;
+        const np = document.getElementById("np"), nm = document.getElementById("nm");
+        const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+        if (grade === "ป.1") { np.value = rand(4,6); nm.value = rand(18,20); }
+        else if (grade === "ป.3") { np.value = rand(12,16); nm.value = rand(12,14); }
+        else if (grade === "ป.6") { np.value = rand(24,26); nm.value = rand(2,6); }
+        else if (grade === "ม.1") { np.value = 28; nm.value = 0; }
+        saveFormDraft();
+    }
+
+    async function handleFormSubmit(e) {
+        e.preventDefault();
+        submitButton.classList.add('blinking');
+        submitButton.disabled = true;
+
+        const formData = new FormData(form);
+        formData.append('CP', document.getElementById("cp").value);
+        selectedButtons.forEach(name => formData.append(name, 'on'));
+
+        const dataObj = {};
+        formData.forEach((val, key) => dataObj[key] = val);
+        const code = dataObj.id;
+        const timeStr = new Date().toLocaleTimeString("th-TH");
+
+        if (!navigator.onLine) {
+            const queue = getOfflineQueue();
+            queue.push({ data: dataObj, timestamp: new Date().toLocaleString("th-TH") });
+            localStorage.setItem(OFFLINE_STORAGE_KEY, JSON.stringify(queue));
+            alert("⚠️ ไม่มีเน็ต! ข้อมูลถูกเก็บไว้ในเครื่องชั่วคราว");
+            afterSubmitProcess(code, timeStr);
+            return;
+        }
+
+        try {
+            const response = await fetch(scriptURL, { method: 'POST', body: formData });
+            if (response.ok) {
+                afterSubmitProcess(code, timeStr);
+            } else {
+                throw new Error();
+            }
+        } catch (err) {
+            const queue = getOfflineQueue();
+            queue.push({ data: dataObj, timestamp: new Date().toLocaleString("th-TH") });
+            localStorage.setItem(OFFLINE_STORAGE_KEY, JSON.stringify(queue));
+            alert("❌ ส่งไม่สำเร็จ! ข้อมูลถูกเก็บไว้ในเครื่องแล้ว");
+            afterSubmitProcess(code, timeStr);
+        }
+    }
+
+    function afterSubmitProcess(code, time) {
+        fieldsToRemember.forEach(f => {
+            const el = document.querySelector(`[name="${f}"]`);
+            if(el) localStorage.setItem(f, el.value);
+        });
+
+        addSubmissionToHistory(code, time);
+        localStorage.removeItem(DRAFT_STORAGE_KEY); // ล้าง Draft เมื่อกดส่งแล้ว
+        resetForm();
+        submitButton.classList.remove('blinking');
+        submitButton.disabled = false;
+        updateOfflineUI();
+    }
+
+    function resetForm() {
+        form.reset();
+        actionButtons.forEach(btn => btn.classList.remove('selected'));
+        selectedButtons.clear();
+        updateCpCount();
+        loadAndSetRememberedFields();
+    }
+
+    // ----------------------------------------------------------------------------------
+    // ระบบ History และ Helper
+    // ----------------------------------------------------------------------------------
+    function loadAndSetRememberedFields() {
+        fieldsToRemember.forEach(f => {
+            const val = localStorage.getItem(f);
+            if (val) {
+                const el = document.querySelector(`[name="${f}"]`);
+                if(el) el.value = val;
+            }
+        });
+    }
+
+    function addSubmissionToHistory(code, time) {
+        submissionHistory.push({ code: code, time: time });
+        if (submissionHistory.length > 2) submissionHistory.shift();
+        localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(submissionHistory));
+        updateSubmissionHistoryDisplay();
+    }
+
+    function loadSubmissionHistory() {
+        const saved = localStorage.getItem(HISTORY_STORAGE_KEY);
+        if (saved) submissionHistory = JSON.parse(saved);
+    }
+
+    function updateSubmissionHistoryDisplay() {
+        const container = document.getElementById('submission-history');
+        container.innerHTML = '';
+        if (submissionHistory.length === 0) { container.style.display = 'none'; return; }
+        container.style.display = 'block';
+        submissionHistory.slice().reverse().forEach(item => {
+            const p = document.createElement('p');
+            p.innerHTML = `ล่าสุด: <strong>${item.code}</strong> | ${item.time}`;
+            container.appendChild(p);
+        });
+    }
+
+    window.addEventListener('online', updateOfflineUI);
   </script>
 </body>
 </html>
