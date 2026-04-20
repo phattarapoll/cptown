@@ -540,7 +540,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="code-display-box" style="margin: 15px auto; padding: 15px; border-radius: 10px; border: 3px dashed #e63946; background-color: #ffe6e6;">
                         <p style="margin: 0; font-size: 1.1em; font-weight: bold; color: #1d3557;">รหัสยกเลิกคิว (Code):</p>
                         <p style="margin: 5px 0 0 0; font-size: 3em; font-weight: bolder; color: #e63946; animation: codeFlash 1.5s infinite;">${cancellationCode}</p>
-                        <p style="margin: 0; font-size: 0.9em; color: #e63946;">**โปรดบันทึกรหัสนี้ไว้เพื่อใช้ในการยกเลิกคิว และตรวจสอบสถานะการจองหลังนัด**</p>
+                        <p style="margin: 0; font-size: 0.9em; color: #e63946;">**โปรดบันทึกรหัสนี้ไว้เพื่อใช้ในการยกเลิกคิว**</p>
                     </div>
                     ` 
                     : '<p style="color: #e63946; font-weight: bold;">ไม่พบรหัสยกเลิกคิว โปรดติดต่อเจ้าหน้าที่</p>';
@@ -565,6 +565,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                 **ประวัติผิดนัดบริการทั้งหมด:** ${noShowCountForUser} ครั้ง
                                 ${noShowCountForUser >= 3 ? `<br><small style="color: #c0392b; font-weight: bolder; display: block; margin-top: 5px;">(คุณยังสามารถใช้คิวที่จองนี้ได้ แต่ครั้งต่อไปจะไม่สามารถจองออนไลน์ได้)</small>` : noShowCountForUser > 0 ? `<br><small style="color: #f39c12; display: block; margin-top: 5px;">(โปรดมาตามนัดเพื่อรักษาสิทธิ์ในการจองออนไลน์ครั้งต่อไป)</small>` : ''}
                             </p>
+							<p>
+                                (กรูณาตรวจสอบคิวบริการหลังจากทำการนัดแล้ว)</small></p>
                         </div>
                         <button onclick="window.location.reload();" style="margin-top: 25px; padding: 12px 25px; font-size: 1.1em; background-color: #e63946; color: white; border: none; border-radius: 8px; cursor: pointer; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#c0392b'" onmouseout="this.style.backgroundColor='#e63946'">
                             จองคิวใหม่ / กลับหน้าหลัก
@@ -572,7 +574,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
                 
-                // 3. แทรกข้อความสรุปถาวรลงใน Container
+                // 3. แทรกข้อความสรุปถาวรลงใน Container  และตรวจสอบสถานะการจองหลังนัด
                 if (container) {
                      const titleElement = container.querySelector('.title');
                      if (titleElement) {
