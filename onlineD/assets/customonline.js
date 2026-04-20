@@ -540,7 +540,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="code-display-box" style="margin: 15px auto; padding: 15px; border-radius: 10px; border: 3px dashed #e63946; background-color: #ffe6e6;">
                         <p style="margin: 0; font-size: 1.1em; font-weight: bold; color: #1d3557;">รหัสยกเลิกคิว (Code):</p>
                         <p style="margin: 5px 0 0 0; font-size: 3em; font-weight: bolder; color: #e63946; animation: codeFlash 1.5s infinite;">${cancellationCode}</p>
-                        <p style="margin: 0; font-size: 0.9em; color: #e63946;">**โปรดบันทึกรหัสนี้ไว้เพื่อใช้ในการยกเลิกคิว**</p>
+                        <p style="margin: 0; font-size: 0.9em; color: #e63946;">**โปรดบันทึกรหัสนี้ไว้เพื่อใช้ในการยกเลิกคิว และตรวจสอบสถานะการจองหลังนัด**</p>
                     </div>
                     ` 
                     : '<p style="color: #e63946; font-weight: bold;">ไม่พบรหัสยกเลิกคิว โปรดติดต่อเจ้าหน้าที่</p>';
