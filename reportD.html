@@ -9,8 +9,9 @@
     <style>
         :root {
             --plan-color: #3b82f6;
-            --active-color: #a855f7; /* สีม่วงตามสั่ง */
-            --success-color: #10b981; /* สีเขียวตามสั่ง */
+            --active-color: #a855f7;
+            --success-color: #10b981;
+            --idle-color: #94a3b8;
             --glass: rgba(255, 255, 255, 0.9);
         }
 
@@ -25,16 +26,22 @@
             align-items: center;
         }
 
-        /* Animations */
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(50px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Animation สำหรับปุ่มกะพริบ เทา-ดำ */
+        @keyframes blink-dark {
+            0% { background-color: #4b5563; } /* สีเทาเข้ม */
+            50% { background-color: #000000; } /* สีดำ */
+            100% { background-color: #4b5563; }
+        }
+
         @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.4); }
-            70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(168, 85, 247, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(168, 85, 247, 0); }
+            0% { transform: scale(1); }
+            70% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
         .container {
@@ -57,45 +64,46 @@
         }
         .logo:hover { transform: rotate(5deg) scale(1.1); }
 
-        /* Status Timeline */
         .status-timeline {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             margin-bottom: 40px;
             position: relative;
         }
 
         .step {
+            display: none;
             flex: 1;
             text-align: center;
             position: relative;
             z-index: 1;
             transition: 0.5s;
-            filter: grayscale(1);
-            opacity: 0.3;
         }
 
-        .step.active { filter: grayscale(0); opacity: 1; }
+        .step.active { 
+            display: block;
+            animation: slideUp 0.5s ease;
+        }
         
         .step-icon {
-            width: 70px;
-            height: 70px;
-            border-radius: 22px;
+            width: 80px;
+            height: 80px;
+            border-radius: 25px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 15px;
-            font-size: 1.8rem;
+            font-size: 2rem;
             color: white;
-            transition: 0.5s;
+            /* เพิ่มแสงสีแดงเรืองๆ อยู่ด้านหลังทุกสถานะ */
+            box-shadow: 0 0 25px rgba(255, 0, 0, 0.6); 
         }
 
-        /* Specific Colors */
-        .step-1.active .step-icon { background: var(--plan-color); box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3); }
-        .step-2.active .step-icon { background: var(--active-color); animation: pulse 2s infinite; }
-        .step-3.active .step-icon { background: var(--success-color); box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3); }
+        .step-0 .step-icon { background: var(--idle-color); }
+        .step-1 .step-icon { background: var(--plan-color); }
+        .step-2 .step-icon { background: var(--active-color); animation: pulse 2s infinite; }
+        .step-3 .step-icon { background: var(--success-color); }
 
-        /* Info Display */
         .display-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -115,7 +123,6 @@
         .label { font-size: 0.9rem; color: #64748b; margin-bottom: 5px; font-weight: bold; }
         .value { font-size: 1.4rem; color: #1e293b; font-weight: 800; }
 
-        /* Grade Badges */
         .grade-badge {
             display: inline-block;
             padding: 5px 15px;
@@ -125,7 +132,6 @@
             color: var(--active-color);
         }
 
-        /* Buttons */
         .btn {
             display: block;
             width: 100%;
@@ -140,11 +146,16 @@
             text-decoration: none;
             margin-bottom: 10px;
         }
-        .btn-main { background: #1e293b; color: white; }
+
+        /* ปุ่มที่กะพริบสีเทา-ดำ */
+        .btn-blink { 
+            animation: blink-dark 1.5s infinite; 
+            color: white; 
+        }
+        
         .btn-sub { background: white; color: #1e293b; border: 2px solid #1e293b; }
         .btn:hover { transform: scale(1.02); filter: brightness(1.2); }
 
-        /* Admin Section */
         #admin-panel {
             background: #fff;
             padding: 25px;
@@ -169,24 +180,26 @@
 <header>
     <img src="assets\images\tm.png" alt="Logo" class="logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3467/3467739.png'">
     <h1 style="color: #1e293b; margin-top: 15px;">ตรวจคัดกรองสุขภาพช่องปากในนักเรียน</h1>
-    <h1 style="color: #FF00FF; margin-top: 14px;">ประจำปีงบประมาณ 2569</h1>
-	<label>งานทันตสาธารณสุข ศูนย์บริการสาธารณสุขเทศบาลเมืองขุมพร(ตึกเก่า)</label>
-
+    <label>งานทันตสาธารณสุข ศูนย์บริการสาธารณสุขเทศบาลเมืองขุมพร(ตึกเก่า)</label>
 </header>
 
 <div class="container">
     <div class="status-timeline">
-        <div class="step step-1 active" id="st-1">
+        <div class="step step-0 active" id="st-0">
+            <div class="step-icon"><i class="fas fa-calendar-times"></i></div>
+            <div style="font-weight: 800; color: var(--idle-color);">ยังไม่มีแผนให้บริการ </div>
+        </div>
+        <div class="step step-1" id="st-1">
             <div class="step-icon"><i class="fas fa-file-signature"></i></div>
-            <div style="font-weight: 800;">วางแผน</div>
+            <div style="font-weight: 800; color: var(--plan-color);">วางแผนการออกตรวจ <span class="current-year"></span></div>
         </div>
         <div class="step step-2" id="st-2">
             <div class="step-icon"><i class="fas fa-user-md"></i></div>
-            <div style="font-weight: 800;">ออกหน่วย</div>
+            <div style="font-weight: 800; color: var(--active-color);">กำลังออกหน่วยคัดกรอง ปี <span class="current-year"></span></div>
         </div>
         <div class="step step-3" id="st-3">
             <div class="step-icon"><i class="fas fa-check-double"></i></div>
-            <div style="font-weight: 800;">เสร็จสิ้น</div>
+            <div style="font-weight: 800; color: var(--success-color);">เสร็จสิ้นกระบวนการ ปี <span class="current-year"></span></div>
         </div>
     </div>
 
@@ -201,7 +214,10 @@
         </div>
     </div>
 
-    <a href="https://script.google.com/macros/s/AKfycbwstQtWNc0CHmAVwDMgOWUKvFxuMKX8JmiRdQzJHyomBLe-2S0seLuxfQctSZiWHDpK/exec" class="btn btn-main"><i class="fas fa-list-check"></i> ตรวจสอบรายชื่อผู้รับบริการ</a>
+    <a href="https://script.google.com/macros/s/AKfycbwstQtWNc0CHmAVwDMgOWUKvFxuMKX8JmiRdQzJHyomBLe-2S0seLuxfQctSZiWHDpK/exec" class="btn btn-blink">
+        <i class="fas fa-list-check"></i> ตรวจสอบรายชื่อ/กดยอมรับบริการ
+    </a>
+    
     <a href="https://cptown.6te.net/" class="btn btn-sub"><i class="fas fa-globe"></i> เว็บไซต์งานทันตสาธารณสุข</a>
 
     <div style="text-align: center; margin-top: 20px;">
@@ -209,7 +225,7 @@
         
         <div id="login-form" style="display:none; margin-top:15px;">
             <input type="password" id="pass" placeholder="รหัสผ่าน" style="width:200px">
-            <button onclick="doLogin()" class="btn-main" style="padding:10px 20px; border-radius:10px; border:none; cursor:pointer;">ตกลง</button>
+            <button onclick="doLogin()" class="btn-blink" style="padding:10px 20px; border-radius:10px; border:none; cursor:pointer;">ตกลง</button>
         </div>
 
         <div id="admin-panel">
@@ -217,9 +233,10 @@
             
             <label>ขั้นตอน:</label>
             <select id="set-status" onchange="sync()">
+                <option value="0">0. ยังไม่มีแผนให้บริการ</option>
                 <option value="1">1. วางแผนการออกหน่วย</option>
-                <option value="2">2. ออกหน่วยบริการ (สีม่วง)</option>
-                <option value="3">3. เสร็จสิ้นกระบวนการ (สีเขียว)</option>
+                <option value="2">2. ออกหน่วยบริการ</option>
+                <option value="3">3. เสร็จสิ้นกระบวนการ</option>
             </select>
 
             <label>โรงเรียน:</label>
@@ -249,6 +266,22 @@
 </div>
 
 <script>
+    function updateYear() {
+        const now = new Date();
+        const yearBE = now.getFullYear() + 543;
+        const yearElements = document.getElementsByClassName('current-year');
+        for(let el of yearElements) {
+            el.innerText = yearBE;
+        }
+        
+        const statusSelect = document.getElementById('set-status');
+        for(let opt of statusSelect.options) {
+            opt.text = opt.text + " " + yearBE;
+        }
+    }
+
+    updateYear();
+
     function showLogin() {
         document.getElementById('login-form').style.display = 'block';
     }
@@ -268,15 +301,15 @@
         const school = document.getElementById('set-school').value;
         const grade = document.getElementById('set-grade').value;
 
-        // Update Text
         document.getElementById('disp-school').innerText = school;
         document.getElementById('disp-grade').innerHTML = `<span class="grade-badge">${grade}</span>`;
 
-        // Update Timeline
-        for(let i=1; i<=3; i++) {
+        for(let i=0; i<=3; i++) {
             const el = document.getElementById('st-'+i);
             el.classList.remove('active');
-            if(i <= status) el.classList.add('active');
+            if(i == status) {
+                el.classList.add('active');
+            }
         }
     }
 </script>
