@@ -213,7 +213,7 @@
 
             <label>โรงเรียน:</label>
             <select id="set-school" onchange="sync()">
-                <option value="ไม่ระบุ">ไม่ระบุ</option>
+                <option value="-">ไม่ระบุ</option>
                 <option value="รร.สหศึกษา">รร.สหศึกษา</option>
                 <option value="รร.เทศบาล1(บ้านท่าตะเภา)">รร.เทศบาล1(บ้านท่าตะเภา)</option>
                 <option value="รร.ฝวาหมินกงลิ">รร.ฝวาหมินกงลิ</option>
@@ -255,7 +255,7 @@
 
         // โหลดค่าที่เคยบันทึกไว้
         const savedStatus = localStorage.getItem('dental_status') || "0";
-        const savedSchool = localStorage.getItem('dental_school') || "ไม่ระบุ";
+        const savedSchool = localStorage.getItem('dental_school') || "-";
         const savedGrade = localStorage.getItem('dental_grade') || "-";
 
         document.getElementById('set-status').value = savedStatus;
