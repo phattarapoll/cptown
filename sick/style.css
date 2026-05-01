@@ -1,795 +1,302 @@
 :root {
-    --primary-color: #007bff;
-    --secondary-color: #6c757d;
-    --success-color: #28a745;
-    --danger-color: #dc3545;
-    --light-color: #f8f9fa;
-    --dark-color: #343a40;
-    --border-color: #ced4da;
+    --primary: #007fff;
+    --accent: #00f2fe;
+    --success: #22c55e;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --text-dark: #1e293b;
+    --text-light: #64748b;
+    --bg-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
-    body {
-      font-family: 'Sarabun', sans-serif;
-      margin: 0;
-      background: linear-gradient(135deg, #4facfe, #00f2fe);
-      color: #333;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 30px;
-    }
-    h1, h2, h3 {
-      margin: 0 0 10px;
-      font-weight: 600;
-      color: #222;
-    }
+* { box-sizing: border-box; }
 
-    .container {
-      background: #007fff;
-      border-radius: 20px;
-      padding: 30px;
-      max-width: 1200px;
-      width: 100%;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
-      animation: fadeIn 0.8s ease-in-out;
-    }
-
-
-.card {
-    background-color: #495057;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #6c757d;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.collapsible-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    margin-bottom: 15px;
-}
-
-.collapsible-header h3 {
+body {
+    font-family: 'Sarabun', sans-serif;
     margin: 0;
+    background: var(--bg-gradient);
+    min-height: 100vh;
+    color: var(--text-dark);
 }
 
-.collapsible-header .fa-chevron-right {
-    transition: transform 0.3s ease;
-}
-
-.collapsible-header.expanded .fa-chevron-right {
-    transform: rotate(90deg);
-}
-
-.collapsible-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
-}
-
-.collapsible-content.expanded {
-    max-height: 1000px;
-}
-
-.main-content {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.left-column, .right-column {
-    flex: 1;
-    min-width: 300px;
-}
-
-label {
-    display: block;
-    margin-top: 15px;
-    font-weight: 600; /* ปรับความหนาของ Label */
-    font-size: 16px; /* ปรับขนาด Label ให้ชัดเจน */
-}
-
-input, select, textarea {
-    width: 100%;
-    padding: 10px; /* เพิ่ม padding ในช่องกรอก */
-    margin-top: 5px;
-    margin-bottom: 15px;
-    border: 1px solid #6c757d;
-    background-color: #495057;
-    color: var(--light-color);
-    border-radius: 4px;
-    box-sizing: border-box;
-    font-size: 16px; /* ปรับขนาดตัวอักษรในช่องกรอก */
-}
-
-button {
-    background-color: var(--primary-color);
-    color: #fff;
-    padding: 12px 20px; /* เพิ่ม padding ในปุ่ม */
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px; /* ปรับขนาดตัวอักษรในปุ่ม */
-    transition: background-color 0.2s ease;
-}
-
-button:hover {
-    background-color: #0056b3;
-}
-
-.approve-button {
-    background-color: var(--success-color);
-}
-.approve-button:hover {
-    background-color: #1e7e34;
-}
-
-.reject-button {
-    background-color: var(--danger-color);
-}
-.reject-button:hover {
-    background-color: #bd2130;
-}
-
-.cancel-button {
-    background-color: var(--secondary-color);
-    font-size: 10px; /* ปรับขนาดตัวอักษรในปุ่ม Cancel */
-    padding: 7px 9px;
-}
-.cancel-button:hover {
-    background-color: #545b62;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-    font-size: 14px; /* ปรับขนาดตัวอักษรในตาราง */
-}
-
-th, td {
-    border: 1px solid #6c757d;
-    padding: 14px; /* เพิ่ม padding ใน cell ของตาราง */
-    text-align: left;
-}
-
-th {
-    background-color: #495057;
-    color: var(--light-color);
-    font-weight: 600;
-}
-
-.hidden {
-    display: none;
-}
-
-/* Floating Panels and Buttons */
-.floating-button {
-    position: fixed;
-    bottom: 15px;
-    font-size: 14px;
-    padding: 12px 18px;
-    border-radius: 50px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-    transition: transform 0.3s ease;
-}
-
-.floating-button.left {
-    left: 20px;
-    background-color: var(--primary-color);
-    color: white;
-}
-
-.floating-button.right {
-    right: 20px;
-    background-color: var(--success-color);
-    color: white;
-}
-
-.floating-panel {
-    position: fixed;
-    bottom: 80px;
-    width: 90%;
-    max-width: 450px;
-    background-color: #495057;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    padding: 20px;
-    z-index: 999;
-    transition: transform 0.3s ease, opacity 0.3s ease;
-    overflow-y: auto;
-    max-height: 80vh;
-}
-
-.floating-panel.left {
-    left: 20px;
-    transform: translateX(-150%) translateY(0);
-}
-
-.floating-panel.right {
-    right: 20px;
-    transform: translateX(150%) translateY(0);
-}
-
-.floating-panel.visible {
-    transform: translateX(0) translateY(0);
-    opacity: 1;
-}
-
-.floating-panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.floating-panel-header h2 {
-    margin: 0;
-}
-
-.floating-panel-close {
-    cursor: pointer;
-    font-size: 24px;
-    color: var(--secondary-color);
-}
-
-.floating-panel-close:hover {
-    color: var(--danger-color);
-}
-    /* ===== Officer Card ===== */
-    #officer-list-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 20px;
-      margin-top: 20px;
-    }
-    .officer-card {
-      background: linear-gradient(135deg, #7a8e8e, #4facfe);
-      border-radius: 16px;
-      padding: 20px;
-      text-align: center;
-      color: #fff;
-      font-weight: 600;
-      cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-      animation: popIn 0.5s ease;
-    }
-    .officer-card:hover {
-      transform: translateY(-8px) scale(1.03);
-      box-shadow: 0 12px 25px rgba(0,0,0,0.2);
-    }
-    .officer-card i {
-      font-size: 1.2rem;
-      margin-bottom: 10px;
-      display: block;
-    }
-
-
-/* Style for the loading button */
-#login-button.loading {
-    background-color: var(--danger-color);
-    cursor: wait;
-}
-
-/* Spinner animation - The following CSS creates a spinning hourglass effect */
-#login-button.loading::before {
-  content: '⌛';
-  display: inline-block;
-  margin-right: 8px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-
-    /* ===== Card Section ===== */
-    .card {
-      background: #fafafa;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-      transition: transform 0.3s ease;
-    }
-    .card:hover { transform: translateY(-5px); }
-
-    .collapsible-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-      margin-bottom: 10px;
-    }
-    .collapsible-header h2, .collapsible-header h3 {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 1.2rem;
-      color: #0077b6;
-    }
-
-    .collapsible-content { display: none; }
-    .collapsible-content.expanded { display: block; }
-
-    .main-content {
-      display: flex;
-      gap: 20px;
-    }
-    .left-column, .right-column { flex: 1; }
-
-    label {
-      display: block;
-      margin: 10px 0 5px;
-      font-weight: 600;
-    }
-    input, select, textarea, button {
-      width: 100%;
-      padding: 10px 15px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      font-family: inherit;
-      font-size: 1rem;
-      transition: 0.3s;
-    }
-    input:focus, select:focus, textarea:focus {
-      border-color: #4facfe;
-      outline: none;
-      box-shadow: 0 0 6px rgba(79,172,254,0.5);
-    }
-
-    button[type="submit"], .floating-button {
-      background: linear-gradient(135deg, #4facfe, #00f2fe);
-      color: #fff;
-      font-weight: 600;
-      border: none;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    button[type="submit"]:hover, .floating-button:hover {
-      background: linear-gradient(135deg, #00f2fe, #4facfe);
-      transform: scale(1.05);
-    }
-    /* ===== Floating Panel ===== */
-    .floating-button {
-      position: fixed;
-      bottom: 30px;
-      right: 30px;
-      padding: 14px 22px;
-      border-radius: 50px;
-      font-size: 1rem;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-      z-index: 1000;
-    }
-.floating-panel {
-    position: fixed;
-    left: 0;
-    bottom: -100%; /* ซ่อนไว้ใต้ขอบจอ */
-    width: 100%; /* เต็มความกว้าง */
-    height: 100%; /* เต็มความสูง */
-    max-width: none; /* ยกเลิกการจำกัดความกว้าง */
-    max-height: 100vh; /* เต็มความสูงหน้าจอ */
-    background-color: #fff; /* หรือสีที่คุณต้องการ เช่น #495057 */
-    border-radius: 20px 20px 0 0; /* ทำมุมมนเฉพาะด้านบน */
-    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.2);
-    z-index: 2000; /* ให้อยู่เหนือทุกอย่าง */
-    transition: bottom 0.5s cubic-bezier(0.4, 0, 0.2, 1); /* แอนิเมชันเลื่อนขึ้น */
-    display: flex;
-    flex-direction: column;
-}
-.floating-panel.visible {
-    bottom: 0;
-    transform: none; /* ยกเลิก translateX เดิม */
-}
-    .floating-panel.open { right: 0; }
-    .floating-panel-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px;
-      border-bottom: 1px solid #eee;
-    }
-    .floating-panel-close {
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
-	.table-scroll-container {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0 20px 20px 20px;
-}
-
-    /* ===== Modal ===== */
-    .modal {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 2000;
-    }
-    .modal-content-wrapper {
-      background: #fff;
-      padding: 30px;
-      border-radius: 20px;
-      width: 380px;
-      text-align: center;
-      animation: popIn 0.5s ease;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-      position: relative;
-    }
-    .close-button {
-      position: absolute;
-      right: 20px;
-      top: 20px;
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
-
-    .password-display {
-      height: 40px;
-      margin: 10px 0 20px;
-      border: 1px dashed #aaa;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      letter-spacing: 5px;
-      background: #f9f9f9;
-    }
-
-    #keypad-container {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-      margin-top: 20px;
-    }
-    .keypad-button {
-      background: linear-gradient(135deg, #00f2fe, #4facfe);
-      border: none;
-      color: #fff;
-      font-size: 1.5rem;
-      border-radius: 50%;
-      width: 80px;
-      height: 80px;
-      cursor: pointer;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-      transition: transform 0.2s ease;
-    }
-    .keypad-button:hover {
-      transform: scale(1.1);
-      background: linear-gradient(135deg, #4facfe, #00f2fe);
-    }
-
-    /* ===== Animation ===== */
-    @keyframes fadeIn {
-      from {opacity: 0; transform: translateY(20px);}
-      to {opacity: 1; transform: translateY(0);}
-    }
-    @keyframes popIn {
-      from {opacity: 0; transform: scale(0.8);}
-      to {opacity: 1; transform: scale(1);}
-    }
-
-/* New Modal Styles for admin_approval.js */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    justify-content: center;
-    align-items: center;
-    overflow: auto;
-}
-
-.modal.visible {
-    display: flex;
-}
-
-.modal-content-wrapper {
-    background-color: #343a40;
-    padding: 30px; /* เพิ่ม padding ใน modal */
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    width: 90%;
-    max-width: 500px;
-    position: relative;
-    color: #fff;
-    animation: fadeIn 0.3s ease-out;
-    margin: auto;
-}
-
-.close-button {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.close-button:hover,
-.close-button:focus {
-    color: #fff;
-    text-decoration: none;
-}
-
-.modal-content h2 {
-    border-bottom: 2px solid var(--primary-color);
-    padding-bottom: 10px;
-    margin-top: 0;
-}
-
-.modal-content p {
-    margin: 10px 0;
-    font-size: 16px; /* ปรับขนาดตัวอักษรใน p ของ modal */
-}
-
-.modal-content strong {
-    color: var(--light-color);
-}
-
-.modal-buttons {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 20px;
-}
-
-.modal-buttons button {
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-#confirm-approve-button {
-    background-color: var(--success-color);
-    color: white;
-    border: none;
-}
-
-#confirm-approve-button:hover {
-    background-color: #1e7e34;
-}
-
-#cancel-modal-button {
-    background-color: var(--danger-color);
-    color: white;
-    border: none;
-}
-
-#cancel-modal-button:hover {
-    background-color: #bd2130;
-}
-
-.table-scroll-container {
-    overflow-x: auto;
-}
-/* New styles for the initial login screen */
+/* --- Login Section --- */
 #login-container {
-    display: block;
+    background: var(--primary);
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 40px 20px;
+    border-radius: 20px;
     text-align: center;
-    padding: 30px;
+    color: white;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
 }
+
+#login-container h1 { font-size: 2.2rem; margin: 0 0 10px; }
+#login-container h2 { font-size: 1.4rem; font-weight: 400; margin: 0 0 15px; opacity: 0.9; }
 
 #officer-list-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
-    margin-top: 20px;
+    margin-top: 30px;
 }
 
 .officer-card {
-    background-color: #495057;
-    padding: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 12px;
-    border: 1px solid #6c757d;
+    padding: 25px 15px;
+    color: white;
     cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.2s ease;
+    transition: 0.3s;
+}
+
+.officer-card:hover { background: rgba(255, 255, 255, 0.35); transform: translateY(-5px); }
+
+/* --- Keypad Modal --- */
+.modal-wrapper {
+    background: white;
+    padding: 30px;
+    border-radius: 24px;
+    width: 100%;
+    max-width: 340px;
     text-align: center;
-}
-
-.officer-card:hover {
-    background-color: #5a6268;
-    transform: translateY(-5px);
-}
-
-.officer-card .icon-placeholder {
-    font-size: 2px;
-    color: var(--primary-color);
-    margin-bottom: 10px;
-}
-
-.officer-card h4 {
-    margin: 0;
-    color: var(--light-color);
-    font-weight: 900; /* ปรับความหนาของชื่อ */
-    font-size: 15px; /* ปรับขนาดชื่อให้ใหญ่ขึ้น */
-}
-
-.officer-card p {
-    margin: 5px 0 0;
-    font-size: 13px; /* ปรับขนาดตัวอักษร p ใน card */
-    color: var(--light-color);
-}
-
-/* Hide the main app container by default */
-#main-app-container {
-    display: none;
-}
-/* New styles for the password keypad */
-.password-display {
-    background-color: #495057;
-    border: 1px solid #6c757d;
-    border-radius: 4px;
-    padding: 10px;
-    margin-top: 5px;
-    margin-bottom: 15px;
-    text-align: center;
-    letter-spacing: 5px;
-    font-size: 24px;
-    min-height: 40px;
-    box-sizing: border-box;
-}
-
-#keypad-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.keypad-row {
-    display: flex;
-    justify-content: space-around;
-    gap: 10px;
-}
-
-.keypad-button {
-    flex: 1;
-    padding: 15px 0;
-    font-size: 20px;
-    font-weight: bold;
-    background-color: #6c757d;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.keypad-button:hover {
-    background-color: #5a6268;
-}
-
-.keypad-button.backspace {
-    background-color: #dc3545;
-}
-.keypad-button.backspace:hover {
-    background-color: #bd2130;
-}
-
-.keypad-button.clear {
-    background-color: #ffc107;
-}
-.keypad-button.clear:hover {
-    background-color: #e0a800;
-}
-
-/* --- Added style for the submit leave button --- */
-.submit-button.loading {
-    background-color: var(--danger-color);
-    color: #fff;
-    cursor: wait;
-    pointer-events: none;
-}
-/* ripple effect */
-.officer-card {
     position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
 }
 
-.officer-card:active {
-    transform: scale(0.97);
+.pass-box {
+    height: 60px;
+    background: #f8fafc;
+    border-radius: 12px;
+    margin: 15px 0;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 10px;
+    color: var(--primary);
+    border: 2px solid #edf2f7;
 }
 
-.ripple {
-    position: absolute;
+#keypad-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.keypad-btn {
+    aspect-ratio: 1/1;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.4);
-    transform: scale(0);
-    animation: ripple-animation 0.6s linear;
+    border: none;
+    background: #f1f5f9;
+    font-size: 1.4rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.keypad-btn:hover { background: var(--primary); color: white; }
+.hint-text { font-size: 0.75rem; color: var(--text-light); margin-top: 15px; }
+
+/* --- Navbar --- */
+.navbar { background: white; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+.nav-brand { font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px; font-size: 1.2rem; }
+
+/* --- Modern Form Design --- */
+.form-card-modern {
+    background: white;
+    border-radius: 24px;
+    padding: 35px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f1f5f9;
+}
+
+.form-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #f8fafc;
+    padding-bottom: 20px;
+}
+
+.form-header .icon-box {
+    width: 50px;
+    height: 50px;
+    background: var(--primary);
+    color: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.form-header h2 { margin: 0; font-size: 1.5rem; color: var(--text-dark); }
+.form-header p { margin: 5px 0 0; color: var(--text-light); font-size: 0.9rem; }
+
+.form-section { margin-bottom: 25px; }
+.section-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-grid-modern {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-group-modern label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper i {
+    position: absolute;
+    left: 15px;
+    color: var(--text-light);
+    font-size: 0.9rem;
     pointer-events: none;
 }
 
-@keyframes ripple-animation {
-    to {
-        transform: scale(4);
-        opacity: 0;
-    }
-	
-/* Style for the container of the print button */
-.print-button-container {
-    text-align: right;
-    margin-bottom: 10px;
+.input-wrapper input, 
+.input-wrapper select, 
+.form-group-modern textarea {
+    width: 100%;
+    padding: 12px 15px 12px 40px; /* เว้นที่ให้ไอคอนทางซ้าย */
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-family: 'Sarabun', sans-serif;
+    transition: all 0.3s ease;
+    background-color: #f8fafc;
 }
 
-/* Style for the Print button */
-.print-button {
-    background-color: #007BFF;
+.form-group-modern textarea {
+    padding: 15px; /* Textarea ไม่ใช้ไอคอนข้างใน */
+    resize: none;
+}
+
+.input-wrapper input:focus, 
+.input-wrapper select:focus, 
+.form-group-modern textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    background-color: white;
+    box-shadow: 0 0 0 4px rgba(0, 127, 255, 0.1);
+}
+
+.form-actions {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #f8fafc;
+}
+
+.btn-submit-modern {
+    width: 100%;
+    background: var(--primary);
+    background: linear-gradient(135deg, var(--primary) 0%, #0066cc 100%);
     color: white;
     border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
+    padding: 16px;
+    border-radius: 14px;
+    font-size: 1.1rem;
+    font-weight: 700;
     cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    transition: all 0.3s ease;
 }
 
-.print-button:hover {
-    background-color: #0056b3;
+.btn-submit-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 127, 255, 0.3);
 }
 
-/* Print-specific styles to hide everything except the history panel */
-@media print {
-    body > *:not(#floating-history-panel) {
-        display: none !important;
-    }
+.btn-submit-modern:active {
+    transform: translateY(0);
+}
 
-    #floating-history-panel {
-        display: block !important;
-        position: static !important;
-        width: 100% !important;
-        height: auto !important;
-        max-height: none !important;
-        left: 0 !important;
-        top: 0 !important;
-        right: 0 !important;
-        box-shadow: none !important;
-        transform: none !important;
-        margin: 0;
+/* ปรับปรุง Responsive สำหรับมือถือ */
+@media (max-width: 600px) {
+    .form-grid-modern {
+        grid-template-columns: 1fr;
     }
+}
+/* --- Dashboard --- */
+.main-app { background: #f0f4f8; min-height: 100vh; }
+.dashboard-layout { display: grid; grid-template-columns: 320px 1fr; gap: 25px; padding: 30px 5%; max-width: 1400px; margin: 0 auto; }
 
-    /* Hide header, close button, and the print button itself from the printed page */
-    .floating-panel-header,
-    .floating-panel-close,
-    .print-button-container {
-        display: none !important;
-    }
+.glass-card { background: white; border-radius: 16px; padding: 20px; box-shadow: var(--card-shadow); margin-bottom: 20px; }
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
+.stat-card { background: white; padding: 15px; border-radius: 16px; display: flex; align-items: center; gap: 12px; border-bottom: 4px solid var(--primary); }
+.stat-val label { font-size: 0.75rem; color: var(--text-light); }
+.stat-val div { font-size: 1.2rem; font-weight: 700; }
 
-    /* Adjust table styles for printing */
-    .table-scroll-container {
-        width: 100% !important;
-        overflow: visible !important;
-    }
-    
-    #leave-history-table {
-        width: 100% !important;
-        border-collapse: collapse;
-    }
-    #leave-history-table th,
-    #leave-history-table td {
-        border: 1px solid #ccc;
-        padding: 8px;
-        font-size: 12px;
-    }
-    #leave-history-table thead {
-        background-color: #f2f2f2;
-    }
+/* --- Form --- */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.btn-submit { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 10px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; }
+
+/* --- History Panel (Modern UI) --- */
+.history-panel {
+    position: fixed;
+    right: -100%;
+    top: 0;
+    width: 100%;
+    max-width: 500px;
+    height: 100%;
+    background: white;
+    z-index: 1001;
+    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+}
+.history-panel.visible { right: 0; }
+.panel-header { padding: 25px; background: var(--primary); color: white; display: flex; justify-content: space-between; align-items: center; }
+.panel-close { cursor: pointer; font-size: 1.5rem; }
+
+.filter-section-refined {
+    padding: 20px;
+    background: #f8fafc;
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    border-bottom: 1px solid #e2e8f0;
+}
+.filter-group { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+.filter-input { padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; }
+.btn-filter { background: var(--text-dark); color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; height: 38px; }
+
+.table-container { flex: 1; overflow-y: auto; padding: 0; }
+table { width: 100%; border-collapse: collapse; }
+th { background: #f1f5f9; padding: 12px; text-align: left; font-size: 0.85rem; position: sticky; top: 0; }
+td { padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+
+.status-badge { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+.status-badge.success { background: #dcfce7; color: #166534; }
+.status-badge.pending { background: #fef9c3; color: #854d0e; }
+.btn-cancel { background: none; border: none; color: var(--danger); cursor: pointer; }
+
+.fab { position: fixed; bottom: 30px; right: 30px; background: var(--primary); color: white; border: none; padding: 15px 25px; border-radius: 50px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 2000; }
+.hidden { display: none !important; }
+
+@media (max-width: 900px) {
+    .dashboard-layout { grid-template-columns: 1fr; padding: 15px; }
+    .stats-grid { grid-template-columns: 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
 }

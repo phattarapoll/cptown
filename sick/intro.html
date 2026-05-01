@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบวันลาข้าราชการ</title>
-    <link rel="stylesheet" href="style.css">
+    <title>ระบบวันลาข้าราชการ | เทศบาลเมืองชุมพร</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -13,154 +16,200 @@
         <h1>ระบบจัดการวันลาข้าราชการ</h1>
         <h2>ฝ่ายบริการสาธารณสุข เทศบาลเมืองชุมพร</h2>
         <h3>เลือกชื่อเจ้าหน้าที่เพื่อเข้าสู่ระบบ</h3>
-        <div id="officer-list-container">
-            </div>
+        <div id="officer-list-container"></div>
     </div>
     
-    <div class="container hidden" id="main-app-container">
-        <div id="content-sections">
-            <div class="main-content">
-                <div class="left-column">
-                    <div id="personal-info-card" class="card">
-                        <div class="collapsible-header">
-                            <h3><i class="fa-solid fa-user"></i> ข้อมูลส่วนบุคคล</h3>
-                            <i class="fa-solid fa-chevron-right"></i>
-                        </div>
-                        <div class="collapsible-content expanded">
-                            <p><strong>ชื่อ:</strong> <span id="user-name"></span></p>
-                            <p><strong>ตำแหน่ง:</strong> <span id="user-position"></span></p>
-                            <p><strong>สังกัด:</strong> <span id="user-organization"></span></p>
-                            <p><strong>ที่อยู่:</strong> <span id="user-address"></span></p>
-                            <p><strong>เบอร์โทร:</strong> <span id="user-phone"></span></p>
+    <div class="main-app hidden" id="main-app-container">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fa-solid fa-hospital-user"></i>
+                <span>ระบบวันลาออนไลน์</span>
+            </div>
+            <div class="nav-user-info">
+                <span id="nav-user-name"></span>
+                <button onclick="location.reload()" class="logout-btn" title="ออกจากระบบ">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+        </nav>
+
+        <div class="dashboard-layout">
+            <aside class="sidebar">
+                <div class="glass-card profile-card">
+                    <div class="avatar-circle"><i class="fa-solid fa-user-doctor"></i></div>
+                    <h2 id="user-name"></h2>
+                    <span class="badge" id="user-position"></span>
+                    <div class="info-details">
+                        <p><i class="fa-solid fa-building"></i> <span id="user-organization"></span></p>
+                        <p><i class="fa-solid fa-phone"></i> <span id="user-phone"></span></p>
+                        <p><i class="fa-solid fa-map-marker-alt"></i> <span id="user-address"></span></p>
+                    </div>
+                </div>
+
+                <div class="glass-card work-info">
+                    <h3><i class="fa-solid fa-briefcase"></i> ข้อมูลการทำงาน</h3>
+                    <div class="work-row"><span>วันบรรจุ:</span> <strong id="work-start-date"></strong></div>
+                    <div class="work-row"><span>รพ.ชุมพร:</span> <strong id="old-work-duration"></strong></div>
+                    <div class="work-row"><span>เทศบาล:</span> <strong id="new-work-duration"></strong></div>
+                    <div class="work-total">รวม: <span id="total-work-duration"></span></div>
+                </div>
+            </aside>
+
+            <main class="content-area">
+                <div class="stats-grid">
+                    <div class="stat-card sick">
+                        <i class="fa-solid fa-stethoscopes"></i>
+                        <div class="stat-val">
+                            <label>ลาป่วย (ใช้ไป/คงเหลือ)</label>
+                            <div>
+                                <span id="sick-leave-used" style="color: var(--danger);">0</span> / 
+                                <span id="sick-leave-remaining">30</span> วัน
+                            </div>
                         </div>
                     </div>
-                    <div id="leave-form-section" class="card">
-                        <div class="collapsible-header">
-                            <h2><i class="fa-solid fa-calendar-plus"></i> ยื่นคำขอลา</h2>
-                            <i class="fa-solid fa-chevron-right"></i>
+                    <div class="stat-card vacation">
+                        <i class="fa-solid fa-umbrella-beach"></i>
+                        <div class="stat-val">
+                            <label>ลาพักผ่อน (ใช้ไป/คงเหลือ)</label>
+                            <div>
+                                <span id="vacation-leave-used" style="color: var(--warning);">0</span> / 
+                                <span id="vacation-leave-remaining">0</span> วัน
+                            </div>
                         </div>
-                        <div class="collapsible-content">
-                            <form id="leave-form">
-                                <label for="leave-type">ประเภทการลา:</label>
-                                <select id="leave-type" name="leave-type" required>
-                                    <option value="">เลือกประเภทการลา</option>
-                                    <option value="ลาป่วย">ลาป่วย</option>
-                                    <option value="ลากิจ">ลากิจ</option>
-                                    <option value="ลาพักผ่อน">ลาพักผ่อน</option>
-                                </select>
-                                <label for="leave-start-date">วันที่เริ่มต้น:</label>
-                                <input type="date" id="leave-start-date" name="leave-start-date" required>
-                                <label for="leave-end-date">วันที่สิ้นสุด:</label>
-                                <input type="date" id="leave-end-date" name="leave-end-date" required>
-                                <label for="leave-phone">เบอร์โทรศัพท์ติดต่อ:</label>
-                                <input type="tel" id="leave-phone" name="leave-phone" required>
-                                <label for="leave-reason">สาเหตุการลา:</label>
-                                <textarea id="leave-reason" name="leave-reason" required></textarea>
-                                <button type="submit">ส่งคำขอลา</button>
-                            </form>
+                    </div>
+                    <div class="stat-card personal">
+                        <i class="fa-solid fa-user-tag"></i>
+                        <div class="stat-val">
+                            <label>ลากิจที่ใช้ไป</label>
+                            <div><span id="personal-leave-used" style="color: var(--primary);">0</span> วัน</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="right-column">
-                    <div id="work-info-card" class="card">
-                        <div class="collapsible-header">
-                            <h3><i class="fa-solid fa-briefcase"></i> ข้อมูลการทำงาน</h3>
-                            <i class="fa-solid fa-chevron-right"></i>
+                <!-- ส่วนที่ปรับปรุงใหม่: ยื่นคำขอลาใหม่ -->
+                <div class="form-card-modern">
+                    <div class="form-header">
+                        <div class="icon-box">
+                            <i class="fa-solid fa-calendar-plus"></i>
                         </div>
-                        <div class="collapsible-content expanded">
-                            <p><strong>วันที่บรรจุราชการ:</strong> <span id="work-start-date"></span></p>
-                            <p><strong>ระยะเวลาทำงาน รพ.ชุมพร:</strong> <span id="old-work-duration"></span></p>
-                            <p><strong>ระยะเวลาทำงาน เทศบาลเมือง:</strong> <span id="new-work-duration"></span></p>
-                            <p><strong>รวมทั้งหมด:</strong> <span id="total-work-duration"></span></p>
+                        <div>
+                            <h2>ยื่นคำขอลาใหม่</h2>
+                            <p>กรุณาระบุรายละเอียดการลาให้ครบถ้วน</p>
                         </div>
                     </div>
-                    <div id="leave-info-card" class="card">
-                        <h2><i class="fa-solid fa-umbrella-beach"></i> ข้อมูลวันลา</h2>
-                        <p><strong>ลาป่วย:</strong> ไปแล้ว <span id="sick-leave-used"></span> วัน (คงเหลือ <span id="sick-leave-remaining"></span> วัน)</p>
-                        <p><strong>ลากิจ:</strong> ไปแล้ว <span id="personal-leave-used"></span> วัน</p>
-                        <p><strong>ลาพักผ่อน:</strong> ไปแล้ว <span id="vacation-leave-used"></span> วัน (คงเหลือ <span id="vacation-leave-remaining"></span> วัน)</p>
-                    </div>
+
+                    <form id="leave-form">
+                        <div class="form-section">
+                            <div class="section-title">
+                                <i class="fa-solid fa-info-circle"></i> ข้อมูลการลา
+                            </div>
+                            <div class="form-grid-modern">
+                                <div class="form-group-modern">
+                                    <label>ประเภทการลา</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-list-ul"></i>
+                                        <select id="leave-type" name="leave-type" required>
+                                            <option value="">เลือกประเภทการลา</option>
+                                            <option value="ลาป่วย">ลาป่วย</option>
+                                            <option value="ลากิจ">ลากิจ</option>
+                                            <option value="ลาพักผ่อน">ลาพักผ่อน</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group-modern">
+                                    <label>เบอร์โทรศัพท์ติดต่อ</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-phone"></i>
+                                        <input type="tel" id="leave-phone" name="leave-phone" required placeholder="ระบุเบอร์ติดต่อ">
+                                    </div>
+                                </div>
+                                <div class="form-group-modern">
+                                    <label>วันที่เริ่มต้น</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-calendar-day"></i>
+                                        <input type="date" id="leave-start-date" name="leave-start-date" required>
+                                    </div>
+                                </div>
+                                <div class="form-group-modern">
+                                    <label>วันที่สิ้นสุด</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-calendar-check"></i>
+                                        <input type="date" id="leave-end-date" name="leave-end-date" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="section-title">
+                                <i class="fa-solid fa-pen-to-square"></i> รายละเอียดเพิ่มเติม
+                            </div>
+                            <div class="form-group-modern">
+                                <label>สาเหตุการลา / รายละเอียด</label>
+                                <textarea id="leave-reason" name="leave-reason" rows="3" required placeholder="ระบุเหตุผลการลา..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn-submit-modern">
+                                <i class="fa-solid fa-paper-plane"></i> ส่งคำขออนุมัติ
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            </div>
+            </main>
         </div>
     </div>
     
     <div id="login-modal" class="modal">
-        <div class="modal-content-wrapper">
-            <div class="modal-content">
-                <span class="close-button" id="close-login-modal">&times;</span>
-                <h2>เข้าสู่ระบบสำหรับ: <span id="login-officer-name"></span></h2>
-                <form id="login-form-modal">
-                    <input type="hidden" id="login-officer-id">
-                    <label for="password-display">รหัสผ่าน:</label>
-                    <div id="password-display" class="password-display"></div>
-                    <input type="hidden" id="password-modal" name="password">
-                    <div id="keypad-container">
-                        <div class="keypad-row">
-                            <button type="button" class="keypad-button">1</button>
-                            <button type="button" class="keypad-button">2</button>
-                            <button type="button" class="keypad-button">3</button>
-                        </div>
-                        <div class="keypad-row">
-                            <button type="button" class="keypad-button">4</button>
-                            <button type="button" class="keypad-button">5</button>
-                            <button type="button" class="keypad-button">6</button>
-                        </div>
-                        <div class="keypad-row">
-                            <button type="button" class="keypad-button">7</button>
-                            <button type="button" class="keypad-button">8</button>
-                            <button type="button" class="keypad-button">9</button>
-                        </div>
-                        <div class="keypad-row">
-                            <button type="button" class="keypad-button backspace"><i class="fa-solid fa-delete-left"></i></button>
-                            <button type="button" class="keypad-button">0</button>
-                            <button type="button" class="keypad-button clear"><i class="fa-solid fa-xmark"></i></button>
-                        </div>
-                    </div>
-                </form>
-            </div>
+        <div class="modal-wrapper">
+            <span class="close-btn" id="close-login-modal">&times;</span>
+            <h2>เข้าสู่ระบบ</h2>
+            <p id="login-officer-name" style="font-weight: 600; color: var(--primary); margin-bottom: 10px;"></p>
+            <div id="password-display" class="pass-box"></div>
+            <div id="keypad-container"></div>
+            <p class="hint-text">สามารถพิมพ์ผ่านแป้นพิมพ์คอมพิวเตอร์ได้</p>
         </div>
     </div>
 
-    <button id="floating-history-button" class="floating-button right hidden">
+    <button id="floating-history-button" class="fab hidden">
         <i class="fa-solid fa-history"></i> ประวัติการลา
     </button>
-    <div id="floating-history-panel" class="floating-panel right">
-        <div class="floating-panel-header">
-            <h2>ประวัติการลา</h2>
-            <div class="panel-actions">
-                <div class="filter-controls">
-                    <label for="history-start-year-filter">จากปี:</label>
-                    <select id="history-start-year-filter">
-                        </select>
-                    <label for="history-end-year-filter">ถึงปี:</label>
-                    <select id="history-end-year-filter">
-                        </select>
-                    <button id="apply-filter-button">กรองตามช่วงปี</button>
-                </div>
-                <button id="print-history-button" class="print-button">
-                    <i class="fa-solid fa-print"></i> พิมพ์
-                </button>
-                <span id="close-history-panel" class="floating-panel-close">&times;</span>
-            </div>
+
+    <div id="floating-history-panel" class="history-panel">
+        <div class="panel-header">
+            <h2><i class="fa-solid fa-clock-rotate-left"></i> ประวัติการขอลา</h2>
+            <span id="close-history-panel" class="panel-close">&times;</span>
         </div>
-        <div class="table-scroll-container">
+        <div class="filter-section-refined">
+            <div class="filter-group">
+                <label>เริ่มต้น (พ.ศ.)</label>
+                <input type="number" id="history-start-year" class="filter-input" placeholder="2566">
+            </div>
+            <div class="filter-group">
+                <label>สิ้นสุด (พ.ศ.)</label>
+                <input type="number" id="history-end-year" class="filter-input" placeholder="2567">
+            </div>
+            <button id="btn-filter-history" class="btn-filter">
+                <i class="fa-solid fa-filter"></i> กรอง
+            </button>
+        </div>
+        <div class="table-container">
             <table id="leave-history-table">
                 <thead>
                     <tr>
                         <th>ประเภท</th>
-                        <th>วันที่เริ่ม</th>
-                        <th>วันที่สิ้นสุด</th>
-                        <th>จำนวนวัน</th>
+                        <th>วันที่ลา</th>
+                        <th>วัน</th>
                         <th>สถานะ</th>
-                        <th>การจัดการ</th>
+                        <th>จัดการ</th>
                     </tr>
                 </thead>
-                <tbody>
-                </tbody>
+                <tbody></tbody>
             </table>
         </div>
-    </div></div>    <script src="script.js"></script>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>

@@ -3,223 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบสำหรับผู้ดูแล</title>
+    <title>ระบบสำหรับผู้ดูแล | Admin Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #495057 0%, #212529 100%);
+            --accent-color: #6c757d;
+            --glass-bg: rgba(255, 255, 255, 0.95);
+        }
+
         body {
-            background-color: #f0f2f5;
+            background: #f0f2f5;
+            background-image: radial-gradient(circle at 50% 50%, #e2e8f0 0%, #cbd5e1 100%);
             font-family: 'Kanit', sans-serif;
             min-height: 100vh;
+            margin: 0;
+        }
+
+        /* Password Overlay Modernized */
+        #password-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(12px);
             display: flex;
-            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            transition: opacity 0.5s ease;
         }
-        .container {
-            margin-top: 50px;
-            flex-grow: 1;
+
+        .password-box {
+            background: var(--glass-bg);
+            padding: 40px;
+            border-radius: 30px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 380px;
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            overflow: hidden;
-            background-color: #ffffff;
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
-        .card-header {
-            background-color: #f8f9fa; /* สีเทาอ่อน */
-            color: #343a40; /* สีตัวอักษรเข้ม */
-            font-size: 1.5rem;
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .keypad-button {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            border: 1px solid #e2e8f0;
+            background: white;
+            font-size: 1.6rem;
             font-weight: 600;
-            border-bottom: 3px solid #6c757d;
-            position: relative;
-            padding: 20px 25px;
-        }
-        #digital-clock {
-            position: absolute;
-            bottom: 5px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 1rem;
-            opacity: 0.8;
-        }
-        .category-title {
-            background-color: #495057; /* เปลี่ยนเป็นสีเทาเข้ม */
-            padding: 15px 25px;
-            font-weight: bold;
-            border-top: 1px solid #e9ecef;
-            border-bottom: 1px solid #e9ecef;
-            color: white; /* เปลี่ยนเป็นสีขาว */
-            font-size: 1.2rem;
+            color: #334155;
             cursor: pointer;
-            position: relative;
-            transition: background-color 0.3s ease;
-        }
-        .category-title:hover {
-            background-color: #6c757d; /* สีเทาอ่อนลงเมื่อโฮเวอร์ */
-        }
-        .category-title .fas {
-            margin-right: 15px;
-            color: white; /* เปลี่ยนเป็นสีขาว */
-        }
-        .category-title::after {
-            content: "\f0d7";
-            font-family: "Font Awesome 6 Free";
-            font-weight: 900;
-            position: absolute;
-            right: 25px;
-            top: 50%;
-            transform: translateY(-50%) rotate(0deg);
-            transition: transform 0.3s ease;
-            color: white; /* เปลี่ยนเป็นสีขาว */
-        }
-        .category-title.collapsed::after {
-            transform: translateY(-50%) rotate(-90deg);
-        }
-        .list-group-item {
-            border: none;
-            padding: 15px 25px;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
-            border-left: 5px solid transparent;
+            justify-content: center;
+            margin: auto;
         }
-        .list-group-item:hover {
-            background-color: #f1f5f9;
-            border-left-color: #007bff;
-            transform: translateX(5px);
+
+        .keypad-button:active, .keypad-button.pressed {
+            transform: scale(0.9);
+            background: #334155;
+            color: white;
         }
-        .list-group-item a {
-            text-decoration: none;
-            color: #333;
-            font-weight: 500;
-            flex-grow: 1;
+
+        #pin-display {
+            font-size: 2.2rem;
+            letter-spacing: 12px;
+            color: #334155;
+            margin: 20px 0;
+            height: 45px;
+            font-weight: bold;
         }
-        .list-group-item a i {
+
+        /* Main Content */
+        .container {
+            max-width: 850px;
+            padding: 50px 20px;
+            display: none;
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; } to { opacity: 1; }
+        }
+
+        .card {
+            border: none;
+            border-radius: 25px;
+            background: var(--glass-bg);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 35px;
+            text-align: center;
+            border: none;
+            position: relative;
+        }
+
+        .category-title {
+            padding: 22px 30px;
+            font-weight: 600;
+            color: white;
+            background: #495057;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .category-title:hover {
+            background: #343a40;
+            padding-left: 35px;
+        }
+
+        .category-title i {
             margin-right: 15px;
-            color: #007bff;
-            font-size: 1.3rem;
             width: 25px;
             text-align: center;
         }
-        .list-group-flush .list-group-item:last-child {
-            border-bottom: none;
+
+        .list-group-item {
+            border: none;
+            padding: 14px 45px;
+            background: transparent;
+            transition: all 0.2s;
+            border-left: 4px solid transparent;
         }
-        .footer {
-            margin-top: 30px;
-            text-align: center;
-            color: #6c757d;
-            font-size: 0.9rem;
-            padding: 20px;
+
+        .list-group-item:hover {
+            background: #f8fafc;
+            border-left-color: #495057;
+            transform: translateX(8px);
+        }
+
+        .list-group-item a {
+            text-decoration: none;
+            color: #334155;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
             width: 100%;
-            margin-top: auto;
         }
-        .footer p {
-            margin: 5px 0;
+
+        .list-group-item i {
+            margin-right: 15px;
+            font-size: 1.1rem;
+            color: #64748b;
+            width: 20px;
+            text-align: center;
         }
-		
-/* Password Prompt Styling */
-#password-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-.password-box {
-    background-color: white;
-    padding: 50px; /* เพิ่มพื้นที่ภายในกล่อง */
-    border-radius: 15px;
-    text-align: center;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-    max-width: 400px; /* จำกัดความกว้างสูงสุด */
-    width: 90%; /* ให้กล่องปรับขนาดตามหน้าจอ */
-}
-.password-box h2 {
-    color: #333;
-    font-size: 1.8rem; /* เพิ่มขนาดตัวอักษรของหัวข้อ */
-    margin-bottom: 30px;
-}
-.password-box .keypad {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px; /* เพิ่มระยะห่างระหว่างปุ่ม */
-    margin-bottom: 30px;
-}
-.password-box .keypad-button {
-    width: 90px; /* เพิ่มความกว้างของปุ่ม */
-    height: 90px; /* เพิ่มความสูงของปุ่ม */
-    background-color: #f1f3f5;
-    border: 2px solid #e9ecef;
-    border-radius: 50%;
-    font-size: 2.2rem; /* เพิ่มขนาดตัวเลขในปุ่ม */
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-.password-box .keypad-button:hover {
-    background-color: #e2e6ea;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 10px rgba(0,0,0,0.15);
-}
-.password-box .keypad-button.pressed {
-    background-color: #FF0000;
-    color: white;
-}
-.password-box #pin-display {
-    font-size: 2.5rem; /* เพิ่มขนาดตัวอักษรของรหัสที่แสดง */
-    font-weight: bold;
-    color: #555;
-    min-height: 40px; /* เพิ่มความสูงขั้นต่ำ */
-    margin-bottom: 25px;
-}
-.password-box #error-message {
-    color: red;
-    margin-top: 20px;
-    font-weight: bold;
-    display: none;
-}    
-/* Styling for the status dot and text */
-.status-info {
-    margin-top: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    color: #4CAF50; /* Green color for text */
-}
-.status-dot {
-    height: 12px;
-    width: 12px;
-    background-color: #4CAF50;
-    border-radius: 50%;
-    display: inline-block;
-    margin-right: 8px;
-    animation: pulse 1.5s infinite;
-}
-/* Animation for the pulsating effect */
-@keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
-    }
-    70% {
-        box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
-    }
-}
-</style>
+
+        /* Footer */
+        .footer {
+            margin-top: 50px;
+            padding-bottom: 50px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        .status-dot {
+            height: 12px;
+            width: 12px;
+            background-color: #22c55e;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 10px;
+            box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+    </style>
 </head>
 <body>
+
     <div id="password-overlay">
         <div class="password-box">
-            <h2>กรุณาใส่รหัสผ่านผู้ดูแล</h2>
+            <h2 style="font-weight: 600; color: #1e293b; margin-bottom: 5px;">ADMIN PORTAL</h2>
+            <p style="color: #64748b; font-size: 0.95rem;">กรุณากรอกรหัสผ่านเพื่อเข้าสู่ระบบ</p>
             <div id="pin-display"></div>
             <div class="keypad">
                 <button class="keypad-button" data-num="1">1</button>
@@ -231,432 +218,152 @@
                 <button class="keypad-button" data-num="7">7</button>
                 <button class="keypad-button" data-num="8">8</button>
                 <button class="keypad-button" data-num="9">9</button>
-                <button class="keypad-button" data-num="clear">C</button>
+                <button class="keypad-button" data-num="clear" style="color: #ef4444; font-size: 1.2rem;">CLR</button>
                 <button class="keypad-button" data-num="0">0</button>
             </div>
-            <p id="error-message">รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่</p>
+            <p id="error-message" style="color: #ef4444; margin-top: 20px; display: none; font-weight: 600;">รหัสผ่านไม่ถูกต้อง ลองใหม่อีกครั้ง</p>
         </div>
     </div>
 
-    <div class="container" id="content" style="display: none;">
+    <div class="container" id="content">
         <div class="card">
             <div class="card-header">
-                <i class="fas fa-user-shield"></i> ระบบสำหรับผู้ดูแล
-                <div id="digital-clock"></div>
+                <h3 class="m-0"><i class="fas fa-user-shield"></i> ระบบสำหรับผู้ดูแล</h3>
+                <div id="digital-clock" class="mt-2" style="font-size: 1.1rem; font-weight: 300;">00:00:00</div>
             </div>
+            
             <div class="card-body p-0">
-                <div class="category-title collapsed" data-bs-toggle="collapse" data-bs-target="#system-management" aria-expanded="false">
-                    <i class="fas fa-cogs"></i> ฐานข้อมูล
+                <!-- หมวดหมู่: ฐานข้อมูล -->
+                <div class="category-title" data-bs-toggle="collapse" data-bs-target="#db-section">
+                    <i class="fas fa-database"></i> ฐานข้อมูลและระบบงาน
                 </div>
-                <ul class="list-group list-group-flush collapse" id="system-management">
-                    <li class="list-group-item">
-                        <a href="https://docs.google.com/spreadsheets/d/1H52HRx2loIpta5tLpLy7UWHQF2UDbvG-XTQ30mxJFoY/edit?gid=307078856#gid=307078856">
-                            <i class="fas fa-database"></i> ฐานข้อมูล OnlineDenT
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://docs.google.com/spreadsheets/d/1dguHfWoc9d-1Lje9PjfbpwiBJjdqzmtrvP6v06dtAB0/edit?gid=0#gid=0">
-                            <i class="fas fa-database"></i> ฐานข้อมูล DCheckV.4
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://docs.google.com/spreadsheets/d/1QFw8sUCuRL91E86Gv1W2iRMWyZR-6YdW1zBO1p2_Has/edit?gid=43695140#gid=43695140">
-                            <i class="fas fa-database"></i> ฐานข้อมูล P4P
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://docs.google.com/spreadsheets/d/1USu9DaseW4z4EwD12NMe24Ti6JsUOBmBUNN_E_m6ST4/edit?gid=0#gid=0">
-                            <i class="fas fa-database"></i> ฐานข้อมูลครุภัณฑ์
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://docs.google.com/spreadsheets/d/1yPpfU8am_pea1JBbEUIVb1C2j_jgh24GEdzTIPQSbfE/edit?gid=0#gid=0">
-                            <i class="fas fa-database"></i> ฐานข้อมูลเบิกวัสดุ
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://docs.google.com/spreadsheets/d/1uPI9m-uIlkm5jpFHGviodTdr5Cao0M_0O-DWrHmfJaU/edit?gid=0#gid=0">
-                            <i class="fas fa-database"></i> ฐานข้อมูลหนังสือราชการ
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://docs.google.com/spreadsheets/d/1QDfC-3C27R1wUHn9rSdtL9snvfIYcBImSbeeIrfWeaU/edit?gid=539353542#gid=539353542" target="_blank">
-                            <i class="fas fa-database"></i> ฐานแผนรายปี
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://docs.google.com/spreadsheets/d/1hhgh7qdX5Wo--6invXPBcGeDHdEEcrP3lqUC638RYVw/edit?gid=0#gid=0" target="_blank">
-                            <i class="fas fa-database"></i> ฐานข้อมูลลาป่วย
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://docs.google.com/spreadsheets/d/1avablJu1_q1qLrN-UvXe2Kq0VxA64CDwXwsQM0BWrJQ/edit?gid=0#gid=0" target="_blank">
-                            <i class="fas fa-database"></i> ฐานข้อมูลความพึงพอใจ
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://docs.google.com/spreadsheets/d/1jw00bypheQvH0VmdX8wHWhREN-r6OHUgh05pCfeDE5s/edit?gid=1232072303#gid=1232072303" target="_blank">
-                            <i class="fas fa-database"></i> ฐานข้อมูลนักเรียนต้องลงใน JHCIS
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://docs.google.com/spreadsheets/d/1taauR-ZEyi09zT1ze6s-iCMbppFpHp0Gf6vJ9_V_RLw/edit?gid=0#gid=0" target="_blank">
-                            <i class="fas fa-database"></i> ฐานข้อมูลผังบุคลากร
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://docs.google.com/spreadsheets/d/1vxnl0l_4CDjPJlnkNk-u3J68U2oNwqk_zoW1wmM6_9M/edit?gid=0#gid=0" target="_blank">
-                            <i class="fas fa-database"></i> ฐานข้อมูลระบบเงินเดือน
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://docs.google.com/spreadsheets/d/1Dqu_pzykY0U2AZiWrfE_ZKWWIZ4SX-7HZEgZBieHQlA/edit?gid=458509926#gid=458509926" target="_blank">
-                            <i class="fas fa-database"></i> ฐานข้อมูลสมรรถนะ9ด้าน
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://docs.google.com/spreadsheets/d/1kCLNH1jh4d7SmZ3QjWUq9AoESqC1gd0aAvzd6Ak6b0k/edit?gid=0#gid=0" target="_blank">
-                            <i class="fas fa-database"></i> ฐานข้อมูลสอบผู้ช่วยทันตกรรม
-                        </a>
-                    </li>
-                </ul>
+                <div class="collapse show" id="db-section">
+                    <ul class="list-group">
+                        <li class="list-group-item"><a href="https://docs.google.com/spreadsheets/d/1H52HRx2loIpta5tLpLy7UWHQF2UDbvG-XTQ30mxJFoY/edit?gid=307078856" target="_blank"><i class="fas fa-table"></i> ฐานข้อมูล OnlineDenT</a></li>
+                        <li class="list-group-item"><a href="https://docs.google.com/spreadsheets/d/1dguHfWoc9d-1Lje9PjfbpwiBJjdqzmtrvP6v06dtAB0/edit?gid=0" target="_blank"><i class="fas fa-table"></i> ฐานข้อมูล DCheckV.4</a></li>
+                        <li class="list-group-item"><a href="https://docs.google.com/spreadsheets/d/1QFw8sUCuRL91E86Gv1W2iRMWyZR-6YdW1zBO1p2_Has/edit?gid=43695140" target="_blank"><i class="fas fa-table"></i> ฐานข้อมูล P4P</a></li>
+                        <li class="list-group-item"><a href="https://docs.google.com/spreadsheets/d/1USu9DaseW4z4EwD12NMe24Ti6JsUOBmBUNN_E_m6ST4/edit?gid=0" target="_blank"><i class="fas fa-table"></i> ฐานข้อมูลครุภัณฑ์</a></li>
+                        <li class="list-group-item"><a href="https://docs.google.com/spreadsheets/d/1yPpfU8am_pea1JBbEUIVb1C2j_jgh24GEdzTIPQSbfE/edit?gid=0" target="_blank"><i class="fas fa-table"></i> ฐานข้อมูลเบิกวัสดุ</a></li>
+                        <li class="list-group-item"><a href="https://docs.google.com/spreadsheets/d/1uPI9m-uIlkm5jpFHGviodTdr5Cao0M_0O-DWrHmfJaU/edit?gid=0" target="_blank"><i class="fas fa-table"></i> ฐานข้อมูลหนังสือราชการ</a></li>
+                        <li class="list-group-item"><a href="https://docs.google.com/spreadsheets/d/1QDfC-3C27R1wUHn9rSdtL9snvfIYcBImSbeeIrfWeaU/edit?gid=539353542" target="_blank"><i class="fas fa-table"></i> ฐานแผนรายปี</a></li>
+                        <li class="list-group-item"><a href="https://docs.google.com/spreadsheets/d/1hhgh7qdX5Wo--6invXPBcGeDHdEEcrP3lqUC638RYVw/edit?gid=0" target="_blank"><i class="fas fa-table"></i> ฐานข้อมูลลาป่วย</a></li>
+                        <li class="list-group-item"><a href="https://docs.google.com/spreadsheets/d/1avablJu1_q1qLrN-UvXe2Kq0VxA64CDwXwsQM0BWrJQ/edit?gid=0" target="_blank"><i class="fas fa-table"></i> ฐานข้อมูลความพึงพอใจ</a></li>
+                    </ul>
+                </div>
 
-                <div class="category-title collapsed" data-bs-toggle="collapse" data-bs-target="#personal-websites" aria-expanded="false">
-                    <i class="fas fa-globe"></i> เว็ปไซต์ส่วนตัว
+                <!-- หมวดหมู่: เว็บไซต์ส่วนตัว -->
+                <div class="category-title" data-bs-toggle="collapse" data-bs-target="#personal-section">
+                    <i class="fas fa-globe"></i> เว็บไซต์และบริการส่วนตัว
                 </div>
-                <ul class="list-group list-group-flush collapse" id="personal-websites">
-                    <li class="list-group-item">
-                        <a href="https://calendar.google.com/calendar/u/0/r?pli=1" target="_blank">
-                            <i class="fas fa-calendar-alt"></i> ปฏิทินส่วนตัว
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://mail.google.com/mail/u/0/#inbox" target="_blank">
-                            <i class="fas fa-envelope"></i> Gmail
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://drive.google.com/drive/my-drive" target="_blank">
-                            <i class="fab fa-google-drive"></i> Gไดร์ฟ
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://phattarapoll.github.io/cptown/ADM.html" target="_blank">
-                            <i class="fas fa-link"></i> ADM
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://cptown.6te.net/" target="_blank">
-                            <i class="fas fa-link"></i> CPT
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://psvmt.6te.net/" target="_blank">
-                            <i class="fas fa-link"></i> PSVMT
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://authenservice.nhso.go.th/authencode/claimcode#/claimcode/create" target="_blank">
-                            <i class="fas fa-id-card"></i> ยืนยันตัวตน
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://www.dropbox.com/login?cont=%2Fh" target="_blank">
-                            <i class="fab fa-dropbox"></i> Dropbox
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://eservice.dlt.go.th/esvapp/login.jsf?prev=L2luZGV4LmpzZg==&m=Session%20timeout" target="_blank">
-                            <i class="fas fa-car"></i> ขนส่ง
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://www.dedbit.com/my.php" target="_blank">
-                            <i class="fas fa-coins"></i> Dedbit
-                        </a>
-                    </li>
-                </ul>
+                <div class="collapse" id="personal-section">
+                    <ul class="list-group">
+                        <li class="list-group-item"><a href="https://calendar.google.com/calendar" target="_blank"><i class="fas fa-calendar-alt"></i> ปฏิทินส่วนตัว</a></li>
+                        <li class="list-group-item"><a href="https://mail.google.com" target="_blank"><i class="fas fa-envelope"></i> Gmail</a></li>
+                        <li class="list-group-item"><a href="https://drive.google.com" target="_blank"><i class="fas fa-hdd"></i> Google Drive</a></li>
+                        <li class="list-group-item"><a href="https://phattarapoll.github.io/cptown/ADM.html" target="_blank"><i class="fas fa-link"></i> ADM Portal</a></li>
+                        <li class="list-group-item"><a href="https://authenservice.nhso.go.th" target="_blank"><i class="fas fa-id-card"></i> ยืนยันตัวตน (NHSO)</a></li>
+                        <li class="list-group-item"><a href="https://www.dropbox.com" target="_blank"><i class="fab fa-dropbox"></i> Dropbox</a></li>
+                    </ul>
+                </div>
 
-                <div class="category-title collapsed" data-bs-toggle="collapse" data-bs-target="#personal-management" aria-expanded="false">
-                    <i class="fas fa-user-circle"></i> การจัดการส่วนตัว
+                <!-- หมวดหมู่: การจัดการและ มสธ -->
+                <div class="category-title" data-bs-toggle="collapse" data-bs-target="#stou-section">
+                    <i class="fas fa-graduation-cap"></i> การจัดการส่วนตัวและ มสธ.
                 </div>
-                <ul class="list-group list-group-flush collapse" id="personal-management">
-                    <li class="list-group-item">
-                        <a href="https://script.google.com/macros/s/AKfycbxXQFmmVBtiZ5UjMNm2kEngaZHiXFnoZ9YsZBNNnekOr1vRtf7CtBFA9dxz4F1D8DR01A/exec">
-                            <i class="fas fa-wifi"></i> รับ-จ่าย งานPSVMT
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://script.google.com/macros/s/AKfycbzJvkr9wM-lXhi9G-2DZ45qgwwH1d3-D0AlueoZWdPIjuVzRdOPl0GDc9GGAJfJ8AYi/exec">
-                            <i class="fas fa-wifi"></i> คณิตศาสตร์ลูก
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://pym-support.ntplc.co.th/QR/">
-                            <i class="fas fa-wifi"></i> จ่ายเน็ต NT 7751J4218
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://epay.nc.ntplc.co.th/app/">
-                            <i class="fas fa-receipt"></i> จ่ายรายเดือน NT 9200272466
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://ufundportal.com/Milestone">
-                            <i class="fas fa-chart-line"></i> UfunD
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://regis.stou.ac.th/STOU/login.jsp">
-                            <i class="fas fa-chart-line"></i> งานทะเบียน มสธ
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://cs.stou.ac.th/register/">
-                            <i class="fas fa-graduation-cap"></i> เพิ่มชุดวิชา มสธ
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://dssj.stou.ac.th/chooseplan/">
-                            <i class="fas fa-calendar-check"></i> เลือกแผน มสธ
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://elearning.stou.ac.th/login/index.php" target="_blank">
-                            <i class="fas fa-chalkboard-teacher"></i> STOU e-Learning 6750017680 มสธ
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://www.stou.ac.th/Exam_Final/login_11.aspx?fbclid=IwY2xjawLm0n5leHRuA2FlbQIxMABicmlkETFVOXMzSW9hTFVvRXZUMDRLAR6x94G0JE0CYGot5ixoU1v1Wht-dNn8sCjpBZTz364kbuyMZ_oIGZ2bKoFsdg_aem_kHsS30ab4OQ3JQpYfTrq6Q" target="_blank">
-                            <i class="fas fa-clipboard-list"></i> กำหนดการสอบ มสธ
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://cmpo.thaicoop.org/dividend" target="_blank">
-                            <i class="fas fa-clipboard-list"></i>สหกรณ์ออมทรัพย์สาสุข
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://exam.stou.ac.th/login/index.php" target="_blank">
-                            <i class="fas fa-laptop-code"></i> สอบออนไลน์ มสธ
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://docs.google.com/spreadsheets/d/1uIH4FHrkQ6EitmjJm9iEREWiydK8sd368aYvL_OBc0w/edit?gid=0#gid=0" target="_blank">
-                            <i class="fas fa-database"></i>ฐานข้อมูลรายรับรายจ่าย
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://docs.google.com/spreadsheets/d/1St7sf2m2WD4S44wLNAo2dbvggASggmHcBwbk725bZ-w/edit?gid=0#gid=0" target="_blank">
-                            <i class="fas fa-database"></i>ฐานข้อมูลเว็ป/ผังครอบครัว/ส่วนตัว 
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://docs.google.com/spreadsheets/d/1MkkVOCB2NR7GnevKBRF-UVmZM1sbM9gy3eiyD1so_j8/edit?gid=1783086412#gid=1783086412" target="_blank">
-                            <i class="fas fa-database"></i> ฐานข้อมูลคณิตศาสตร์
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://docs.google.com/spreadsheets/d/1_24wcQnwYVNiD8QI9QIMtoTPkAno6DXrBr2hnSqMqEQ/edit?gid=0#gid=0" target="_blank">
-                            <i class="fas fa-database"></i> ฐานข้อมูลประโยคภาษาอังกฤษ
-                        </a>
-                    </li>
-                </ul>
+                <div class="collapse" id="stou-section">
+                    <ul class="list-group">
+                        <li class="list-group-item"><a href="https://regis.stou.ac.th/STOU/login.jsp" target="_blank"><i class="fas fa-user-edit"></i> งานทะเบียน มสธ.</a></li>
+                        <li class="list-group-item"><a href="https://elearning.stou.ac.th" target="_blank"><i class="fas fa-book-reader"></i> STOU e-Learning</a></li>
+                        <li class="list-group-item"><a href="https://script.google.com/macros/s/AKfycbxXQFmmVBtiZ5UjMNm2kEngaZHiXFnoZ9YsZBNNnekOr1vRtf7CtBFA9dxz4F1D8DR01A/exec" target="_blank"><i class="fas fa-money-bill-wave"></i> รับ-จ่าย งาน PSVMT</a></li>
+                        <li class="list-group-item"><a href="https://docs.google.com/spreadsheets/d/1uIH4FHrkQ6EitmjJm9iEREWiydK8sd368aYvL_OBc0w/edit?gid=0" target="_blank"><i class="fas fa-chart-pie"></i> ฐานข้อมูลรายรับรายจ่าย</a></li>
+                    </ul>
+                </div>
             </div>
-        </div> <div class="footer">
-            <div class="status-info">
-                <span class="status-dot"></span>
-                <span id="status-text"></span>
-            </div>
-            <p>สร้างและพัฒนา... นายภัทรพล ไพศาลวัชรเมธี</p>
-            <p>ทันตสาธารณสุขอาวุโส</p>
-            <p>ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร</p>
         </div>
-    </div> <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+        <div class="footer">
+            <div class="status-info mb-3">
+                <span class="status-dot"></span>
+                <span id="status-text" style="font-weight: 500;">ออนไลน์: ระบบพร้อมทำงาน</span>
+            </div>
+            <p class="m-0" style="font-weight: 600; color: #1e293b; font-size: 1.1rem;">นายภัทรพล ไพศาลวัชรเมธี</p>
+            <p class="m-1">ทันตสาธารณสุขอาวุโส</p>
+            <p class="m-0" style="font-size: 0.85rem;">ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-const correctPassword = "3946";
-let enteredPassword = "";
-const keypadButtons = document.querySelectorAll(".keypad-button");
-const passwordOverlay = document.getElementById("password-overlay");
-const content = document.getElementById("content");
-const errorMessage = document.getElementById("error-message");
-const pinDisplay = document.getElementById("pin-display");
-const categoryTitles = document.querySelectorAll(".category-title");
-const digitalClock = document.getElementById("digital-clock");
+        const correctPassword = "3946";
+        let enteredPassword = "";
+        const passwordOverlay = document.getElementById("password-overlay");
+        const content = document.getElementById("content");
+        const pinDisplay = document.getElementById("pin-display");
+        const errorMessage = document.getElementById("error-message");
 
-function updatePinDisplay() {
-    pinDisplay.textContent = "*".repeat(enteredPassword.length);
-}
-
-// Function to count categories and list items
-function updateStatus() {
-    const categoryCount = document.querySelectorAll('.category-title').length;
-    const listItemCount = document.querySelectorAll('.list-group-item').length;
-    const statusText = document.getElementById('status-text');
-
-    statusText.textContent = `มี ${categoryCount} หัวข้อหลัก และ ${listItemCount} หัวข้อย่อย`;
-}
-
-// Call the function when the page loads
-window.addEventListener('load', updateStatus);
-
-function resetKeypad() {
-    enteredPassword = "";
-    updatePinDisplay();
-    keypadButtons.forEach(button => {
-        button.classList.remove("pressed");
-    });
-    errorMessage.style.display = "none";
-}
-
-keypadButtons.forEach(button => {
-    button.addEventListener("click", function() {
-        const num = this.getAttribute("data-num");
-
-        if (num === "clear") {
-            resetKeypad();
-            return;
+        function updatePinDisplay() {
+            pinDisplay.textContent = "•".repeat(enteredPassword.length);
         }
 
-        if (enteredPassword.length < 4) {
-            enteredPassword += num;
-            this.classList.add("pressed");
-            // เพิ่มโค้ดส่วนนี้เพื่อลบสีแดงหลังจาก 0.5 วินาที
-            setTimeout(() => {
-                this.classList.remove("pressed");
-            }, 100);
+        function resetKeypad() {
+            enteredPassword = "";
             updatePinDisplay();
+            errorMessage.style.display = "none";
+        }
 
-            if (enteredPassword.length === 4) {
-                setTimeout(() => {
-                    if (enteredPassword === correctPassword) {
-                        errorMessage.textContent = "รหัสผ่านถูกต้อง!";
-                        errorMessage.style.color = "green";
-                        errorMessage.style.display = "block";
-                        setTimeout(() => {
-                            passwordOverlay.style.display = "none";
-                            content.style.display = "block";
-                            resetKeypad();
-                        }, 500);
-                    } else {
-                        errorMessage.textContent = "รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่";
-                        errorMessage.style.color = "red";
-                        errorMessage.style.display = "block";
-                        setTimeout(() => {
-                            resetKeypad();
-                        }, 1500);
-                    }
-                }, 200);
+        function handleNumberInput(num) {
+            if (enteredPassword.length < 4) {
+                enteredPassword += num;
+                updatePinDisplay();
+
+                if (enteredPassword.length === 4) {
+                    setTimeout(() => {
+                        if (enteredPassword === correctPassword) {
+                            passwordOverlay.style.opacity = "0";
+                            setTimeout(() => {
+                                passwordOverlay.style.display = "none";
+                                content.style.display = "block";
+                            }, 500);
+                        } else {
+                            errorMessage.style.display = "block";
+                            errorMessage.classList.add("shake");
+                            setTimeout(resetKeypad, 1000);
+                        }
+                    }, 300);
+                }
             }
         }
-    });
-});
-// Other functions remain unchanged
-categoryTitles.forEach(title => {
-    title.addEventListener('click', () => {
-        const targetId = title.getAttribute('data-bs-target');
-        const targetCollapse = document.querySelector(targetId);
-        const isCollapsed = title.classList.contains('collapsed');
 
-        categoryTitles.forEach(otherTitle => {
-            const otherTargetId = otherTitle.getAttribute('data-bs-target');
-            const otherTargetCollapse = document.querySelector(otherTargetId);
-            if (otherTargetCollapse.classList.contains('show')) {
-                otherTargetCollapse.classList.remove('show');
-                otherTitle.classList.add('collapsed');
+        // Single Event Listener for all buttons (Fixed Double Input)
+        document.querySelectorAll(".keypad-button").forEach(button => {
+            button.addEventListener("click", function() {
+                const num = this.getAttribute("data-num");
+                if (num === "clear") {
+                    resetKeypad();
+                } else {
+                    this.classList.add("pressed");
+                    setTimeout(() => this.classList.remove("pressed"), 100);
+                    handleNumberInput(num);
+                }
+            });
+        });
+
+        // Keyboard Support
+        document.addEventListener("keydown", (e) => {
+            if (passwordOverlay.style.display !== "none") {
+                if (/^[0-9]$/.test(e.key)) handleNumberInput(e.key);
+                if (e.key === "Backspace" || e.key.toLowerCase() === "c") resetKeypad();
             }
         });
 
-        if (isCollapsed) {
-            targetCollapse.classList.add('show');
-            title.classList.remove('collapsed');
-        } else {
-            targetCollapse.classList.remove('show');
-            title.classList.add('collapsed');
+        // Clock Function
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('th-TH', { hour12: false });
+            document.getElementById("digital-clock").textContent = timeString;
         }
-    });
-});
-
-function updateClock() {
-    const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
-    digitalClock.textContent = `${hours}:${minutes}:${seconds}`;
-}
-
-setInterval(updateClock, 1000);
-updateClock();
-
-// เพิ่ม Event Listener สำหรับการกดปุ่มบนคีย์บอร์ด
-document.addEventListener("keydown", function(event) {
-    // ตรวจสอบว่าหน้าจอใส่รหัสผ่านยังแสดงอยู่หรือไม่
-    if (passwordOverlay.style.display !== "none") {
-        const key = event.key;
-
-        // ถ้ากดตัวเลข 0-9
-        if (/^[0-9]$/.test(key)) {
-            handleNumberInput(key);
-            
-            // เพิ่ม Effect สีแดงที่ปุ่มบนหน้าจอเวลาเรากดคีย์บอร์ด (เพื่อให้ดูเหมือนเรากดปุ่มจริงๆ)
-            const button = document.querySelector(`.keypad-button[data-num="${key}"]`);
-            if (button) {
-                button.classList.add("pressed");
-                setTimeout(() => button.classList.remove("pressed"), 100);
-            }
-        } 
-        // ถ้ากด Backspace หรือ Delete ให้ล้างค่า (Clear)
-        else if (key === "Backspace" || key === "Delete" || key.toLowerCase() === "c") {
-            resetKeypad();
-        }
-    }
-});
-
-// แยก Logic การรับตัวเลขออกมาเป็น Function เพื่อให้ใช้ร่วมกันได้ทั้ง Click และ Keyboard
-function handleNumberInput(num) {
-    if (enteredPassword.length < 4) {
-        enteredPassword += num;
-        updatePinDisplay();
-
-        if (enteredPassword.length === 4) {
-            setTimeout(() => {
-                if (enteredPassword === correctPassword) {
-                    errorMessage.textContent = "รหัสผ่านถูกต้อง!";
-                    errorMessage.style.color = "green";
-                    errorMessage.style.display = "block";
-                    setTimeout(() => {
-                        passwordOverlay.style.display = "none";
-                        content.style.display = "block";
-                        resetKeypad();
-                    }, 500);
-                } else {
-                    errorMessage.textContent = "รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่";
-                    errorMessage.style.color = "red";
-                    errorMessage.style.display = "block";
-                    setTimeout(() => {
-                        resetKeypad();
-                    }, 1500);
-                }
-            }, 200);
-        }
-    }
-}
-
-// ปรับปรุง Event Listener เดิมของปุ่มกด (Click) ให้ไปเรียกใช้ handleNumberInput แทน
-keypadButtons.forEach(button => {
-    button.addEventListener("click", function() {
-        const num = this.getAttribute("data-num");
-
-        if (num === "clear") {
-            resetKeypad();
-            return;
-        }
-
-        this.classList.add("pressed");
-        setTimeout(() => this.classList.remove("pressed"), 100);
-        handleNumberInput(num);
-    });
-});
+        setInterval(updateClock, 1000);
+        updateClock();
     </script>
 </body>
 </html>
