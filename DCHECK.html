@@ -18,20 +18,95 @@
     .keypad-button.action { background-color: #6c757d; font-size: 18px; }
     #enter-button { grid-column: span 3; background-color: #28a745; font-size: 20px; padding: 15px 10px; margin-top: 10px; border: none; border-radius: 8px; color: white; cursor: pointer; }
     #message { color: red; font-weight: bold; min-height: 20px; }
+	
+.status-card {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  padding: 12px 20px;
+  border-radius: 15px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+  max-width: 280px;
+  margin: 10px auto 20px;
+}
 
-    /* --- Style ส่วน Sync Progress Bar (ปรับปรุงใหม่) --- */
-    #offline-sync-bar {
-      display: none;
-      background: #ffffff;
-      color: #333;
-      padding: 20px;
-      text-align: center;
-      position: sticky;
-      top: 0;
-      z-index: 1500;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      border-bottom: 5px solid #ff9800;
-    }
+.status-indicator {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  margin-right: 15px;
+}
+
+.dot {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  position: relative;
+  z-index: 2;
+}
+
+.pulse {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  z-index: 1;
+  opacity: 0;
+}
+
+.status-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+#status-label {
+  font-size: 0.7rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+#status-text {
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+/* --- สถานะ Online: ไฟเขียวนุ่มนวล --- */
+.online-mode .dot { background: #2ecc71; }
+.online-mode .pulse {
+  background: #2ecc71;
+  animation: soft-pulse 2s infinite ease-out;
+}
+.online-mode #status-text { color: #27ae60; }
+
+/* --- สถานะ Offline: ไฟแดงสลับเขียวแบบทันสมัย --- */
+.offline-mode .dot {
+  animation: color-shift 1.5s infinite;
+}
+.offline-mode .pulse {
+  animation: color-shift-pulse 1.5s infinite;
+}
+.offline-mode #status-text { color: #e74c3c; }
+
+@keyframes soft-pulse {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(3.5); opacity: 0; }
+}
+
+@keyframes color-shift {
+  0%, 100% { background: #e74c3c; transform: scale(1); }
+  50% { background: #2ecc71; transform: scale(1.1); }
+}
+
+@keyframes color-shift-pulse {
+  0%, 100% { background: #e74c3c; transform: scale(1); opacity: 0.4; }
+  50% { background: #2ecc71; transform: scale(2.5); opacity: 0; }
+}
     .progress-wrapper {
       width: 100%;
       max-width: 500px;
@@ -218,7 +293,18 @@
         </div> 
       </div> 
     </form>
-    <br><br>
+    <br>	
+		<div class="status-card">
+			<div class="status-indicator">
+			<div id="status-dot" class="dot"></div>
+			<div id="status-pulse" class="pulse"></div>
+		</div>
+		<div class="status-info">
+			<span id="status-label">ระบบการเชื่อมต่อ</span>
+			<strong id="status-text">กำลังตรวจสอบ...</strong>
+		</div>
+</div>
+	<br>
     <h6 style="text-align:center;">ผู้สร้างและพัฒนา...นายภัทรพล ไพศาลวัชรเมธี ทันตสาธารณสุขอาวุโส</h6>
   </div>
 
@@ -280,6 +366,35 @@
         }
         updateCpCount();
     }
+	
+async function updateModernStatus() {
+    const container = document.querySelector('.status-card');
+    const statusText = document.getElementById('status-text');
+    let isOnline = false;
+
+    if (navigator.onLine) {
+        try {
+            // เช็คเน็ตจริงเพื่อให้ข้อมูลแม่นยำตามมาตรฐานของคุณ
+            await fetch("https://www.google.com/favicon.ico", { mode: 'no-cors', cache: 'no-store' });
+            isOnline = true;
+        } catch (e) { isOnline = false; }
+    }
+
+    if (isOnline) {
+        container.classList.remove('offline-mode');
+        container.classList.add('online-mode');
+        statusText.textContent = "พร้อมเชื่อมต่อฐานข้อมูล";
+    } else {
+        container.classList.remove('online-mode');
+        container.classList.add('offline-mode');
+        statusText.textContent = "กำลังบันทึกลงเครื่อง";
+    }
+}
+
+// ตรวจสอบสถานะทันทีและทุก 5 วินาที
+updateModernStatus();
+setInterval(updateModernStatus, 5000);
+
 
     // ----------------------------------------------------------------------------------
     // ระบบ LOGIN & KEYBOARD SUPPORT
@@ -367,6 +482,38 @@
                 remainingQueue.push(item);
             }
         }
+		
+		async function checkConnection() {
+    const dot = document.getElementById('status-dot');
+    const text = document.getElementById('status-text');
+
+    // ตรวจสอบเบื้องต้นและลองดึงข้อมูลเล็กน้อยเพื่อเช็คเน็ตจริง
+    let isActuallyOnline = false;
+    if (navigator.onLine) {
+        try {
+            const response = await fetch("https://www.google.com/favicon.ico", { mode: 'no-cors', cache: 'no-store' });
+            isActuallyOnline = true;
+        } catch (e) {
+            isActuallyOnline = false;
+        }
+    }
+
+    if (isActuallyOnline) {
+        dot.className = "dot-online";
+        text.textContent = "ออนไลน์: พร้อมส่งข้อมูล";
+        text.style.color = "#28a745";
+    } else {
+        dot.className = "dot-offline";
+        text.textContent = "ออฟไลน์: ข้อมูลจะถูกล็อกไว้ในเครื่อง";
+        text.style.color = "#d32f2f";
+    }
+}
+
+// ตรวจสอบทุกๆ 3 วินาทีเพื่อให้ข้อมูลสดใหม่เสมอ
+setInterval(checkConnection, 3000);
+window.addEventListener('online', checkConnection);
+window.addEventListener('offline', checkConnection);
+checkConnection();
 
         // จบการทำงาน
         progBar.style.width = "100%";
