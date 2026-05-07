@@ -3,935 +3,452 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PSVMT Family Legacy</title>
+    <title>PSVMT Family Legacy | Premium Experience</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
-        /* CSS เดิม */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
-:root {
-    --bg-color: #121212;
-    --main-color: #E6B34A;
-    --text-color: #f0f0f0;
-    --border-color: #333;
-    --chat-bg: #1c1c1c;
-}
-body {
-    font-family: 'Playfair Display', serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    display: flex;
-    height: 100vh;
-}
-#video-background {
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    min-width: 100%;
-    min-height: 100%;
-    width: auto;
-    height: auto;
-    z-index: -100;
-    filter: brightness(0.4);
-}
-.container {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    position: relative;
-    z-index: 1;
-}
-.main-content {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 2rem;
-    text-align: center;
-    transition: all 0.5s ease; /* ปรับ transition ให้กับ main-content */
-}
-.main-content h1 {
-    font-size: 4rem;
-    color: var(--main-color);
-    margin-bottom: 1rem;
-    text-shadow: 0 0 10px rgba(230, 179, 74, 0.5);
-}
-.main-content p {
-    font-size: 1.2rem;
-    color: #ccc;
-}
-.left-menu {
-    position: fixed; /* เปลี่ยนให้เป็น fixed */
-    top: 0;
-    left: -30vw; /* เลื่อนเมนูออกจากหน้าจอ */
-    height: 100vh; /* ให้เต็มความสูงหน้าจอ */
-    width: 30vw; /* กำหนดความกว้าง */
-    background-color: rgba(0, 0, 0, 0.5); /* พื้นหลังโปร่งใส */
-    overflow-x: hidden;
-    transition: all 0.5s ease;
-    display: flex;
-    flex-direction: column;
-    padding-top: 5rem;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
-}
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Sarabun:wght@200;400;600&display=swap');
 
-.left-menu.active {
-    left: 0; /* เลื่อนเมนูกลับเข้ามา */
-    padding: 2rem; /* เพิ่ม padding เมื่อเมนู active */
-}
-.left-menu a {
-    padding: 1rem 1.5rem;
-    text-decoration: none;
-    font-size: 1.2rem;
-    color: var(--text-color);
-    display: block;
-    transition: color 0.3s ease, background-color 0.3s ease;
-    border-left: 3px solid transparent;
-}
-.left-menu a:hover {
-    color: var(--main-color);
-    background-color: rgba(230, 179, 74, 0.1);
-    border-left: 3px solid var(--main-color);
-}
-.left-menu .sub-menu-item {
-    padding: 0.5rem 1.5rem 0.5rem 3rem; /* Indent sub-menu items */
-    font-size: 1rem;
-}
-.menu-icon {
-    position: fixed;
-    top: 2rem;
-    left: 2rem;
-    font-size: 2rem;
-    cursor: pointer;
-    color: var(--main-color);
-    z-index: 1000;
-}
-.right-menu {
-    position: fixed;
-    right: 2rem;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    z-index: 100;
-}
-.right-menu .icon-container {
-    position: relative;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-}
-.right-menu .icon-container:hover {
-    transform: scale(1.1);
-}
-.right-menu i {
-    font-size: 1.8rem;
-    color: var(--main-color);
-    transition: color 0.3s ease;
-}
-.right-menu .tooltip {
-    visibility: hidden;
-    width: 120px;
-    background-color: rgba(0, 0, 0, 0.8);
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px 0;
-    position: absolute;
-    z-index: 1;
-    right: 120%;
-    top: 50%;
-    transform: translateY(-50%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-.right-menu .icon-container:hover .tooltip {
-    visibility: visible;
-    opacity: 1;
-}
-.chat-container {
-    width: 70%;
-    height: 80%;
-    background-color: var(--chat-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    display: none;
-    flex-direction: column;
-    overflow: hidden;
-}
-.chat-header {
-    padding: 1rem;
-    text-align: center;
-    border-bottom: 1px solid var(--border-color);
-    position: relative;
-}
-#online-status {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-color);
-    font-size: 0.9em;
-}
-#music-status {
-    position: absolute;
-    right: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--main-color);
-    animation: pulse 1.5s infinite;
-}
-@keyframes pulse {
-    0% { transform: translateY(-50%) scale(1); }
-    50% { transform: translateY(-50%) scale(1.1); }
-    100% { transform: translateY(-50%) scale(1); }
-}
-.chat-box {
-    flex-grow: 1;
-    padding: 1rem;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-.message {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-}
-.message .message-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.2rem;
-}
-.message .user-name {
-    font-weight: bold;
-    color: var(--text-color);
-    font-size: 0.9rem;
-}
-.message .message-time {
-    font-size: 0.7rem;
-    color: #888;
-}
-.message .message-text {
-    background-color: #383838;
-    padding: 0.6rem 1rem;
-    border-radius: 15px;
-    max-width: 70%;
-    word-wrap: break-word;
-    align-self: flex-start;
-}
-.message.adm .user-name {
-    color: var(--main-color);
-}
-.message.adm .message-text {
-    background-color: rgba(230, 179, 74, 0.1);
-    border: 1px solid var(--main-color);
-}
-.chat-input {
-    display: flex;
-    padding: 1rem;
-    border-top: 1px solid var(--border-color);
-}
-.chat-input input {
-    flex-grow: 1;
-    background-color: #2a2a2a;
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
-    padding: 0.8rem 1.5rem;
-    color: var(--text-color);
-    font-family: inherit;
-}
-.chat-input button {
-    background-color: var(--main-color);
-    border: none;
-    color: var(--bg-color);
-    padding: 0.8rem 1.5rem;
-    border-radius: 20px;
-    margin-left: 1rem;
-    cursor: pointer;
-    font-weight: bold;
-}
-.overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-.login-popup, .history-popup {
-    background-color: var(--chat-bg);
-    padding: 2rem;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    width: 300px;
-}
-.login-popup h2, .history-popup h2 {
-    margin-bottom: 1.5rem;
-    color: var(--main-color);
-}
-.login-popup input {
-    width: 100%;
-    padding: 0.8rem;
-    background-color: #2a2a2a;
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-    color: var(--text-color);
-    margin-bottom: 1rem;
-}
-.login-popup button {
-    background-color: var(--main-color);
-    border: none;
-    color: var(--bg-color);
-    padding: 0.8rem 2rem;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-}
-.adm-icon {
-    color: var(--main-color);
-    margin-right: 5px;
-}
-.music-player-container {
-    display: none;
-    margin-top: 2rem;
-    text-align: center;
-}
-.music-player-container h3 {
-    color: var(--main-color);
-    margin-bottom: 0.5rem;
-}
-/* New popup container for iframes */
-.popup-iframe-container {
-    width: 90%;
-    height: 90%;
-    max-width: 1000px; /* กำหนดขนาดสูงสุดเพื่อความสวยงาม */
-    max-height: 800px;
-    background-color: var(--chat-bg);
-    border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
+        :root {
+            --bg-dark: #0a0a0a;
+            --gold: #d4af37;
+            --gold-glow: rgba(212, 175, 55, 0.5);
+            --white: #ffffff;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
 
-.popup-iframe-container .close-btn {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    font-size: 2rem;
-    color: var(--text-color);
-    cursor: pointer;
-    z-index: 2; /* ให้ปุ่มปิดอยู่ด้านบน iframe */
-}
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-.popup-iframe-container iframe {
-    width: 100%;
-    height: 100%;
-    border: none; /* ลบเส้นขอบ iframe */
-    border-radius: 0 0 10px 10px; /* ทำให้มุมล่างโค้งมนเหมือนคอนเทนเนอร์ */
-}
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--white);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+        }
 
+        #video-background {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            filter: brightness(0.3) contrast(1.2);
+            object-fit: cover;
+            transform: scale(1.1);
+            animation: slowZoom 20s infinite alternate;
+        }
 
-/* Responsive Design - Media Queries */
-@media (max-width: 768px) {
-    .main-content {
-        /* ปรับ padding เล็กน้อย */
-        padding: 1rem;
-    }
-    .main-content h1 {
-        font-size: 2.5rem;
-    }
-    .main-content p {
-        font-size: 1rem;
-    }
-    .menu-icon {
-        top: 1rem;
-        left: 1rem;
-        font-size: 1.5rem;
-    }
-    .left-menu.active {
-        width: 100%;
-        padding: 1rem;
-    }
-    .right-menu {
-        right: 1rem;
-        top: auto;
-        bottom: 1rem;
-        transform: none;
-        flex-direction: row;
-        gap: 1rem;
-    }
-    .right-menu .tooltip {
-        display: none; /* Hide tooltips on mobile */
-    }
-    .chat-container {
-        width: 90%;
-        height: 90%;
-    }
-    .chat-header h2 {
-        font-size: 1.2rem;
-    }
-    .chat-input {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-    .chat-input input, .chat-input button {
-        width: 100%;
-        margin: 0;
-    }
-    .message .message-text {
-        max-width: 85%;
-    }
-    .login-popup, .history-popup {
-        padding: 1rem;
-    }
-	
-	
-}
-</style>
+        @keyframes slowZoom {
+            from { transform: scale(1); }
+            to { transform: scale(1.15); }
+        }
+
+        .menu-toggle {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            font-size: 22px;
+            color: var(--gold);
+            cursor: pointer;
+            z-index: 1001;
+            background: var(--glass);
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 1px solid var(--glass-border);
+            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .menu-toggle:hover {
+            background: var(--gold);
+            color: #000;
+            box-shadow: 0 0 20px var(--gold);
+        }
+
+        .sidebar {
+            position: fixed;
+            left: -400px;
+            top: 0;
+            width: 380px;
+            height: 100%;
+            background: rgba(5, 5, 5, 0.95);
+            backdrop-filter: blur(25px);
+            z-index: 1000;
+            transition: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 110px 20px;
+            border-right: 1px solid var(--gold);
+            overflow-y: auto;
+        }
+
+        .sidebar.active { left: 0; box-shadow: 20px 0 50px rgba(0,0,0,0.8); }
+
+        .menu-group { margin-bottom: 10px; border-bottom: 1px solid var(--glass-border); padding-bottom: 5px; }
+        
+        .menu-label { 
+            color: var(--gold); 
+            font-family: 'Cinzel'; 
+            font-size: 0.85rem; 
+            letter-spacing: 2px; 
+            padding: 15px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.3s;
+            user-select: none;
+        }
+
+        .menu-label:hover { background: var(--glass); color: #fff; }
+
+        .menu-label::after {
+            content: '\f107';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 0.7rem;
+            transition: 0.4s;
+        }
+
+        .menu-group.active .menu-label::after { transform: rotate(180deg); }
+        .menu-group.active .menu-label { color: #fff; }
+
+        .menu-content {
+            display: none;
+            padding: 10px 0 20px 10px;
+            animation: fadeInDown 0.4s ease;
+        }
+
+        .menu-group.active .menu-content { display: block; }
+
+        .sidebar a {
+            color: #ccc;
+            text-decoration: none;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 200;
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+
+        .sidebar a:hover {
+            color: var(--white);
+            background: var(--glass);
+            transform: translateX(10px);
+        }
+
+        .sidebar a i { color: var(--gold); width: 20px; text-align: center; }
+
+        .hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2.5rem, 10vw, 6rem);
+            color: var(--gold);
+            letter-spacing: 20px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 40px var(--gold-glow);
+            animation: tracking-in-expand 1.5s cubic-bezier(0.215, 0.610, 0.355, 1.000) both;
+        }
+
+        @keyframes tracking-in-expand {
+            0% { letter-spacing: -0.5em; opacity: 0; }
+            40% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            letter-spacing: 5px;
+            color: #ddd;
+            font-weight: 200;
+            animation: fadeInUp 2s ease;
+        }
+
+        .right-nav {
+            position: fixed;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .nav-item {
+            position: relative;
+            background: var(--glass);
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 1px solid var(--glass-border);
+            color: var(--gold);
+            text-decoration: none;
+            transition: 0.5s;
+        }
+
+        .nav-item:hover {
+            background: var(--gold);
+            color: #000;
+            transform: scale(1.2) rotate(360deg);
+            box-shadow: 0 0 25px var(--gold);
+        }
+
+        .nav-item .tooltip {
+            position: absolute;
+            right: 80px;
+            background: var(--gold);
+            color: #000;
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: 0.4s;
+            font-weight: bold;
+        }
+
+        .nav-item:hover .tooltip { opacity: 1; transform: translateX(0); }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal {
+            background: #000;
+            width: 95%;
+            height: 90%;
+            border-radius: 20px;
+            border: 1px solid var(--gold);
+            position: relative;
+            overflow: hidden;
+            animation: zoomIn 0.4s ease;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 25px;
+            right: 30px;
+            font-size: 35px;
+            color: var(--gold);
+            cursor: pointer;
+            z-index: 2001;
+            transition: 0.3s;
+        }
+        .close-modal:hover { transform: scale(1.2) rotate(90deg); }
+
+        iframe { width: 100%; height: 100%; border: none; }
+
+        .history-content { padding: 80px; text-align: center; }
+        .history-content h2 { font-family: 'Cinzel'; color: var(--gold); font-size: 3rem; margin-bottom: 2rem; }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 100%; left: -100%; }
+            .hero h1 { font-size: 3rem; letter-spacing: 5px; }
+            .right-nav { bottom: 30px; top: auto; flex-direction: row; left: 50%; transform: translateX(-50%); }
+        }
+    </style>
 </head>
 <body>
-    <video autoplay muted loop id="video-background">
+
+    <video autoplay muted loop playsinline id="video-background">
         <source src="https://assets.mixkit.co/videos/abstract-cosmic-glow-1634-small.mp4" type="video/mp4">
     </video>
-    <div class="menu-icon" id="menu-icon">
-        <i class="fas fa-bars"></i>
+
+    <div class="menu-toggle" id="menu-toggle">
+        <i class="fas fa-crown"></i>
     </div>
-    <div class="left-menu" id="left-menu">
-        <a href="#" id="login-link">เข้าสู่ระบบ</a>
-		
-        <a href="#" id="menu-daily">ประจำทุกวัน</a>
-        <div id="sub-menu-daily" style="display:none;">
-            <a href="https://script.google.com/macros/s/AKfycbx17Mj67GGInH3D46iEX7rIRX0pHb58JwZvZkxOsq8fY65e5gADlQElsfEwudF7y2zG/exec" class="sub-menu-item" target="_blank">คณิตศาสตร์ทำทุกวัน</a>
-        </div>
-		
-        <a href="#" id="menu-clips">คลิปควรดู(เรียนรู้)</a>
-        <div id="sub-menu-clips" style="display:none;">
-            <a href="https://youtu.be/zcz_jsr8jD4?si=D0iU5EMKYWjs6Ogi" class="sub-menu-item" target="_blank">เซลล์ และ ออร์แกเนลล์ สรุปใน 10 นาที</a>
-            <a href="https://youtu.be/iTPHJ2UgOx4?si=4Wk_q6s8eeISAZOW" class="sub-menu-item" target="_blank"> เซลล์พืช VS เซลล์สัตว์ต่างกันยังไง?</a>
-            <a href="https://www.youtube.com/watch?v=mwKN1BldIwA&list=PLnt-Q7zztkrjqcRcpBR9l6JXskfNWR4m3&index=2" class="sub-menu-item" target="_blank">
-สรุปชีวะ เซลล์ และ ออร์แกเนลล์ </a>
-            <a href="https://youtu.be/_Jw46OgGJ1c?si=zeugZsU4GmhvSxQc" class="sub-menu-item" target="_blank">ระบบไหลเวียนเลือด circulatory system</a>
-            <a href="https://youtu.be/gB4wTQbNYmA?si=tivY4ggEg9TNN0GY" class="sub-menu-item" target="_blank">PARt1 โครงสร้างและหน้าที่ของเซลล์ - สอวน. ชีววิทยา</a>
-            <a href="https://youtu.be/9tM3975oSjU?si=vQ-xSKzBeceOTdkj" class="sub-menu-item" target="_blank">PART2 โครงสร้างและหน้าที่ของเซลล์ - สอวน.</a>
-            <a href="https://youtu.be/izb-oLrzH0E?si=dEr9kqFi4Mohx5Ks" class="sub-menu-item" target="_blank">PART3 โครงสร้างและหน้าที่ของเซลล์ - สอวน.</a>
-            <a href="https://youtu.be/XL2PKmI5AcM?si=Nmc9GWZHOlUm11Ph" class="sub-menu-item" target="_blank">PART4 โครงสร้างและหน้าที่ของเซลล์ - สอวน.</a>
-            <a href="https://youtu.be/Hcr2NfcFl_k?si=bLZbldXuBoG1YRRt" class="sub-menu-item" target="_blank">PART1 การหายใจระดับเซลล์ - สอวน.</a>
-            <a href="https://youtu.be/xOgw4p2zjOQ?si=Pv-371n1d9XfF0uX" class="sub-menu-item" target="_blank">PART2 การหายใจระดับเซลล์ - สอวน.</a>
-            <a href="https://youtu.be/88tJNtel4fU?si=r5mOz8Ka5kCs5wk4" class="sub-menu-item" target="_blank">PART3 การหายใจระดับเซลล์ - สอวน.</a>
-            <a href="https://youtu.be/z4EvNajwudI?si=UAlvtWZRBzl4dwPa" class="sub-menu-item" target="_blank">PART4 การหายใจระดับเซลล์ - สอวน.</a>
-            <a href="https://youtu.be/9GStq212F3U?si=cyxhTjSSXPcgxiTN" class="sub-menu-item" target="_blank">PART1 การแบ่งเซลล์ - สอวน.</a>
-            <a href="https://youtu.be/TwZ-wBQNT3o?si=Q_kHmHzTOy_igYLA" class="sub-menu-item" target="_blank">PART2 การแบ่งเซลล์ - สอวน.</a>
-            <a href="https://youtu.be/NHFaPa8vsAs?si=5FV8txutEP3H6LGn" class="sub-menu-item" target="_blank">PART1 ชีวโมเลกุล - สอวน.</a>
-            <a href="https://youtu.be/i2b5UmoBS0k?si=7Fi15IHHguw6KmsU" class="sub-menu-item" target="_blank">PART2 ชีวโมเลกุล - สอวน.</a>
-            <a href="https://youtu.be/A0QV1xWdAYU?si=3QxcioUW7AMO6YWA" class="sub-menu-item" target="_blank">PART3 ชีวโมเลกุล - สอวน.</a>
-            <a href="https://youtu.be/8p6xZUjJL9M?si=vPVuRL5u1JTkgQ8J" class="sub-menu-item" target="_blank">PART4 ชีวโมเลกุล - สอวน.</a>
-            <a href="https://youtu.be/h7nGP9LlTfY?si=goHZ8MknR3erU3Ur" class="sub-menu-item" target="_blank">PART5 ชีวโมเลกุล - สอวน.</a>
-            <a href="https://youtu.be/Beuh1CfXiM4?si=ar5eJylTyMjr_PTP" class="sub-menu-item" target="_blank">🔴 ติวคณิตศาสตร์ ป.6 สอบเข้า ม.1 By พี่เอ๋ </a>
-            <a href="https://youtu.be/3Q5_R2E_UM0" class="sub-menu-item" target="_blank">🔴 ติวลัด วิทยาศาสตร์ สอบเข้าม.1 จุฬาภรณ์</a>
-            <a href="https://youtu.be/2XbYNX9Anp0" class="sub-menu-item" target="_blank">🔴 ภาษาอังกฤษ เตรียมสอบเข้า ม.1</a>
-        </div>
-		
-        <a href="#" id="menu-websites">เว็ปไซต์เรียนรู้</a>
-        <div id="sub-menu-websites" style="display:none;">
-            <a href="science/Science.html" class="sub-menu-item" target="_blank">วิทยาศาสตร์23บท ป.4-6</a>
-            <a href="science/thai.html" class="sub-menu-item" target="_blank">ภาษาไทย</a>
-            <a href="science/ENG.html" class="sub-menu-item" target="_blank">ภาษาอังกฤษ</a>
-            <a href="science/PES.html" class="sub-menu-item" target="_blank">ฝึกพูดประโยค</a>
-            <a href="science/society.html" class="sub-menu-item" target="_blank">สังคม</a>
-            <a href="science/Science2.html" class="sub-menu-item" target="_blank">ชีววิทยา ม.1</a>
-        </div>
-		
-        <a href="#" id="menu-related">เว็บไซต์ที่เกี่ยวข้อง</a>
-        <div id="sub-menu-related" style="display:none;">
-            <a href="https://script.google.com/macros/s/AKfycbxXQFmmVBtiZ5UjMNm2kEngaZHiXFnoZ9YsZBNNnekOr1vRtf7CtBFA9dxz4F1D8DR01A/exec" class="sub-menu-item" target="_blank">รับ-จ่าย งานต่างๆ</a>
-            <a href="https://ws2.tommasovietina.it/mg4/se/password.html" class="sub-menu-item" target="_blank">Engine MODE MG4</a>
-            <a href="https://phattarapoll.github.io/cptown/huy/index.html" class="sub-menu-item" target="_blank">สุ่มล็อตรี่</a>
-            <a href="https://pym-support.ntplc.co.th/QR/" class="sub-menu-item" target="_blank">NT 7751J4218 Internet</a>
-            <a href="https://epay.nc.ntplc.co.th/app/" class="sub-menu-item" target="_blank">NT SIM </a>
-            <a href="https://ufundportal.com/" class="sub-menu-item" target="_blank">UFUND</a>
-            <a href="https://cmpo.thaicoop.org/" class="sub-menu-item" target="_blank">สหกรณ์</a>
-        </div>
-		
-        <a href="download.html" id="login-link-adm">สำหรับผู้ดูแล</a>
-        <div style="margin-top: 2rem; padding: 1rem; border-top: 1px solid var(--border-color); color: #888;">
-            <p style="margin: 0; font-size: 0.9rem;">ติดต่อตระกูล PSVMT</p>
-            <p style="margin: 0; font-size: 0.9rem;">phattarapoll@gmail.com</p>
-        </div>
-    </div>
-    <div class="main-content" id="main-content">
-        <h1 id="main-title">PAISANWUTCHARAMETEA</h1>
-        <p id="main-subtitle">ยินดีต้อนรับสู่พื้นที่ส่วนตัวของตระกูล PSVMT</p>
-        <div class="chat-container" id="chat-container">
-            <div class="chat-header">
-                <p id="online-status">ออนไลน์: 0</p>
-                <h2>ช่องแชท ฝากข้อความ</h2>
-                <span id="music-status" style="display: none;"><i class="fas fa-music"></i> <span id="current-song-info"></span></span>
-            </div>
-            <div class="chat-box" id="chat-box"></div>
-            <div class="chat-input">
-                <input type="text" id="chat-message" placeholder="พิมพ์ข้อความของคุณ...">
-                <button id="send-btn">Transmit</button>
+
+    <nav class="sidebar" id="sidebar">
+        
+        <div class="menu-group">
+            <span class="menu-label">DAILY TASKS</span>
+            <div class="menu-content">
+                <a href="https://script.google.com/macros/s/AKfycbx17Mj67GGInH3D46iEX7rIRX0pHb58JwZvZkxOsq8fY65e5gADlQElsfEwudF7y2zG/exec" target="_blank"><i class="fas fa-square-root-alt"></i> คณิตศาสตร์ทำทุกวัน</a>
             </div>
         </div>
-        <div class="music-player-container" id="adm-music-player">
-            <h3>ADM Music Controls</h3>
-            <select id="song-select"></select>
-            <button id="play-song-btn">Play Song</button>
+
+        <div class="menu-group">
+            <span class="menu-label">KNOWLEDGE BASE</span>
+            <div class="menu-content">
+                <a href="https://youtu.be/zcz_jsr8jD4?si=D0iU5EMKYWjs6Ogi" target="_blank">เซลล์ และ ออร์แกเนลล์ สรุปใน 10 นาที</a>
+                <a href="https://youtu.be/iTPHJ2UgOx4?si=4Wk_q6s8eeISAZOW" target="_blank"> เซลล์พืช VS เซลล์สัตว์ต่างกันยังไง?</a>
+                <a href="https://www.youtube.com/watch?v=mwKN1BldIwA&list=PLnt-Q7zztkrjqcRcpBR9l6JXskfNWR4m3&index=2" target="_blank">สรุปชีวะ เซลล์ และ ออร์แกเนลล์ </a>
+                <a href="https://youtu.be/_Jw46OgGJ1c?si=zeugZsU4GmhvSxQc" target="_blank">ระบบไหลเวียนเลือด circulatory system</a>
+                <a href="https://youtu.be/gB4wTQbNYmA?si=tivY4ggEg9TNN0GY" target="_blank">PARt1 โครงสร้างและหน้าที่ของเซลล์ - สอวน.</a>
+                <a href="https://youtu.be/9tM3975oSjU?si=vQ-xSKzBeceOTdkj" target="_blank">PART2 โครงสร้างและหน้าที่ของเซลล์ - สอวน.</a>
+                <a href="https://youtu.be/izb-oLrzH0E?si=dEr9kqFi4Mohx5Ks" target="_blank">PART3 โครงสร้างและหน้าที่ของเซลล์ - สอวน.</a>
+                <a href="https://youtu.be/XL2PKmI5AcM?si=Nmc9GWZHOlUm11Ph" target="_blank">PART4 โครงสร้างและหน้าที่ของเซลล์ - สอวน.</a>
+                <a href="https://youtu.be/Hcr2NfcFl_k?si=bLZbldXuBoG1YRRt" target="_blank">PART1 การหายใจระดับเซลล์ - สอวน.</a>
+                <a href="https://youtu.be/xOgw4p2zjOQ?si=Pv-371n1d9XfF0uX" target="_blank">PART2 การหายใจระดับเซลล์ - สอวน.</a>
+                <a href="https://youtu.be/88tJNtel4fU?si=r5mOz8Ka5kCs5wk4" target="_blank">PART3 การหายใจระดับเซลล์ - สอวน.</a>
+                <a href="https://youtu.be/z4EvNajwudI?si=UAlvtWZRBzl4dwPa" target="_blank">PART4 การหายใจระดับเซลล์ - สอวน.</a>
+                <a href="https://youtu.be/9GStq212F3U?si=cyxhTjSSXPcgxiTN" target="_blank">PART1 การแบ่งเซลล์ - สอวน.</a>
+                <a href="https://youtu.be/TwZ-wBQNT3o?si=Q_kHmHzTOy_igYLA" target="_blank">PART2 การแบ่งเซลล์ - สอวน.</a>
+                <a href="https://youtu.be/NHFaPa8vsAs?si=5FV8txutEP3H6LGn" target="_blank">PART1 ชีวโมเลกุล - สอวน.</a>
+                <a href="https://youtu.be/i2b5UmoBS0k?si=7Fi15IHHguw6KmsU" target="_blank">PART2 ชีวโมเลกุล - สอวน.</a>
+                <a href="https://youtu.be/A0QV1xWdAYU?si=3QxcioUW7AMO6YWA" target="_blank">PART3 ชีวโมเลกุล - สอวน.</a>
+                <a href="https://youtu.be/8p6xZUjJL9M?si=vPVuRL5u1JTkgQ8J" target="_blank">PART4 ชีวโมเลกุล - สอวน.</a>
+                <a href="https://youtu.be/h7nGP9LlTfY?si=goHZ8MknR3erU3Ur" target="_blank">PART5 ชีวโมเลกุล - สอวน.</a>
+                <a href="https://youtu.be/Beuh1CfXiM4?si=ar5eJylTyMjr_PTP" target="_blank">🔴 ติวคณิตศาสตร์ ป.6 สอบเข้า ม.1 </a>
+                <a href="https://youtu.be/3Q5_R2E_UM0" target="_blank">🔴 ติวลัด วิทยาศาสตร์ สอบเข้าม.1 จุฬาภรณ์</a>
+                <a href="https://youtu.be/2XbYNX9Anp0" target="_blank">🔴 ภาษาอังกฤษ เตรียมสอบเข้า ม.1</a>
+            </div>
+        </div>
+
+        <div class="menu-group">
+            <span class="menu-label">ACADEMIC WEB</span>
+            <div class="menu-content">
+                <a href="science/Science.html" target="_blank">วิทยาศาสตร์23บท ป.4-6</a>
+                <a href="science/thai.html" target="_blank">ภาษาไทย</a>
+                <a href="science/ENG.html" target="_blank">ภาษาอังกฤษ</a>
+                <a href="science/PES.html" target="_blank">ฝึกพูดประโยค</a>
+                <a href="science/society.html" target="_blank">สังคม</a>
+                <a href="science/Science2.html" target="_blank">ชีววิทยา ม.1</a>
+            </div>
+        </div>
+
+        <div class="menu-group">
+            <span class="menu-label">SYSTEM & TOOLS</span>
+            <div class="menu-content">
+                <a href="https://script.google.com/macros/s/AKfycbXXQFmmVBtiZ5UjMNm2kEngaZHiXFnoZ9YsZBNNnekOr1vRtf7CtBFA9dxz4F1D8DR01A/exec" target="_blank">รับ-จ่าย งานต่างๆ</a>
+                <a href="https://ws2.tommasovietina.it/mg4/se/password.html" target="_blank">Engine MODE MG4</a>
+                <a href="https://phattarapoll.github.io/cptown/huy/index.html" target="_blank">สุ่มล็อตรี่</a>
+                <a href="https://pym-support.ntplc.co.th/QR/" target="_blank">NT 7751J4218 Internet</a>
+                <a href="https://epay.nc.ntplc.co.th/app/" target="_blank">NT SIM </a>
+                <a href="https://ufundportal.com/" target="_blank">UFUND</a>
+                <a href="https://cmpo.thaicoop.org/" target="_blank">สหกรณ์</a>
+            </div>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <a href="#" id="admin-trigger"><i class="fas fa-user-shield"></i> ผู้ดูแลระบบ (ADMIN)</a>
+        </div>
+    </nav>
+
+    <main class="hero">
+        <p class="animate__animated animate__fadeIn">THE LEGACY OF</p>
+        <h1 id="main-title">PSVMT</h1>
+        <div style="width: 100px; height: 1px; background: var(--gold); margin: 20px 0;"></div>
+        <p class="animate__animated animate__fadeInUp">ESTABLISHED 2019 • CHUMPHON THAILAND</p>
+    </main>
+
+    <nav class="right-nav">
+        <a href="#" class="nav-item" id="btn-history">
+            <i class="fas fa-scroll"></i>
+            <span class="tooltip">HISTORY</span>
+        </a>
+        <a href="#" class="nav-item" id="btn-family">
+            <i class="fas fa-project-diagram"></i>
+            <span class="tooltip">FAMILY TREE</span>
+        </a>
+        <a href="#" class="nav-item" id="btn-phat">
+            <i class="fas fa-user-graduate"></i>
+            <span class="tooltip">PHATTARAPOLL</span>
+        </a>
+        <a href="#" class="nav-item" id="btn-tin">
+            <i class="fas fa-compass"></i>
+            <span class="tooltip">TIN</span>
+        </a>
+    </nav>
+
+    <div class="overlay" id="modal-overlay">
+        <div class="modal">
+            <span class="close-modal">&times;</span>
+            <div id="modal-content" style="height: 100%;"></div>
         </div>
     </div>
-    <div class="right-menu">
-        <div class="icon-container">
-            <a href="#" id="history-link"><i class="fas fa-book-reader"></i></a>
-            <span class="tooltip">ความเป็นมาของสกุล</span>
-        </div>
-        <div class="icon-container">
-            <a href="#" id="family-link"><i class="fas fa-sitemap"></i></a>
-            <span class="tooltip">ผังครอบครัว</span>
-        </div>
-        <div class="icon-container">
-            <a href="#" id="phattarapoll-link"><i class="fas fa-medal"></i></a>
-            <span class="tooltip">ภัทรพล</span>
-        </div>
-        <div class="icon-container">
-            <a href="#" id="tin-link"><i class="fas fa-compass"></i></a>
-            <span class="tooltip">ติณณ์</span>
-        </div>
-    </div>
-    <div class="overlay" id="login-overlay">
-        <div class="login-popup">
-            <h2 id="login-title">กรุณาใส่ชื่อของคุณ</h2>
-            <input type="text" id="username-input" placeholder="ชื่อผู้ใช้งาน">
-            <input type="password" id="password-input" placeholder="รหัสผ่าน" style="display: none;">
-            <button id="login-btn">เข้าสู่ระบบ</button>
-        </div>
-    </div>
-    <div class="overlay" id="history-overlay" style="display: none;">
-        <div class="history-popup">
-            <span class="close-btn" id="history-close-btn">&times;</span>
-            <h2>ความเป็นมาของสกุล</h2>
-            <p>จดทะเบียนสกุล เมื่อวันที่ 2 สิงหาคม 2562</p>
-            <p><strong>เลขศาสตร์ 65 "คู่ทรัพย์ คู่โชค"</strong></p>
-            <p>ให้ความหมายในตัวเลขนี้ว่า ส่งเสริมความเจริญก้าวหน้า ความราบรื่นในชีวิต ชะตาชีวิตรุ่งเรือง มีบุพเพวาสนาส่ง หาเงินเก่งและมีเสน่ห์ เป็นที่รัก</p>
-        </div>
-    </div>
-    <div class="overlay" id="family-overlay" style="display: none;">
-        <div class="popup-iframe-container">
-            <span class="close-btn" id="family-close-btn">&times;</span>
-            <iframe id="family-iframe" src="" frameborder="0"></iframe>
-        </div>
-    </div>
 
-    <div class="overlay" id="phattarapoll-overlay" style="display: none;">
-        <div class="popup-iframe-container">
-            <span class="close-btn" id="phattarapoll-close-btn">&times;</span>
-            <iframe id="phattarapoll-iframe" src="" frameborder="0"></iframe>
-        </div>
-    </div>
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const menuToggle = document.getElementById('menu-toggle');
 
-    <div class="overlay" id="tin-overlay" style="display: none;">
-        <div class="popup-iframe-container">
-            <span class="close-btn" id="tin-close-btn">&times;</span>
-            <iframe id="tin-iframe" src="" frameborder="0"></iframe>
-        </div>
-    </div>
-    <audio id="audio-player"></audio>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const menuIcon = document.getElementById('menu-icon');
-        const leftMenu = document.getElementById('left-menu');
-        const mainContent = document.getElementById('main-content');
-        const loginLink = document.getElementById('login-link');
-        // const loginLinkAdm = document.getElementById('login-link-adm'); // ไม่ได้ใช้
-        const loginOverlay = document.getElementById('login-overlay');
-        const loginBtn = document.getElementById('login-btn');
-        const usernameInput = document.getElementById('username-input');
-        const passwordInput = document.getElementById('password-input');
-        const chatContainer = document.getElementById('chat-container');
-        const mainTitle = document.getElementById('main-title');
-        const mainSubtitle = document.getElementById('main-subtitle');
-        const chatBox = document.getElementById('chat-box');
-        const chatMessage = document.getElementById('chat-message');
-        const sendBtn = document.getElementById('send-btn');
-        const loginTitle = document.getElementById('login-title');
-        const onlineStatus = document.getElementById('online-status');
-        const historyLink = document.getElementById('history-link');
-        const historyOverlay = document.getElementById('history-overlay');
-        const historyCloseBtn = document.getElementById('history-close-btn');
-        
-        // New elements for related links - อัปเดต ID ใหม่
-        const menuDaily = document.getElementById('menu-daily');
-        const subMenuDaily = document.getElementById('sub-menu-daily');
-        const menuClips = document.getElementById('menu-clips');
-        const subMenuClips = document.getElementById('sub-menu-clips');
-        const menuWebsites = document.getElementById('menu-websites');
-        const subMenuWebsites = document.getElementById('sub-menu-websites');
-        const menuRelated = document.getElementById('menu-related');
-        const subMenuRelated = document.getElementById('sub-menu-related');
-        // *************************************************************
+        // Sidebar Main Toggle
+        menuToggle.onclick = () => sidebar.classList.toggle('active');
 
-        // New popup elements
-        const familyLink = document.getElementById('family-link');
-        const familyOverlay = document.getElementById('family-overlay');
-        const familyCloseBtn = document.getElementById('family-close-btn');
-        const familyIframe = document.getElementById('family-iframe');
-
-        const phattarapollLink = document.getElementById('phattarapoll-link');
-        const phattarapollOverlay = document.getElementById('phattarapoll-overlay');
-        const phattarapollCloseBtn = document.getElementById('phattarapoll-close-btn');
-        const phattarapollIframe = document.getElementById('phattarapoll-iframe');
-
-        const tinLink = document.getElementById('tin-link');
-        const tinOverlay = document.getElementById('tin-overlay');
-        const tinCloseBtn = document.getElementById('tin-close-btn');
-        const tinIframe = document.getElementById('tin-iframe');
-
-        // *************** ลบตัวแปร Learning Popup Elements ออกไป ***************
-        // เนื่องจากไม่ต้องการให้เปิดใน iframe แล้ว
-        const learningLinks = document.querySelectorAll('.sub-menu-item'); 
-        // *************************************************************
-
-
-        let currentUser = null;
-        const ADM_USERNAME = 'adm';
-        const ADM_PASSWORD = '3946';
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw15w3AUwkNJG2Wb02XLc2eNImBR6WJ0IWzXJgoD7UXfVfnx4rhobjdX6uCLPxSAuqJ/exec';
-
-        // Toggle menu visibility
-        menuIcon.addEventListener('click', () => {
-            leftMenu.classList.toggle('active');
-        });
-        
-        // Toggle related sub-menu visibility - อัปเดต Event Listener
-        menuDaily.addEventListener('click', (e) => {
-            e.preventDefault();
-            subMenuDaily.style.display = subMenuDaily.style.display === 'none' ? 'block' : 'none';
-        });
-
-        menuClips.addEventListener('click', (e) => {
-            e.preventDefault();
-            subMenuClips.style.display = subMenuClips.style.display === 'none' ? 'block' : 'none';
-        });
-
-        menuWebsites.addEventListener('click', (e) => {
-            e.preventDefault();
-            subMenuWebsites.style.display = subMenuWebsites.style.display === 'none' ? 'block' : 'none';
-        });
-
-        menuRelated.addEventListener('click', (e) => {
-            e.preventDefault();
-            subMenuRelated.style.display = subMenuRelated.style.display === 'none' ? 'block' : 'none';
-        });
-        // *************************************************************
-
-        loginLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            loginTitle.textContent = 'กรุณาใส่ชื่อของคุณ';
-            passwordInput.style.display = 'none';
-            usernameInput.value = '';
-            passwordInput.value = '';
-            loginOverlay.style.display = 'flex';
-        });
-
-        historyLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            historyOverlay.style.display = 'flex';
-        });
-
-        historyCloseBtn.addEventListener('click', () => {
-            historyOverlay.style.display = 'none';
-        });
-
-        usernameInput.addEventListener('input', () => {
-            if (usernameInput.value.toLowerCase() === ADM_USERNAME) {
-                passwordInput.style.display = 'block';
-                loginTitle.textContent = 'กรุณาใส่รหัสผ่าน ADM';
-            } else {
-                passwordInput.style.display = 'none';
-                loginTitle.textContent = 'กรุณาใส่ชื่อของคุณ';
-            }
-        });
-
-        loginBtn.addEventListener('click', () => {
-            const username = usernameInput.value.trim();
-            const password = passwordInput.value.trim();
-            if (!username) {
-                alert('กรุณาใส่ชื่อผู้ใช้งาน');
-                return;
-            }
-            if (username.toLowerCase() === ADM_USERNAME) {
-                if (password === ADM_PASSWORD) {
-                    performLogin(username);
-                } else {
-                    alert('รหัสผ่านไม่ถูกต้อง');
+        // --- Accordion Logic ---
+        const menuGroups = document.querySelectorAll('.menu-group');
+        menuGroups.forEach(group => {
+            const label = group.querySelector('.menu-label');
+            label.addEventListener('click', () => {
+                const isActive = group.classList.contains('active');
+                menuGroups.forEach(g => g.classList.remove('active'));
+                if (!isActive) {
+                    group.classList.add('active');
                 }
-            } else {
-                performLogin(username);
-            }
-        });
-
-        const performLogin = async (username) => {
-            currentUser = username;
-            loginOverlay.style.display = 'none';
-            loginLink.textContent = `ยินดีต้อนรับ, ${currentUser}`;
-            loginLink.style.pointerEvents = 'none';
-            loginLink.style.color = 'var(--main-color)';
-            mainTitle.style.display = 'none';
-            mainSubtitle.style.display = 'none';
-            chatContainer.style.display = 'flex';
-            mainContent.style.justifyContent = 'flex-start'; // ปรับการจัดตำแหน่งของเนื้อหาหลัก
-
-            await fetch(WEB_APP_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: 'userLogin', username: currentUser }),
-                headers: { 'Content-Type': 'text/plain' }
-            }).catch(err => console.error('Error logging in user:', err));
-
-            fetchChatHistory();
-            fetchOnlineUsers();
-            setInterval(() => {
-                fetchChatHistory();
-                fetchOnlineUsers();
-            }, 3000);
-
-            window.addEventListener('beforeunload', () => {
-                navigator.sendBeacon(WEB_APP_URL, JSON.stringify({ action: 'userLogout', username: currentUser }));
             });
-        };
-
-        const isADM = (username) => username && username.toLowerCase() === ADM_USERNAME;
-
-        const fetchChatHistory = async () => {
-            try {
-                const response = await fetch(`${WEB_APP_URL}?action=getChat`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                
-                if (Array.isArray(data.chat)) {
-                    chatBox.innerHTML = '';
-                    data.chat.forEach(msg => {
-                        displayMessage(msg.username, msg.message, msg.timestamp);
-                    });
-                    chatBox.scrollTop = chatBox.scrollHeight;
-                } else {
-                    console.warn("Chat data is not an array:", data);
-                }
-            } catch (error) {
-                console.error('Error fetching chat history:', error);
-            }
-        };
-
-        const fetchOnlineUsers = async () => {
-            try {
-                const response = await fetch(`${WEB_APP_URL}?action=getOnlineUsers`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                
-                if (Array.isArray(data.onlineUsers)) {
-                    onlineStatus.textContent = `ออนไลน์: ${data.onlineUsers.join(', ')}`;
-                } else {
-                    onlineStatus.textContent = `ออนไลน์: 0`;
-                }
-            } catch (error) {
-                console.error('Error fetching online users:', error);
-            }
-        };
-
-        const sendMessage = async () => {
-            const messageText = chatMessage.value.trim();
-            if (messageText && currentUser) {
-                try {
-                    const response = await fetch(WEB_APP_URL, {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            action: 'postMessage',
-                            username: currentUser,
-                            message: messageText
-                        }),
-                        headers: { 'Content-Type': 'text/plain' }
-                    });
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const result = await response.json();
-                    if (result.status === "success") {
-                        chatMessage.value = '';
-                        setTimeout(fetchChatHistory, 500); 
-                    } else {
-                        console.error("Error from server:", result.message);
-                        alert("มีข้อผิดพลาดในการส่งข้อความ: " + result.message);
-                    }
-                } catch (error) {
-                    console.error('Error sending message:', error);
-                    alert("มีข้อผิดพลาดในการส่งข้อความ");
-                }
-            }
-        };
-
-        const deleteMessage = async (timestamp) => {
-            if (!isADM(currentUser)) {
-                alert("คุณไม่มีสิทธิ์ลบข้อความ");
-                return;
-            }
-            if (confirm("คุณต้องการลบข้อความนี้ใช่หรือไม่?")) {
-                try {
-                    const response = await fetch(WEB_APP_URL, {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            action: 'deleteMessage',
-                            timestamp: timestamp
-                        }),
-                        headers: { 'Content-Type': 'text/plain' }
-                    });
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const result = await response.json();
-                    if (result.status === "success") {
-                        setTimeout(fetchChatHistory, 500);
-                    } else {
-                        console.error("Error from server:", result.message);
-                        alert("มีข้อผิดพลาดในการลบข้อความ: " + result.message);
-                    }
-                } catch (error) {
-                    console.error('Error deleting message:', error);
-                    alert("มีข้อผิดพลาดในการลบข้อความ");
-                }
-            }
-        };
-
-        const displayMessage = (username, message, timestamp) => {
-            const messageElement = document.createElement('div');
-            messageElement.classList.add('message');
-            let nameClass = '';
-            if (isADM(username)) {
-                messageElement.classList.add('adm');
-                nameClass = '<span class="adm-icon"><i class="fas fa-shield-alt"></i> ADM</span> ';
-            }
-            
-            const time = new Date(timestamp);
-            const formattedTime = time.toLocaleDateString('th-TH') + ' ' + time.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
-
-            messageElement.innerHTML = `
-                <div class="message-header">
-                    <span class="user-name">${nameClass}${username}</span>
-                    <span class="message-time">${formattedTime}</span>
-                </div>
-                <div class="message-text">${message}</div>
-            `;
-            if (isADM(currentUser)) {
-                const deleteIcon = document.createElement('i');
-                deleteIcon.classList.add('fas', 'fa-trash');
-                deleteIcon.style.color = '#e74c3c';
-                deleteIcon.style.cursor = 'pointer';
-                deleteIcon.style.marginLeft = '5px';
-                deleteIcon.title = 'ลบข้อความ';
-                deleteIcon.addEventListener('click', () => {
-                    deleteMessage(timestamp);
-                });
-                messageElement.querySelector('.message-header').appendChild(deleteIcon);
-            }
-            chatBox.appendChild(messageElement);
-        };
-
-        sendBtn.addEventListener('click', sendMessage);
-        chatMessage.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
         });
 
-        // Function to show an overlay with a specific URL
-        const showIframeOverlay = (overlayElement, iframeElement, url) => {
-            // ปรับ URL สำหรับวิดีโอ YouTube เพื่อให้สามารถฝังและเต็มจอได้
-            let finalUrl = url;
-            if (url.includes('youtube.com/watch?v=')) {
-                const videoId = url.split('v=')[1].split('&')[0];
-                finalUrl = `https://www.youtube.com/embed/${videoId}?rel=0&autoplay=1`;
-            }
-            
-            iframeElement.src = finalUrl;
-            overlayElement.style.display = 'flex';
-        };
-
-        // Function to hide an overlay
-        const hideOverlay = (overlayElement) => {
-            overlayElement.style.display = 'none';
-            // Optionally, clear the iframe source to stop video/audio
-            const iframe = overlayElement.querySelector('iframe');
-            if (iframe) {
-                iframe.src = 'about:blank';
-            }
-        };
-
-        // Add event listeners to the new links
-        // ลิงก์เหล่านี้ยังคงใช้ iframe popup เหมือนเดิม
-        familyLink.addEventListener('click', (e) => {
+        // Admin Access - Removed Password Check
+        document.getElementById('admin-trigger').onclick = (e) => {
             e.preventDefault();
-            showIframeOverlay(familyOverlay, familyIframe, 'family.html');
-        });
+            window.location.href = 'download.html';
+        };
 
-        phattarapollLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            showIframeOverlay(phattarapollOverlay, phattarapollIframe, 'Phattarapoll/index.html');
-        });
+        // Modal Controls
+        const overlay = document.getElementById('modal-overlay');
+        const modalContent = document.getElementById('modal-content');
+        const closeModal = document.querySelector('.close-modal');
 
-        tinLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            showIframeOverlay(tinOverlay, tinIframe, 'TIN/mainTIN.html');
-        });
-
-        // *************** ลบ Event Listeners สำหรับเมนูเรียนรู้ (learningLinks.forEach) ออกไป ***************
-        // เนื่องจากต้องการให้เมนูย่อยเปิดในแท็บใหม่ตาม target="_blank" ใน HTML
-
-        // Add event listeners to the close buttons
-        familyCloseBtn.addEventListener('click', () => {
-            hideOverlay(familyOverlay);
-        });
-
-        phattarapollCloseBtn.addEventListener('click', () => {
-            hideOverlay(phattarapollOverlay);
-        });
-
-        tinCloseBtn.addEventListener('click', () => {
-            hideOverlay(tinOverlay);
-        });
-
-        window.addEventListener('click', (event) => {
-            if (event.target === loginOverlay) {
-                loginOverlay.style.display = 'none';
+        function openModal(type, url) {
+            overlay.style.display = 'flex';
+            if(type === 'iframe') {
+                modalContent.innerHTML = `<iframe src="${url}"></iframe>`;
+            } else {
+                modalContent.innerHTML = `
+                    <div class="history-content animate__animated animate__fadeIn">
+                        <h2>FAMILY LEGACY</h2>
+                        <p style="font-size:1.5rem; color:var(--gold);">จดทะเบียนเมื่อวันที่ 2 สิงหาคม 2562</p>
+                        <br>
+                        <p style="font-size:1.2rem; line-height:2;">
+                            <strong>เลขศาสตร์ 65 "คู่ทรัพย์ คู่โชค"</strong><br>
+                            ส่งเสริมความเจริญก้าวหน้า ความราบรื่นในชีวิต ชะตาชีวิตรุ่งเรือง <br> 
+                            มีบุพเพวาสนาส่ง หาเงินเก่งและมีเสน่ห์ เป็นที่รักของทุกคน
+                        </p>
+                    </div>`;
             }
-            if (event.target === historyOverlay) {
-                historyOverlay.style.display = 'none';
-            }
-            if (event.target === familyOverlay) {
-                hideOverlay(familyOverlay);
-            }
-            if (event.target === phattarapollOverlay) {
-                hideOverlay(phattarapollOverlay);
-            }
-            if (event.target === tinOverlay) {
-                hideOverlay(tinOverlay);
-            }
-            // *************** ลบเงื่อนไขปิด Learning Overlay ออกไป ***************
-        });
-    });
-</script>
+        }
+
+        closeModal.onclick = () => { overlay.style.display = 'none'; modalContent.innerHTML = ''; };
+        window.onclick = (e) => { 
+            if (e.target == overlay) { 
+                overlay.style.display = 'none'; 
+            } 
+        };
+
+        // Right Nav Buttons
+        document.getElementById('btn-history').onclick = () => openModal('history');
+        document.getElementById('btn-family').onclick = () => openModal('iframe', 'family.html');
+        document.getElementById('btn-phat').onclick = () => openModal('iframe', 'Phattarapoll/index.html');
+        document.getElementById('btn-tin').onclick = () => openModal('iframe', 'TIN/mainTIN.html');
+    </script>
 </body>
 </html>
