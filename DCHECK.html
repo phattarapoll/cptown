@@ -8,18 +8,49 @@
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    /* --- Style ส่วน Login --- */
-    #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; z-index: 2000; font-family: 'Sarabun', sans-serif; flex-direction: column; }
-    #login-box { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); text-align: center; width: 90%; max-width: 350px; }
-    #passcode-display { height: 40px; margin-bottom: 20px; border: 2px solid #ccc; border-radius: 8px; font-size: 24px; line-height: 36px; color: #333; text-align: center; letter-spacing: 5px; background-color: #e9ecef; }
-    #keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
-    .keypad-button { background-color: #007bff; color: white; border: none; border-radius: 8px; padding: 20px 10px; font-size: 24px; cursor: pointer; transition: background-color 0.2s; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
-    .keypad-button:hover { background-color: #0056b3; }
-    .keypad-button.action { background-color: #6c757d; font-size: 18px; }
-    #enter-button { grid-column: span 3; background-color: #28a745; font-size: 20px; padding: 15px 10px; margin-top: 10px; border: none; border-radius: 8px; color: white; cursor: pointer; }
-    #message { color: red; font-weight: bold; min-height: 20px; }
+    /* --- ส่วน Login UI --- */
+    #login-overlay { 
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+      background-color: #f4f7f6; display: flex; justify-content: center; 
+      align-items: center; z-index: 2000; font-family: 'Sarabun', sans-serif; 
+      flex-direction: column; transition: transform 0.6s ease-in-out;
+    }
+    #login-box { 
+      background: white; padding: 30px; border-radius: 20px; 
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); text-align: center; 
+      width: 90%; max-width: 380px; 
+    }
+    .mode-btn {
+      width: 100%; padding: 15px; margin: 10px 0; border: none;
+      border-radius: 12px; font-size: 1.1rem; cursor: pointer;
+      transition: 0.3s; font-family: 'Sarabun'; font-weight: bold;
+    }
+    .btn-admin { background-color: #007bff; color: white; }
+    .btn-guest { background-color: #6c757d; color: white; }
+    
+    #keypad-section { display: none; margin-top: 15px; }
+    #passcode-display { 
+      height: 45px; margin-bottom: 20px; border: 2px solid #eee; 
+      border-radius: 10px; font-size: 24px; line-height: 45px; 
+      color: #333; text-align: center; letter-spacing: 8px; background-color: #f8f9fa; 
+    }
+    #keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .keypad-button { 
+      background-color: #ffffff; border: 1px solid #ddd; border-radius: 10px; 
+      padding: 18px 10px; font-size: 20px; cursor: pointer; transition: 0.2s; 
+    }
+    .keypad-button:active { background-color: #e9ecef; }
+    .keypad-button.action { background-color: #f8f9fa; color: #666; font-size: 16px; }
+    #enter-button { 
+      grid-column: span 3; background-color: #28a745; color: white; 
+      font-size: 1.1rem; padding: 15px; border: none; border-radius: 10px; cursor: pointer;
+    }
+    #message { color: #dc3545; font-size: 0.9rem; margin-top: 10px; min-height: 20px; }
 
-    /* --- ส่วนแสดงสถานะดีไซน์ใหม่ --- */
+    .read-only-overlay { pointer-events: none !important; opacity: 0.7; filter: grayscale(0.5); }
+    .guest-label { background: #ffc107; color: #000; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; margin-bottom: 10px; display: inline-block; }
+
+    /* --- ส่วนแสดงผลสถานะ --- */
     .status-card {
       display: flex; align-items: center; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px);
       padding: 10px 18px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.05);
@@ -28,32 +59,23 @@
     .status-indicator { position: relative; width: 12px; height: 12px; margin-right: 12px; }
     .dot { width: 100%; height: 100%; border-radius: 50%; position: relative; z-index: 2; }
     .pulse { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; z-index: 1; opacity: 0; }
-    .status-info { display: flex; flex-direction: column; text-align: left; }
     #status-label { font-size: 0.65rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
     #status-text { font-size: 0.85rem; font-weight: bold; }
-
     .online-mode .dot { background: #2ecc71; }
     .online-mode .pulse { background: #2ecc71; animation: soft-pulse 2s infinite ease-out; }
     .online-mode #status-text { color: #27ae60; }
     .offline-mode .dot { animation: color-shift 1.5s infinite; }
     .offline-mode .pulse { animation: color-shift-pulse 1.5s infinite; }
     .offline-mode #status-text { color: #e74c3c; }
-
     @keyframes soft-pulse { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(3); opacity: 0; } }
     @keyframes color-shift { 0%, 100% { background: #e74c3c; } 50% { background: #2ecc71; } }
     @keyframes color-shift-pulse { 0%, 100% { background: #e74c3c; transform: scale(1); opacity: 0.4; } 50% { background: #2ecc71; transform: scale(2.2); opacity: 0; } }
-
-    #offline-sync-bar {
-      display: none; background: #fff; padding: 15px; text-align: center;
-      position: sticky; top: 0; z-index: 1500; border-bottom: 4px solid #ff9800; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
+    #offline-sync-bar { display: none; background: #fff; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 1500; border-bottom: 4px solid #ff9800; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
     .progress-wrapper { width: 100%; max-width: 400px; margin: 10px auto; display: none; }
     .progress-container { width: 100%; background: #eee; border-radius: 10px; height: 20px; overflow: hidden; }
     .progress-bar { width: 0%; height: 100%; background: #ff9800; transition: width 0.3s; color: white; font-size: 12px; display: flex; align-items: center; justify-content: center; }
-
     #submission-history { position: fixed; top: 110px; right: 20px; color: #333; padding: 10px; z-index: 1000; display: none; text-align: right; pointer-events: none; }
     #submission-history p { margin: 0; padding: 4px 8px; border-radius: 5px; margin-bottom: 4px; background: rgba(255,255,255,0.9); box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-size: 0.9rem; }
-    
     .hidden { display: none !important; }
     .blinking { opacity: 0.5; cursor: not-allowed; }
   </style>
@@ -62,23 +84,35 @@
 
   <div id="login-overlay">
     <div id="login-box">
-        <h2>กรุณาป้อนรหัสผ่าน</h2>
-        <div id="passcode-display"></div>
-        <p id="message"></p>
-        <div id="keypad">
-            <button type="button" class="keypad-button" data-key="1">1</button>
-            <button type="button" class="keypad-button" data-key="2">2</button>
-            <button type="button" class="keypad-button" data-key="3">3</button>
-            <button type="button" class="keypad-button" data-key="4">4</button>
-            <button type="button" class="keypad-button" data-key="5">5</button>
-            <button type="button" class="keypad-button" data-key="6">6</button>
-            <button type="button" class="keypad-button" data-key="7">7</button>
-            <button type="button" class="keypad-button" data-key="8">8</button>
-            <button type="button" class="keypad-button" data-key="9">9</button>
-            <button type="button" class="keypad-button action" id="clear-button">ล้าง</button>
-            <button type="button" class="keypad-button" data-key="0">0</button>
-            <button type="button" class="keypad-button action" id="backspace-button"><i class="fas fa-backspace"></i></button>
-            <button type="button" class="keypad-button action" id="enter-button">ตกลง (Enter)</button>
+        <div id="mode-selection">
+            <i class="fas fa-tooth fa-4x" style="color: #007bff; margin-bottom: 20px;"></i>
+            <h2 style="margin-bottom: 25px;">ยินดีต้อนรับสู่ Dent-Check</h2>
+            <button class="mode-btn btn-admin" onclick="showAdminKeypad()"><i class="fas fa-user-md"></i> เข้าใช้งานโดยเจ้าหน้าที่</button>
+            <button class="mode-btn btn-guest" onclick="accessAsGuest()"><i class="fas fa-eye"></i> บุคคลทั่วไป (ดูข้อมูลเท่านั้น)</button>
+        </div>
+
+        <div id="keypad-section">
+            <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                <button onclick="backToModeSelection()" style="border:none; background:none; cursor:pointer; color:#007bff;"><i class="fas fa-arrow-left"></i> ย้อนกลับ</button>
+                <h3 style="flex-grow: 1; margin-right: 20px;">CODE ADMIN</h3>
+            </div>
+            <div id="passcode-display"></div>
+            <div id="keypad">
+                <button type="button" class="keypad-button" onclick="inputPass('1')">1</button>
+                <button type="button" class="keypad-button" onclick="inputPass('2')">2</button>
+                <button type="button" class="keypad-button" onclick="inputPass('3')">3</button>
+                <button type="button" class="keypad-button" onclick="inputPass('4')">4</button>
+                <button type="button" class="keypad-button" onclick="inputPass('5')">5</button>
+                <button type="button" class="keypad-button" onclick="inputPass('6')">6</button>
+                <button type="button" class="keypad-button" onclick="inputPass('7')">7</button>
+                <button type="button" class="keypad-button" onclick="inputPass('8')">8</button>
+                <button type="button" class="keypad-button" onclick="inputPass('9')">9</button>
+                <button type="button" class="keypad-button action" onclick="clearPass()">ล้าง</button>
+                <button type="button" class="keypad-button" onclick="inputPass('0')">0</button>
+                <button type="button" class="keypad-button action" onclick="delPass()"><i class="fas fa-backspace"></i></button>
+                <button type="button" id="enter-button" onclick="validateLogin()">เข้าสู่โปรแกรม</button>
+            </div>
+            <p id="message"></p>
         </div>
     </div>
   </div>
@@ -98,10 +132,13 @@
   <div id="submission-history"></div> 
 
   <div class="container" id="main-content" style="display:none;">
+    <div id="guest-notice" class="hidden" style="text-align:center;">
+        <span class="guest-label"><i class="fas fa-lock"></i> โหมดอ่านอย่างเดียว</span>
+    </div>
     <h1> PROGRAM DENTCHECK V.5.1 </h1>
     
     <form id="dataForm">
-      <div class="main-content-grid">
+      <div class="main-content-grid" id="interactive-form-grid">
         <div class="left-column">
           <div class="section gray1">
             <label>วันที่ <input type="date" id="date" name="date"> </label>
@@ -113,8 +150,9 @@
                 <option value="ป.4"><option value="ป.5"><option value="ป.6"><option value="ม.1">
               </datalist>
             </label>
-            <label>โรงเรียน
+            <label>เขตพื้นที่
               <select id="school" name="school">
+                <option value="ทั่วไป">-</option>
                 <option value="สหศึกษา">สหศึกษา</option>
                 <option value="ฝวาหมินกงลิ">ฝวาหมินกงลิ</option>
                 <option value="เทศบาล1ท่าตะเภา">เทศบาล1ท่าตะเภา</option>
@@ -197,7 +235,6 @@
       </div> 
     </form>
 	
-	
     <div class="status-card">
       <div class="status-indicator">
         <div id="status-dot" class="dot"></div>
@@ -209,22 +246,88 @@
       </div>
     </div>
 
-
     <br>
     <h6 style="text-align:center; color:#888;">ผู้สร้างและพัฒนา...นายภัทรพล ไพศาลวัชรเมธี ทันตสาธารณสุขอาวุโส</h6>
   </div>
 
   <script>
+    /* --- ส่วนควบคุมการ Login และ Keyboard Support --- */
     const CORRECT_PASSCODE = "122333";
+    let tempPass = "";
+
+    function showAdminKeypad() {
+        document.getElementById('mode-selection').style.display = 'none';
+        document.getElementById('keypad-section').style.display = 'block';
+    }
+    function backToModeSelection() {
+        document.getElementById('keypad-section').style.display = 'none';
+        document.getElementById('mode-selection').style.display = 'block';
+        clearPass();
+    }
+    function inputPass(n) { tempPass += n; updatePassUI(); }
+    function clearPass() { tempPass = ""; updatePassUI(); }
+    function delPass() { tempPass = tempPass.slice(0, -1); updatePassUI(); }
+    function updatePassUI() { 
+        document.getElementById('passcode-display').textContent = "*".repeat(tempPass.length); 
+        document.getElementById('message').textContent = "";
+    }
+
+    function validateLogin() {
+        if (tempPass === CORRECT_PASSCODE) {
+            launchApp();
+        } else {
+            document.getElementById('message').textContent = "❌ รหัสผ่านไม่ถูกต้อง";
+            clearPass();
+        }
+    }
+    function accessAsGuest() {
+        document.getElementById('interactive-form-grid').classList.add('read-only-overlay');
+        document.getElementById('guest-notice').classList.remove('hidden');
+        launchApp();
+    }
+    function launchApp() {
+        const overlay = document.getElementById('login-overlay');
+        overlay.style.transform = "translateY(-100%)";
+        setTimeout(() => {
+            overlay.classList.add('hidden');
+            document.getElementById('main-content').style.display = 'block';
+            initialSetup();
+        }, 600);
+    }
+
+    // ฟังก์ชันตรวจจับการกดคีย์บอร์ด
+    window.addEventListener('keydown', function(e) {
+        // ทำงานเฉพาะเมื่อหน้า Login ยังไม่ถูกซ่อน และอยู่ในส่วน Keypad
+        const loginVisible = !document.getElementById('login-overlay').classList.contains('hidden');
+        const keypadSectionVisible = document.getElementById('keypad-section').style.display === 'block';
+
+        if (loginVisible && keypadSectionVisible) {
+            // ถ้าเป็นตัวเลข 0-9
+            if (e.key >= '0' && e.key <= '9') {
+                inputPass(e.key);
+            } 
+            // ถ้าเป็นปุ่ม Enter
+            else if (e.key === 'Enter') {
+                validateLogin();
+            } 
+            // ถ้าเป็นปุ่ม Backspace
+            else if (e.key === 'Backspace') {
+                delPass();
+            }
+            // ถ้าเป็นปุ่ม Esc หรือ Delete (ให้ล้างรหัส)
+            else if (e.key === 'Escape' || e.key === 'Delete') {
+                clearPass();
+            }
+        }
+    });
+
+    /* --- รักษา Logic เดิมของคุณไว้ทั้งหมด ห้ามแก้ไข --- */
     const scriptURL = "https://script.google.com/macros/s/AKfycbwgNSARmEVj9bZU9euDyAkkuOb8PeJOtsHKHVjFcUR0AhP1ZQcOKcs4f4JmKk3H_fv-xg/exec";
     const OFFLINE_STORAGE_KEY = 'dentcheck_offline_queue';
     const HISTORY_STORAGE_KEY = 'dentalSubmissionHistory';
     const DRAFT_STORAGE_KEY = 'dentcheck_form_draft';
     const fieldsToRemember = ["date", "grade", "school", "NP", "NM", "CM"];
 
-    const loginOverlay = document.getElementById("login-overlay");
-    const mainContent = document.getElementById("main-content");
-    const passcodeDisplay = document.getElementById("passcode-display");
     const form = document.getElementById("dataForm");
     const submitButton = document.getElementById("main-submit-btn");
     const offlineBar = document.getElementById("offline-sync-bar");
@@ -235,44 +338,8 @@
     const selectedButtons = new Set();
     const actionButtons = document.querySelectorAll('.action-button');
 
-    let currentPasscode = "";
     let submissionHistory = [];
 
-    // --- ระบบ Login & Keyboard Support ---
-    function updatePasscodeDisplay() { passcodeDisplay.textContent = "*".repeat(currentPasscode.length); }
-    
-    function attemptLogin() {
-        if (currentPasscode === CORRECT_PASSCODE) { 
-            loginOverlay.classList.add("hidden"); 
-            mainContent.style.display = 'block'; 
-            initialSetup(); 
-        } else { 
-            document.getElementById("message").textContent = "รหัสผ่านไม่ถูกต้อง"; 
-            currentPasscode = ""; 
-            updatePasscodeDisplay(); 
-        }
-    }
-
-    // คลิกปุ่มบนหน้าจอ
-    document.querySelectorAll(".keypad-button[data-key]").forEach(btn => {
-        btn.addEventListener("click", () => { currentPasscode += btn.dataset.key; updatePasscodeDisplay(); });
-    });
-    document.getElementById("clear-button").addEventListener("click", () => { currentPasscode = ""; updatePasscodeDisplay(); });
-    document.getElementById("backspace-button").addEventListener("click", () => { currentPasscode = currentPasscode.slice(0, -1); updatePasscodeDisplay(); });
-    document.getElementById("enter-button").addEventListener("click", attemptLogin);
-
-    // รองรับ Keyboard
-    window.addEventListener("keydown", (e) => {
-        // ทำงานเฉพาะตอนที่ยังติดหน้า Login เท่านั้น
-        if (!loginOverlay.classList.contains("hidden")) {
-            if (e.key >= "0" && e.key <= "9") { currentPasscode += e.key; updatePasscodeDisplay(); }
-            else if (e.key === "Enter") { attemptLogin(); }
-            else if (e.key === "Backspace" || e.key === "Delete") { currentPasscode = currentPasscode.slice(0, -1); updatePasscodeDisplay(); }
-            else if (e.key === "Escape") { currentPasscode = ""; updatePasscodeDisplay(); }
-        }
-    });
-
-    // --- ระบบตรวจสอบสถานะ Real-time ---
     async function checkConnectivity() {
         const container = document.querySelector('.status-card');
         const statusText = document.getElementById('status-text');
@@ -310,25 +377,19 @@
             const percent = Math.round(((total - queue.length) / total) * 100);
             progBar.style.width = percent + "%"; progBar.textContent = percent + "%";
             syncStatusDetail.innerHTML = `ส่งรหัส: <strong>${item.data.id}</strong> (${total - queue.length + 1}/${total})`;
-
             const formData = new URLSearchParams();
             for (const key in item.data) formData.append(key, item.data[key]);
-
             try {
                 const res = await fetch(scriptURL, { method: 'POST', body: formData });
-                if (res.ok) {
-                    queue.shift(); localStorage.setItem(OFFLINE_STORAGE_KEY, JSON.stringify(queue));
-                    updateOfflineUI();
-                } else { break; }
+                if (res.ok) { queue.shift(); localStorage.setItem(OFFLINE_STORAGE_KEY, JSON.stringify(queue)); updateOfflineUI(); } 
+                else { break; }
             } catch (e) { break; }
         }
         progBar.style.width = "100%"; progBar.textContent = "100%";
         setTimeout(() => { progWrapper.style.display = 'none'; syncBtn.disabled = false; }, 800);
     }
 
-    function clearOfflineData() {
-        if (confirm("ต้องการล้างข้อมูลค้างส่งทั้งหมด?")) { localStorage.removeItem(OFFLINE_STORAGE_KEY); updateOfflineUI(); }
-    }
+    function clearOfflineData() { if (confirm("ต้องการล้างข้อมูลค้างส่งทั้งหมด?")) { localStorage.removeItem(OFFLINE_STORAGE_KEY); updateOfflineUI(); } }
 
     function initialSetup() {
         loadSubmissionHistory(); updateSubmissionHistoryDisplay(); loadAndSetRememberedFields();
@@ -346,14 +407,9 @@
         selectedButtons.forEach(name => formData.append(name, 'on'));
         const dataObj = {}; formData.forEach((val, key) => dataObj[key] = val);
         const code = dataObj.id; const timeStr = new Date().toLocaleTimeString("th-TH");
-
         let isOnline = navigator.onLine;
         if (isOnline) { try { await fetch("https://www.google.com/favicon.ico", { mode: 'no-cors', cache: 'no-store' }); } catch(err){ isOnline = false; } }
-
-        if (!isOnline) {
-            saveToOffline(dataObj); afterSubmit(code, timeStr); return;
-        }
-
+        if (!isOnline) { saveToOffline(dataObj); afterSubmit(code, timeStr); return; }
         try {
             const res = await fetch(scriptURL, { method: 'POST', body: new URLSearchParams(dataObj) });
             if (res.ok) { afterSubmit(code, timeStr); } else { throw Error(); }
