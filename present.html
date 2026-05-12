@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dent-check V.5 | นวัตกรรมเพื่อรอยยิ้มชุมชน</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;400;600&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Kanit', sans-serif; scroll-behavior: smooth; overflow-x: hidden; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+        .hero-gradient { background: radial-gradient(circle at top right, #1e293b, #0f172a); }
+        .text-gradient {
+            background: linear-gradient(to right, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .img-container {
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            cursor: zoom-in;
+        }
+        .img-container:hover { transform: scale(1.02); }
+
+        .full-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            padding: 4rem 1.5rem;
+        }
+
+        .nav-control {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+            z-index: 40;
+            text-decoration: none;
+        }
+        .nav-control:hover { opacity: 1; }
+        .nav-up { top: 1rem; }
+        .nav-down { bottom: 1rem; }
+        .arrow-bounce { animation: bounce 2s infinite; }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-10px);}
+            60% {transform: translateY(-5px);}
+        }
+
+        #lightbox {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            cursor: zoom-out;
+        }
+        #lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+        #lightbox.active { display: flex; }
+        #lightbox.active img { transform: scale(1); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <header id="sec1" class="hero-gradient text-white min-h-screen flex flex-col justify-center items-center text-center px-4 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+            <div class="absolute top-10 left-10 w-64 h-64 bg-blue-500 rounded-full filter blur-[100px]"></div>
+            <div class="absolute bottom-10 right-10 w-96 h-96 bg-purple-500 rounded-full filter blur-[120px]"></div>
+        </div>
+        
+        <h1 class="text-6xl md:text-8xl font-bold mb-6 tracking-tight" data-aos="zoom-out">
+            Dent-check <span class="text-gradient">V.5</span>
+        </h1>
+        <p class="text-xl md:text-2xl mb-10 max-w-3xl font-light opacity-80" data-aos="fade-up" data-aos-delay="200">
+            ยกระดับการคัดกรองสุขภาพช่องปากแบบ Real-time ด้วยนวัตกรรมดิจิทัลเพื่อการดูแลที่ครอบคลุมทุกระดับชุมชน
+        </p>
+        
+        <div class="flex flex-wrap justify-center gap-4" data-aos="fade-up" data-aos-delay="400">
+            <a href="#sec2" class="bg-blue-600 hover:bg-blue-500 text-white px-10 py-4 rounded-full font-semibold shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-1">สำรวจนวัตกรรม</a>
+            <a href="https://cptown.6te.net" target="_blank" class="glass-card text-slate-800 px-10 py-4 rounded-full font-semibold hover:bg-white transition-all">ศูนย์สารสนเทศ</a>
+        </div>
+
+        <a href="#sec2" class="nav-control nav-down text-white">
+            <span class="text-xs mb-1">ถัดไป</span>
+            <span class="text-2xl arrow-bounce">↓</span>
+        </a>
+    </header>
+
+    <section id="sec2" class="full-section bg-white">
+        <a href="#sec1" class="nav-control nav-up text-slate-400">
+            <span class="text-2xl">↑</span>
+            <span class="text-xs mt-1">ย้อนกลับ</span>
+        </a>
+
+        <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+            <div data-aos="fade-right">
+                <div class="inline-block px-4 py-1 rounded-full bg-blue-100 text-blue-600 text-sm font-bold mb-4">SECURITY FIRST</div>
+                <h2 class="text-4xl font-bold mb-6">ความปลอดภัยระดับสากล และระบบทำงานไร้เน็ต</h2>
+                <p class="text-slate-600 text-lg mb-6 leading-relaxed">
+                    เราให้ความสำคัญกับความปลอดภัยของข้อมูลตามมาตรฐาน PDPA โดยผู้ใช้ต้องเข้ารหัสผ่านทุกครั้ง และรองรับการคีย์ข้อมูลภาคสนามแม้ไม่มีสัญญาณอินเทอร์เน็ต
+                </p>
+                <div class="glass-card p-6 rounded-2xl border-l-4 border-blue-500">
+                    <ul class="space-y-4">
+                        <li class="flex items-center gap-3">
+                            <span class="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs">✓</span>
+                            <span>รองรับงานแนะนำขูดหินน้ำลาย ถอนฟัน และเคลือบหลุมร่องฟัน</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs">✓</span>
+                            <span>ระบุข้อมูลการรักษาเฉพาะรายซี่ได้อย่างแม่นยำ</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 gap-4" data-aos="fade-left">
+                <div class="img-container"><img src="PIC/1.png" class="w-full"></div>
+                <div class="img-container"><img src="PIC/2.png" class="w-full border-t-8 border-blue-500"></div>
+            </div>
+        </div>
+
+        <a href="#sec_report" class="nav-control nav-down text-slate-400">
+            <span class="text-xs mb-1">ถัดไป</span>
+            <span class="text-2xl arrow-bounce">↓</span>
+        </a>
+    </section>
+
+    <section id="sec_report" class="full-section bg-blue-50">
+        <a href="#sec2" class="nav-control nav-up text-slate-400">
+            <span class="text-2xl">↑</span>
+            <span class="text-xs mt-1">ย้อนกลับ</span>
+        </a>
+
+        <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+            <div class="order-2 md:order-1" data-aos="zoom-in">
+                <div class="img-container shadow-2xl border-4 border-white">
+                    <img src="PIC/2.1.png" class="w-full">
+                </div>
+                <p class="text-center text-sm text-slate-400 mt-4 italic">* คลิกที่รูปเพื่อขยายดูรายละเอียดของรายงาน</p>
+            </div>
+            <div class="order-1 md:order-2" data-aos="fade-left">
+                <div class="inline-block px-4 py-1 rounded-full bg-green-100 text-green-600 text-sm font-bold mb-4">PARENTAL REPORT</div>
+                <h2 class="text-4xl font-bold mb-6 text-slate-800">ระบบรายงานผลแจ้งผู้ปกครอง</h2>
+                <p class="text-slate-600 text-lg mb-8 leading-relaxed">
+                    เพิ่มความสะดวกในการติดตามสุขภาพช่องปากบุตรหลาน ผู้ปกครองสามารถตรวจสอบผลการคัดกรองได้ทันทีว่า "ต้องทำอะไรบ้าง" พร้อมระบบยืนยันนัดหมายเข้ารับบริการแบบออนไลน์
+                </p>
+                <div class="space-y-4">
+                    <div class="flex items-start gap-4 bg-white p-5 rounded-2xl shadow-sm">
+                        <span class="text-3xl">📝</span>
+                        <div>
+                            <h4 class="font-bold">สรุปผลการตรวจ</h4>
+                            <p class="text-sm text-slate-500">แจ้งรายละเอียดฟันซี่ที่ต้องรักษาและแนวทางปฏิบัติ</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4 bg-white p-5 rounded-2xl shadow-sm">
+                        <span class="text-3xl">🤝</span>
+                        <div>
+                            <h4 class="font-bold">การตอบรับนัดหมาย</h4>
+                            <p class="text-sm text-slate-500">ผู้ปกครองสามารถกดยืนยันการเข้ารับบริการได้ทันที</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a href="#sec3" class="nav-control nav-down text-slate-400">
+            <span class="text-xs mb-1">ถัดไป</span>
+            <span class="text-2xl arrow-bounce">↓</span>
+        </a>
+    </section>
+
+    <section id="sec3" class="full-section bg-white">
+        <a href="#sec_report" class="nav-control nav-up text-slate-400">
+            <span class="text-2xl">↑</span>
+            <span class="text-xs mt-1">ย้อนกลับ</span>
+        </a>
+
+        <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+            <div class="order-2 md:order-1 grid grid-cols-2 gap-4" data-aos="fade-right">
+                <div class="img-container"><img src="PIC/3.jpg" class="w-full"></div>
+                <div class="img-container mt-12"><img src="PIC/4.png" class="w-full"></div>
+            </div>
+            <div class="order-1 md:order-2" data-aos="fade-left">
+                <h2 class="text-4xl font-bold mb-6">สะดวกผ่าน LINE & คัดกรองด้วยตนเอง</h2>
+                <p class="text-slate-600 text-lg mb-6 leading-relaxed">เชื่อมต่อการสื่อสารที่ใกล้ตัวที่สุดผ่าน Line Application เพื่อติดตามผลสุขภาพและความเสี่ยงรายบุคคล</p>
+                <div class="bg-blue-600 text-white p-8 rounded-[2rem] shadow-2xl">
+                    <h4 class="font-bold text-xl mb-3 text-white">Self-Screening AI</h4>
+                    <p class="opacity-90 text-white">ระบบประเมินความเสี่ยงจากอาการปัจจุบัน พร้อมให้คำแนะนำในการปฏิบัติตัวที่ถูกต้องตามหลักทันตสาธารณสุขได้ทันที</p>
+                </div>
+            </div>
+        </div>
+
+        <a href="#sec4" class="nav-control nav-down text-slate-400">
+            <span class="text-xs mb-1">ถัดไป</span>
+            <span class="text-2xl arrow-bounce">↓</span>
+        </a>
+    </section>
+
+    <section id="sec4" class="full-section bg-slate-900 text-white">
+        <a href="#sec3" class="nav-control nav-up text-white/40">
+            <span class="text-2xl">↑</span>
+            <span class="text-xs mt-1">ย้อนกลับ</span>
+        </a>
+
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12" data-aos="fade-up">
+                <h2 class="text-4xl font-bold mb-4 text-white">พลังแห่งชุมชนและการดูแลเชิงรุก</h2>
+                <p class="opacity-60">เชื่อมต่อ อสม. และบุคลากรทางการแพทย์เข้ากับบ้านทุกหลัง</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white/5 p-6 rounded-3xl border border-white/10" data-aos="fade-up" data-aos-delay="100">
+                    <div class="img-container mb-6"><img src="PIC/5.png" class="w-full h-40 object-cover"></div>
+                    <h3 class="font-bold mb-2">ระบบ อสม.</h3>
+                    <p class="text-sm opacity-60 text-white">ฐานข้อมูลติดตามสุขภาพฟันถึงหน้าบ้าน (กำลังพัฒนา)</p>
+                </div>
+                <div class="bg-white/5 p-6 rounded-3xl border border-white/10" data-aos="fade-up" data-aos-delay="200">
+                    <div class="img-container mb-6"><img src="PIC/6.png" class="w-full h-40 object-cover"></div>
+                    <h3 class="font-bold mb-2">ดูแลผู้ป่วยติดเตียง</h3>
+                    <p class="text-sm opacity-60 text-white">ช่องทางแจ้งเหตุเพื่อให้ทีมทันตกรรมเข้าดูแลแบบเชิงรุก</p>
+                </div>
+                <div class="bg-white/5 p-6 rounded-3xl border border-white/10" data-aos="fade-up" data-aos-delay="300">
+                    <div class="img-container mb-6"><img src="PIC/7.png" class="w-full h-40 object-cover"></div>
+                    <h3 class="font-bold mb-2">Mental Health</h3>
+                    <p class="text-sm opacity-60 text-white">ประเมินสุขภาพจิตเบื้องต้น เพื่อการดูแลแบบองค์รวม</p>
+                </div>
+            </div>
+        </div>
+
+        <a href="#sec5" class="nav-control nav-down text-white/40">
+            <span class="text-xs mb-1">ถัดไป</span>
+            <span class="text-2xl arrow-bounce">↓</span>
+        </a>
+    </section>
+
+    <section id="sec5" class="full-section bg-blue-600 text-white">
+        <a href="#sec4" class="nav-control nav-up text-white/40">
+            <span class="text-2xl">↑</span>
+            <span class="text-xs mt-1">ย้อนกลับ</span>
+        </a>
+
+        <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+            <div data-aos="fade-right">
+                <h2 class="text-4xl font-bold mb-8">จองคิวง่าย ดูแลไว <br><span class="text-blue-200">ตลอด 24 ชั่วโมง</span></h2>
+                <div class="space-y-6 mb-8">
+                    <div class="flex gap-4 items-start bg-white/10 p-4 rounded-2xl">
+                        <span class="text-2xl text-white">📅</span>
+                        <div>
+                            <h4 class="font-bold">นัดหมาย & เรียกคิวออนไลน์</h4>
+                            <p class="text-sm opacity-80 text-white">วางแผนรับบริการและดูสถานะคิวผ่านมือถือได้ทันที</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 items-start bg-white/10 p-4 rounded-2xl">
+                        <span class="text-2xl text-white">🔔</span>
+                        <div>
+                            <h4 class="font-bold">Admin Notification</h4>
+                            <p class="text-sm opacity-80 text-white">ระบบแจ้งเตือนเจ้าหน้าที่เพื่อตรวจสอบข้อมูลล่วงหน้า</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="img-container"><img src="PIC/8.jpg" class="w-full opacity-90"></div>
+            </div>
+            <div class="grid grid-cols-2 gap-4" data-aos="zoom-in">
+                <div class="img-container"><img src="PIC/9.png" class="w-full"></div>
+                <div class="img-container"><img src="PIC/10.jpg" class="w-full"></div>
+                <div class="img-container col-span-2"><img src="PIC/11.png" class="w-full"></div>
+            </div>
+        </div>
+
+        <a href="#sec1" class="nav-control nav-down text-yellow-300">
+            <span class="text-xs mb-1 font-bold">ย้อนกลับหน้าแรกสุด</span>
+            <span class="text-2xl">⤴</span>
+        </a>
+    </section>
+
+    <footer class="bg-slate-50 py-12 text-center border-t border-slate-200">
+        <h3 class="text-xl font-bold text-slate-800 mb-2">ศูนย์สารสนเทศทางด้านทันตสาธารณสุข</h3>
+        <a href="https://cptown.6te.net" target="_blank" class="text-blue-600 font-semibold hover:underline">cptown.6te.net</a>
+        <p class="text-slate-400 text-xs mt-6 italic">&copy; 2026 Dent-check V.5 Project</p>
+    </footer>
+
+    <div id="lightbox">
+        <img id="lightbox-img" src="" alt="Enlarged view">
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 1000, once: false, offset: 50 });
+        
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+
+        document.querySelectorAll('img[src^="PIC/"]').forEach(img => {
+            img.addEventListener('click', () => {
+                lightbox.classList.add('active');
+                lightboxImg.src = img.src;
+                document.body.style.overflow = 'hidden';
+            });
+        });
+
+        lightbox.addEventListener('click', () => {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        });
+    </script>
+</body>
+</html>
