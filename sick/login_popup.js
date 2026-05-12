@@ -3,74 +3,93 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const loginModal = document.getElementById('login-modal');
     const officerSelect = document.getElementById('officer-select');
-    const passwordDisplay = document.getElementById('password-display');
+    const adminSelectionPart = document.getElementById('admin-selection-part');
+    const keypadSection = document.getElementById('keypad-section');
     const numericKeypad = document.getElementById('numeric-keypad');
+    const passwordDisplay = document.getElementById('password-display');
     const loginStatus = document.getElementById('login-status');
+    const cancelLogin = document.getElementById('cancel-login');
+    
     const loginInfo = document.getElementById('login-info');
     const loginMessage = document.getElementById('login-message');
     const logoutButton = document.getElementById('logout-button');
     const pendingRequestsSection = document.getElementById('pending-requests-section');
 
     let currentPassword = '';
-    window.loggedInAdminId = null; // เพิ่มตัวแปรนี้เพื่อเก็บ ID ของผู้ดูแลระบบ
+    window.loggedInAdminId = null;
 
-    // ฟังก์ชันสำหรับดึงรายชื่อผู้ดูแลระบบจาก Apps Script
-    async function fetchAdmins() {
-        try {
-            const response = await fetch(appsScriptUrl, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                body: `action=getAdmins`
-            });
-            const result = await response.json();
-            if (result.success && result.officers.length > 0) {
-                officerSelect.innerHTML = '<option value="">กรุณาเลือกชื่อ</option>';
-                result.officers.forEach(officer => {
-                    const option = document.createElement('option');
-                    option.value = officer.id;
-                    option.textContent = officer.name;
-                    officerSelect.appendChild(option);
-                });
-            } else {
-                officerSelect.innerHTML = '<option value="">ไม่พบผู้ดูแลระบบ</option>';
-                console.error('Failed to fetch admin list:', result.message);
-            }
-        } catch (error) {
-            console.error('Error fetching admin list:', error);
-            loginStatus.textContent = 'เกิดข้อผิดพลาดในการดึงรายชื่อผู้ดูแลระบบ';
+    // 1. เมื่อเลือกชื่อแล้ว ให้แสดง Keypad
+    officerSelect.addEventListener('change', function() {
+        if (this.value !== "") {
+            adminSelectionPart.style.display = 'none';
+            keypadSection.style.display = 'block';
+            currentPassword = '';
+            updatePasswordDisplay();
+            loginStatus.textContent = '';
         }
+    });
+
+    // 2. ฟังก์ชันกดยกเลิก
+    cancelLogin.addEventListener('click', function() {
+        adminSelectionPart.style.display = 'block';
+        keypadSection.style.display = 'none';
+        officerSelect.value = "";
+        currentPassword = '';
+        loginStatus.textContent = '';
+    });
+
+    // 3. ฟังก์ชันอัปเดตรหัสผ่าน (ใช้ร่วมกันทั้งหน้าจอและคีย์บอร์ด)
+    function updatePasswordDisplay() {
+        passwordDisplay.textContent = currentPassword.length > 0 
+            ? '*'.repeat(currentPassword.length) 
+            : '____'; 
     }
 
-    // ฟังก์ชันจัดการการคลิกแป้นพิมพ์
+    // 4. จัดการการกดจากหน้าจอ (Numeric Keypad)
     numericKeypad.addEventListener('click', function(event) {
-        if (event.target.classList.contains('key')) {
-            const key = event.target.dataset.key;
-            if (key === 'delete') {
-                currentPassword = currentPassword.slice(0, -1);
-            } else if (currentPassword.length < 4) {
-                currentPassword += key;
-            }
-            updatePasswordDisplay();
-            if (currentPassword.length === 4) {
-                handleLogin();
+        const target = event.target.closest('.key-modern');
+        if (!target) return;
+
+        const key = target.dataset.key;
+        handleInput(key);
+    });
+
+    // 5. จัดการการกดจากคีย์บอร์ด (Physical Keyboard)
+    document.addEventListener('keydown', function(event) {
+        // ทำงานเฉพาะเมื่อหน้าใส่รหัสผ่านแสดงอยู่
+        if (keypadSection.style.display === 'block') {
+            const key = event.key;
+
+            if (key >= '0' && key <= '9') {
+                handleInput(key);
+            } else if (key === 'Backspace') {
+                handleInput('delete');
+            } else if (key === 'Escape') {
+                cancelLogin.click(); // กด Esc เพื่อกลับไปหน้าเลือกชื่อ
             }
         }
     });
 
-    // อัปเดตการแสดงผลรหัสผ่าน
-    function updatePasswordDisplay() {
-        passwordDisplay.textContent = '*'.repeat(currentPassword.length);
+    // 6. ฟังก์ชันกลางสำหรับจัดการ Input
+    function handleInput(key) {
+        if (key === 'delete') {
+            currentPassword = currentPassword.slice(0, -1);
+        } else if (currentPassword.length < 4) {
+            currentPassword += key;
+        }
+        
+        updatePasswordDisplay();
+        
+        if (currentPassword.length === 4) {
+            handleLogin();
+        }
     }
 
-    // ฟังก์ชันสำหรับจัดการการล็อกอิน
+    // 7. ฟังก์ชันตรวจสอบการล็อกอิน
     async function handleLogin() {
         const userId = officerSelect.value;
-        if (!userId) {
-            loginStatus.textContent = 'กรุณาเลือกชื่อ';
-            return;
-        }
-
         loginStatus.textContent = 'กำลังตรวจสอบ...';
+        loginStatus.style.color = '#1e293b';
         
         try {
             const response = await fetch(appsScriptUrl, {
@@ -79,63 +98,51 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: `action=login&id=${userId}&password=${currentPassword}`
             });
             const result = await response.json();
+            
             if (result.success) {
-                window.loggedInAdminId = userId; // บันทึก ID ของผู้ดูแลระบบ
+                window.loggedInAdminId = userId;
                 const selectedOfficerName = officerSelect.options[officerSelect.selectedIndex].text;
                 loginModal.style.display = 'none';
                 pendingRequestsSection.style.display = 'block';
                 loginInfo.style.display = 'flex';
-                loginMessage.innerHTML = `<span class="login-dot"></span>เข้าสู่ระบบในฐานะ: <strong>${selectedOfficerName}</strong> (ผู้ดูแลระบบ)`;
+                loginMessage.innerHTML = `<span class="login-dot"></span>ผู้ดูแลระบบ: <strong>${selectedOfficerName}</strong>`;
                 if (typeof window.fetchPendingRequests === 'function') {
                     window.fetchPendingRequests();
                 }
             } else {
-                loginStatus.textContent = result.message;
+                loginStatus.textContent = 'รหัสผ่านไม่ถูกต้อง';
+                loginStatus.style.color = '#ef4444';
                 currentPassword = '';
                 updatePasswordDisplay();
             }
         } catch (error) {
-            loginStatus.textContent = 'เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง';
-            console.error('Error during login:', error);
+            loginStatus.textContent = 'การเชื่อมต่อล้มเหลว';
             currentPassword = '';
             updatePasswordDisplay();
         }
     }
 
-    // เพิ่ม event listener สำหรับปุ่มออกจากระบบ
-    logoutButton.addEventListener('click', function() {
-        window.location.href = 'check.html';
-    });
-
-    // เริ่มต้นหน้าด้วยการแสดงป๊อปอัปและดึงรายชื่อเจ้าหน้าที่
-    loginModal.style.display = 'flex';
-    pendingRequestsSection.style.display = 'none';
-    loginInfo.style.display = 'none';
-    fetchAdmins();
-	
-	// เพิ่มการรองรับการกดปุ่มจากคีย์บอร์ด (Physical Keyboard)
-    document.addEventListener('keydown', function(event) {
-        // ทำงานเฉพาะเมื่อ Modal ล็อกอินกำลังแสดงอยู่
-        if (loginModal.style.display === 'flex') {
-            const key = event.key;
-
-            // ตรวจสอบว่ากดตัวเลข 0-9 หรือไม่
-            if (key >= '0' && key <= '9') {
-                if (currentPassword.length < 4) {
-                    currentPassword += key;
-                    updatePasswordDisplay();
-                    
-                    // เมื่อครบ 4 หลัก ให้ตรวจสอบการเข้าสู่ระบบทันที
-                    if (currentPassword.length === 4) {
-                        handleLogin();
-                    }
-                }
-            } 
-            // ตรวจสอบการกดปุ่ม Backspace เพื่อลบ
-            else if (key === 'Backspace') {
-                currentPassword = currentPassword.slice(0, -1);
-                updatePasswordDisplay();
+    // โหลดรายชื่อเริ่มต้น
+    async function fetchAdmins() {
+        try {
+            const response = await fetch(appsScriptUrl, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `action=getAdmins`
+            });
+            const result = await response.json();
+            if (result.success) {
+                officerSelect.innerHTML = '<option value="">กรุณาเลือกชื่อ</option>';
+                result.officers.forEach(officer => {
+                    const option = document.createElement('option');
+                    option.value = officer.id;
+                    option.textContent = officer.name;
+                    officerSelect.appendChild(option);
+                });
             }
-        }
-    });
+        } catch (e) { console.error(e); }
+    }
+
+    logoutButton.addEventListener('click', () => window.location.href = 'check.html');
+    fetchAdmins();
 });

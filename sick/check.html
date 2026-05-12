@@ -178,40 +178,41 @@
             <h2><i class="fa-solid fa-clipboard-list"></i> รายการคำขอลาที่รออนุมัติ</h2>
             <div class="table-responsive">
                 <table id="pending-leave-table">
-                    <thead>
-                        <tr>
-                            <th>ชื่อ-นามสกุล</th>
-                            <th>ประเภทการลา</th>
-                            <th>จำนวนวัน</th>
-                            <th>วันที่เริ่ม-สิ้นสุด</th>
-                            <th>เหตุผลการลา</th>
-                            <th>การจัดการ</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- ข้อมูลจะถูกเติมโดย admin_approval.js -->
-                    </tbody>
-                </table>
-            </div>
+    <thead>
+        <tr>
+            <th>ชื่อ-นามสกุล</th>
+            <th>ประเภทการลา</th>
+            <th style="text-align:center;">จำนวนวัน</th>
+            <th>วันที่เริ่ม-สิ้นสุด</th>
+            <th>เหตุผลการลา</th>
+            <th style="width: 180px;">การจัดการ</th>
+        </tr>
+    </thead>
+    <tbody>
+        </tbody>
+</table>
+
+<div id="approval-modal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
+    <div id="modal-content" class="modal-content-modern" style="max-width: 500px; background: white; width: 90%;">
         </div>
+</div>
     </div>
+	</div>
 
     <!-- Modal เข้าสู่ระบบ (Keypad) -->
-    <div id="login-modal" class="modal" style="display: flex;"> <!-- เปลี่ยนเป็น flex เพื่อทดสอบ หรือจัดการผ่าน JS -->
-        <div class="modal-content-modern">
-            <h2 style="margin-bottom: 5px;">เข้าสู่ระบบ</h2>
-            <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 20px;">เฉพาะผู้มีอำนาจอนุมัติเท่านั้น</p>
+    <div id="login-modal" class="modal" style="display: flex;">
+    <div class="modal-content-modern">
+        <h2 style="margin-bottom: 5px;">เข้าสู่ระบบ</h2>
+        <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 20px;">เฉพาะผู้มีอำนาจอนุมัติเท่านั้น</p>
+        
+        <div id="admin-selection-part" style="text-align: left; margin-bottom: 15px;">
+            <label style="font-size: 0.85rem; font-weight: 600;">เลือกผู้ดูแลระบบ</label>
+            <select id="officer-select" class="admin-select"></select>
+        </div>
+
+        <div id="keypad-section" style="display: none; border-top: 1px solid #eee; pt-3;">
+            <div id="password-display" class="password-box-modern" style="margin: 15px 0;"></div>
             
-            <div style="text-align: left; margin-bottom: 15px;">
-                <label style="font-size: 0.85rem; font-weight: 600;">เลือกผู้ดูแลระบบ</label>
-                <select id="officer-select" class="admin-select"></select>
-            </div>
-
-            <div style="text-align: left;">
-                <label style="font-size: 0.85rem; font-weight: 600;">รหัสผ่าน 4 หลัก</label>
-                <div id="password-display" class="password-box-modern"></div>
-            </div>
-
             <div id="numeric-keypad" class="keypad-modern">
                 <button class="key-modern" data-key="1">1</button>
                 <button class="key-modern" data-key="2">2</button>
@@ -222,14 +223,17 @@
                 <button class="key-modern" data-key="7">7</button>
                 <button class="key-modern" data-key="8">8</button>
                 <button class="key-modern" data-key="9">9</button>
+                <button class="key-modern" style="visibility: hidden;">X</button>
                 <button class="key-modern" data-key="0">0</button>
-                <button class="key-modern delete" data-key="delete">
-                    <i class="fa-solid fa-backspace"></i> ลบข้อมูล
-                </button>
+                <button class="key-modern" data-key="delete" style="color: #ef4444;"><i class="fa-solid fa-backspace"></i></button>
             </div>
-            <p id="login-status" class="login-status" style="margin-top: 15px;"></p>
+            
+            <button id="cancel-login" style="margin-top: 15px; background: none; border: none; color: #64748b; font-size: 0.85rem; cursor: pointer;">เปลี่ยนชื่อผู้ใช้งาน</button>
         </div>
+
+        <p id="login-status" class="login-status" style="margin-top: 15px;"></p>
     </div>
+</div>
 
     <!-- Modal รายละเอียดการอนุมัติ -->
     <div id="approval-modal" class="modal">
