@@ -350,10 +350,10 @@
         }
         if (isActuallyOnline) {
             container.classList.remove('offline-mode'); container.classList.add('online-mode');
-            statusText.textContent = "เชื่อมต่อฐานข้อมูลปกติ";
+            statusText.textContent = "online";
         } else {
             container.classList.remove('online-mode'); container.classList.add('offline-mode');
-            statusText.textContent = "โหมดออฟไลน์ (ล็อกลงเครื่อง)";
+            statusText.textContent = "off line";
         }
         updateOfflineUI();
     }
