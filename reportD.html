@@ -237,60 +237,53 @@
 </div>
 
 <script>
-    function initApp() {
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxLFRuzfMxbVivZeQVATKMggFoEY6IXQhZQJG_b1JJg3fV6q0pLEkyFbknycR4Kxc4KQA/exec";
+
+    async function initApp() {
         const now = new Date();
         const yearBE = now.getFullYear() + 543;
         
         const yearElements = document.getElementsByClassName('current-year');
-        for(let el of yearElements) {
-            el.innerText = yearBE;
-        }
-        
-        const statusSelect = document.getElementById('set-status');
-        for(let i=0; i < statusSelect.options.length; i++) {
-            if(i !== 0) { // ยกเว้นสถานะ 0 ไม่ต้องเติมปีใน dropdown
-                statusSelect.options[i].text = statusSelect.options[i].text + " " + yearBE;
-            }
-        }
+        for(let el of yearElements) { el.innerText = yearBE; }
 
-        // โหลดค่าที่เคยบันทึกไว้
-        const savedStatus = localStorage.getItem('dental_status') || "0";
-        const savedSchool = localStorage.getItem('dental_school') || "-";
-        const savedGrade = localStorage.getItem('dental_grade') || "-";
-
-        document.getElementById('set-status').value = savedStatus;
-        document.getElementById('set-school').value = savedSchool;
-        document.getElementById('set-grade').value = savedGrade;
-
-        sync();
-    }
-
-    function showLogin() {
-        document.getElementById('login-form').style.display = 'block';
-    }
-
-    function doLogin() {
-        if(document.getElementById('pass').value === '3946') {
-            document.getElementById('admin-panel').style.display = 'block';
-            document.getElementById('login-form').style.display = 'none';
-            document.getElementById('login-btn').style.display = 'none';
-        } else {
-            alert('รหัสผ่านไม่ถูกต้อง');
+        // ดึงข้อมูลล่าสุดจาก Google Sheets
+        try {
+            const response = await fetch(SCRIPT_URL);
+            const data = await response.json();
+            
+            document.getElementById('set-status').value = data.status;
+            document.getElementById('set-school').value = data.school;
+            document.getElementById('set-grade').value = data.grade;
+            
+            updateUI(data.status, data.school, data.grade);
+        } catch (error) {
+            console.error("Error loading data:", error);
         }
     }
 
-    function sync() {
+    async function sync() {
         const status = document.getElementById('set-status').value;
         const school = document.getElementById('set-school').value;
         const grade = document.getElementById('set-grade').value;
 
-        // บันทึกค่าลงใน localStorage
-        localStorage.setItem('dental_status', status);
-        localStorage.setItem('dental_school', school);
-        localStorage.setItem('dental_grade', grade);
+        // อัปเดตหน้าจอทันที (Optimistic UI)
+        updateUI(status, school, grade);
 
+        // ส่งข้อมูลไปบันทึกใน Google Sheets
+        try {
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ status, school, grade })
+            });
+        } catch (error) {
+            alert("บันทึกข้อมูลไม่สำเร็จ กรุณาลองใหม่");
+        }
+    }
+
+    function updateUI(status, school, grade) {
         document.getElementById('disp-school').innerText = school;
         const gradeDisp = document.getElementById('disp-grade');
+        
         if(grade === "-") {
             gradeDisp.innerText = "-";
         } else {
@@ -299,12 +292,19 @@
 
         for(let i=0; i<=3; i++) {
             const el = document.getElementById('st-'+i);
-            if(i == status) {
-                el.classList.add('active');
-            } else {
-                el.classList.remove('active');
+            if(el) {
+                i == status ? el.classList.add('active') : el.classList.remove('active');
             }
         }
+    }
+
+    function showLogin() { document.getElementById('login-form').style.display = 'block'; }
+    function doLogin() {
+        if(document.getElementById('pass').value === '3946') {
+            document.getElementById('admin-panel').style.display = 'block';
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('login-btn').style.display = 'none';
+        } else { alert('รหัสผ่านไม่ถูกต้อง'); }
     }
 
     window.onload = initApp;
