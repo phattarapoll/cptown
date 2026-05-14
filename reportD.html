@@ -150,6 +150,29 @@
 </head>
 <body>
 
+	<div id="loading-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s;">
+    <div class="hourglass-icon">
+        <i class="fas fa-hourglass-half"></i>
+    </div>
+    <div style="margin-top: 20px; font-weight: 800; color: #1e293b; letter-spacing: 1px;">กำลังตรวจสอบข้อมูลล่าสุด...</div>
+</div>
+
+<style>
+    .hourglass-icon {
+        font-size: 4rem;
+        color: #3b82f6; /* สีน้ำเงิน Plan Color */
+        animation: flip-hourglass 2s infinite ease-in-out;
+    }
+
+    @keyframes flip-hourglass {
+        0% { transform: rotate(0); }
+        25% { transform: rotate(0); }
+        50% { transform: rotate(180deg); }
+        75% { transform: rotate(180deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
 <header>
     <img src="assets\images\tm.png" alt="Logo" class="logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3467/3467739.png'">
     <h1 style="color: #1e293b; margin-top: 15px;">ตรวจคัดกรองสุขภาพช่องปากในนักเรียน</h1>
@@ -237,17 +260,18 @@
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxLFRuzfMxbVivZeQVATKMggFoEY6IXQhZQJG_b1JJg3fV6q0pLEkyFbknycR4Kxc4KQA/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxLFRuzfMxbVivZeQVATKMggFoEY6IXQhZQJG_b1JJg3fV6q0pLEkyFbknycR4Kxc4KQA/exec"; 
 
     async function initApp() {
+        const loadingScreen = document.getElementById('loading-screen');
         const now = new Date();
         const yearBE = now.getFullYear() + 543;
         
         const yearElements = document.getElementsByClassName('current-year');
         for(let el of yearElements) { el.innerText = yearBE; }
 
-        // ดึงข้อมูลล่าสุดจาก Google Sheets
         try {
+            // เริ่มดึงข้อมูล
             const response = await fetch(SCRIPT_URL);
             const data = await response.json();
             
@@ -256,27 +280,33 @@
             document.getElementById('set-grade').value = data.grade;
             
             updateUI(data.status, data.school, data.grade);
+
+            // ซ่อนหน้าจอโหลดเมื่อสำเร็จ
+            loadingScreen.style.opacity = '0';
+            setTimeout(() => loadingScreen.style.display = 'none', 500);
+
         } catch (error) {
             console.error("Error loading data:", error);
+            document.querySelector('#loading-screen div:last-child').innerText = "เกิดข้อผิดพลาดในการเชื่อมต่อ";
         }
     }
 
     async function sync() {
+        // เมื่อมีการเปลี่ยนค่าในโหมด Admin ให้แสดง Loading เล็กน้อยเพื่อบอกว่ากำลังบันทึก
         const status = document.getElementById('set-status').value;
         const school = document.getElementById('set-school').value;
         const grade = document.getElementById('set-grade').value;
 
-        // อัปเดตหน้าจอทันที (Optimistic UI)
         updateUI(status, school, grade);
 
-        // ส่งข้อมูลไปบันทึกใน Google Sheets
         try {
             await fetch(SCRIPT_URL, {
                 method: 'POST',
                 body: JSON.stringify({ status, school, grade })
             });
+            console.log("บันทึกสำเร็จ");
         } catch (error) {
-            alert("บันทึกข้อมูลไม่สำเร็จ กรุณาลองใหม่");
+            alert("ไม่สามารถบันทึกลง Google Sheets ได้");
         }
     }
 
@@ -309,6 +339,5 @@
 
     window.onload = initApp;
 </script>
-
 </body>
 </html>
