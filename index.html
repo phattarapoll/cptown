@@ -367,60 +367,84 @@
             <img class="max-w-full max-h-full block m-auto shadow-2xl rounded-lg" id="modalImage">
         </div>
 
-        <section class="glassy-section readonly-section p-8 rounded-xl shadow-lg mb-8">
-            <h2 class="text-3xl font-bold text-blue-800 mb-6 border-b-2 border-blue-300 pb-2">บริการผู้ป่วยที่เปิด</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="service-card p-6 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="open">
+        <section class="glassy-section p-8 rounded-xl shadow-lg mb-8">
+    <h2 class="text-3xl font-bold text-blue-800 mb-6 border-b-2 border-blue-300 pb-2">บริการผู้ป่วยและข่าวสารล่าสุด</h2>
+    
+    <div class="flex flex-col lg:flex-row gap-8">
+        
+        <div class="lg:w-1/2">
+            <h3 class="text-xl font-semibold text-gray-700 mb-4"><i class="fas fa-stethoscope mr-2"></i>บริการที่เปิด</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between border border-gray-100" data-status="open">
                     <div class="flex items-center">
                         <img src="assets/icons/dental-checkup.png" alt="ตรวจสุขภาพช่องปาก" class="w-8 h-8 mr-3">
-                        <span class="text-xl font-semibold text-gray-800">ตรวจสุขภาพช่องปาก</span>
+                        <span class="text-lg font-semibold text-gray-800">ตรวจสุขภาพช่องปาก</span>
                     </div>
-                    <span class="service-status px-4 py-2 rounded-full font-bold text-sm service-status-open">open</span>
+                    <span class="service-status px-3 py-1 rounded-full font-bold text-xs service-status-open">open</span>
                 </div>
-                <div class="service-card p-6 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="open">
+                <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between border border-gray-100" data-status="open">
                     <div class="flex items-center">
                         <img src="assets/icons/filling-tool.png" alt="อุดฟัน" class="w-8 h-8 mr-3">
-                        <span class="text-xl font-semibold text-gray-800">อุดฟัน</span>
+                        <span class="text-lg font-semibold text-gray-800">อุดฟัน</span>
                     </div>
-                    <span class="service-status px-4 py-2 rounded-full font-bold text-sm service-status-open">open</span>
+                    <span class="service-status px-3 py-1 rounded-full font-bold text-xs service-status-open">open</span>
                 </div>
-                <div class="service-card p-6 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="open">
+                <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between border border-gray-100" data-status="open">
                     <div class="flex items-center">
                         <img src="assets/icons/scaling.png" alt="ขูดหินน้ำลาย" class="w-8 h-8 mr-3">
-                        <span class="text-xl font-semibold text-gray-800">ขูดหินน้ำลาย</span>
+                        <span class="text-lg font-semibold text-gray-800">ขูดหินน้ำลาย</span>
                     </div>
-                    <span class="service-status px-4 py-2 rounded-full font-bold text-sm service-status-open">open</span>
+                    <span class="service-status px-3 py-1 rounded-full font-bold text-xs service-status-open">open</span>
                 </div>
-                <div class="service-card p-6 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="open">
+                <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between border border-gray-100" data-status="open">
                     <div class="flex items-center">
                         <img src="assets/icons/extraction.png" alt="ถอนฟัน" class="w-8 h-8 mr-3">
-                        <span class="text-xl font-semibold text-gray-800">ถอนฟัน</span>
+                        <span class="text-lg font-semibold text-gray-800">ถอนฟัน</span>
                     </div>
-                    <span class="service-status px-4 py-2 rounded-full font-bold text-sm service-status-open">open</span>
+                    <span class="service-status px-3 py-1 rounded-full font-bold text-xs service-status-open">open</span>
                 </div>
-                <div class="service-card p-6 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="open">
+                <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between border border-gray-100" data-status="open">
                     <div class="flex items-center">
                         <img src="assets/icons/sealant.png" alt="เคลือบหลุมร่องฟัน" class="w-8 h-8 mr-3">
-                        <span class="text-xl font-semibold text-gray-800">เคลือบหลุมร่องฟัน</span>
+                        <span class="text-lg font-semibold text-gray-800">เคลือบหลุมร่องฟัน</span>
                     </div>
-                    <span class="service-status px-4 py-2 rounded-full font-bold text-sm service-status-open">open</span>
+                    <span class="service-status px-3 py-1 rounded-full font-bold text-xs service-status-open">open</span>
                 </div>
-                <div class="service-card p-6 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="closed">
+                <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between border border-gray-100" data-status="closed">
                     <div class="flex items-center">
                         <img src="assets/icons/root-canal.png" alt="รักษารากฟัน" class="w-8 h-8 mr-3">
-                        <span class="text-xl font-semibold text-gray-800">รักษารากฟัน</span>
+                        <span class="text-lg font-semibold text-gray-800">รักษารากฟัน</span>
                     </div>
-                    <span class="service-status px-4 py-2 rounded-full font-bold text-sm service-status-closed">closed</span>
+                    <span class="service-status px-3 py-1 rounded-full font-bold text-xs service-status-closed">closed</span>
                 </div>
-                <div class="service-card p-6 rounded-xl shadow-md flex items-center justify-between cursor-pointer transition duration-300 ease-in-out hover:scale-105" data-status="closed">
+                <div class="service-card p-4 rounded-xl shadow-md flex items-center justify-between border border-gray-100" data-status="closed">
                     <div class="flex items-center">
                         <img src="assets/icons/dentures.png" alt="ทำฟันปลอม" class="w-8 h-8 mr-3">
-                        <span class="text-xl font-semibold text-gray-800">ทำฟันปลอม</span>
+                        <span class="text-lg font-semibold text-gray-800">ทำฟันปลอม</span>
                     </div>
-                    <span class="service-status px-4 py-2 rounded-full font-bold text-sm service-status-closed">closed</span>
+                    <span class="service-status px-3 py-1 rounded-full font-bold text-xs service-status-closed">closed</span>
                 </div>
             </div>
-        </section>
+        </div>
+
+        <div class="lg:w-1/2 flex flex-col">
+    <h3 class="text-xl font-semibold text-gray-700 mb-4 w-full">
+        <i class="fab fa-facebook mr-2 text-blue-600"></i>ข่าวสารล่าสุด
+    </h3>
+    
+    <div class="w-full bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 flex-grow" 
+         style="height: 480px; overflow-y: auto;">
+        
+        <script src="https://static.elfsight.com/platform/platform.js" async></script>
+        <div class="elfsight-app-2273ca95-ed49-4d58-955d-b2d6471a1d72" data-elfsight-app-lazy></div>
+        
+    </div>
+    
+</div>
+        
+    </div>
+</section>
+
         <section class="glassy-section p-8 rounded-xl shadow-lg mb-8">
             <h2 class="text-3xl font-bold text-blue-800 mb-6 border-b-2 border-blue-300 pb-2">สิทธิและบริการทันตกรรม</h2>
             <p class="text-lg font-medium text-gray-700 mb-6 text-center">
