@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ตารางธาตุอสำหรับลูกพ่อ</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --accent-color: #38bdf8;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--accent-color);
+            margin-bottom: 5px;
+        }
+
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        @media (min-width: 1100px) {
+            .container {
+                grid-template-columns: 2.2fr 1fr;
+            }
+        }
+
+        /* ส่วนตารางธาตุ */
+        .periodic-table-box {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+
+        .periodic-table {
+            display: grid;
+            grid-template-columns: repeat(18, minmax(40px, 1fr));
+            gap: 4px;
+            margin-bottom: 20px;
+        }
+
+        .element-node {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            border: 2px solid transparent;
+            color: #ffffff;
+            font-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .element-node:hover {
+            transform: scale(1.15);
+            z-index: 10;
+            box-shadow: 0 0 15px var(--accent-color);
+        }
+
+        .element-node.active {
+            border-color: #ffffff;
+            box-shadow: 0 0 12px #ffffff;
+        }
+
+        .element-node .num { font-size: 0.55rem; opacity: 0.85; margin-bottom: 2px; }
+        .element-node .sym { font-size: 1.1rem; font-weight: bold; }
+
+        /* สีแบ่งกลุ่มธาตุ */
+        .reactive-nonmetal { background: #0ea5e9; }
+        .noble-gas { background: #a855f7; }
+        .alkali-metal { background: #f97316; }
+        .alkaline-earth { background: #eab308; }
+        .metalloid { background: #10b981; }
+        .transition { background: #ef4444; }
+        .post-transition { background: #64748b; }
+        .lanthanide { background: #ec4899; }
+        .actinide { background: #f43f5e; }
+
+        /* แผงควบคุมและจำลอง */
+        .display-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .panel-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        /* โครงสร้างอะตอม Canvas */
+        #atomCanvas {
+            background: #020617;
+            border-radius: 50%;
+            margin-top: 15px;
+            box-shadow: inset 0 0 20px rgba(56, 189, 248, 0.2);
+        }
+
+        /* แผงผสมธาตุ */
+        .blender-slots {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .slot {
+            width: 70px;
+            height: 70px;
+            background: #334155;
+            border: 2px dashed #64748b;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .btn {
+            background: #0284c7;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .btn:hover { background: #0369a1; }
+        .btn:disabled { background: #475569; cursor: not-allowed; }
+
+        #blendResult {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+        }
+
+        .success-blend { background: #065f46; color: #a7f3d0; border: 1px solid #10b981; }
+        .fail-blend { background: #7f1d1d; color: #fca5a5; border: 1px solid #ef4444; }
+
+        .legend-container {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            font-size: 0.8rem;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #334155;
+        }
+        .legend-item { display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+    <h1>⚛️ ตารางธาตุ PSVMT</h1>
+    <p style="text-align:center; opacity:0.8; margin:0;">คลิกเลือกธาตุเพื่อจำลองโครงสร้างอะตอม หรือนำธาตุมาผสมกันในเครื่องจำลองปฏิกิริยา</p>
+
+    <div class="container">
+        <!-- ฝั่งซ้าย: ตารางธาตุ -->
+        <div class="periodic-table-box">
+            <div class="periodic-table" id="periodicTable"></div>
+            
+            <!-- คำอธิบายสีธาตุ -->
+            <div class="legend-container">
+                <div class="legend-item"><span class="legend-dot alkali-metal"></span> โลหะแอลคาไล</div>
+                <div class="legend-item"><span class="legend-dot alkaline-earth"></span> โลหะแอลคาไลน์เอิร์ท</div>
+                <div class="legend-item"><span class="legend-dot transition"></span> โลหะทรานซิชัน</div>
+                <div class="legend-item"><span class="legend-dot post-transition"></span> โลหะหลังทรานซิชัน</div>
+                <div class="legend-item"><span class="legend-dot metalloid"></span> ธาตุกึ่งโลหะ</div>
+                <div class="legend-item"><span class="legend-dot reactive-nonmetal"></span> อโลหะที่มีปฏิกิริยาสูง</div>
+                <div class="legend-item"><span class="legend-dot halogen"></span> แฮโลเจน</div>
+                <div class="legend-item"><span class="legend-dot noble-gas"></span> แก๊สเฉื่อย</div>
+                <div class="legend-item"><span class="legend-dot lanthanide"></span> แลนทาไนด์</div>
+                <div class="legend-item"><span class="legend-dot actinide"></span> แอกทิไนด์</div>
+            </div>
+        </div>
+
+        <!-- ฝั่งขวา: แผงแสดงโครงสร้างอะตอมและห้องทดลองผสมธาตุ -->
+        <div class="display-panel">
+            <!-- โมเดลจำลองโครงสร้างอะตอม -->
+            <div class="panel-card">
+                <h3 id="atomTitle" style="margin: 0 0 5px 0;">Hydrogen (H)</h3>
+                <p id="atomDesc" style="font-size:0.9rem; text-align:center; margin:0 0 5px 0; min-height: 55px;"></p>
+                <canvas id="atomCanvas" width="240" height="240"></canvas>
+            </div>
+
+            <!-- เตาผสมธาตุจำลอง -->
+            <div class="panel-card">
+                <h3 style="margin: 0 0 5px 0;">🧪 เครื่องผสมธาตุ (Blender Engine)</h3>
+                <p style="font-size: 0.8rem; opacity: 0.8; margin: 0 0 10px 0; text-align:center;">คลิกเลือกธาตุในตาราง แล้วกดปุ่มเพื่อใส่ลงในช่องผสม</p>
+                
+                <div class="blender-slots">
+                    <div class="slot" id="slot1">-</div>
+                    <div class="slot" id="slot2">-</div>
+                </div>
+                
+                <div style="display:flex; gap:10px; width: 100%;">
+                    <button class="btn" id="addSlotBtn" style="flex: 1;">ใส่ในช่องผสม</button>
+                    <button class="btn" id="clearBtn" style="background:#64748b;">ล้างช่อง</button>
+                </div>
+                
+                <button class="btn" id="blendBtn" style="margin-top:15px; width:100%; background:#10b981; font-size:1.1rem; padding:12px;" disabled>เริ่มเกิดปฏิกิริยาเคมี</button>
+                
+                <div id="blendResult" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // ชุดข้อมูลธาตุทั้งหมด 118 ธาตุแบบสมบูรณ์
+    const elementsData = {
+        1: { name: "Hydrogen", sym: "H", num: 1, mass: 1.008, shells: [1], type: "reactive-nonmetal", col: 1, row: 1, desc: "ธาตุที่เบาที่สุดและมีมากที่สุดในจักรวาล เป็นต้นกำเนิดดวงดาว" },
+        2: { name: "Helium", sym: "He", num: 2, mass: 4.0026, shells: [2], type: "noble-gas", col: 18, row: 1, desc: "แก๊สเฉื่อยที่ไม่มีสี ไม่มีกลิ่น เบากว่าอากาศ ปลอดภัยสูง" },
+        3: { name: "Lithium", sym: "Li", num: 3, mass: 6.94, shells: [2, 1], type: "alkali-metal", col: 1, row: 2, desc: "โลหะที่เบาที่สุดในโลก ไวต่อการทำปฏิกิริยา ปัจจุบันใช้ทำแบตเตอรี่หลัก" },
+        4: { name: "Beryllium", sym: "Be", num: 4, mass: 9.0122, shells: [2, 2], type: "alkaline-earth", col: 2, row: 2, desc: "โลหะสีเทาสลัว แข็งแกร่งแต่น้ำหนักเบา ใช้ในโครงสร้างยานอวกาศ" },
+        5: { name: "Boron", sym: "B", num: 5, mass: 10.81, shells: [2, 3], type: "metalloid", col: 13, row: 2, desc: "ธาตุกึ่งโลหะ ใช้ทำแก้วทนความร้อนสูง (Borosilicate)" },
+        6: { name: "Carbon", sym: "C", num: 6, mass: 12.011, shells: [2, 4], type: "reactive-nonmetal", col: 14, row: 2, desc: "รากฐานเคมีของสิ่งมีชีวิตทุกชนิด โครงสร้างเปลี่ยนได้ทั้งถ่านและเพชร" },
+        7: { name: "Nitrogen", sym: "N", num: 7, mass: 14.007, shells: [2, 5], type: "reactive-nonmetal", col: 15, row: 2, desc: "แก๊สที่มีปริมาณมากที่สุดในชั้นบรรยากาศโลก มีความเสถียรสูง" },
+        8: { name: "Oxygen", sym: "O", num: 8, mass: 15.999, shells: [2, 6], type: "reactive-nonmetal", col: 16, row: 2, desc: "แก๊สสำคัญที่ช่วยให้เกิดกระบวนการเผาไหม้และค้ำจุนชีวิตสัตว์" },
+        9: { name: "Fluorine", sym: "F", num: 9, mass: 18.998, shells: [2, 7], type: "halogen", col: 17, row: 2, desc: "แก๊สสีเหลืองซีด มีพิษร้ายแรง และเป็นธาตุที่ดึงดูดอิเล็กตรอนเก่งที่สุด" },
+        10: { name: "Neon", sym: "Ne", num: 10, mass: 20.180, shells: [2, 8], type: "noble-gas", col: 18, row: 2, desc: "แก๊สเฉื่อย เรืองแสงสีส้มแดงสดใสสะดุดตาเมื่อบรรจุในหลอดไฟป้ายโฆษณา" },
+        11: { name: "Sodium", sym: "Na", num: 11, mass: 22.990, shells: [2, 8, 1], type: "alkali-metal", col: 1, row: 3, desc: "โลหะอ่อนสีเงิน ใช้มีดตัดได้ สามารถเกิดระเบิดได้ทันทีเมื่อสัมผัสกับน้ำ" },
+        12: { name: "Magnesium", sym: "Mg", num: 12, mass: 24.305, shells: [2, 8, 2], type: "alkaline-earth", col: 2, row: 3, desc: "โลหะน้ำหนักเบาและแข็งแรง เมื่อติดไฟจะให้แสงสีขาวสว่างจ้ามาก" },
+        13: { name: "Aluminium", sym: "Al", num: 13, mass: 26.982, shells: [2, 8, 3], type: "post-transition", col: 13, row: 3, desc: "โลหะยอดนิยมเพราะน้ำหนักเบา นำความร้อนได้ดี และไม่เป็นสนิม" },
+        14: { name: "Silicon", sym: "Si", num: 14, mass: 28.085, shells: [2, 8, 4], type: "metalloid", col: 14, row: 3, desc: "สารกึ่งตัวนำที่เป็นหัวใจและสมองกลในชิปคอมพิวเตอร์และแผงโซลาร์เซลล์" },
+        15: { name: "Phosphorus", sym: "P", num: 15, mass: 30.974, shells: [2, 8, 5], type: "reactive-nonmetal", col: 15, row: 3, desc: "อโลหะไวไฟสูง ส่องแสงเรืองรองในที่มืดได้ เป็นองค์ประกอบในหัวไม้ขีดไฟ" },
+        16: { name: "Sulfur", sym: "S", num: 16, mass: 32.06, shells: [2, 8, 6], type: "reactive-nonmetal", col: 16, row: 3, desc: "กำมะถันสีเหลืองนวล พบมากรอบปล่องภูเขาไฟ มีบทบาทในอุตสาหกรรมเคมี" },
+        17: { name: "Chlorine", sym: "Cl", num: 17, mass: 35.45, shells: [2, 8, 7], type: "halogen", col: 17, row: 3, desc: "แก๊สพิษสีเขียวอมเหลือง มีกลิ่นฉุน นิยมใช้ฆ่าเชื้อโรคและบำบัดน้ำในสระ" },
+        18: { name: "Argon", sym: "Ar", num: 18, mass: 39.948, shells: [2, 8, 8], type: "noble-gas", col: 18, row: 3, desc: "แก๊สเฉื่อยยอดนิยม ใช้บรรจุในหลอดไส้ทังสเตนเพื่อป้องกันการลุกไหม้" },
+        19: { name: "Potassium", sym: "K", num: 19, mass: 39.098, shells: [2, 8, 8, 1], type: "alkali-metal", col: 1, row: 4, desc: "โลหะไวปฏิกิริยาสูงมาก มีความสำคัญต่อระบบประสาทและกล้ามเนื้อในร่างกาย" },
+        20: { name: "Calcium", sym: "Ca", num: 20, mass: 40.078, shells: [2, 8, 8, 2], type: "alkaline-earth", col: 2, row: 4, desc: "ธาตุโลหะที่เป็นโครงสร้างหลักของกระดูก ฟัน เปลือกหอย และปูนซีเมนต์" },
+        21: { name: "Scandium", sym: "Sc", num: 21, mass: 44.956, shells: [2, 8, 9, 2], type: "transition", col: 3, row: 4, desc: "โลหะทรานซิชันสีขาวเงิน นิยมผสมในโลหะทำเฟรมจักรยานระดับแข่งขัน" },
+        22: { name: "Titanium", sym: "Ti", num: 22, mass: 47.867, shells: [2, 8, 10, 2], type: "transition", col: 4, row: 4, desc: "โลหะที่แข็งแกร่งเท่าเหล็กแต่เบากว่ามาก ทนการกัดกร่อนสูง ไม่ระคายเคืองต่อเนื้อเยื่อคน" },
+        23: { name: "Vanadium", sym: "V", num: 23, mass: 50.942, shells: [2, 8, 11, 2], type: "transition", col: 5, row: 4, desc: "โลหะสีเทาเงิน นิยมนำไปผสมเหล็กกล้าเพื่อให้ได้เครื่องมือช่างที่อึดถึกทน" },
+        24: { name: "Chromium", sym: "Cr", num: 24, mass: 51.996, shells: [2, 8, 13, 1], type: "transition", col: 6, row: 4, desc: "โลหะเงางามสะท้อนแสง ใช้ชุบผิวชิ้นส่วนรถยนต์เพื่อความสวยงามและกันสนิม" },
+        25: { name: "Manganese", sym: "Mn", num: 25, mass: 54.938, shells: [2, 8, 13, 2], type: "transition", col: 7, row: 4, desc: "โลหะเนื้อแข็งแต่เปราะ มีความสำคัญมากในการผลิตเหล็กกล้าอุตสาหกรรม" },
+        26: { Iron: { name: "Iron", sym: "Fe", num: 26, mass: 55.845, shells: [2, 8, 14, 2], type: "transition", col: 8, row: 4, desc: "เหล็ก ธาตุที่เป็นแกนกลางของโลก และเป็นกระดูกสันหลังของสิ่งก่อสร้างยุคปัจจุบัน" } },
+        26: { name: "Iron", sym: "Fe", num: 26, mass: 55.845, shells: [2, 8, 14, 2], type: "transition", col: 8, row: 4, desc: "เหล็ก ธาตุที่เป็นแกนหลักในแกนโลก และมีความสำคัญในเม็ดเลือดแดงของมนุษย์" },
+        27: { name: "Cobalt", sym: "Co", num: 27, mass: 58.933, shells: [2, 8, 15, 2], type: "transition", col: 9, row: 4, desc: "โลหะสีเงินอมฟ้า มีคุณสมบัติแม่เหล็กตามธรรมชาติ นิยมใช้ในแบตเตอรี่ลิเธียม" },
+        28: { name: "Nickel", sym: "Ni", num: 28, mass: 58.693, shells: [2, 8, 16, 2], type: "transition", col: 10, row: 4, desc: "โลหะทนการกัดกร่อน ใช้ผสมทำสเตนเลสสตีลและเหรียญกษาปณ์" },
+        29: { name: "Copper", sym: "Cu", num: 29, mass: 63.546, shells: [2, 8, 18, 1], type: "transition", col: 11, row: 4, desc: "ทองแดง โลหะสีส้มแดง นำไฟฟ้าได้ดีเยี่ยม เป็นสายไฟหลักทั่วโลก" },
+        30: { name: "Zinc", sym: "Zn", num: 30, mass: 65.38, shells: [2, 8, 18, 2], type: "transition", col: 12, row: 4, desc: "สังกะสี นิยมใช้เคลือบแผ่นเหล็กเพื่อทำหลังคาบ้านป้องกันสนิม" },
+        31: { name: "Gallium", sym: "Ga", num: 31, mass: 69.723, shells: [2, 8, 18, 3], type: "post-transition", col: 13, row: 4, desc: "โลหะมหัศจรรย์ที่มีจุดหลอมเหลวต่ำมาก สามารถละลายคามือเราได้" },
+        32: { name: "Germanium", sym: "Ge", num: 32, mass: 72.630, shells: [2, 8, 18, 4], type: "metalloid", col: 14, row: 4, desc: "ธาตุกึ่งโลหะ ใช้ในกล้องส่องเวลากลางคืนและระบบใยแก้วนำแสง" },
+        33: { name: "Arsenic", sym: "As", num: 33, mass: 74.922, shells: [2, 8, 18, 5], type: "metalloid", col: 15, row: 4, desc: "สารหนู มีชื่อเสียงในฐานะยาพิษร้ายแรงในประวัติศาสตร์" },
+        34: { name: "Selenium", sym: "Se", num: 34, mass: 78.971, shells: [2, 8, 18, 6], type: "reactive-nonmetal", col: 16, row: 4, desc: "ธาตุอโลหะ นำไฟฟ้าได้ดีขึ้นเมื่อโดนแสง มักใช้ในเครื่องถ่ายเอกสาร" },
+        35: { name: "Bromine", sym: "Br", num: 35, mass: 79.904, shells: [2, 8, 18, 7], type: "halogen", col: 17, row: 4, desc: "ธาตุอโลหะชนิดเดียวที่เป็นของเหลวสีแดงเข้ม ระเหยเป็นไอพิษได้ง่าย" },
+        36: { name: "Krypton", sym: "Kr", num: 36, mass: 83.798, shells: [2, 8, 18, 8], type: "noble-gas", col: 18, row: 4, desc: "แก๊สเฉื่อยใช้ในหลอดไฟแฟลชถ่ายภาพความเร็วสูงมาก" },
+        37: { name: "Rubidium", sym: "Rb", num: 37, mass: 85.468, shells: [2, 8, 18, 8, 1], type: "alkali-metal", col: 1, row: 5, desc: "โลหะเหลวสีเงินนุ่ม ไวต่ออากาศจนสามารถติดไฟได้เอง" },
+        38: { name: "Strontium", sym: "Sr", num: 38, mass: 87.62, shells: [2, 8, 18, 8, 2], type: "alkaline-earth", col: 2, row: 5, desc: "โลหะที่ให้เปลวไฟสีแดงสดเข้มข้น นิยมใช้ทำพลุดอกไม้ไฟ" },
+        39: { name: "Yttrium", sym: "Y", num: 39, mass: 88.906, shells: [2, 8, 18, 9, 2], type: "transition", col: 3, row: 5, desc: "โลหะสีเทาเงิน ใช้ในระบบเลเซอร์สีแดงและจอภาพรุ่นเก่า" },
+        40: { name: "Zirconium", sym: "Zr", num: 40, mass: 91.224, shells: [2, 8, 18, 10, 2], type: "transition", col: 4, row: 5, desc: "โลหะทนความร้อนสูง แร่ของมันนิยมเจียระไนเป็นเพชรเทียมราคาถูก" },
+        41: { name: "Niobium", sym: "Nb", num: 41, mass: 92.906, shells: [2, 8, 18, 12, 1], type: "transition", col: 5, row: 5, desc: "โลหะเหนียว ใช้ในระบบสายไฟยิ่งยวดของเครื่องตรวจ MRI" },
+        42: { name: "Molybdenum", sym: "Mo", num: 42, mass: 95.95, shells: [2, 8, 18, 13, 1], type: "transition", col: 6, row: 5, desc: "โลหะจุดหลอมเหลวสูงมาก มักผสมในเหล็กกล้าสำหรับอาวุธยุทโธปกรณ์" },
+        43: { name: "Technetium", sym: "Tc", num: 43, mass: 98, shells: [2, 8, 18, 13, 2], type: "transition", col: 7, row: 5, desc: "ธาตุกัมมันตรังสีตัวแรกที่มนุษย์สร้างขึ้นในแล็บบางส่วน ใช้ทางการแพทย์" },
+        44: { name: "Ruthenium", sym: "Ru", num: 44, mass: 101.07, shells: [2, 8, 18, 15, 1], type: "transition", col: 8, row: 5, desc: "โลหะหายากมาก ใช้เพิ่มความทนทานให้กับหน้าสัมผัสระบบไฟฟ้า" },
+        45: { name: "Rhodium", sym: "Rh", num: 45, mass: 102.91, shells: [2, 8, 18, 16, 1], type: "transition", col: 9, row: 5, desc: "หนึ่งในโลหะมีค่าที่ราคาแพงที่สุดในโลก ใช้เคลือบเครื่องประดับให้เงางาม" },
+        46: { name: "Palladium", sym: "Pd", num: 46, mass: 106.42, shells: [2, 8, 18, 18], type: "transition", col: 10, row: 5, desc: "โลหะสีขาวเงิน มีคุณสมบัติดูดซับแก๊สไฮโดรเจนได้ดีเยี่ยม" },
+        47: { name: "Silver", sym: "Ag", num: 47, mass: 107.87, shells: [2, 8, 18, 18, 1], type: "transition", col: 11, row: 5, desc: "แร่เงิน โลหะนำไฟฟ้าและนำความร้อนได้ดีที่สุดในตารางธาตุทั้งหมด" },
+        48: { name: "Cadmium", sym: "Cd", num: 48, mass: 112.41, shells: [2, 8, 18, 18, 2], type: "transition", col: 12, row: 5, desc: "โลหะสีฟ้าขาว เป็นพิษสูง เคยใช้ผลิตแบตเตอรี่นิกเกิลแคดเมียม" },
+        49: { name: "Indium", sym: "In", num: 49, mass: 114.82, shells: [2, 8, 18, 18, 3], type: "post-transition", col: 13, row: 5, desc: "โลหะอ่อนสีเงินนวล ใช้เคลือบผลิตหน้าจอแอลซีดีทัชสกรีน" },
+        50: { name: "Tin", sym: "Sn", num: 50, mass: 118.71, shells: [2, 8, 18, 18, 4], type: "post-transition", col: 14, row: 5, desc: "ดีบุก โลหะทนสนิม ใช้เคลือบผิวภายในกระป๋องบรรจุอาหาร" },
+        51: { name: "Antimony", sym: "Sb", num: 51, mass: 121.76, shells: [2, 8, 18, 18, 5], type: "metalloid", col: 15, row: 5, desc: "พลวง ธาตุกึ่งโลหะ ใช้ผสมในโลหะแบริ่งและสารหน่วงไฟขัดเงา" },
+        52: { name: "Tellurium", sym: "Te", num: 52, mass: 127.60, shells: [2, 8, 18, 18, 6], type: "metalloid", col: 16, row: 5, desc: "ธาตุกึ่งโลหะสีเทานวล ใช้ผสมในโลหะเพื่อเพิ่มความสามารถในการขึ้นรูป" },
+        53: { name: "Iodine", sym: "I", num: 53, mass: 126.90, shells: [2, 8, 18, 18, 7], type: "halogen", col: 17, row: 5, desc: "ไอโอดีน อโลหะสีม่วงดำ จำเป็นต่อต่อมไทรอยด์และใช้ทำยาล้างแผลเบทาดีน" },
+        54: { name: "Xenon", sym: "Xe", num: 54, mass: 131.29, shells: [2, 8, 18, 18, 8], type: "noble-gas", col: 18, row: 5, desc: "แก๊สเฉื่อย ให้แสงสีฟ้าไอโอดีนสว่างจ้าในหลอดไฟหน้ารถยนต์ไฮเอนด์" },
+        55: { name: "Caesium", sym: "Cs", num: 55, mass: 132.91, shells: [2, 8, 18, 18, 8, 1], type: "alkali-metal", col: 1, row: 6, desc: "โลหะที่ทำปฏิกิริยารุนแรงมากที่สุด ใช้จับเวลาในนาฬิกาอะตอมที่แม่นยำที่สุด" },
+        56: { name: "Barium", sym: "Ba", num: 56, mass: 137.33, shells: [2, 8, 18, 18, 8, 2], type: "alkaline-earth", col: 2, row: 6, desc: "โลหะที่ใช้ในสารทึบรังสี เพื่อให้ผู้ป่วยดื่มก่อนเอกซเรย์ลำไส้" },
+        
+        // กลุ่ม Lanthanides
+        57: { name: "Lanthanum", sym: "La", num: 57, mass: 138.91, shells: [2, 8, 18, 18, 9, 2], type: "lanthanide", col: 4, row: 8, desc: "โลหะเริ่มต้นกลุ่มแลนทาไนด์ ใช้ทำเลนส์กล้องถ่ายรูปสเปกสูง" },
+        58: { name: "Cerium", sym: "Ce", num: 58, mass: 140.12, shells: [2, 8, 18, 19, 9, 2], type: "lanthanide", col: 5, row: 8, desc: "โลหะกลุ่มหายากที่พบมากที่สุด ใช้ทำหินเหล็กไฟขูดในไฟแช็ก" },
+        59: { name: "Praseodymium", sym: "Pr", num: 59, mass: 140.91, shells: [2, 8, 18, 21, 8, 2], type: "lanthanide", col: 6, row: 8, desc: "โลหะสีเงินอ่อนนุ่ม ใช้ผสมทำแว่นตากันแสงเชื่อมโลหะของช่าง" },
+        60: { name: "Neodymium", sym: "Nd", num: 60, mass: 144.24, shells: [2, 8, 18, 22, 8, 2], type: "lanthanide", col: 7, row: 8, desc: "ใช้สร้างแม่เหล็กถาวรนีโอดิเมียม (NdFeB) ที่ทรงพลังที่สุดในโลก" },
+        61: { name: "Promethium", sym: "Pm", num: 61, mass: 145, shells: [2, 8, 18, 23, 8, 2], type: "lanthanide", col: 8, row: 8, desc: "ธาตุกัมมันตรังสีหายากมาก คาดว่าใช้ในแบตเตอรี่นิวเคลียร์ขนาดจิ๋ว" },
+        62: { name: "Samarium", sym: "Sm", num: 62, mass: 150.36, shells: [2, 8, 18, 24, 8, 2], type: "lanthanide", col: 9, row: 8, desc: "โลหะผสมแม่เหล็กทนความร้อนสูงมากเป็นพิเศษ" },
+        63: { name: "Europium", sym: "Eu", num: 63, mass: 151.96, shells: [2, 8, 18, 25, 8, 2], type: "lanthanide", col: 10, row: 8, desc: "ธาตุเรืองแสงสีแดง ใช้พิมพ์บนธนบัตรยูโรเพื่อป้องกันการปลอมแปลง" },
+        64: { name: "Gadolinium", sym: "Gd", num: 64, mass: 157.25, shells: [2, 8, 18, 25, 9, 2], type: "lanthanide", col: 11, row: 8, desc: "ใช้เป็นสารฉีดเพิ่มความคมชัดของภาพในการตรวจร่างกายด้วย MRI" },
+        65: { name: "Terbium", sym: "Tb", num: 65, mass: 158.93, shells: [2, 8, 18, 27, 8, 2], type: "lanthanide", col: 12, row: 8, desc: "โลหะสีเงิน ใช้ทำสารเรืองแสงสีเขียวในหน้าจอดิจิทัลสมัยใหม่" },
+        66: { name: "Dysprosium", sym: "Dy", num: 66, mass: 162.50, shells: [2, 8, 18, 28, 8, 2], type: "lanthanide", col: 13, row: 8, desc: "โลหะที่มีสมบัติแม่เหล็กจำเพาะ ใช้ในแกนควบคุมเตาปฏิกรณ์" },
+        67: { name: "Holmium", sym: "Ho", num: 67, mass: 164.93, shells: [2, 8, 18, 29, 8, 2], type: "lanthanide", col: 14, row: 8, desc: "ธาตุที่มีพลังสนามแม่เหล็กเข้มข้นที่สุดในธรรมชาติชิ้นหนึ่ง" },
+        68: { name: "Erbium", sym: "Er", num: 68, mass: 167.26, shells: [2, 8, 18, 30, 8, 2], type: "lanthanide", col: 15, row: 8, desc: "ใช้โดปในสายไฟเบอร์ออปติกใต้มหาสมุทรเพื่อทำหน้าที่ขยายสัญญาณอินเทอร์เน็ต" },
+        69: { name: "Thulium", sym: "Tm", num: 69, mass: 168.93, shells: [2, 8, 18, 31, 8, 2], type: "lanthanide", col: 16, row: 8, desc: "หนึ่งในธาตุหายากที่แพงที่สุด ใช้ทำเครื่องเอกซเรย์ฟันแบบพกพา" },
+        70: { name: "Ytterbium", sym: "Yb", num: 70, mass: 173.05, shells: [2, 8, 18, 32, 8, 2], type: "lanthanide", col: 17, row: 8, desc: "โลหะสีเงิน ใช้ปรับปรุงคุณสมบัติความเหนียวของเหล็กกล้า" },
+        71: { name: "Lutetium", sym: "Lu", num: 71, mass: 174.97, shells: [2, 8, 18, 32, 9, 2], type: "lanthanide", col: 18, row: 8, desc: "ธาตุสุดท้ายของกลุ่ม มีความหนาแน่นและจุดหลอมเหลวสูงที่สุดในกลุ่ม" },
+        
+        // แถว 6 ปกติ
+        72: { name: "Hafnium", sym: "Hf", num: 72, mass: 178.49, shells: [2, 8, 18, 32, 10, 2], type: "transition", col: 4, row: 6, desc: "โลหะทนความร้อนสูง ดูดซับนิวตรอนได้ดีมากในระบบนิวเคลียร์" },
+        73: { name: "Tantalum", sym: "Ta", num: 73, mass: 180.95, shells: [2, 8, 18, 32, 11, 2], type: "transition", col: 5, row: 6, desc: "โลหะทนการกัดกร่อนยอดเยี่ยม ใช้สร้างตัวเก็บประจุขนาดจิ๋วในสมาร์ทโฟน" },
+        74: { name: "Tungsten", sym: "W", num: 74, mass: 183.84, shells: [2, 8, 18, 32, 12, 2], type: "transition", col: 6, row: 6, desc: "ทังสเตน โลหะที่มีจุดหลอมเหลวสูงที่สุดในโลก ใช้ทำไส้หลอดไฟและหัวเจาะ" },
+        75: { name: "Rhenium", sym: "Re", num: 75, mass: 186.21, shells: [2, 8, 18, 32, 13, 2], type: "transition", col: 7, row: 6, desc: "โลหะที่หนาแน่นและหายากมาก ใช้ในเครื่องยนต์ไอพ่นขับดันของเครื่องบิน" },
+        76: { name: "Osmium", sym: "Os", num: 76, mass: 190.23, shells: [2, 8, 18, 32, 14, 2], type: "transition", col: 8, row: 6, desc: "ธาตุธรรมชาติที่มีความหนาแน่นสูงที่สุดในโลก หนักกว่าน้ำถึง 22.6 เท่า" },
+        77: { name: "Iridium", sym: "Ir", num: 77, mass: 192.22, shells: [2, 8, 18, 32, 15, 2], type: "transition", col: 9, row: 6, desc: "โลหะที่ทนการกัดกร่อนดีที่สุด มักพบมากในชั้นดินที่อุกกาบาตพุ่งชนโลก" },
+        78: { name: "Platinum", sym: "Pt", num: 78, mass: 195.08, shells: [2, 8, 18, 32, 17, 1], type: "transition", col: 10, row: 6, desc: "ทองคำขาว โลหะล้ำค่าที่มีความเสถียรเคมีสูง ใช้ทำเครื่องประดับราคาสูง" },
+        79: { name: "Gold", sym: "Au", num: 79, mass: 196.97, shells: [2, 8, 18, 32, 18, 1], type: "transition", col: 11, row: 6, desc: "ทองคำ โลหะมีค่าสีเหลืองอร่าม ไม่เป็นสนิมตลอดกาล ทั่วโลกใช้เป็นสินทรัพย์สำรอง" },
+        80: { name: "Mercury", sym: "Hg", num: 80, mass: 200.59, shells: [2, 8, 18, 32, 18, 2], type: "transition", col: 12, row: 6, desc: "ปรอท โลหะเหลวหนึ่งเดียวที่อุณหภูมิห้อง เป็นพิษสูงมาก ใช้ในเทอร์โมมิเตอร์" },
+        81: { name: "Thallium", sym: "Tl", num: 81, mass: 204.38, shells: [2, 8, 18, 32, 18, 3], type: "post-transition", col: 13, row: 6, desc: "โลหะอ่อนสีเทา สารประกอบในอดีตเคยถูกใช้เป็นยาเบื่อหนูที่ไร้กลิ่น" },
+        82: { name: "Lead", sym: "Pb", num: 82, mass: 207.2, shells: [2, 8, 18, 32, 18, 4], type: "post-transition", col: 14, row: 6, desc: "ตะกั่ว โลหะหนักเนื้อนิ่ม หนาแน่นสูง นิยมใช้ทำแผ่นฉากกั้นรังสีเอกซ์" },
+        83: { name: "Bismuth", sym: "Bi", num: 83, mass: 208.98, shells: [2, 8, 18, 32, 18, 5], type: "post-transition", col: 15, row: 6, desc: "บิสมัท โลหะสีชมพูขาว เมื่อตกผลึกช้าๆ จะสร้างโครงสร้างเหลี่ยมรุ้งงดงาม" },
+        84: { name: "Polonium", sym: "Po", num: 84, mass: 209, shells: [2, 8, 18, 32, 18, 6], type: "metalloid", col: 16, row: 6, desc: "ธาตุกัมมันตรังสีรุนแรงและหายากยิ่ง ค้นพบโดยมาดาม มารี กูรี" },
+        85: { name: "Astatine", sym: "At", num: 85, mass: 210, shells: [2, 8, 18, 32, 18, 7], type: "halogen", col: 17, row: 6, desc: "ธาตุตามธรรมชาติที่หายากที่สุดในเปลือกโลก มีการสลายตัวที่เร็วมาก" },
+        86: { name: "Radon", sym: "Rn", num: 86, mass: 222, shells: [2, 8, 18, 32, 18, 8], type: "noble-gas", col: 18, row: 6, desc: "แก๊สเฉื่อยกัมมันตรังสี ไม่มีสีและกลิ่น สะสมอยู่ตามหินใต้ดิน เป็นภัยเงียบต่อปอด" },
+        87: { name: "Francium", sym: "Fr", num: 87, mass: 223, shells: [2, 8, 18, 32, 18, 8, 1], type: "alkali-metal", col: 1, row: 7, desc: "โลหะกัมมันตรังสีที่ไม่อยู่ตัวอย่างยิ่ง มีปริมาณรวมกันทั่วโลกไม่กี่กรัม" },
+        88: { name: "Radium", sym: "Ra", num: 88, mass: 226, shells: [2, 8, 18, 32, 18, 8, 2], type: "alkaline-earth", col: 2, row: 7, desc: "เรเดียม ธาตุกัมมันตรังสีเรืองแสงฟ้าในที่มืด อดีตใช้ทาสีเข็มนาฬิกา" },
+        
+        // กลุ่ม Actinides
+        89: { name: "Actinium", sym: "Ac", num: 89, mass: 227, shells: [2, 8, 18, 32, 18, 9, 2], type: "actinide", col: 4, row: 9, desc: "ธาตุกัมมันตรังสีแผ่รังสีฟ้าเข้มข้น มีความเป็นพิษสูงระดับวิกฤต" },
+        90: { name: "Thorium", sym: "Th", num: 90, mass: 232.04, shells: [2, 8, 18, 32, 18, 10, 2], type: "actinide", col: 5, row: 9, desc: "โลหะกัมมันตรังสี คาดว่าจะเป็นพลังงานนิวเคลียร์ที่สะอาดและปลอดภัยในอนาคต" },
+        91: { name: "Protactinium", sym: "Pa", num: 91, mass: 231.04, shells: [2, 8, 18, 32, 20, 9, 2], type: "actinide", col: 6, row: 9, desc: "ธาตุกัมมันตรังสีหายาก แทรกร่างอยู่ในแร่ยูเรเนียมธรรมชาติ" },
+        92: { name: "Uranium", sym: "U", num: 92, mass: 238.03, shells: [2, 8, 18, 32, 21, 9, 2], type: "actinide", col: 7, row: 9, desc: "ยูเรเนียม เชื้อเพลิงหลักในเตาปฏิกรณ์โรงไฟฟ้านิวเคลียร์ปัจจุบัน" },
+        93: { name: "Neptunium", sym: "Np", num: 93, mass: 237, shells: [2, 8, 18, 32, 22, 9, 2], type: "actinide", col: 8, row: 9, desc: "ธาตุสังเคราะห์กัมมันตรังสีชนิดแรก ค้นพบจากการยิงนิวตรอนใส่ยูเรเนียม" },
+        94: { name: "Plutonium", sym: "Pu", num: 94, mass: 244, shells: [2, 8, 18, 32, 24, 8, 2], type: "actinide", col: 9, row: 9, desc: "ธาตุหลักที่ใช้ในการสร้างอาวุธนิวเคลียร์ และใช้ขับเคลื่อนยานอวกาศระยะไกล" },
+        95: { name: "Americium", sym: "Am", num: 95, mass: 243, shells: [2, 8, 18, 32, 25, 8, 2], type: "actinide", col: 10, row: 9, desc: "ธาตุสังเคราะห์ที่ใช้แผ่รังสีตรวจจับควันในอุปกรณ์เตือนภัยตามบ้าน" },
+        96: { name: "Curium", sym: "Cm", num: 96, mass: 247, shells: [2, 8, 18, 32, 25, 9, 2], type: "actinide", col: 11, row: 9, desc: "ตั้งชื่อตามมาดามกูรี สลายตัวแผ่ความร้อนสูงจนสามารถเรืองแสงสีม่วงได้" },
+        97: { name: "Berkelium", sym: "Bk", num: 97, mass: 247, shells: [2, 8, 18, 32, 27, 8, 2], type: "actinide", col: 12, row: 9, desc: "ธาตุสังเคราะห์กัมมันตรังสีจางๆ สร้างขึ้นเพื่อการค้นคว้าทางฟิสิกส์ชั้นสูง" },
+        98: { name: "Californium", sym: "Cf", num: 98, mass: 251, shells: [2, 8, 18, 32, 28, 8, 2], type: "actinide", col: 13, row: 9, desc: "ธาตุราคาแพงมหาศาล ปล่อยนิวตรอนเข้มข้น ใช้สตาร์ทเตานิวเคลียร์" },
+        99: { name: "Einsteinium", sym: "Es", num: 99, mass: 252, shells: [2, 8, 18, 32, 29, 8, 2], type: "actinide", col: 14, row: 9, desc: "ตั้งชื่อเพื่อเป็นเกียรติแก่ไอน์สไตน์ ค้นพบจากเขม่าระเบิดไฮโดรเจนลูกแรก" },
+        100: { name: "Fermium", sym: "Fm", num: 100, mass: 257, shells: [2, 8, 18, 32, 30, 8, 2], type: "actinide", col: 15, row: 9, desc: "ธาตุหนักที่ได้จากการระดมยิงนิวตรอนใส่ธาตุเบา สลายตัวในไม่กี่วัน" },
+        101: { name: "Mendelevium", sym: "Md", num: 101, mass: 258, shells: [2, 8, 18, 32, 31, 8, 2], type: "actinide", col: 16, row: 9, desc: "ตั้งชื่อตาม ดมีตรี เมนเดเลเยฟ นักเคมีผู้คิดค้นตารางธาตุคนแรก" },
+        102: { name: "Nobelium", sym: "No", num: 102, mass: 259, shells: [2, 8, 18, 32, 32, 8, 2], type: "actinide", col: 17, row: 9, desc: "ตั้งชื่อตาม อัลเฟรด โนเบล ผู้ประดิษฐ์ระเบิดไดนาไมต์และผู้ให้กำเนิดรางวัลโนเบล" },
+        103: { name: "Lawrencium", sym: "Lr", num: 103, mass: 266, shells: [2, 8, 18, 32, 32, 9, 2], type: "actinide", col: 18, row: 9, desc: "ธาตุสุดท้ายของแอกทิไนด์ กัมมันตรังสีเสื่อมสลายหายไปในเวลาเพียงไม่กี่นาที" },
+        
+        // แถว 7 ปกติ
+        104: { name: "Rutherfordium", sym: "Rf", num: 104, mass: 267, shells: [2, 8, 18, 32, 32, 10, 2], type: "transition", col: 4, row: 7, desc: "ธาตุสังเคราะห์กัมมันตรังสีน้ำหนักมหาศาลตัวแรกในแถวที่ 7" },
+        105: { name: "Dubnium", sym: "Db", num: 105, mass: 268, shells: [2, 8, 18, 32, 32, 11, 2], type: "transition", col: 5, row: 7, desc: "ตั้งชื่อตามเมืองศูนย์วิจัยนิวเคลียร์ ดูบนา (Dubna) ในประเทศรัสเซีย" },
+        106: { name: "Seaborgium", sym: "Sg", num: 106, mass: 269, shells: [2, 8, 18, 32, 32, 12, 2], type: "transition", col: 6, row: 7, desc: "ตั้งชื่อตาม เกลนน์ ซีบอร์ก นักวิจัยผู้ค้นพบธาตุทรานส์ยูเรเนียมหลายตัว" },
+        107: { name: "Bohrium", sym: "Bh", num: 107, mass: 270, shells: [2, 8, 18, 32, 32, 13, 2], type: "transition", col: 7, row: 7, desc: "ตั้งชื่อเพื่อเป็นเกียรติแก่ นีลส์ โบร์ บิดาแห่งทฤษฎีควอนตัมอะตอม" },
+        108: { name: "Hassium", sym: "Hs", num: 108, mass: 277, shells: [2, 8, 18, 32, 32, 14, 2], type: "transition", col: 8, row: 7, desc: "ธาตุสังเคราะห์ยิ่งยวด สลายตัวแบบกัมมันตรังสีภายในเวลาไม่กี่วินาที" },
+        109: { name: "Meitnerium", sym: "Mt", num: 109, mass: 278, shells: [2, 8, 18, 32, 32, 15, 2], type: "transition", col: 9, row: 7, desc: "ตั้งชื่อตาม ลิเซ ไมต์เนอร์ นักฟิสิกส์หญิงผู้ค้นพบฟิชชันนิวเคลียร์ร่วม" },
+        110: { name: "Darmstadtium", sym: "Ds", num: 110, mass: 281, shells: [2, 8, 18, 32, 32, 17, 1], type: "transition", col: 10, row: 7, desc: "ตั้งชื่อตามเมืองดาร์มชตัดท์ เยอรมนี แหล่งที่สังเคราะห์ธาตุนี้สำเร็จ" },
+        111: { name: "Roentgenium", sym: "Rg", num: 111, mass: 282, shells: [2, 8, 18, 32, 32, 18, 1], type: "transition", col: 11, row: 7, desc: "ตั้งชื่อเพื่อระลึกถึง วิลเฮล์ม เรินต์เกน ผู้ค้นพบรังสีเอกซ์คนแรก" },
+        112: { name: "Copernicium", sym: "Cn", num: 112, mass: 285, shells: [2, 8, 18, 32, 32, 18, 2], type: "transition", col: 12, row: 7, desc: "ตั้งชื่อตาม โคเปอร์นิคัส นักดาราศาสตร์ผู้เปลี่ยนความเชื่อว่าโลกหมุนรอบดวงอาทิตย์" },
+        113: { name: "Nihonium", sym: "Nh", num: 113, mass: 286, shells: [2, 8, 18, 32, 32, 18, 3], type: "post-transition", col: 13, row: 7, desc: "ธาตุแรกที่สังเคราะห์และตั้งชื่อโดยทีมงานประเทศญี่ปุ่น (Nihon แปลว่าญี่ปุ่น)" },
+        114: { name: "Flerovium", sym: "Fl", num: 114, mass: 289, shells: [2, 8, 18, 32, 32, 18, 4], type: "post-transition", col: 14, row: 7, desc: "ธาตุสังเคราะห์หนักพิเศษ แตกตัวเร็วมาก ค้นพบโดยสถาบันวิจัยที่รัสเซีย" },
+        115: { name: "Moscovium", sym: "Mc", num: 115, mass: 290, shells: [2, 8, 18, 32, 32, 18, 5], type: "post-transition", col: 15, row: 7, desc: "ตั้งชื่อตามแคว้นมอสโก (Moscow) ถิ่นกำเนิดการทดลองสังเคราะห์ไอโซโทปนี้" },
+        116: { name: "Livermorium", sym: "Lv", num: 116, mass: 293, shells: [2, 8, 18, 32, 32, 18, 6], type: "post-transition", col: 16, row: 7, desc: "ตั้งชื่อตามห้องแล็บแห่งชาติ ลิเวอร์มอร์ สหรัฐอเมริกา ผู้ร่วมวิจัยธาตุสะเทือนโลก" },
+        117: { name: "Tennessine", sym: "Ts", num: 117, mass: 294, shells: [2, 8, 18, 32, 32, 18, 7], type: "halogen", col: 17, row: 7, desc: "ธาตุแฮโลเจนสังเคราะห์ที่หนักที่สุด ปัจจุบันสร้างได้เพียงไม่กี่อะตอม" },
+        118: { name: "Oganesson", sym: "Og", num: 118, mass: 294, shells: [2, 8, 18, 32, 32, 18, 8], type: "noble-gas", col: 18, row: 7, desc: "ธาตุสุดท้ายและหนักที่สุดในตารางธาตุปัจจุบัน ตั้งชื่อตาม ยูริ โอกาเนสเซียน" }
+    };
+
+    // คลังสูตรผสมธาตุเคมี (Element Blender Formulae)
+    const recipes = {
+        "H+O": { name: "น้ำ (H₂O)", desc: "ไฮโดรเจน 2 อะตอม รวมกับออกซิเจน 1 อะตอม เกิดเป็นโมเลกุลของเหลวพื้นฐานที่จำเป็นต่อการหล่อเลี้ยงสิ่งมีชีวิตทุกชนิด" },
+        "Na+Cl": { name: "เกลือแกง หรือ โซเดียมคลอไรด์ (NaCl)", desc: "ผลลัพธ์อันน่าทึ่ง! โลหะระเบิดเมื่อโดนน้ำ (Na) รวมกับแก๊สพิษกลิ่นฉุน (Cl) กลายสภาพเป็นผลึกเกลือรสเค็มที่เรากินได้อย่างปลอดภัย" },
+        "C+O": { name: "คาร์บอนไดออกไซด์ (CO₂)", desc: "แก๊สที่ไม่มีสี เกิดขึ้นจากการเผาไหม้สมบูรณ์ การหายใจออกของสัตว์ และเป็นอาหารหลักในกระบวนการสังเคราะห์แสงของพืช" },
+        "H+C": { name: "แก๊สมีเทน (CH₄)", desc: "ก๊าซไฮโดรคาร์บอนที่เรียบง่ายที่สุด เป็นส่วนประกอบหลักของก๊าซธรรมชาติ (NGV) ไวไฟสูง เกิดจากการหมักหมมสารอินทรีย์" },
+        "H+Cl": { name: "กรดไฮโดรคลอริก หรือ กรดเกลือ (HCl)", desc: "สารละลายแก๊สที่มีฤทธิ์เป็นกรดแก่ กัดกร่อนสูง เป็นกรดหลักที่ทำหน้าที่ย่อยอาหารในกระเพาะอาหารของมนุษย์" },
+        "N+H": { name: "แอมโมเนีย (NH₃)", desc: "แก๊สไร้สีที่มีกลิ่นฉุนรุนแรงเป็นเอกลักษณ์ ละลายน้ำได้ดี นิยมใช้ในอุตสาหกรรมทำปุ๋ยเคมีและน้ำยายอดนิยมสำหรับล้างกระจก" }
+    };
+
+    let selectedElement = elementsData[1];
+    let slot1 = null;
+    let slot2 = null;
+
+    // การตั้งค่าแอนิเมชันโครงสร้างอะตอมด้วย HTML5 Canvas
+    const canvas = document.getElementById('atomCanvas');
+    const ctx = canvas.getContext('2d');
+    let animationFrameId;
+    let angle = 0;
+
+    function drawAtom() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const cx = canvas.width / 2;
+        const cy = canvas.height / 2;
+
+        if (!selectedElement) return;
+
+        // 1. วาดแกนกลาง นิวเคลียส (โปรตอนสีแดง + นิวตรอนสีเทา)
+        ctx.beginPath();
+        ctx.arc(cx, cy, 15, 0, Math.PI * 2);
+        ctx.fillStyle = '#ef4444'; // Proton
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(cx - 5, cy + 4, 12, 0, Math.PI * 2);
+        ctx.fillStyle = '#475569'; // Neutron
+        ctx.fill();
+        
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(selectedElement.sym, cx, cy);
+
+        // 2. วาดชั้นพลังงานและอิเล็กตรอนที่วิ่งรอบวง (Electron Shells)
+        selectedElement.shells.forEach((electronCount, index) => {
+            const radius = 45 + index * 22; // ขยายรัศมีตามจำนวนชั้น
+            
+            // วาดเส้นวงโคจรจางๆ
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            // วาดเม็ดอิเล็กตรอนที่เคลื่อนที่แบบ Dynamic
+            for (let i = 0; i < electronCount; i++) {
+                // คำนวณมุมเลื่อมกันเพื่อกระจายตัวอิเล็กตรอนรอบวงกลม
+                const currentAngle = angle * (1.5 / (index + 1)) + (i * (Math.PI * 2 / electronCount));
+                const ex = cx + Math.cos(currentAngle) * radius;
+                const ey = cy + Math.sin(currentAngle) * radius;
+
+                ctx.beginPath();
+                ctx.arc(ex, ey, 5, 0, Math.PI * 2);
+                ctx.fillStyle = '#38bdf8'; // อิเล็กตรอนเรืองแสงสีฟ้า
+                ctx.shadowColor = '#38bdf8';
+                ctx.shadowBlur = 8;
+                ctx.fill();
+                ctx.shadowBlur = 0; // ล้างค่าเงา
+            }
+        });
+
+        angle += 0.015; // ความเร็ววงโคจรการหมุน
+        animationFrameId = requestAnimationFrame(drawAtom);
+    }
+
+    // อัปเดตข้อมูลบนหน้าจอเมื่อทำการคลิกธาตุ
+    function updateDisplay(element) {
+        selectedElement = element;
+        document.getElementById('atomTitle').innerText = `${element.name} (${element.sym})`;
+        document.getElementById('atomDesc').innerHTML = `<strong>เลขอะตอม:</strong> ${element.num} | <strong>มวลอะตอม:</strong> ${element.mass} amu<br><span style="color:#94a3b8; font-size:0.85rem;">${element.desc}</span>`;
+        
+        // จัดการคลาสแสดงความแอคทีฟบนตาราง
+        document.querySelectorAll('.element-node').forEach(node => node.classList.remove('active'));
+        const activeNode = document.querySelector(`[data-num='${element.num}']`);
+        if (activeNode) activeNode.classList.add('active');
+
+        // รีเซ็ตลูปแอนิเมชัน Canvas ใหม่
+        cancelAnimationFrame(animationFrameId);
+        drawAtom();
+    }
+
+    // ฟังก์ชันวาดสร้างตารางธาตุแบบมาตรฐานสากล
+    function buildTable() {
+        const tableContainer = document.getElementById('periodicTable');
+        tableContainer.innerHTML = '';
+        
+        // วงลูปจัดเรียง 9 แถว (7 แถวหลัก + 2 แถวเว้นพิเศษใต้ตารางสำหรับกลุ่มแลนทาไนด์/แอกทิไนด์)
+        for (let r = 1; r <= 9; r++) {
+            for (let c = 1; c <= 18; c++) {
+                const match = Object.values(elementsData).find(e => e.row === r && e.col === c);
+                
+                if (match) {
+                    const node = document.createElement('div');
+                    node.className = `element-node ${match.type}`;
+                    node.setAttribute('data-num', match.num);
+                    node.innerHTML = `<span class="num">${match.num}</span><span class="sym">${match.sym}</span>`;
+                    node.addEventListener('click', () => updateDisplay(match));
+                    tableContainer.appendChild(node);
+                } else {
+                    const emptyNode = document.createElement('div');
+                    // จัดการสเปซความสวยงามขั้นสูงระหว่างช่องรอยต่อแถวแลนทาไนด์
+                    if (r === 8 && c === 1) {
+                        emptyNode.style.gridColumn = "span 3";
+                        c += 2;
+                    } else if (r === 9 && c === 1) {
+                        emptyNode.style.gridColumn = "span 3";
+                        c += 2;
+                    }
+                    tableContainer.appendChild(emptyNode);
+                }
+            }
+        }
+    }
+
+    // การควบคุมเตาปฏิกิริยาผสมสารเคมี
+    document.getElementById('addSlotBtn').addEventListener('click', () => {
+        if (!slot1) {
+            slot1 = selectedElement;
+            document.getElementById('slot1').innerText = slot1.sym;
+        } else if (!slot2) {
+            slot2 = selectedElement;
+            document.getElementById('slot2').innerText = slot2.sym;
+            document.getElementById('blendBtn').disabled = false;
+        }
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', () => {
+        slot1 = null;
+        slot2 = null;
+        document.getElementById('slot1').innerText = '-';
+        document.getElementById('slot2').innerText = '-';
+        document.getElementById('blendBtn').disabled = true;
+        const resultDiv = document.getElementById('blendResult');
+        resultDiv.style.display = 'none';
+        resultDiv.innerText = '';
+    });
+
+    document.getElementById('blendBtn').addEventListener('click', () => {
+        if (!slot1 || !slot2) return;
+
+        const key1 = `${slot1.sym}+${slot2.sym}`;
+        const key2 = `${slot2.sym}+${slot1.sym}`;
+        const matchRecipe = recipes[key1] || recipes[key2];
+
+        const resultDiv = document.getElementById('blendResult');
+        resultDiv.style.display = 'block';
+        
+        if (matchRecipe) {
+            resultDiv.className = 'success-blend';
+            resultDiv.innerHTML = `<h4 style="margin:5px 0;">✨ ค้นพบสารประกอบ: ${matchRecipe.name}</h4><p style="margin:5px 0; font-size:0.85rem;">${matchRecipe.desc}</p>`;
+        } else {
+            resultDiv.className = 'fail-blend';
+            resultDiv.innerHTML = `<h4 style="margin:5px 0;">💥 ปฏิกิริยาไม่เสถียร</h4><p style="margin:5px 0; font-size:0.85rem;">${slot1.name} และ ${slot2.name} ไม่สร้างพันธะเคมีร่วมกันในสภาวะปกติ หรือห้องแล็บยังไม่รองรับสูตรนี้</p>`;
+        }
+    });
+
+    // เปิดทำงานครั้งแรกทันทีที่โหลดหน้าเสร็จสิ้น
+    buildTable();
+    updateDisplay(elementsData[1]); // เริ่มต้นที่ธาตุไฮโดรเจนตัวแรก
+</script>
+</body>
+</html>
