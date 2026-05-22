@@ -31,6 +31,11 @@
             border-top: 1px solid #e5e7eb;
             margin-top: 10px;
         }
+		
+		/* ปิดการคลิกและการตอบสนองของ Card บริการ */
+			.service-card {
+			pointer-events: none;
+		}
         
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
@@ -623,28 +628,41 @@ document.addEventListener("DOMContentLoaded", function() {
             if (entry.isIntersecting) {
                 const progressBars = entry.target.querySelectorAll('.progress-bar-fill');
                 
-                progressBars.forEach(bar => {
+                progressBars.forEach((bar, index) => {
                     const targetPercent = parseFloat(bar.getAttribute('data-percent'));
                     
-                    // 1. สั่งให้แถบ CSS เริ่มขยับ (ใช้เวลา 10 วินาทีสำหรับ 100%)
-                    bar.style.width = targetPercent + '%';
+                    // 1. สุ่มเวลาดีเลย์เริ่มโหลด (Delay) ของแต่ละแท่งไม่ให้เท่ากัน (0 ถึง 1.5 วินาที)
+                    const randomDelay = Math.random() * 2000; 
                     
-                    // 2. สั่งให้ตัวเลขวิ่งเพิ่มขึ้นทีละนิดอย่างสมูท
-                    let startTimestamp = null;
-                    const duration = (targetPercent / 10) * 1000; // คำนวณเวลาตามจริง (10% ต่อ 1 วินาที)
+                    // 2. สุ่มความเร็วในการวิ่ง (Duration) ของแต่ละแท่ง (2 ถึง 4 วินาที)
+                    const randomDuration = 2000 + (Math.random() * 2000);
 
-                    function step(timestamp) {
-                        if (!startTimestamp) startTimestamp = timestamp;
-                        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                        const currentVal = (progress * targetPercent).toFixed(2);
+                    // ตั้งเวลาหน่วงก่อนเริ่มทำงาน
+                    setTimeout(() => {
+                        // ปรับ CSS transition ให้ใช้เวลาตามที่สุ่มได้ และให้วิ่งช้าลงตอนใกล้เต็ม
+                        bar.style.transition = `width ${randomDuration}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+                        bar.style.width = targetPercent + '%';
                         
-                        bar.innerText = currentVal + '%';
+                        let startTimestamp = null;
 
-                        if (progress < 1) {
-                            window.requestAnimationFrame(step);
+                        function step(timestamp) {
+                            if (!startTimestamp) startTimestamp = timestamp;
+                            const progress = Math.min((timestamp - startTimestamp) / randomDuration, 1);
+                            
+                            // คำนวณตัวเลขวิ่ง
+                            let currentVal = (progress * targetPercent).toFixed(2);
+                            bar.innerText = currentVal + '%';
+
+                            if (progress < 1) {
+                                window.requestAnimationFrame(step);
+                            } else {
+                                // เมื่อวิ่งเสร็จให้แสดงค่าจริงจากระบบอย่างแม่นยำ
+                                bar.innerText = targetPercent.toFixed(2) + '%';
+                            }
                         }
-                    }
-                    window.requestAnimationFrame(step);
+                        window.requestAnimationFrame(step);
+                        
+                    }, randomDelay);
                 });
                 
                 observer.unobserve(entry.target); // ทำงานครั้งเดียวแล้วหยุด
@@ -656,44 +674,39 @@ document.addEventListener("DOMContentLoaded", function() {
     if (section) observer.observe(section);
 });
 
-        // 1. Script สำหรับการขยาย/ยุบ Card
-        function toggleCard(cardElement) {
-            cardElement.classList.toggle('expanded');
-        }
-
-        // 2. Script สำหรับการเปิด/ปิด Modal ขยายรูปภาพ
-        const modal = document.getElementById("imageModal");
-        const modalImg = document.getElementById("modalImage");
-        
-		// 3. Script ควบคุมวิดีโอ
-		function playVideo() {
-    const videoUrl = "https://www.youtube.com/embed/รหัสวิดีโอของคุณ?autoplay=1";
-    // เลือกวิธีที่ต้องการ:
-    
-    // แบบที่ 1: เปิดในแท็บใหม่
-    window.open("https://youtu.be/dC14uBAA1Lw?si=IxvzxJEPmCaMuDaD", "_blank");
-    
-    // แบบที่ 2: ถ้าคุณมี Modal อยู่แล้ว ให้สั่งเปิด Modal และยัด URL ใส่ Iframe ใน Modal
-    // document.getElementById('modalIframe').src = videoUrl;
-    // document.getElementById('videoModal').style.display = 'block';
+// 1. Script สำหรับการขยาย/ยุบ Card
+function toggleCard(cardElement) {
+    cardElement.classList.toggle('expanded');
 }
 
-        // ฟังก์ชันเปิด Modal
-        function openModal(imageSrc) {
-            modal.style.display = "flex";
-            modalImg.src = imageSrc;
-        }
-        
-        // ฟังก์ชันปิด Modal (คลิกที่พื้นหลังหรือปุ่ม X)
-        function closeModal(event) {
-            if (event.target === modal || event.target.tagName === 'SPAN') {
-                modal.style.display = "none";
-            }
-        }
-		
-		document.addEventListener("keydown", function(event) {
-    // ตรวจสอบว่า Dropdown สำหรับผู้ดูแลเปิดอยู่หรือไม่ (เพื่อไม่ให้ไปรบกวนการพิมพ์ในส่วนอื่น)
+// 2. Script สำหรับการเปิด/ปิด Modal ขยายรูปภาพ
+const modal = document.getElementById("imageModal");
+const modalImg = document.getElementById("modalImage");
+
+// 3. Script ควบคุมวิดีโอ
+function playVideo() {
+    window.open("https://youtu.be/dC14uBAA1Lw?si=IxvzxJEPmCaMuDaD", "_blank");
+}
+
+// ฟังก์ชันเปิด Modal
+function openModal(imageSrc) {
+    modal.style.display = "flex";
+    modalImg.src = imageSrc;
+}
+
+// ฟังก์ชันปิด Modal (คลิกที่พื้นหลังหรือปุ่ม X)
+function closeModal(event) {
+    if (event.target === modal || event.target.tagName === 'SPAN') {
+        modal.style.display = "none";
+    }
+}
+
+// 4. Script สำหรับควบคุมคีย์แพดรหัสผ่านด้วยคีย์บอร์ด
+document.addEventListener("keydown", function(event) {
+    // ตรวจสอบว่า Dropdown สำหรับผู้ดูแลเปิดอยู่หรือไม่
     const staffDropdown = document.getElementById('staffDropdownContent');
+    if (!staffDropdown) return;
+    
     const isVisible = window.getComputedStyle(staffDropdown).display !== 'none';
     
     if (isVisible) {
@@ -716,13 +729,11 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         // ถ้ากด Enter ให้ทำการ Login
         else if (key === "Enter") {
-            document.getElementById('loginButton').click();
+            const loginBtn = document.getElementById('loginButton');
+            if (loginBtn) loginBtn.click();
         }
     }
 });
-
-
-
 </script>
     
     <script src="assets/js/custom.js"></script>
