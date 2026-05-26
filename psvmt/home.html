@@ -361,25 +361,31 @@
         <p class="animate__animated animate__fadeIn">THE LEGACY OF</p>
         <h1 id="main-title">PSVMT</h1>
         <div style="width: 100px; height: 1px; background: var(--gold); margin: 20px 0;"></div>
-        <p class="animate__animated animate__fadeInUp">ESTABLISHED 2019 • CHUMPHON THAILAND</p>
+        <p class="animate__animated animate__fadeInUp">จดทะเบียนเมื่อวันที่ 2 สิงหาคม 2562</p>
+                        <br>
+                        <p style="font-size:1.2rem; line-height:2;">
+                            <strong>เลขศาสตร์ 65 "คู่ทรัพย์ คู่โชค"</strong><br>
+                            ส่งเสริมความเจริญก้าวหน้า ความราบรื่นในชีวิต ชะตาชีวิตรุ่งเรือง <br> 
+                            มีบุพเพวาสนาส่ง หาเงินเก่งและมีเสน่ห์ เป็นที่รักของทุกคน
+                        </p>
     </main>
 
     <nav class="right-nav">
-        <a href="#" class="nav-item" id="btn-history">
+        <a href="https://www.facebook.com/profile.php?id=100063890299126" class="nav-item" id="btn-history">
             <i class="fas fa-scroll"></i>
-            <span class="tooltip">HISTORY</span>
+            <span class="tooltip">PAGE FB</span>
         </a>
         <a href="#" class="nav-item" id="btn-family">
             <i class="fas fa-project-diagram"></i>
-            <span class="tooltip">FAMILY TREE</span>
+            <span class="tooltip">ผังตระกูล</span>
         </a>
         <a href="#" class="nav-item" id="btn-phat">
             <i class="fas fa-user-graduate"></i>
-            <span class="tooltip">PHATTARAPOLL</span>
+            <span class="tooltip">WEB PHAT</span>
         </a>
         <a href="#" class="nav-item" id="btn-tin">
             <i class="fas fa-compass"></i>
-            <span class="tooltip">TIN</span>
+            <span class="tooltip">WEB TIN</span>
         </a>
     </nav>
 
@@ -421,34 +427,9 @@
         const modalContent = document.getElementById('modal-content');
         const closeModal = document.querySelector('.close-modal');
 
-        function openModal(type, url) {
-            overlay.style.display = 'flex';
-            if(type === 'iframe') {
-                modalContent.innerHTML = `<iframe src="${url}"></iframe>`;
-            } else {
-                modalContent.innerHTML = `
-                    <div class="history-content animate__animated animate__fadeIn">
-                        <h2>FAMILY LEGACY</h2>
-                        <p style="font-size:1.5rem; color:var(--gold);">จดทะเบียนเมื่อวันที่ 2 สิงหาคม 2562</p>
-                        <br>
-                        <p style="font-size:1.2rem; line-height:2;">
-                            <strong>เลขศาสตร์ 65 "คู่ทรัพย์ คู่โชค"</strong><br>
-                            ส่งเสริมความเจริญก้าวหน้า ความราบรื่นในชีวิต ชะตาชีวิตรุ่งเรือง <br> 
-                            มีบุพเพวาสนาส่ง หาเงินเก่งและมีเสน่ห์ เป็นที่รักของทุกคน
-                        </p>
-                    </div>`;
-            }
-        }
-
-        closeModal.onclick = () => { overlay.style.display = 'none'; modalContent.innerHTML = ''; };
-        window.onclick = (e) => { 
-            if (e.target == overlay) { 
-                overlay.style.display = 'none'; 
-            } 
-        };
-
+        
         // Right Nav Buttons
-        document.getElementById('btn-history').onclick = () => openModal('history');
+        document.getElementById('btn-history').onclick = () => openModal('PAGE FB');
         document.getElementById('btn-family').onclick = () => openModal('iframe', 'family.html');
         document.getElementById('btn-phat').onclick = () => openModal('iframe', 'Phattarapoll/index.html');
         document.getElementById('btn-tin').onclick = () => openModal('iframe', 'TIN/mainTIN.html');
