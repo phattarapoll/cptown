@@ -16,111 +16,112 @@
         <i class="fas fa-arrow-left"></i> กลับหน้าหลัก
     </button>
     
-    <a href="https://maps.app.goo.gl/VEmRNHtpxwiTqPWz9" target="_blank" class="navigation-button">
-        <i class="fas fa-location-dot"></i> นำทาง
-    </a>
-	<a href="https://phattarapoll.github.io/cptown/recive/index.html" target="_blank" class="feedback-button">
-        <i class="fas fa-star"></i> ให้คะแนน
-    </a>
-
     <div class="container">
-        <header class="header">
-            <div class="header-content">
-                <div class="logo-icon"><img src="assets/tm.png"></div>
-                <h2 class="title">จองคิวทำฟัน</h2>
-                <p class="subtitle">
-                    ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร(ตึกเก่า)<br>
-                    <span style="font-size: 0.9em; opacity: 0.8;">งานทันตสาธารณสุข โทร. 077-507082</span>
-                </p>
-            </div>
+        <header>
+            <div class="logo-icon"><img src="assets/tm.png"></div>
+            <h1>ระบบจองคิวออนไลน์</h1>
+            <p>งานทันตสาธารณสุข ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร(ตึกเก่า)</p>
         </header>
 
         <div class="calendar-wrapper glass-effect">
             <div class="calendar-header">
-                <button id="prevMonth" class="nav-button"><i class="fas fa-chevron-left"></i></button>
-                <h2 id="currentMonthYear" class="month-year-display"></h2>
-                <button id="nextMonth" class="nav-button"><i class="fas fa-chevron-right"></i></button>
+                <button id="prevMonth" class="nav-btn"><i class="fas fa-chevron-left"></i></button>
+                <h2 id="currentMonthYear"></h2>
+                <button id="nextMonth" class="nav-btn"><i class="fas fa-chevron-right"></i></button>
             </div>
-            <div class="calendar-grid-container">
-                <div class="day-names">
-                    <div class="day-of-week">อา.</div>
-                    <div class="day-of-week">จ.</div>
-                    <div class="day-of-week">อ.</div>
-                    <div class="day-of-week">พ.</div>
-                    <div class="day-of-week">พฤ.</div>
-                    <div class="day-of-week">ศ.</div>
-                    <div class="day-of-week">ส.</div>
-                </div>
-                <div id="calendarGrid" class="calendar-grid"></div>
+            
+            <div class="day-names">
+                <div class="day-name">อา.</div>
+                <div class="day-name">จ.</div>
+                <div class="day-name">อ.</div>
+                <div class="day-name">พ.</div>
+                <div class="day-name">พฤ.</div>
+                <div class="day-name">ศ.</div>
+                <div class="day-name">ส.</div>
             </div>
+            
+            <div id="calendarGrid" class="calendar-grid"></div>
         </div>
 
-        <div id="timeSlotDetails" class="time-slot-details hidden glass-effect">
-            <h3 id="selectedDateDisplay"></h3>
+        <div id="timeSlotDetails" class="time-slots-wrapper glass-effect hidden">
+            <div class="slots-header">
+                <button id="backToCalendar" class="back-btn"><i class="fas fa-arrow-left"></i> กลับหน้าปฏิทิน</button>
+                <h3 id="selectedDateDisplay"></h3>
+            </div>
             <div id="timeSlots" class="time-slots-grid"></div>
-            <button id="backToCalendar" class="back-button">
-                <i class="fas fa-calendar-alt"></i> เลือกวันอื่น
-            </button>
         </div>
     </div>
 
-    <div id="bookingPopup" class="popup-overlay hidden">
-        <div class="popup-content glass-effect">
-            <button id="closePopup" class="close-button"><i class="fas fa-times"></i></button>
-            <div class="popup-header-icon"><i class="fas fa-calendar-check"></i></div>
-            <h2 class="popup-title">ยืนยันการนัดหมาย</h2>
+    <div id="bookingPopup" class="modal-overlay hidden">
+        <div class="modal-content glass-effect animate-popup">
+            <button id="closePopup" class="close-modal-btn">&times;</button>
+            <h2><i class="fas fa-calendar-check text-accent"></i> ยืนยันการนัดหมาย</h2>
+            <hr class="modal-divider">
             
-            <div class="booking-summary-card">
-                <p><i class="far fa-calendar"></i> <strong>วันที่:</strong> <span id="popupDate"></span></p>
-                <p><i class="far fa-clock"></i> <strong>เวลา:</strong> <span id="popupTimeSlot"></span></p>
+            <div class="booking-summary-box">
+                <p><strong><i class="fas fa-calendar-day"></i> วันที่นัด:</strong> <span id="popupDate" class="text-highlight"></span></p>
+                <p><strong><i class="fas fa-clock"></i> เวลา:</strong> <span id="popupTimeSlot" class="text-highlight"></span></p>
             </div>
 
-            <form id="bookingForm" class="booking-form">
-                <div class="form-group floating-label">
-                    <input type="text" id="fullName" name="fullName" placeholder=" " required>
-                    <label for="fullName">ชื่อ-นามสกุล (ไม่ต้องใส่คำนำหน้า)</label>
-                </div>
-                <div class="form-group floating-label">
-                    <input type="tel" id="telNumber" name="telNumber" pattern="[0-9]{10}" placeholder=" " required>
-                    <label for="telNumber">เบอร์โทรศัพท์ (10 หลัก)</label>
+            <form id="bookingForm" autocomplete="off">
+                <div class="form-group">
+                    <label class="select-label" style="display: block; margin-bottom: 12px; font-weight: 600;">อาการ/เหตุผลที่เข้ารับบริการ</label>
+                    <input type="hidden" id="bookingReason" name="bookingReason" required>
+                    <div class="reason-button-grid">
+                        <button type="button" class="reason-btn" data-value="ตรวจฟัน">
+                            <i class="fas fa-teeth fa-2x"></i>
+                            <span>ตรวจฟัน</span>
+                        </button>
+                        <button type="button" class="reason-btn" data-value="อุดฟัน">
+                            <i class="fas fa-tooth fa-2x"></i>
+                            <span>อุดฟัน</span>
+                        </button>
+                        <button type="button" class="reason-btn" data-value="ถอนฟัน">
+                            <i class="fas fa-tooth-open fa-2x"></i>
+                            <span>ถอนฟัน</span>
+                        </button>
+                        <button type="button" class="reason-btn" data-value="ขูดหินปูน">
+                            <i class="fas fa-sparkles fa-2x"></i>
+                            <span>ขูดหินปูน</span>
+                        </button>
+                        <button type="button" class="reason-btn" data-value="อื่นๆ (ระบุในหมายเหตุ)">
+                            <i class="fas fa-comment-medical fa-2x"></i>
+                            <span>อื่นๆ</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="bookingReason" class="select-label">อาการ/เหตุผลที่เข้ารับบริการ</label>
-                    <div class="select-wrapper">
-                        <select id="bookingReason" name="bookingReason" required>
-                            <option value="" disabled selected>-- กรุณาเลือกรายการ --</option>
-                            <option value="ตรวจฟัน">ตรวจสุขภาพช่องปากประจำปี</option>
-                            <option value="อุดฟัน">อุดฟัน / วัสดุอุดหลุด / ฟันแตก</option>
-                            <option value="ขูดหินน้ำลาย">ขูดหินปูน</option>
-                            <option value="ปวดฟัน">มีอาการปวดฟัน</option>
-                            <option value="เสียวฟัน">มีอาการเสียวฟัน</option>
-                            <option value="ถอนฟัน">ถอนฟัน (โยก/ฟันน้ำนม)</option>
-                            <option value="อื่นๆ">อื่นๆ</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="submit-button">ยืนยันการจอง</button>
-                    <div id="formMessage" class="form-message"></div>
+                    <label for="fullName">ชื่อ - นามสกุล (ผู้เข้ารับบริการ)</label>
+                    <input type="text" id="fullName" name="fullName" required placeholder="ไม่ต้องระบุคำนำหน้าชื่อ" class="form-input">
                 </div>
+                
+                <div class="form-group">
+                    <label for="telNumber">เบอร์โทร</label>
+                    <input type="tel" id="telNumber" name="telNumber" required maxlength="10" pattern="[0-9]{9,10}" placeholder="เช่น 0812345678" class="form-input">
+                </div>
+
+                <button type="submit" class="submit-button">ยืนยันการจองคิว</button>
+                <div id="formMessage" class="form-message"></div>
             </form>
         </div>
     </div>
-    
-    <div id="cancelPopup" class="popup-overlay hidden">
-        <div class="popup-content glass-effect">
-            <button id="closeCancelPopup" class="close-button"><i class="fas fa-times"></i></button>
-            <div class="popup-header-icon delete"><i class="fas fa-calendar-times"></i></div>
-            <h2 class="popup-title" style="color: #e63946;">ยกเลิกนัดหมาย</h2>
+
+    <div id="cancelPopup" class="modal-overlay hidden">
+        <div class="modal-content glass-effect animate-popup">
+            <button id="closeCancelPopup" class="close-modal-btn">&times;</button>
+            <h2><i class="fas fa-calendar-times text-danger"></i> ยกเลิกการนัดหมาย</h2>
+            <hr class="modal-divider">
             
-            <div class="booking-summary-card warning">
-                 <p><strong>วันที่:</strong> <span id="cancelPopupDate"></span></p>
-                 <p><strong>เวลา:</strong> <span id="cancelPopupTimeSlot"></span></p>
-                 <p><strong>ผู้จอง:</strong> <span id="cancelPopupFullName"></span></p>
+            <div class="booking-summary-box border-danger">
+                <p><strong><i class="fas fa-calendar-day"></i> วันที่นัด:</strong> <span id="cancelPopupDate" class="text-highlight"></span></p>
+                <p><strong><i class="fas fa-clock"></i> เวลา:</strong> <span id="cancelPopupTimeSlot" class="text-highlight"></span></p>
+                <p><strong><i class="fas fa-user"></i> ผู้จอง:</strong> <span id="cancelPopupFullName" class="text-highlight"></span></p>
             </div>
 
-            <p class="input-instruction">ระบุรหัสยกเลิกคิว 6 หลัก (Code)</p> 
-            <div class="form-group">
-                <input type="password" id="cancelPassword" maxlength="6" pattern="[0-9]{6}" placeholder="• • • • • •" required class="code-input">
+            <div class="form-group mt-4">
+                <label for="cancelPassword">ป้อนรหัสยกเลิกคิว (6 หลักที่ได้ตอนจอง)</label>
+                <input type="password" id="cancelPassword" maxlength="6" pattern="[0-9]{6}\" placeholder="• • • • • •" required class="code-input">
             </div>
             <button id="confirmCancelButton" class="submit-button btn-danger">ยืนยันการยกเลิก</button>
             <div id="cancelFormMessage" class="form-message"></div>
@@ -131,8 +132,16 @@
         <div class="spinner-ring"></div>
         <p>กำลังประมวลผล...</p>
     </div>
+	
+	    <a href="https://maps.app.goo.gl/VEmRNHtpxwiTqPWz9" target="_blank" class="navigation-button">
+        <i class="fas fa-location-dot"></i> นำทาง
+    </a>
+	<a href="https://phattarapoll.github.io/cptown/recive/index.html" target="_blank" class="check-queue-button">
+        <i class="fas fa-search"></i> ให้คะแนนบริการ
+    </a>
+
 				   
-    <div class="flex justify-center mt-4 mb-4" style="z-index: 10; position: relative;">
+    <div class="flex justify-center mt-4 mb-4" style=\"z-index: 10; position: relative;\">
         <div class="info-bubble">
             <div class="info-icon"><i class="fas fa-info-circle"></i></div>
             <div class="info-text">
@@ -144,13 +153,5 @@
     </div>
 
     <script src="assets/customonline.js"></script>
-
-    <footer class="footer">
-        <p>© 2022 ระบบจองคิวทำฟันออนไลน์</p>
-        <p style="font-size: 0.8em; opacity: 0.7;">สร้างและพัฒนาโดย นายภัทรพล ไพศาลวัชรเมธี<br>
-		ทันตสาธารณสุขอาวุโส<br>
-		งานทันตสาธารณสุข ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร
-		</p>
-    </footer>
 </body>
 </html>

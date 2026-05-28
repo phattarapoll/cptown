@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // กำหนด URL ของ Google Apps Script Web App ของคุณ
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzsXJO9TBwcIdTz0_5nt_a044mk76VfAGn2eIt8xhsUStVLX_7V_U_ICalH3FxFBM7ZDw/exec';
 
     const calendarGrid = document.getElementById('calendarGrid');
@@ -29,37 +28,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     bookingForm.addEventListener('submit', submitBooking);
 
+    // --- 🛠️ ส่วนเพิ่มเติม: คุมระบบปุ่มเลือกอาการแทน Dropdown ---
+    document.querySelectorAll('.reason-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.reason-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById('bookingReason').value = this.getAttribute('data-value');
+        });
+    });
+
     let currentMonth = new Date().getMonth();
     let currentYear = new Date().getFullYear();
     let selectedDate = null;
     let selectedTimeSlot = null;
 
-    let configData = {
-        unavailableDates: [],
-        unavailableWeekdays: [],
-        timeSlots: [],
-        holidayNames: []
-    };
+    let configData = { unavailableDates: [], unavailableWeekdays: [], timeSlots: [], holidayNames: [] };
     let bookingData = {};
     let noShowCount = {}; 
-    
     let currentCancelDate = null;
     let currentCancelTimeSlot = null;
     
     closeCancelPopupBtn.addEventListener('click', () => {
         cancelPopup.classList.remove('is-active');
         if (!cancelPopup.classList.contains('hidden')) { 
-             setTimeout(() => {
-                cancelPopup.classList.add('hidden');
-             }, 300);
+             setTimeout(() => { cancelPopup.classList.add('hidden'); }, 300);
         }
         timeSlotDetails.classList.remove('hidden'); 
     });
 
-    // --- ฟังก์ชันสำหรับตัดคำนำหน้าชื่อ (เพิ่มใหม่ตามคำขอ) ---
     function removeTitle(fullName) {
         if (!fullName) return '';
-        // รายการคำนำหน้าที่ต้องการตัดออก (นาย, นาง, นางสาว, ด.ช., ด.หญิง ฯลฯ)
         const titles = /^(นาย|นางสาว|นาง|ด\.ช\.|ด\.หญิง|เด็กชาย|เด็กหญิง)\s*/g;
         return fullName.replace(titles, '').trim();
     }
@@ -84,9 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const normalizedKey = key.trim().toLowerCase();
                 const [name1, name2] = [normalizedCurrentName, normalizedKey].sort((a, b) => a.length - b.length);
                 if (name2.includes(name1) && name1.length > 2) { 
-                    if (noShowCountMap[key] > maxCount) {
-                        maxCount = noShowCountMap[key];
-                    }
+                    if (noShowCountMap[key] > maxCount) { maxCount = noShowCountMap[key]; }
                 }
             }
         }
@@ -305,6 +301,10 @@ document.addEventListener('DOMContentLoaded', () => {
         popupTimeSlot.textContent = slot;
         formMessage.textContent = '';
         document.getElementById('bookingReason').value = ''; 
+        
+        // ล้างสถานะปุ่มกดเลือกอาการเพื่อเริ่มต้นใหม่
+        document.querySelectorAll('.reason-btn').forEach(b => b.classList.remove('active'));
+
         bookingPopup.classList.remove('hidden');
         timeSlotDetails.classList.add('hidden');
         setTimeout(() => { bookingPopup.classList.add('is-active'); }, 10);
@@ -313,15 +313,19 @@ document.addEventListener('DOMContentLoaded', () => {
     async function submitBooking(event) {
         event.preventDefault();
 
-        // --- ส่วนที่ปรับปรุง: ตัดคำนำหน้าชื่ออัตโนมัติ ---
         let fullName = document.getElementById('fullName').value.trim();
         fullName = removeTitle(fullName); 
-        // ------------------------------------------
 
         const telNumber = document.getElementById('telNumber').value.trim();
         const bookingReason = document.getElementById('bookingReason').value.trim();
         const bookingDate = formatDateForComparison(selectedDate);
         const bookingDateThai = formatDateThai(selectedDate);
+
+        if (!bookingReason) {
+            formMessage.textContent = '❌ กรุณาเลือกอาการ/เหตุผลที่เข้ารับบริการ';
+            formMessage.className = 'form-message error';
+            return;
+        }
 
         if (!fullName) {
             formMessage.textContent = 'กรุณาป้อนชื่อ-นามสกุล';
@@ -343,14 +347,18 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        bookingPopup.classList.remove('is-active');
-        bookingPopup.classList.add('hidden');
+        // === 🛠️ จุดแก้ไขตามความต้องการ: ปล่อย Popup เปิดอยู่ค้างไว้ และทำการแปลงสไตล์ปุ่ม ===
+        const submitBtn = event.target.querySelector('.submit-button');
+        const originalBtnContent = submitBtn.innerHTML;
+
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังจองคิวให้ท่าน...';
+        submitBtn.classList.add('is-submitting');
         loadingSpinner.classList.remove('hidden');
 
         const formData = new FormData();
         formData.append('fullName', fullName);
         formData.append('telNumber', telNumber);
-        formData.append('phone', telNumber); // 🛠️ แก้ไข: เพิ่มคีย์ phone ส่งคู่ขนานไปเพื่อให้สคริปต์ Code.gs นำไปใช้งานกับระบบ LINE ได้ถูกต้อง
+        formData.append('phone', telNumber); 
         formData.append('bookingDate', bookingDate);
         formData.append('timeSlot', selectedTimeSlot);
         formData.append('bookingReason', bookingReason);
@@ -364,7 +372,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 const result = JSON.parse(resultText); 
-                // 🛠️ แก้ไข: ปรับการตรวจสถานะสำเร็จให้รองรับคำว่า 'Success' ตามที่ Code.gs ส่งกลับมาจริง
                 isSuccess = result.status === 'Booking successful!' || result.status === 'Success';
                 cancellationCode = result.cancellationCode || result.code;
             } catch (e) {
@@ -372,27 +379,33 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (isSuccess) {
+                // คิวสำเร็จเสร็จสมบูรณ์ -> ทำการปิดหน้าต่าง Popup ต่างๆ ลงพร้อมกัน
+                bookingPopup.classList.remove('is-active');
+                bookingPopup.classList.add('hidden');
                 loadingSpinner.classList.add('hidden');
+                
+                submitBtn.innerHTML = originalBtnContent;
+                submitBtn.classList.remove('is-submitting');
+
                 document.querySelector('.calendar-wrapper').classList.add('hidden');
                 timeSlotDetails.classList.add('hidden');
-                const reasonElement = document.querySelector(`#bookingReason option[value="${bookingReason}"]`);
-                const reasonText = reasonElement ? reasonElement.textContent : 'ไม่ระบุ';
+                
                 const codeDisplayHtml = cancellationCode ? `<div class="code-display-box" style="margin: 15px auto; padding: 15px; border-radius: 10px; border: 3px dashed #e63946; background-color: #ffe6e6;"><p style="margin: 0; font-weight: bold;">รหัสยกเลิกคิว (Code):</p><p style="margin: 5px 0 0 0; font-size: 3em; font-weight: bolder; color: #e63946;">${cancellationCode}</p></div>` : '';
-
-                const successSummary = `<div class="glass-effect" style="margin: 40px auto; max-width: 600px; text-align: center; padding: 25px; border: 5px solid #2a9d8f; border-radius: 15px;"><h3 style="color: #2a9d8f;">✅ การจองคิวสำเร็จ ✅</h3>${codeDisplayHtml}<div style="text-align: left; padding: 15px; background: white; border-radius: 10px;"><p><strong>👤 ผู้จอง:</strong> ${fullName}</p><p><strong>🗓 วันที่นัด:</strong> ${bookingDateThai}</p><p><strong>⏰ ช่วงเวลา:</strong> ${selectedTimeSlot}</p><p><strong>📝 อาการ:</strong> ${reasonText}</p></div><button onclick="window.location.reload();" style="margin-top: 20px; padding: 10px 20px; background: #e63946; color: white; border: none; border-radius: 8px; cursor: pointer;">กลับหน้าหลัก</button></div>`;
+                const successSummary = `<div class="glass-effect" style="margin: 40px auto; max-width: 600px; text-align: center; padding: 25px; border: 5px solid #2a9d8f; border-radius: 15px;"><h3 style="color: #2a9d8f;">✅ การจองคิวสำเร็จ ✅</h3>${codeDisplayHtml}<div style="text-align: left; padding: 15px; background: white; border-radius: 10px;"><p><strong>👤 ผู้จอง:</strong> ${fullName}</p><p><strong>🗓 วันที่นัด:</strong> ${bookingDateThai}</p><p><strong>⏰ ช่วงเวลา:</strong> ${selectedTimeSlot}</p><p><strong>📝 อาการ:</strong> ${bookingReason}</p></div><button onclick="window.location.reload();" style="margin-top: 20px; padding: 10px 20px; background: #e63946; color: white; border: none; border-radius: 8px; cursor: pointer;">กลับหน้าหลัก</button></div>`;
                 document.querySelector('.container').insertAdjacentHTML('beforeend', successSummary);
             } else {
                 loadingSpinner.classList.add('hidden');
+                submitBtn.innerHTML = originalBtnContent;
+                submitBtn.classList.remove('is-submitting');
                 alert('เกิดข้อผิดพลาด: ' + resultText);
-                bookingPopup.classList.remove('hidden');
             }
         } catch (error) {
             loadingSpinner.classList.add('hidden');
+            submitBtn.innerHTML = originalBtnContent;
+            submitBtn.classList.remove('is-submitting');
             alert('เชื่อมต่อผิดพลาด: ' + error.message);
         }
     }
-	
-	
 
     function cancelBooking(dateString, slot, telNumberMasked, fullName) {
         currentCancelDate = dateString;
@@ -410,95 +423,80 @@ document.addEventListener('DOMContentLoaded', () => {
     confirmCancelButton.addEventListener('click', confirmCancel);
 
 	async function confirmCancel() {
-    const password = cancelPasswordInput.value.trim();
-    if (password.length !== 6) {
-        alert('กรุณาใส่รหัส 6 หลัก');
-        return;
-    }
-    
-    const confirmButton = document.getElementById('confirmCancelButton');
-    
-    // 1. เปิดเอฟเฟกต์ปุ่มกระพริบ และล็อกปุ่มไม่ให้กดซ้ำขณะระบบกำลังทำงาน
-    if (confirmButton) {
-        confirmButton.disabled = true;
-        confirmButton.style.animation = 'pulse 1s infinite';
-        confirmButton.innerText = 'กำลังส่งคำขอยกเลิก...';
-    }
-
-    // 2. แสดงหน้าต่างอนิเมชั่นหมุนโหลด (Spinner) พร้อมข้อความแจ้งสถาณะชัดเจน
-    const spinnerMessage = loadingSpinner.querySelector('p');
-    if (spinnerMessage) {
-        spinnerMessage.innerHTML = '<i class="fas fa-trash-alt animate-pulse"></i> กำลังทำการลบคิวในระบบ กรุณารอสักครู่...';
-    }
-    loadingSpinner.classList.remove('hidden');
-    
-    const formData = new FormData();
-    formData.append('action', 'cancelBooking');
-    formData.append('bookingDate', currentCancelDate);
-    formData.append('timeSlot', currentCancelTimeSlot);
-    formData.append('password', password);
-
-    try {
-        const response = await fetch(WEB_APP_URL, { method: 'POST', body: formData });
-        const resultText = await response.text();
-        
-        // 3. ปิดอนิเมชั่นและคืนค่าสถานะปุ่มเมื่อระบบทำงานเสร็จสิ้น
-        loadingSpinner.classList.add('hidden');
-        if (spinnerMessage) {
-            spinnerMessage.innerText = 'กำลังประมวลผล...';
+        const password = cancelPasswordInput.value.trim();
+        if (password.length !== 6) {
+            alert('กรุณาใส่รหัส 6 หลัก');
+            return;
         }
+        
+        const confirmButton = document.getElementById('confirmCancelButton');
         if (confirmButton) {
-            confirmButton.disabled = false;
-            confirmButton.style.animation = 'none';
-            confirmButton.innerText = 'ยืนยันการยกเลิก';
+            confirmButton.disabled = true;
+            confirmButton.style.animation = 'pulse 1s infinite';
+            confirmButton.innerText = 'กำลังส่งคำขอยกเลิก...';
         }
+
+        const spinnerMessage = loadingSpinner.querySelector('p');
+        if (spinnerMessage) {
+            spinnerMessage.innerHTML = '<i class="fas fa-trash-alt animate-pulse"></i> กำลังทำการลบคิวในระบบ กรุณารอสักครู่...';
+        }
+        loadingSpinner.classList.remove('hidden');
         
-        let statusMessage = '';
-        let isSuccess = false;
+        const formData = new FormData();
+        formData.append('action', 'cancelBooking');
+        formData.append('bookingDate', currentCancelDate);
+        formData.append('timeSlot', currentCancelTimeSlot);
+        formData.append('password', password);
 
         try {
-            const jsonResult = JSON.parse(resultText);
-            statusMessage = jsonResult.status;
-            if (statusMessage === 'Cancel successful!') {
-                isSuccess = true;
+            const response = await fetch(WEB_APP_URL, { method: 'POST', body: formData });
+            const resultText = await response.text();
+            
+            loadingSpinner.classList.add('hidden');
+            if (spinnerMessage) { spinnerMessage.innerText = 'กำลังประมวลผล...'; }
+            if (confirmButton) {
+                confirmButton.disabled = false;
+                confirmButton.style.animation = 'none';
+                confirmButton.innerText = 'ยืนยันการยกเลิก';
             }
-        } catch (e) {
-            statusMessage = resultText;
-            if (resultText.includes('Cancel successful!')) {
-                isSuccess = true;
+            
+            let statusMessage = '';
+            let isSuccess = false;
+
+            try {
+                const jsonResult = JSON.parse(resultText);
+                statusMessage = jsonResult.status;
+                if (statusMessage === 'Cancel successful!') { isSuccess = true; }
+            } catch (e) {
+                statusMessage = resultText;
+                if (resultText.includes('Cancel successful!')) { isSuccess = true; }
             }
-        }
 
-        // 4. แสดงหน้าต่างแจ้งผลลัพธ์การยกเลิกเสร็จสมบูรณ์
-        if (isSuccess) {
-            alert('✅ ดำเนินการเสร็จสมบูรณ์!\nระบบได้ทำการลบคิวนัดหมายนี้เรียบร้อยแล้วครับ');
-            window.location.reload(); // รีเฟรชหน้าเว็บทันทีเพื่อให้ปฏิทินอัปเดตช่องว่าง
-        } else if (statusMessage === 'Invalid code!') {
-            alert('❌ ยกเลิกไม่สำเร็จ: รหัสยกเลิกคิว 6 หลักไม่ถูกต้อง กรุณาตรวจสอบรหัสในคอลัมน์ G (Code) อีกครั้ง');
-        } else if (statusMessage === 'Booking not found!') {
-            alert('❌ ยกเลิกไม่สำเร็จ: ไม่พบข้อมูลการจองในระบบ');
-        } else if (statusMessage.includes('Cannot cancel a past appointment')) {
-            alert('❌ ยกเลิกไม่สำเร็จ: เกินเวลานัดหมาย ไม่สามารถยกเลิกย้อนหลังได้');
-        } else if (statusMessage.includes('less than 1 hour')) {
-            alert('❌ ยกเลิกไม่สำเร็จ: ไม่สามารถยกเลิกได้เนื่องจากเหลือน้อยกว่า 1 ชั่วโมงก่อนถึงเวลานัด');
-        } else {
-            alert('❌ เกิดข้อผิดพลาดจากระบบ: ' + statusMessage);
+            if (isSuccess) {
+                alert('✅ ดำเนินการเสร็จสมบูรณ์!\nระบบได้ทำการลบคิวนัดหมายนี้เรียบร้อยแล้วครับ');
+                window.location.reload();
+            } else if (statusMessage === 'Invalid code!') {
+                alert('❌ ยกเลิกไม่สำเร็จ: รหัสยกเลิกคิว 6 หลักไม่ถูกต้อง กรุณาตรวจสอบรหัสในคอลัมน์ G (Code) อีกครั้ง');
+            } else if (statusMessage === 'Booking not found!') {
+                alert('❌ ยกเลิกไม่สำเร็จ: ไม่พบข้อมูลการจองในระบบ');
+            } else if (statusMessage.includes('Cannot cancel a past appointment')) {
+                alert('❌ ยกเลิกไม่สำเร็จ: เกินเวลานัดหมาย ไม่สามารถยกเลิกย้อนหลังได้');
+            } else if (statusMessage.includes('less than 1 hour')) {
+                alert('❌ ยกเลิกไม่สำเร็จ: ไม่สามารถยกเลิกได้เนื่องจากเหลือน้อยกว่า 1 ชั่วโมงก่อนถึงเวลานัด');
+            } else {
+                alert('❌ เกิดข้อผิดพลาดจากระบบ: ' + statusMessage);
+            }
+        } catch (error) {
+            loadingSpinner.classList.add('hidden');
+            if (spinnerMessage) { spinnerMessage.innerText = 'กำลังประมวลผล...'; }
+            if (confirmButton) {
+                confirmButton.disabled = false;
+                confirmButton.style.animation = 'none';
+                confirmButton.innerText = 'ยืนยันการยกเลิก';
+            }
+            alert('🌐 เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย: ' + error.message);
         }
-
-    } catch (error) {
-        // หากเกิดข้อผิดพลาดทางเครือข่าย ให้คืนค่าปุ่มเป็นปกติและแจ้งเตือน
-        loadingSpinner.classList.add('hidden');
-        if (spinnerMessage) {
-            spinnerMessage.innerText = 'กำลังประมวลผล...';
-        }
-        if (confirmButton) {
-            confirmButton.disabled = false;
-            confirmButton.style.animation = 'none';
-            confirmButton.innerText = 'ยืนยันการยกเลิก';
-        }
-        alert('🌐 เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย: ' + error.message);
     }
-}
 
     function getMonthName(monthIndex) {
         const monthNames = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบตรวจสอบรายชื่อผู้จองคิวรายวัน | งานทันตกรรม</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1e293b;
+            --accent: #0ea5e9;
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            --radius: 16px;
+        }
+
+        * { box-sizing: border-box; font-family: 'Sarabun', sans-serif; }
+
+        body {
+            margin: 0; padding: 0;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            color: #334155;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        header h1 {
+            font-family: 'Kanit', sans-serif;
+            color: var(--primary);
+            font-size: 2rem;
+            margin: 0 0 10px 0;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            border-radius: var(--radius);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .control-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .control-row label {
+            font-family: 'Kanit', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+
+        .date-input {
+            padding: 10px 15px;
+            font-size: 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            outline: none;
+            background: white;
+            color: var(--primary);
+            font-weight: 600;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+            transition: border 0.2s;
+        }
+
+        .date-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+        }
+
+        .refresh-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 11px 20px;
+            border-radius: 8px;
+            font-family: 'Kanit', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .refresh-btn:hover { background: #0284c7; }
+
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            background: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background: #f1f5f9;
+            color: var(--primary);
+            font-family: 'Kanit', sans-serif;
+            font-weight: 600;
+            padding: 14px 16px;
+            border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background-color: #f8fafc; }
+
+        .badge-time {
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-block;
+        }
+
+        .badge-reason {
+            background: #f0fdf4;
+            color: #166534;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid #bbf7d0;
+            display: inline-block;
+        }
+
+        .code-text {
+            font-family: monospace;
+            font-weight: bold;
+            color: #e11d48;
+            background: #fff1f2;
+            padding: 2px 6px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .no-data i {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 10px;
+            color: #cbd5e1;
+        }
+
+        .spinner {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            color: var(--accent);
+            font-weight: 600;
+        }
+        .spinner i { animation: spin 1s linear infinite; font-size: 2rem; margin-bottom: 8px; display: block; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .summary-badge {
+            margin-top: 15px;
+            font-weight: 600;
+            color: var(--primary);
+            text-align: right;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 768px) {
+            .control-row { flex-direction: column; align-items: stretch; }
+            .date-input, .refresh-btn { width: 100%; text-align: center; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-list-check text-accent"></i> รายชื่อผู้เข้ารับบริการรายวัน</h1>
+            <p>งานทันตกรรม โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านท่าตะเภา</p>
+        </header>
+
+        <div class="glass-card">
+            <div class="control-row">
+                <label for="searchDate"><i class="far fa-calendar-alt"></i> ระบุวันที่ต้องการตรวจสอบ:</label>
+                <input type="date" id="searchDate" class="date-input">
+                <button id="fetchBtn" class="refresh-btn"><i class="fas fa-sync-alt"></i> อัปเดตข้อมูล</button>
+            </div>
+        </div>
+
+        <div id="loading" class="spinner">
+            <i class="fas fa-circle-notch"></i>
+            กำลังดึงข้อมูลคิวจากระบบ
+        </div>
+
+        <div id="tableContainer" class="glass-card" style="display: none;">
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 80px; text-align: center;">ลำดับ</th>
+                            <th>ช่วงเวลา </th>
+                            <th>ชื่อ - นามสกุล</th>
+                            <th>เบอร์โทรศัพท์</th>
+                            <th>อาการ/สาเหตุ</th>
+                            <th style="text-align: center;">รหัสยกเลิก</th>
+                        </tr>
+                    </thead>
+                    <tbody id="queueTableBody">
+                    </tbody>
+                </table>
+            </div>
+            <div id="summaryText" class="summary-badge"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzsXJO9TBwcIdTz0_5nt_a044mk76VfAGn2eIt8xhsUStVLX_7V_U_ICalH3FxFBM7ZDw/exec';
+            
+            const searchDateInput = document.getElementById('searchDate');
+            const fetchBtn = document.getElementById('fetchBtn');
+            const loading = document.getElementById('loading');
+            const tableContainer = document.getElementById('tableContainer');
+            const queueTableBody = document.getElementById('queueTableBody');
+            const summaryText = document.getElementById('summaryText');
+
+            const today = new Date();
+            const tzoffset = today.getTimezoneOffset() * 60000; 
+            const localISODate = (new Date(today.getTime() - tzoffset)).toISOString().split('T')[0];
+            searchDateInput.value = localISODate;
+
+            fetchBtn.addEventListener('click', loadQueueData);
+            searchDateInput.addEventListener('change', loadQueueData);
+
+            loadQueueData();
+
+            // ฟังก์ชันสำหรับจัดฟอร์แมตเบอร์โทรให้เติมเลข 0 นำหน้ากรณีถูก Google Sheet ตัดออก
+            function formatPhoneNumber(tel) {
+                if (!tel) return '-';
+                let telStr = String(tel).trim();
+                if (telStr.length === 9 && telStr.charAt(0) !== '0') {
+                    telStr = '0' + telStr;
+                }
+                return telStr;
+            }
+
+            async function loadQueueData() {
+                const targetDate = searchDateInput.value;
+                if (!targetDate) return;
+
+                loading.style.display = 'block';
+                tableContainer.style.display = 'none';
+                queueTableBody.innerHTML = '';
+
+                try {
+                    const response = await fetch(`${WEB_APP_URL}?action=getConfigAndBookings`);
+                    if (!response.ok) throw new Error('การเชื่อมต่อฝั่งเซิร์ฟเวอร์ขัดข้อง');
+                    
+                    const data = await response.json();
+                    const allBookings = data.bookings || {};
+                    const targetDateBookings = allBookings[targetDate] || {};
+                    
+                    const queueList = [];
+                    for (const slot in targetDateBookings) {
+                        if (targetDateBookings[slot] && targetDateBookings[slot].count > 0) {
+						let reason = targetDateBookings[slot].bookingReason;
+						if (!reason || reason === "" || reason === "-") {
+                    reason = "ไม่ระบุสาเหตุ";
+                }
+
+                queueList.push({
+                    slot: slot,
+                    fullName: targetDateBookings[slot].fullName || '-',
+                    telNumber: formatPhoneNumber(targetDateBookings[slot].telNumber),
+                    bookingReason: reason,
+                    code: targetDateBookings[slot].cancellationCode || targetDateBookings[slot].code || '-'
+                });
+            }
+        }
+                            
+
+                    queueList.sort((a, b) => a.slot.localeCompare(b.slot));
+
+                    loading.style.display = 'none';
+                    tableContainer.style.display = 'block';
+
+                    if (queueList.length === 0) {
+                        queueTableBody.innerHTML = `
+                            <tr>
+                                <td colspan="6" class="no-data">
+                                    <i class="far fa-calendar-times"></i>
+                                    ไม่มีรายชื่อผู้จองคิวในวันที่ ${formatDateThai(new Date(targetDate))}
+                                </td>
+                            </tr>
+                        `;
+                        summaryText.innerText = 'จำนวนผู้รับบริการทั้งหมด: 0 ราย';
+                        return;
+                    }
+
+                    queueList.forEach((item, index) => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td style="text-align: center; font-weight: bold; color: #64748b;">${index + 1}</td>
+                            <td><span class="badge-time">${item.slot}</span></td>
+                            <td style="font-weight: 600; color: #1e293b;">${item.fullName}</td>
+                            <td><a href="tel:${item.telNumber}" style="color: #0ea5e9; text-decoration: none;"><i class="fas fa-phone-alt"></i> ${item.telNumber}</a></td>
+                            <td><span class="badge-reason">${item.bookingReason}</span></td>
+                            <td style="text-align: center;"><span class="code-text">${item.code}</span></td>
+                        `;
+                        queueTableBody.appendChild(tr);
+                    });
+
+                    summaryText.innerText = `จำนวนผู้รับบริการทั้งหมดในวันนี้: ${queueList.length} ราย`;
+
+                } catch (error) {
+                    loading.style.display = 'none';
+                    tableContainer.style.display = 'block';
+                    queueTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="no-data" style="color: #ef4444;">
+                                <i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i>
+                                ไม่สามารถดึงข้อมูลได้: ${error.message}
+                            </td>
+                        </tr>
+                    `;
+                }
+            }
+
+            function formatDateThai(date) {
+                const day = date.getDate();
+                const monthNames = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+                const month = monthNames[date.getMonth()];
+                const year = date.getFullYear() + 543;
+                return `${day} ${month} ${year}`;
+            }
+        });
+    </script>
+</body>
+</html>

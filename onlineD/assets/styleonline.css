@@ -1,14 +1,14 @@
 /* --- VARIABLES & SETUP --- */
 :root {
-    --primary-color: #0f172a;    /* Navy Blue - สีหลักเข้มหรู */
-    --secondary-color: #334155;  /* Slate - สีรอง */
-    --accent-color: #0ea5e9;     /* Sky Blue - สีสดใสสำหรับจุดเด่น */
+    --primary-color: #0f172a;
+    --secondary-color: #334155;
+    --accent-color: #0ea5e9;
     --accent-hover: #0284c7;
-    --danger-color: #ef4444;     /* Red - สีแจ้งเตือน/ยกเลิก */
-    --success-color: #10b981;    /* Green - สีสำเร็จ/ว่าง */
-    --warning-color: #f59e0b;    /* Amber - สีเต็ม/รอ */
+    --danger-color: #ef4444;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
     
-    --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); /* พื้นหลังหน้าเว็บ */
+    --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
     --glass-bg: rgba(255, 255, 255, 0.85);
     --glass-border: 1px solid rgba(255, 255, 255, 0.6);
     --shadow-soft: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
@@ -16,75 +16,336 @@
     
     --radius-lg: 24px;
     --radius-md: 16px;
-    --radius-sm: 10px;
+    --radius-sm: 12px;
     
-    --font-head: 'Kanit', sans-serif;
+    --font-heading: 'Kanit', sans-serif;
     --font-body: 'Sarabun', sans-serif;
 }
 
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: var(--font-body);
-    background: #f1f5f9; /* Fallback */
-    background: radial-gradient(at top left, #e0f2fe, #f1f5f9, #e2e8f0);
-    color: var(--primary-color);
     margin: 0;
-    padding: 20px;
+    padding: 0;
+    font-family: var(--font-body);
+    color: var(--secondary-color);
+    background: var(--bg-gradient);
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 100vh;
-    position: relative;
+    justify-content: flex-start;
     overflow-x: hidden;
+    position: relative;
 }
 
-/* Background Shapes Decoration */
+/* Decorative Background Shapes */
 .bg-shape {
+    position: absolute;
     position: fixed;
     border-radius: 50%;
     filter: blur(80px);
     z-index: -1;
-    opacity: 0.6;
+    opacity: 0.5;
 }
 .shape-1 {
-    top: -10%;
-    left: -10%;
-    width: 500px;
-    height: 500px;
-    background: #bae6fd;
-}
-.shape-2 {
-    bottom: -10%;
-    right: -10%;
     width: 400px;
     height: 400px;
-    background: #ddd6fe;
+    background: cubic-gradient(from 180deg at 50% 50%, #bae6fd 0deg, #e0f2fe 360deg);
+    top: -100px;
+    left: -100px;
+}
+.shape-2 {
+    width: 500px;
+    height: 500px;
+    background: cubic-gradient(from 180deg at 50% 50%, #fef08a 0deg, #fef9c3 360deg);
+    bottom: -150px;
+    right: -150px;
 }
 
+/* Top Buttons */
+.back-to-previous-button, .navigation-button, .check-queue-button {
+    position: absolute;
+    top: 20px;
+    padding: 10px 16px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: var(--shadow-soft);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 100;
+}
+.back-to-previous-button {
+    left: 20px;
+    background: white;
+    color: var(--secondary-color);
+    border: 1px solid #e2e8f0;
+}
+.navigation-button {
+    right: 20px;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    border: none;
+}
+.check-queue-button {
+    right: 150px;
+    background: linear-gradient(135deg, var(--success-color), #047857);
+    color: white;
+    border: none;
+}
+
+.back-to-previous-button:hover, .navigation-button:hover, .check-queue-button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+/* CONTAINER & LAYOUT */
 .container {
     width: 100%;
-    max-width: 850px;
-    margin: 40px auto;
-    z-index: 1;
+    max-width: 900px;
+    padding: 120px 24px 40px 24px;
 }
 
-/* --- GLASS MORPHISM CARD --- */
-.glass-effect {
-    background: var(--glass-bg);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: var(--glass-border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-soft);
-    padding: 30px;
-    margin-bottom: 25px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* --- HEADER --- */
-.header {
+header {
     text-align: center;
     margin-bottom: 40px;
-    animation: slideDown 0.8s ease-out;
+}
+header .logo {
+    font-size: 3rem;
+    color: var(--accent-color);
+    margin-bottom: 12px;
+    display: inline-block;
+    filter: drop-shadow(0 10px 15px rgba(14, 165, 233, 0.2));
+}
+header h1 {
+    font-family: var(--font-heading);
+    color: var(--primary-color);
+    font-size: 2.25rem;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+}
+header p {
+    color: var(--secondary-color);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.glass-effect {
+    background: var(--glass-bg);
+    border: var(--glass-border);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    padding: 32px;
+    transition: box-shadow 0.3s ease;
+}
+.glass-effect:hover {
+    box-shadow: var(--shadow-hover);
+}
+
+/* CALENDAR STYLES */
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+.calendar-header h2 {
+    font-family: var(--font-heading);
+    color: var(--primary-color);
+    margin: 0;
+    font-size: 1.5rem;
+}
+.nav-btn {
+    background: white;
+    border: 1px solid #e2e8f0;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--secondary-color);
+    transition: all 0.2s ease;
+}
+.nav-btn:hover {
+    background: #f8fafc;
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.day-names {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+.day-name {
+    color: #64748b;
+    padding: 8px 0;
+}
+.day-names .day-name:nth-child(1), .day-names .day-name:nth-child(7) {
+    color: var(--danger-color);
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 12px;
+}
+.calendar-day {
+    min-height: 90px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+.calendar-day.day:not(.unavailable):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+    border-color: var(--accent-color);
+    cursor: pointer;
+}
+.calendar-day .day-number {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+.calendar-day.day-weekend .day-number {
+    color: var(--danger-color);
+}
+.calendar-day.current-day {
+    background: #f0f9ff;
+    border: 2px solid var(--accent-color);
+}
+.calendar-day.current-day .day-number {
+    color: var(--accent-color);
+}
+
+.slot-count {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 4px 6px;
+    border-radius: 6px;
+    text-align: center;
+    display: block;
+}
+.slot-count.available {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+.slot-count.full {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.calendar-day.unavailable {
+    background-color: #f1f5f9;
+    color: #94a3b8;
+    opacity: 0.75;
+}
+.calendar-day.unavailable small {
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: 600;
+    word-break: break-all;
+    line-height: 1.2;
+}
+
+/* TIME SLOTS STYLES */
+.slots-header {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.back-btn {
+    align-self: flex-start;
+    background: white;
+    border: 1px solid #e2e8f0;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--secondary-color);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+.back-btn:hover {
+    background: #f8fafc;
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+.slots-header h3 {
+    font-family: var(--font-heading);
+    margin: 0;
+    color: var(--primary-color);
+    font-size: 1.35rem;
+}
+
+.time-slots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+}
+.time-slot {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    text-align: center;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    transition: all 0.2s ease;
+}
+.available-slot {
+    border-left: 5px solid var(--success-color);
+    color: var(--success-color);
+    cursor: pointer;
+}
+.available-slot:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-soft);
+    background: #f0fdf4;
+}
+.booked-slot {
+    border-left: 5px solid var(--warning-color);
+    color: #b45309;
+    background-color: #fffbeb;
+    font-size: 0.95rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+.unavailable-slot {
+    border-left: 5px solid #94a3b8;
+    color: #64748b;
+    background-color: #f8fafc;
+    opacity: 0.6;
 }
 
 .logo-icon {
@@ -106,721 +367,205 @@ body {
     object-fit: contain; /* ปรับให้รูปภาพพอดีกับกล่องโดยไม่ยืด */
 }
 
-.title {
-    font-family: var(--font-head);
-    font-size: 2.5rem;
-    font-weight: 600;
-    color: var(--primary-color);
-    margin: 0;
-    letter-spacing: -0.5px;
-}
-
-.subtitle {
-    font-size: 1.1rem;
-    color: var(--secondary-color);
-    margin-top: 10px;
-    line-height: 1.6;
-}
-
-/* --- BUTTONS --- */
-.back-to-previous-button, .navigation-button {
-    position: absolute;
-    top: 20px;
-    padding: 10px 20px;
-    border-radius: 50px;
-    border: none;
-    cursor: pointer;
-    font-family: var(--font-head);
-    font-weight: 500;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    z-index: 100;
-}
-
-.back-to-previous-button {
-    left: 20px;
-    background: white;
-    color: var(--secondary-color);
-}
-
-.navigation-button {
-    right: 20px;
-    background: var(--accent-color);
-    color: white;
-    text-decoration: none;
-}
-
-.back-to-previous-button:hover, .navigation-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
-}
-.navigation-button:hover { background: var(--accent-hover); }
-
-/* --- CALENDAR --- */
-.calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-}
-
-.month-year-display {
-    font-family: var(--font-head);
-    font-size: 1.8rem;
-    color: var(--primary-color);
-    margin: 0;
-}
-
-.nav-button {
-    background: white;
-    border: 1px solid #e2e8f0;
-    color: var(--secondary-color);
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.nav-button:hover {
-    background: var(--primary-color);
-    color: white;
-}
-
-.calendar-grid-container {
-    background: white;
-    border-radius: var(--radius-md);
-    padding: 20px;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
-}
-
-.day-names {
-    display: grid;
-    /* เปลี่ยนจาก 7 เป็น 5 คอลัมน์ (สำหรับ จ-ศ) */
-    grid-template-columns: repeat(5, 1fr); 
-    text-align: center;
-    font-family: var(--font-head);
-    color: #94a3b8;
-    margin-bottom: 15px;
-    font-weight: 500;
-}
-
-.calendar-grid {
-    display: grid;
-    /* เปลี่ยนจาก 7 เป็น 5 คอลัมน์ (สำหรับ จ-ศ) */
-    grid-template-columns: repeat(5, 1fr); 
-    gap: 10px;
-}
-
-.calendar-day {
-    background: #f8fafc;
-    border-radius: var(--radius-sm);
-    min-height: 90px;
-    /* คืนค่า padding เป็น 10px ทุกด้าน */
-    padding: 10px; 
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    position: relative;
-    border: 1px solid transparent;
-}
-
-.calendar-day:hover:not(.disabled):not(.unavailable) {
-    background: white;
-    transform: translateY(-4px);
-    box-shadow: 0 10px 20px rgba(14, 165, 233, 0.15);
-    border-color: var(--accent-color);
-}
-
-.calendar-day .day-number {
-    font-family: var(--font-head);
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--secondary-color);
-    margin-bottom: 5px;
-}
-
-.calendar-day.current-day {
-    background: #f0f9ff;
-    border: 2px solid var(--accent-color);
-}
-.calendar-day.current-day .day-number {
-    color: var(--accent-color);
-}
-
-/* Status Labels in Calendar */
-.slot-count {
-    font-size: 0.75rem;
-    padding: 4px 8px;
-    border-radius: 20px;
-    font-weight: 600;
-    width: 90%;
-    text-align: center;
-}
-
-.slot-count.available {
-    background: #d1fae5;
-    color: #059669;
-}
-
-.slot-count.full {
-    background: #fee2e2;
-    color: #dc2626;
-}
-
-/* สร้าง Animation การกระพริบ */
-@keyframes emergencyFlash {
-    0%, 100% {
-        background-color: #ef4444; /* สีแดง */
-        color: white;
-        box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
-    }
-    50% {
-        background-color: white; /* สีขาว */
-        color: #ef4444; /* ข้อความแดง */
-        box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
-        transform: scale(1.05); /* ขยายขนาดขึ้นเล็กน้อยขณะกระพริบ */
-    }
-}
-
-/* นำ Animation ไปใช้กับปุ่ม navigation-button */
-.navigation-button {
-    animation: emergencyFlash 0.6s infinite; /* กระพริบเร็วๆ ทุก 0.6 วินาที */
-    border: 2px solid #ef4444; /* เพิ่มขอบให้ชัดเจน */
-    font-weight: bold;
-}
-
-/* ปรับให้หยุดขยายเวลาเอาเมาส์ไปวาง (Hover) เพื่อให้กดง่าย */
-.navigation-button:hover {
-    animation-play-state: paused; /* หยุดกระพริบชั่วคราวเวลาจะกด */
-    background: #dc2626;
-    color: white;
-}
-
-/* Unavailable / Disabled Days */
-.calendar-day.unavailable, .calendar-day.disabled {
-    background: #f1f5f9;
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-.calendar-day.unavailable small {
+/* Blinking Message & Warnings */
+.blinking-message {
+    background-color: #fee2e2;
     color: var(--danger-color);
-    font-weight: 500;
-}
-.calendar-day.day-weekend {
-    background-color: #f8fafc; /* Subtle different shade */
-}
-
-
-/* --- CUSTOM MODIFICATION: HIDE WEEKENDS (SUN & SAT) --- */
-
-/* 1. Hide Day Names (Sun and Sat) */
-.day-names .day-of-week:nth-child(1), /* วันอาทิตย์ (Sunday) */
-.day-names .day-of-week:nth-child(7) { /* วันเสาร์ (Saturday) */
-    display: none;
-}
-
-/* 2. Hide Calendar Day Slots (Sun and Sat) */
-.calendar-grid .calendar-day:nth-child(7n+1), 
-.calendar-grid .calendar-day:nth-child(7n) { 
-    display: none;
-}
-/* ---------------------------------------------------- */
-
-
-/* --- TIME SLOTS --- */
-.time-slot-details h3 {
-    font-family: var(--font-head);
-    color: var(--primary-color);
+    padding: 10px 16px;
+    border-radius: var(--radius-sm);
+    font-weight: bold;
     text-align: center;
-    font-size: 1.5rem;
-    margin-bottom: 30px;
+    margin-bottom: 15px;
+    border: 1px solid #fecaca;
+    font-size: 0.95rem;
+    animation: textFlash 1.5s infinite;
+}
+@keyframes textFlash {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
 }
 
-.time-slots-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 15px;
-    padding: 10px;
-}
-
-.time-slot {
-    background: white;
-    border: 1px solid #e2e8f0;
-    color: var(--primary-color);
-    padding: 20px 10px;
-    border-radius: var(--radius-md);
-    text-align: center;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 100px;
-}
-
-.time-slot:hover:not(.unavailable-slot) {
-    background: var(--accent-color);
-    color: white;
-    box-shadow: 0 8px 16px rgba(14, 165, 233, 0.25);
-    transform: translateY(-3px);
-    border-color: var(--accent-color);
-}
-
-.time-slot.unavailable-slot {
-    background: #f1f5f9;
-    color: #94a3b8;
-    cursor: default;
-    box-shadow: none;
-}
-
-/* Cancel Button Style */
 .cancel-button {
-    background: var(--danger-color);
+    background-color: var(--danger-color);
     color: white;
     border: none;
-    padding: 6px 12px;
+    padding: 4px 10px;
     border-radius: 6px;
     font-size: 0.8rem;
-    margin-top: 10px;
-    width: 100%;
     cursor: pointer;
+    font-family: var(--font-heading);
+    margin-top: 4px;
     transition: background 0.2s;
 }
-.cancel-button:hover { background: #dc2626; }
+.cancel-button:hover { background-color: #dc2626; }
 
-/* --- FORMS & POPUPS --- */
-.popup-overlay {
+.no-show-warning { background-color: #fff1f2 !important; border-left-color: var(--danger-color) !important; color: #9f1239 !important; }
+.no-show-count-text { color: var(--danger-color); font-weight: bold; font-size: 0.75rem; margin-top: 2px; }
+
+/* MODALS & FORMS */
+.modal-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(15, 23, 42, 0.6); /* Darker overlay */
-    backdrop-filter: blur(5px);
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     z-index: 1000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0; visibility: hidden;
-    transition: all 0.3s;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
-.popup-overlay.is-active { opacity: 1; visibility: visible; }
-
-.popup-content {
+.modal-overlay.is-active { opacity: 1; }
+.modal-content {
+    width: 100%;
+    max-width: 520px;
+    margin: 16px;
     background: white;
-    width: 90%; max-width: 450px;
-    padding: 40px 30px;
-    border-radius: var(--radius-lg);
-    text-align: center;
     position: relative;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
-
-.popup-header-icon {
-    width: 60px; height: 60px;
-    background: #e0f2fe;
-    color: var(--accent-color);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    margin: 0 auto 20px;
-}
-.popup-header-icon.delete { background: #fee2e2; color: var(--danger-color); }
-
-.popup-title {
-    font-family: var(--font-head);
-    font-size: 1.6rem;
-    margin-bottom: 20px;
-    color: var(--primary-color);
-}
-
-/* Booking Summary Card inside Popup */
-.booking-summary-card {
-    background: #f8fafc;
-    border-radius: var(--radius-sm);
-    padding: 15px;
-    margin-bottom: 25px;
-    text-align: left;
-    border-left: 4px solid var(--accent-color);
-}
-.booking-summary-card.warning { border-color: var(--danger-color); }
-.booking-summary-card p { margin: 8px 0; font-size: 0.95rem; color: var(--secondary-color); }
-.booking-summary-card i { width: 20px; color: var(--accent-color); text-align: center; margin-right: 8px; }
-
-/* Modern Inputs */
-.form-group { margin-bottom: 20px; text-align: left; position: relative; }
-
-.form-group input, .form-group select {
-    width: 100%;
-    padding: 14px 16px;
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
-    font-size: 1rem;
-    font-family: var(--font-body);
-    transition: all 0.3s;
-    background: #f8fafc;
-    box-sizing: border-box;
-    color: var(--primary-color);
-}
-
-.form-group input:focus, .form-group select:focus {
-    outline: none;
-    border-color: var(--accent-color);
-    background: white;
-    box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
-}
-
-/* Floating Label Effect */
-.floating-label { position: relative; }
-.floating-label label {
+.close-modal-btn {
     position: absolute;
-    left: 14px; top: 16px;
-    color: #94a3b8;
-    transition: all 0.2s;
-    pointer-events: none;
-    background: transparent;
+    top: 20px; right: 20px;
+    width: 36px; height: 36px;
+    background: #f1f5f9;
+    border: none; border-radius: 50%;
+    font-size: 1.5rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: #64748b; transition: all 0.2s ease;
 }
-.floating-label input:focus + label,
-.floating-label input:not(:placeholder-shown) + label {
-    top: -10px; left: 10px;
-    font-size: 0.8rem;
-    background: white;
-    padding: 0 5px;
-    color: var(--accent-color);
-    font-weight: 600;
-}
+.close-modal-btn:hover { background: #e2e8f0; color: var(--primary-color); }
 
-/* Code Input Special Style */
-.code-input {
-    text-align: center;
-    letter-spacing: 8px;
-    font-size: 1.5rem !important;
-    font-family: monospace !important;
-}
+.modal-content h2 { font-family: var(--font-heading); margin: 0 0 16px 0; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
+.modal-divider { border: 0; height: 1px; background: #e2e8f0; margin-bottom: 20px; }
 
-.submit-button {
-    background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
-    color: white;
-    width: 100%;
-    padding: 16px;
-    border: none;
-    border-radius: 12px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
-    transition: all 0.3s;
-    margin-top: 10px;
-}
-.submit-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
-}
-.submit-button.btn-danger {
-    background: linear-gradient(135deg, #ef4444, #b91c1c);
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-}
+.booking-summary-box { background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid var(--accent-color); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 20px; }
+.booking-summary-box.border-danger { border-left-color: var(--danger-color); }
+.booking-summary-box p { margin: 8px 0; font-size: 1rem; }
+.booking-summary-box p:first-child { margin-top: 0; }
+.booking-summary-box p:last-child { margin-bottom: 0; }
+.text-highlight { font-weight: 600; color: var(--primary-color); }
+.text-accent { color: var(--accent-color); }
+.text-danger { color: var(--danger-color); }
 
-.close-button {
-    position: absolute;
-    top: 15px; right: 15px;
-    background: transparent;
-    border: none;
-    font-size: 1.2rem;
-    color: #94a3b8;
-    cursor: pointer;
-    transition: color 0.2s;
-}
-.close-button:hover { color: var(--danger-color); }
+.form-group { margin-bottom: 20px; text-align: left; }
+.form-group label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.95rem; color: var(--primary-color); }
 
-/* --- INFO BUBBLE --- */
-.info-bubble {
-    background: linear-gradient(135deg, #4f46e5, #818cf8); /* Indigo Gradient */
-    color: white;
-    padding: 20px;
-    border-radius: var(--radius-md);
-    box-shadow: 0 10px 20px rgba(79, 70, 229, 0.25);
-    display: flex;
-    align-items: flex-start;
-    gap: 15px;
-    max-width: 90%;
-}
-.info-icon { font-size: 1.5rem; opacity: 0.8; margin-top: 2px; }
-.info-text { font-size: 0.9rem; line-height: 1.5; }
-
-/* --- LOADING SPINNER --- */
-.loading-spinner {
-    color: var(--accent-color);
-}
-.spinner-ring {
-    width: 50px; height: 50px;
-    border: 4px solid #e2e8f0;
-    border-top: 4px solid var(--accent-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+/* --- ส่วนที่แก้ไขเพิ่ม: สไตล์ปุ่มตัวเลือกอาการแบบ Grid & Responsive --- */
+.reason-button-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
     margin-bottom: 15px;
 }
-
-/* --- FEEDBACK BUTTON (GREEN PULSE) --- */
-.feedback-button {
-    position: absolute;
-    top: 75px; /* วางไว้ใต้ปุ่มนำทาง (ปุ่มแรก top: 20px + ความสูงปุ่มประมาณ 55px) */
-    right: 20px;
-    padding: 3px 20px;
-    border-radius: 50px;
-    border: 2px solid #10b981;
-    cursor: pointer;
-    font-family: var(--font-head);
-    font-weight: bold;
-    text-decoration: none;
+.reason-btn[data-value="อื่นๆ (ระบุในหมายเหตุ)"] {
+    grid-column: span 2;
+}
+.reason-btn {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: var(--radius-sm);
+    padding: 12px 8px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     gap: 8px;
-    z-index: 100;
-    transition: all 3.3s ease;
-    animation: successFlash 3.8s infinite; /* เรียกใช้ Animation กระพริบสีเขียว */
+    cursor: pointer;
+    font-family: var(--font-body), sans-serif;
+    color: var(--primary-color);
+    transition: all 0.2s ease;
+}
+.reason-btn i { color: var(--accent-color); transition: transform 0.2s ease; }
+.reason-btn span { font-size: 0.85rem; font-weight: 600; }
+.reason-btn:hover { background: #f0f9ff; border-color: var(--accent-color); }
+.reason-btn.active {
+    background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+    border-color: var(--accent-color);
+    box-shadow: 0 4px 10px rgba(14, 165, 233, 0.15);
+}
+.reason-btn.active i { transform: scale(1.1); color: var(--accent-hover); }
+
+/* สไตล์ Input ทั่วไป */
+.form-input, .code-input {
+    width: 100%; padding: 12px 16px;
+    border: 1px solid #e2e8f0; border-radius: var(--radius-sm);
+    font-family: var(--font-body); font-size: 1rem; transition: all 0.2s ease;
+    background-color: #f8fafc;
+}
+.form-input:focus, .code-input:focus { outline: none; border-color: var(--accent-color); background-color: white; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15); }
+
+.code-input { text-align: center; font-size: 1.5rem; letter-spacing: 8px; font-weight: bold; }
+
+.submit-button {
+    width: 100%; padding: 14px;
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+    color: white; border: none; border-radius: var(--radius-sm);
+    font-family: var(--font-heading); font-size: 1.1rem; font-weight: 600;
+    cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
+}
+.submit-button:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(14, 165, 233, 0.3); }
+.btn-danger { background: linear-gradient(135deg, var(--danger-color), #dc2626); box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2); }
+.btn-danger:hover { box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3); }
+
+/* --- ส่วนที่แก้ไขเพิ่ม: อนิเมชันปุ่มสีแดงกระพริบเมื่อกดส่งฟอร์มจองคิว --- */
+@keyframes redFlashingAnimation {
+    0%, 100% { background: #ef4444; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4); }
+    50% { background: #b91c1c; box-shadow: 0 4px 20px rgba(185, 28, 28, 0.6); }
+}
+.submit-button.is-submitting {
+    animation: redFlashingAnimation 0.8s infinite ease-in-out !important;
+    pointer-events: none;
+    transform: none !important;
 }
 
-/* สร้าง Animation การกระพริบสีเขียว */
-@keyframes successFlash {
-    0%, 100% {
-        background-color: #10b981; /* สีเขียวหลัก */
-        color: white;
-        box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
-    }
-    50% {
-        background-color: white;
-        color: #10b981;
-        box-shadow: 0 0 25px rgba(16, 185, 129, 0.7);
-        transform: scale(1.05);
-    }
+.form-message { margin-top: 14px; text-align: center; font-weight: 600; font-size: 0.95rem; padding: 10px; border-radius: 8px; display: none; }
+.form-message.error { display: block; background-color: #fee2e2; color: #991b1b; }
+
+/* SPINNER & UTILITIES */
+.loading-spinner {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.6); display: flex; flex-direction: column;
+    align-items: center; justify-content: center; z-index: 2000; gap: 16px;
 }
+.spinner-ring { width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-spinner p { color: white; font-family: var(--font-heading); font-weight: 600; margin: 0; font-size: 1.1rem; }
 
-/* หยุดกระพริบเมื่อเอาเมาส์ไปวาง */
-.feedback-button:hover {
-    animation-play-state: paused;
-    background: #059669;
-    color: white;
-    transform: translateY(-2px);
-}
-
-/* ปรับตำแหน่งสำหรับมือถือ */
-@media (max-width: 600px) {
-    .feedback-button {
-        padding: 8px 15px;
-        font-size: 0.9rem;
-        top: 70px; /* ขยับขึ้นเล็กน้อยในมือถือ */
-    }
-}
-
-/* --- TIME SLOTS COLORS --- */
-
-/* 1. คิวที่ว่างและจองได้ (สีฟ้า) */
-.time-slot.available-slot {
-    background-color: #0ea5e9 !important; /* Sky Blue */
-    color: white !important;
-    border: 1px solid #0284c7;
-}
-.time-slot.available-slot:hover {
-    background-color: #0284c7 !important;
-    transform: translateY(-3px);
-    box-shadow: 0 8px 16px rgba(14, 165, 233, 0.3);
-}
-
-/* 2. คิวที่จองไม่ได้ / ต่ำกว่า 1 ชม. / ผ่านไปแล้ว (สีแดง) */
-.time-slot.unavailable-slot {
-    background-color: #fee2e2 !important; /* พื้นแดงอ่อน */
-    color: #ef4444 !important;            /* ตัวอักษรแดง */
-    border: 1px solid #fecaca !important;
-    cursor: not-allowed;
-    opacity: 1; /* ปรับให้สีชัดเจนไม่จาง */
-}
-
-/* 3. คิวที่มีผู้จองแล้ว (สีขาว) */
-.time-slot.booked-slot {
-    background-color: #ffffff !important;
-    color: #1e293b !important;
-    border: 1px solid #e2e8f0 !important;
-    cursor: default;
-}
-
-/* ปรับแต่งปุ่มยกเลิกภายในช่องสีขาว */
-.booked-slot .cancel-button {
-    background-color: #ef4444;
-    color: white;
-    margin-top: 5px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-}
-
-/* สไตล์สำหรับข้อความเตือนแบบเน้นพิเศษ */
-.blinking-message {
-    background-color: #fee2e2; /* พื้นหลังสีแดงอ่อน */
-    color: #ef4444;            /* ตัวอักษรสีแดง */
-    padding: 15px;
-    border-radius: 12px;
-    border: 2px solid #ef4444;
-    text-align: center;
-    font-weight: bold;
-    font-size: 1.2rem;
-    margin: 15px 0;
-    animation: pulseWarning 1.5s infinite; /* ทำให้มีการขยายและยุบตัวเบาๆ */
-    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
-}
-
-@keyframes pulseWarning {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.02); }
-    100% { transform: scale(1); }
-}
-
-/* ลบสไตล์เดิมที่อาจทับซ้อน */
-.time-slot.unavailable-slot::before { content: none; }
-
-/* --- ANIMATIONS --- */
-@keyframes slideDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-@keyframes blink-red { 0%, 100% { background-color: #fee2e2; } 50% { background-color: #fecaca; } }
-
-
-/* 1. สร้าง Animation การกระพริบสีฟ้า */
-@keyframes blinkBlue {
-    0% {
-        background-color: #e0f2fe; /* ฟ้าอ่อน */
-        box-shadow: 0 0 0 rgba(14, 165, 233, 0.2);
-    }
-    50% {
-        background-color: #7dd3fc; /* ฟ้าเข้มขึ้น */
-        box-shadow: 0 0 20px rgba(14, 165, 233, 0.6); /* เรืองแสงสีฟ้า */
-        transform: scale(1.02); /* ขยายขึ้นนิดนึง */
-    }
-    100% {
-        background-color: #e0f2fe; /* กลับมาฟ้าอ่อน */
-        box-shadow: 0 0 0 rgba(14, 165, 233, 0.2);
-    }
-}
-
-
-/* 2. เรียกใช้ Animation กับวันปัจจุบัน */
-.calendar-day.current-day {
-    /* เส้นขอบสีฟ้าสด */
-    border: 2px solid #0ea5e9; 
-    
-    /* สั่งให้เล่น Animation ชื่อ blinkBlue วนไปเรื่อยๆ */
-    animation: blinkBlue 2s infinite ease-in-out; 
-    
-    /* ให้แน่ใจว่าตัวเลขยังมองเห็นชัด */
-    font-weight: bold;
-    z-index: 1; /* ให้อยู่เหนือวันอื่นๆ เล็กน้อยเวลาขยาย */
-}
-
-/* เอฟเฟกต์กระพริบของปุ่มยกเลิกขณะทำงาน */
-@keyframes pulse {
-    0% {
-        opacity: 1;
-        transform: scale(1);
-    }
-    50% {
-        opacity: 0.5;
-        transform: scale(0.98);
-        background-color: #b91c1c; /* สีแดงเข้มขึ้นเล็กน้อยตอนกระพริบ */
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-/* --- FOOTER --- */
-.footer {
-    margin-top: auto;
-    padding: 30px;
-    text-align: center;
-    color: var(--secondary-color);
-    width: 100%;
-}
-
-/* Utility Classes */
 .hidden { display: none !important; }
+.flex { display: flex; }
+.justify-center { justify-content: center; }
+.mt-4 { margin-top: 1rem; }
+.mb-4 { margin-bottom: 1rem; }
 
-/* Responsive Adjustments */
-/* แก้ไขส่วน Responsive สำหรับมือถือ (วางทับของเดิมที่อยู่ล่างสุดของไฟล์) */
-@media (max-width: 600px) {
-    .container {
-        width: 95%;
-        margin: 20px auto;
-        padding: 0; /* ลบ padding ของ container หลัก */
-    }
+.info-bubble { background: #1e293b; color: white; border-radius: var(--radius-sm); padding: 12px 20px; display: flex; align-items: center; gap: 14px; box-shadow: var(--shadow-soft); max-width: 600px; }
+.info-icon { font-size: 1.5rem; color: #fef08a; }
+.info-text p { margin: 0; line-height: 1.4; }
 
-    /* 1. ลดขอบขาวรอบๆ ตารางปฏิทิน เพื่อให้มีพื้นที่ขยายออกด้านข้างมากขึ้น */
-    .calendar-grid-container {
-        padding: 5px; /* เดิมอาจจะ 15-20px ลดเหลือ 5px */
-    }
+/* RESPONSIVE MEDIA QUERIES */
+@media (max-width: 768px) {
+    .back-to-previous-button { position: static; margin-bottom: 10px; width: 100%; justify-content: center; }
+    .navigation-button { position: static; width: 100%; justify-content: center; margin-bottom: 10px; }
+    .check-queue-button { position: static; width: 100%; justify-content: center; margin-bottom: 20px; }
+    .container { padding-top: 30px; }
+    header h1 { font-size: 1.75rem; }
+    .calendar-header h2 { font-size: 1.25rem; }
+    .calendar-day { min-height: 75px; padding: 6px; }
+    .calendar-day .day-number { font-size: 1rem; }
+    .slot-count { font-size: 0.75rem; padding: 2px 4px; }
+}
 
-    /* 2. ลดช่องว่างระหว่างวัน (Gap) */
-    .calendar-grid {
-        gap: 3px; /* เดิม 8-10px ลดเหลือ 3px เพื่อให้วันชิดกันมากขึ้น */
-        /* เพิ่ม: ปรับ Grid Columns เป็น 5 ในโหมดมือถือด้วย */
-        grid-template-columns: repeat(5, 1fr); 
-    }
+@media (min-width: 600px) {
+    /* บนหน้าจอคอมพิวเตอร์ ขยายเป็น 5 คอลัมน์เรียงกันอย่างสวยงาม */
+    .reason-button-grid { grid-template-columns: repeat(5, 1fr); }
+    .reason-btn[data-value="อื่นๆ (ระบุในหมายเหตุ)"] { grid-column: unset; }
+}
 
-    /* เพิ่ม: ซ่อนวันอาทิตย์และเสาร์ในโหมดมือถือ */
-    .calendar-grid .calendar-day:nth-child(7n+1), 
-    .calendar-grid .calendar-day:nth-child(7n) { 
-        display: none;
-    }
-    
-    /* เพิ่ม: ปรับ grid-template-columns ของชื่อวันด้วย */
-    .day-names {
-        grid-template-columns: repeat(5, 1fr);
-    }
-
-
-    /* 3. ปรับขนาดกล่องวันที่ */
-    .calendar-day {
-        min-height: 65px; /* ลดความสูงลง */
-        padding: 4px 2px; /* ลด padding ภายในกล่องให้เหลือน้อยที่สุด */
-        border-radius: 8px; /* ลดความมนลงนิดหน่อยให้ดูไม่เทอะทะ */
-    }
-
-    /* 4. ปรับขนาดตัวเลขวันที่ */
-    .calendar-day .day-number {
-        font-size: 1rem; /* ลดขนาดตัวเลข */
-        margin-bottom: 2px;
-    }
-
-    /* 5. ปรับขนาดป้ายสถานะ (ว่าง/เต็ม/ออกหน่วย) */
-    .slot-count, .calendar-day small {
-        font-size: 0.6rem; /* ตัวหนังสือเล็กให้อ่านได้ในพื้นที่จำกัด */
-        padding: 2px 4px;
-        white-space: nowrap; /* บังคับไม่ให้ตัดบรรทัดถ้าไม่จำเป็น */
-        line-height: 1.2;
-        display: block; /* จัดให้อยู่กึ่งกลาง */
-    }
-
-    /* ปรับหัวข้อเดือนให้เล็กลง */
-    .month-year-display {
-        font-size: 1.4rem;
-    }
-    
-    /* ปรับปุ่มลูกศรซ้ายขวา */
-    .nav-button {
-        width: 32px;
-        height: 32px;
-        font-size: 0.9rem;
-    }
+@media (max-width: 480px) {
+    /* โหมดแสดงผลเฉพาะจุดขนาดเล็กพิเศษมือถือ */
+    .calendar-grid { gap: 3px; grid-template-columns: repeat(5, 1fr); }
+    .calendar-grid .calendar-day:nth-child(7n+1), .calendar-grid .calendar-day:nth-child(7n) { display: none; }
+    .day-names { grid-template-columns: repeat(5, 1fr); }
+    .day-names .day-name:nth-child(1), .day-names .day-name:nth-child(7) { display: none; }
+    .calendar-day { min-height: 65px; padding: 4px 2px; border-radius: 8px; }
+    .calendar-day .day-number { font-size: 1rem; margin-bottom: 2px; }
 }
