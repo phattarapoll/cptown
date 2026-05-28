@@ -68,27 +68,28 @@
                     <label class="select-label" style="display: block; margin-bottom: 12px; font-weight: 600;">อาการ/เหตุผลที่เข้ารับบริการ</label>
                     <input type="hidden" id="bookingReason" name="bookingReason" required>
                     <div class="reason-button-grid">
-                        <button type="button" class="reason-btn" data-value="ตรวจฟัน">
-                            <i class="fas fa-teeth fa-2x"></i>
-                            <span>ตรวจฟัน</span>
-                        </button>
-                        <button type="button" class="reason-btn" data-value="อุดฟัน">
-                            <i class="fas fa-tooth fa-2x"></i>
-                            <span>อุดฟัน</span>
-                        </button>
-                        <button type="button" class="reason-btn" data-value="ถอนฟัน">
-                            <i class="fas fa-tooth-open fa-2x"></i>
-                            <span>ถอนฟัน</span>
-                        </button>
-                        <button type="button" class="reason-btn" data-value="ขูดหินปูน">
-                            <i class="fas fa-sparkles fa-2x"></i>
-                            <span>ขูดหินปูน</span>
-                        </button>
-                        <button type="button" class="reason-btn" data-value="อื่นๆ (ระบุในหมายเหตุ)">
-                            <i class="fas fa-comment-medical fa-2x"></i>
-                            <span>อื่นๆ</span>
-                        </button>
-                    </div>
+    <button type="button" class="reason-btn" data-value="ตรวจฟัน">
+        <i class="fas fa-stethoscope fa-2x"></i> <!-- ปรับจาก teeth ให้เป็น stethoscope ที่สื่อถึงการตรวจ -->
+        <span>ตรวจฟัน</span>
+    </button>
+    <button type="button" class="reason-btn" data-value="อุดฟัน">
+        <i class="fas fa-tooth fa-2x"></i>
+        <span>อุดฟัน</span>
+    </button>
+    <button type="button" class="reason-btn" data-value="ถอนฟัน">
+        <i class="fas fa-牙-open fa-2x" style="display:none;"></i> <!-- ใช้ไอคอนนี้แทน -->
+        <i class="fas fa-user-injured fa-2x"></i> <!-- แนะนำตัวนี้แทนถอนฟัน จะดูซอฟต์กว่า -->
+        <span>ถอนฟัน</span>
+    </button>
+    <button type="button" class="reason-btn" data-value="ขูดหินปูน">
+        <i class="fas fa-magic fa-2x"></i> <!-- sparkles เปลี่ยนเป็น magic จะแสดงผลชัดกว่า -->
+        <span>ขูดหินปูน</span>
+    </button>
+    <button type="button" class="reason-btn" data-value="อื่นๆ">
+        <i class="fas fa-ellipsis-h fa-2x"></i>
+        <span>อื่นๆ</span>
+    </button>
+</div>
                 </div>
 
                 <div class="form-group">
