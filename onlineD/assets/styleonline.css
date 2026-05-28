@@ -714,6 +714,7 @@ body {
     }
 }
 
+
 /* 2. เรียกใช้ Animation กับวันปัจจุบัน */
 .calendar-day.current-day {
     /* เส้นขอบสีฟ้าสด */
@@ -726,6 +727,24 @@ body {
     font-weight: bold;
     z-index: 1; /* ให้อยู่เหนือวันอื่นๆ เล็กน้อยเวลาขยาย */
 }
+
+/* เอฟเฟกต์กระพริบของปุ่มยกเลิกขณะทำงาน */
+@keyframes pulse {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(0.98);
+        background-color: #b91c1c; /* สีแดงเข้มขึ้นเล็กน้อยตอนกระพริบ */
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
 /* --- FOOTER --- */
 .footer {
     margin-top: auto;
