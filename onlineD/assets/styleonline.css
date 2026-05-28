@@ -726,6 +726,81 @@ body {
     font-weight: bold;
     z-index: 1; /* ให้อยู่เหนือวันอื่นๆ เล็กน้อยเวลาขยาย */
 }
+
+/* --- BUTTON SELECTION DESIGN BY DR.PHATTARAPOLL --- */
+
+/* จัด Layout ปุ่มแบ่งเป็นสัดส่วน (ในคอมจะเป็นแถวเรียงสวย ในมือถือจะปรับตามจออัตโนมัติ) */
+.reason-options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+}
+
+/* สไตล์พื้นฐานของแต่ละปุ่มอาการ */
+.reason-btn {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 12px 8px;
+    font-family: var(--font-head);
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+/* เอฟเฟกต์ตอนเลื่อนเมาส์ผ่าน (Hover) */
+.reason-btn:hover {
+    border-color: var(--accent-color);
+    background: rgba(14, 165, 233, 0.04);
+    transform: translateY(-2px);
+}
+
+/* สไตล์เด่นชัดเมื่อปุ่มนั้นถูกเลือก (Active) */
+.reason-btn.active {
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-hover)) !important;
+    border-color: var(--accent-hover) !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.35);
+    transform: scale(1.02);
+}
+
+/* ปรับแต่งไอคอนภายในปุ่ม */
+.reason-btn i {
+    font-size: 1.3rem;
+    color: var(--accent-color);
+    transition: color 0.2s;
+}
+
+/* เปลี่ยนสีไอคอนเป็นสีขาวเมื่อปุ่มโดนเลือก */
+.reason-btn.active i {
+    color: #ffffff !important;
+}
+
+/* ปรับแต่งขนาดเพิ่มเติมเมื่ออยู่บนหน้าจอมือถือขนาดเล็ก */
+@media (max-width: 480px) {
+    .reason-options-grid {
+        grid-template-columns: repeat(2, 1fr); /* บนมือถือแสดงแถวละ 2 ปุ่ม เพื่อให้กดถนัดนิ้ว */
+        gap: 8px;
+    }
+    .reason-btn {
+        padding: 10px 6px;
+        font-size: 0.85rem;
+    }
+    .reason-btn i {
+        font-size: 1.15rem;
+    }
+}
+
 /* --- FOOTER --- */
 .footer {
     margin-top: auto;
