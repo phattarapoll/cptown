@@ -277,28 +277,34 @@
             }
 
             async function loadQueueData() {
-                const targetDate = searchDateInput.value;
-                if (!targetDate) return;
+    const targetDate = searchDateInput.value;
+    if (!targetDate) return;
 
-                loading.style.display = 'block';
-                tableContainer.style.display = 'none';
-                queueTableBody.innerHTML = '';
+    loading.style.display = 'block';
+    tableContainer.style.display = 'none';
+    queueTableBody.innerHTML = '';
 
-                try {
-                    const response = await fetch(`${WEB_APP_URL}?action=getConfigAndBookings`);
-                    if (!response.ok) throw new Error('การเชื่อมต่อฝั่งเซิร์ฟเวอร์ขัดข้อง');
-                    
-                    const data = await response.json();
-                    const allBookings = data.bookings || {};
-                    const targetDateBookings = allBookings[targetDate] || {};
-                    
-                    const queueList = [];
-                    for (const slot in targetDateBookings) {
-                        if (targetDateBookings[slot] && targetDateBookings[slot].count > 0) {
-						let reason = targetDateBookings[slot].bookingReason;
-						if (!reason || reason === "" || reason === "-") {
-                    reason = "ไม่ระบุสาเหตุ";
-                }
+    try {
+        const response = await fetch(`${WEB_APP_URL}?action=getConfigAndBookings`);
+        const data = await response.json();
+        
+        // --- ส่วนเพิ่ม: Debug เพื่อดูว่าข้อมูลจริงๆ มาชื่ออะไร ---
+        console.log("ข้อมูลที่ได้รับจาก Google Sheet:", data);
+        // ---------------------------------------------------
+
+        const allBookings = data.bookings || {};
+        const targetDateBookings = allBookings[targetDate] || {};
+        
+        const queueList = [];
+        for (const slot in targetDateBookings) {
+            if (targetDateBookings[slot] && targetDateBookings[slot].count > 0) {
+                
+                // ตรวจสอบชื่อคีย์ (รองรับทั้ง bookingReason หรือถ้าใน Sheet อาจจะส่งมาเป็นชื่ออื่น)
+                let reason = targetDateBookings[slot].bookingReason || 
+                             targetDateBookings[slot].reason || 
+                             targetDateBookings[slot].symptom || "-";
+                
+                if (reason === "-") reason = ""; 
 
                 queueList.push({
                     slot: slot,
