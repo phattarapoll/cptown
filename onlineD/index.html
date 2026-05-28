@@ -86,35 +86,20 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="select-label">อาการ/เหตุผลที่เข้ารับบริการ</label>
-                    
-                    <input type="hidden" id="bookingReason" name="bookingReason" required>
-                    
-                    <div class="reason-options-grid">
-                        <button type="button" class="reason-btn" data-value="ตรวจฟัน">
-                            <i class="fas fa-teeth"></i> ตรวจสุขภาพช่องปากประจำปี
-                        </button>
-                        <button type="button" class="reason-btn" data-value="อุดฟัน">
-                            <i class="fas fa-tooth"></i> อุดฟัน / วัสดุอุดหลุด / ฟันแตก
-                        </button>
-                        <button type="button" class="reason-btn" data-value="ขูดหินน้ำลาย">
-                            <i class="fas fa-sparkles"></i> ขูดหินปูน
-                        </button>
-                        <button type="button" class="reason-btn" data-value="ปวดฟัน">
-                            <i class="fas fa-sad-tear"></i> มีอาการปวดฟัน
-                        </button>
-                        <button type="button" class="reason-btn" data-value="เสียวฟัน">
-                            <i class="fas fa-temperature-high"></i> มีอาการเสียวฟัน
-                        </button>
-                        <button type="button" class="reason-btn" data-value="ถอนฟัน">
-                            <i class="fas fa-tooth" style="transform: rotate(180deg);"></i> ถอนฟัน (โยก/ฟันน้ำนม)
-                        </button>
-                        <button type="button" class="reason-btn" data-value="อื่นๆ">
-                            <i class="fas fa-ellipsis-h"></i> อื่นๆ
-                        </button>
+                    <label for="bookingReason" class="select-label">อาการ/เหตุผลที่เข้ารับบริการ</label>
+                    <div class="select-wrapper">
+                        <select id="bookingReason" name="bookingReason" required>
+                            <option value="" disabled selected>-- กรุณาเลือกรายการ --</option>
+                            <option value="ตรวจฟัน">ตรวจสุขภาพช่องปากประจำปี</option>
+                            <option value="อุดฟัน">อุดฟัน / วัสดุอุดหลุด / ฟันแตก</option>
+                            <option value="ขูดหินน้ำลาย">ขูดหินปูน</option>
+                            <option value="ปวดฟัน">มีอาการปวดฟัน</option>
+                            <option value="เสียวฟัน">มีอาการเสียวฟัน</option>
+                            <option value="ถอนฟัน">ถอนฟัน (โยก/ฟันน้ำนม)</option>
+                            <option value="อื่นๆ">อื่นๆ</option>
+                        </select>
                     </div>
-                    
-                    <button type="submit" class="submit-button" style="margin-top: 25px;">ยืนยันการจอง</button>
+                    <button type="submit" class="submit-button">ยืนยันการจอง</button>
                     <div id="formMessage" class="form-message"></div>
                 </div>
             </form>

@@ -46,31 +46,17 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentCancelDate = null;
     let currentCancelTimeSlot = null;
     
-    closePopupBtn.addEventListener('click', () => {
-        bookingPopup.classList.remove('is-active');
-        // ล้างสถานะปุ่มกดเมื่อปิดหน้าต่างนัดหมาย
-        document.querySelectorAll('.reason-btn').forEach(btn => btn.classList.remove('active'));
-        setTimeout(() => { bookingPopup.classList.add('hidden'); }, 300);
-        timeSlotDetails.classList.remove('hidden');
+    closeCancelPopupBtn.addEventListener('click', () => {
+        cancelPopup.classList.remove('is-active');
+        if (!cancelPopup.classList.contains('hidden')) { 
+             setTimeout(() => {
+                cancelPopup.classList.add('hidden');
+             }, 300);
+        }
+        timeSlotDetails.classList.remove('hidden'); 
     });
-	
-    // --- ฟังก์ชันคลิปปุ่มงานที่ต้องการรักษา ---
-	// ล้างสี (Active) ของปุ่มทั้งหมดใหม่ทุกครั้งที่เปิด Popup
-        document.querySelectorAll('.reason-btn').forEach(btn => btn.classList.remove('active'));
 
-        // เพิ่ม Event Listener ให้กลุ่มปุ่มกดทำงานสัมพันธ์กับช่อง Input ซ่อน
-        document.querySelectorAll('.reason-btn').forEach(button => {
-            // เคลียร์ event เดิมออกก่อนเพื่อป้องกันการเรียกซ้ำซ้อน
-            button.removeAttribute('onclick'); 
-            button.onclick = function() {
-                document.querySelectorAll('.reason-btn').forEach(btn => btn.classList.remove('active'));
-                this.classList.add('active');
-                // นำค่าจากปุ่มส่งเข้า input หลัก
-                document.getElementById('bookingReason').value = this.getAttribute('data-value');
-            };
-        });
-
-    // --- ฟังก์ชันสำหรับตัดคำนำหน้าชื่อ ---
+    // --- ฟังก์ชันสำหรับตัดคำนำหน้าชื่อ (เพิ่มใหม่ตามคำขอ) ---
     function removeTitle(fullName) {
         if (!fullName) return '';
         // รายการคำนำหน้าที่ต้องการตัดออก (นาย, นาง, นางสาว, ด.ช., ด.หญิง ฯลฯ)
@@ -391,7 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const reasonText = reasonElement ? reasonElement.textContent : 'ไม่ระบุ';
                 const codeDisplayHtml = cancellationCode ? `<div class="code-display-box" style="margin: 15px auto; padding: 15px; border-radius: 10px; border: 3px dashed #e63946; background-color: #ffe6e6;"><p style="margin: 0; font-weight: bold;">รหัสยกเลิกคิว (Code):</p><p style="margin: 5px 0 0 0; font-size: 3em; font-weight: bolder; color: #e63946;">${cancellationCode}</p></div>` : '';
 
-                const successSummary = `<div class="glass-effect" style="margin: 40px auto; max-width: 600px; text-align: center; padding: 25px; border: 5px solid #2a9d8f; border-radius: 15px;"><h3 style="color: #2a9d8f;">✅ การจองคิวสำเร็จ ✅</h3>${codeDisplayHtml}<div style="text-align: left; padding: 15px; background: white; border-radius: 10px;"><p><strong>👤 ผู้จอง:</strong> ${fullName}</p><p><strong>🗓 วันที่นัด:</strong> ${bookingDateThai}</p><p><strong>⏰ ช่วงเวลา:</strong> ${selectedTimeSlot}</p></div><button onclick="window.location.reload();" style="margin-top: 20px; padding: 10px 20px; background: #e63946; color: white; border: none; border-radius: 8px; cursor: pointer;">กลับหน้าหลัก</button></div>`;
+                const successSummary = `<div class="glass-effect" style="margin: 40px auto; max-width: 600px; text-align: center; padding: 25px; border: 5px solid #2a9d8f; border-radius: 15px;"><h3 style="color: #2a9d8f;">✅ การจองคิวสำเร็จ ✅</h3>${codeDisplayHtml}<div style="text-align: left; padding: 15px; background: white; border-radius: 10px;"><p><strong>👤 ผู้จอง:</strong> ${fullName}</p><p><strong>🗓 วันที่นัด:</strong> ${bookingDateThai}</p><p><strong>⏰ ช่วงเวลา:</strong> ${selectedTimeSlot}</p><p><strong>📝 อาการ:</strong> ${reasonText}</p></div><button onclick="window.location.reload();" style="margin-top: 20px; padding: 10px 20px; background: #e63946; color: white; border: none; border-radius: 8px; cursor: pointer;">กลับหน้าหลัก</button></div>`;
                 document.querySelector('.container').insertAdjacentHTML('beforeend', successSummary);
             } else {
                 loadingSpinner.classList.add('hidden');
