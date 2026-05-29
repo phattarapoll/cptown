@@ -569,3 +569,19 @@ header p {
     .calendar-day { min-height: 65px; padding: 4px 2px; border-radius: 8px; }
     .calendar-day .day-number { font-size: 1rem; margin-bottom: 2px; }
 }
+
+/* แก้ไขให้ Modal เลื่อนขึ้นได้เมื่อแป้นพิมพ์บัง */
+@media (max-width: 768px) {
+    .modal-content {
+        margin-top: 10vh; /* เว้นระยะด้านบนเล็กน้อย */
+        max-height: 80vh; /* จำกัดความสูงไม่ให้เกินหน้าจอ */
+        overflow-y: auto; /* ทำให้เลื่อนหน้าต่างได้หากเนื้อหาเกิน */
+        padding-bottom: 50px; /* เพิ่มพื้นที่ด้านล่าง */
+    }
+}
+
+/* ปรับ Input ให้รองรับการแตะบนมือถือ */
+.form-input, .code-input {
+    font-size: 16px; /* สำคัญ: ขนาดตัวอักษร 16px ขึ้นไปจะช่วยไม่ให้ iOS ซูมหน้าจออัตโนมัติ */
+    padding: 12px;
+}

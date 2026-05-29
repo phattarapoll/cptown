@@ -509,6 +509,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const year = date.getFullYear() + 543;
         return `${day} ${month} ${year}`;
     }
+	
+	// เพิ่มไว้ในส่วนที่จัดการกับ Form ใน customonline.js
+const inputs = document.querySelectorAll('.form-input');
+inputs.forEach(input => {
+    input.addEventListener('focus', function() {
+        setTimeout(() => {
+            // เลื่อนหน้าจอให้ช่องที่เลือกขึ้นมาอยู่ด้านบน
+            this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300); // รอแป้นพิมพ์ดีดขึ้นมาก่อนแล้วค่อยเลื่อน
+    });
+});
+
 
     function formatDateForComparison(date) {
         const year = date.getFullYear();
