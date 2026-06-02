@@ -242,7 +242,7 @@ header p {
 .slot-count {
     font-size: 0.8rem;
     font-weight: 600;
-    padding: 4px 6px;
+    padding: 2px 6px;
     border-radius: 6px;
     text-align: center;
     display: block;
@@ -310,7 +310,7 @@ header p {
 }
 .time-slot {
     background: white;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #B21ED0;
     border-radius: var(--radius-sm);
     padding: 16px;
     text-align: center;
@@ -332,8 +332,8 @@ header p {
 }
 .booked-slot {
     border-left: 5px solid var(--warning-color);
-    color: #b45309;
-    background-color: #fffbeb;
+    color: #121212;
+    background-color: #EFCA51;
     font-size: 0.95rem;
     display: flex;
     flex-direction: column;
