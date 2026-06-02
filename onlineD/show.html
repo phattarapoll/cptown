@@ -39,6 +39,14 @@
             width: 100%;
             padding-bottom: 75%; /* ปรับความสูงให้เหมาะสม */
         }
+		.responsive-text {
+			white-space: nowrap;      /* บังคับไม่ให้ขึ้นบรรทัดใหม่ */
+			font-size: 14px;          /* ขนาดเริ่มต้น */
+			display: inline-block;
+			max-width: 100%;          /* ไม่ให้เกินความกว้างหน้าจอ */
+			overflow: hidden;
+			text-overflow: ellipsis;  /* ถ้าตัวอักษรยาวเกินไป ให้แสดงเป็นจุด ... แทนการขึ้นบรรทัดใหม่ */
+		}
         iframe { 
             position: absolute; 
             top: 0; left: 0; 
@@ -51,13 +59,34 @@
             color: #666;
             font-size: 14px;
         }
+		@keyframes fadeInUp {
+			from { opacity: 0; transform: translateY(20px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+		.header {
+			animation: fadeInUp 1s ease-out;
+		}
+		.footer-card {
+			background: white;
+			padding: 15px;
+			border-radius: 10px;
+			box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+			transition: transform 0.3s ease; /* เพิ่มลูกเล่นการย่อขยาย */
+			margin: 10px auto;
+			max-width: 80%;
+		}
+		.footer-card:hover {
+			transform: scale(1.02); /* ขยายขึ้นเล็กน้อยเมื่อเอาเมาส์ชี้ */
+		}
     </style>
 </head>
 <body>
 
     <div class="header">
-        คิวทันตสาธารณสุข<br>งานทันตสาธารณสุข <br>กองสาธารณสุขและสิ่งแวดล้อม
-    </div>
+		<div>คิวทันตสาธารณสุข</div>
+		<div class="responsive-text" style="font-size: 0.6em;">งานทันตสาธารณสุข กองสาธารณสุขและสิ่งแวดล้อม</div>
+	</div>
+
 
     <div class="calendar-container">
         <div class="container">
@@ -66,8 +95,9 @@
     </div>
 
     <div class="footer">
-        ผู้สร้างและพัฒนา นายภัทรพล ไพศาลวัชรเมธี <br> ทันตสาธารณสุขอาวุโส <br>งานทันตสาธารณสุข กองสาธารณสุขและสิ่งแวดล้อม ทม.ชพ.
-    </div>
+			ผู้สร้างและพัฒนา นายภัทรพล ไพศาลวัชรเมธี <br> 
+			ทันตสาธารณสุขอาวุโส <br>
+</div>
 
 </body>
 </html>
