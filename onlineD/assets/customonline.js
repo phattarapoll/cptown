@@ -90,8 +90,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function fetchData() {
+        const loadingText = document.getElementById('loadingText');
+        const loadingPercentage = document.getElementById('loadingPercentage');
+        let progress = 0;
+        let progressInterval;
+
         try {
             loadingSpinner.classList.remove('hidden');
+            if (loadingText) loadingText.textContent = "กำลังโหลดข้อมูลคิว...";
+            if (loadingPercentage) loadingPercentage.textContent = "0%";
+            
+            isInitialLoading = true;
+            renderCalendar(currentMonth, currentYear);
+
+            // ⚡ เริ่มจำลองตัวเลข % วิ่ง
+            progressInterval = setInterval(() => {
+                if (progress < 70) {
+                    progress += Math.floor(Math.random() * 15) + 5; // ช่วงแรกวิ่งเร็วหน่อย
+                } else if (progress < 93) {
+                    progress += Math.floor(Math.random() * 3) + 1;  // ช่วงหลังค่อยๆ ชะลอตัวลง
+                }
+                if (progress > 95) progress = 95; // ขังไว้ที่ 95% จนกว่าข้อมูลจะมาจริง
+                
+                if (loadingPercentage) loadingPercentage.textContent = `${progress}%`;
+            }, 300); // อัปเดตทุกๆ 0.3 วินาที
+
             const response = await fetch(`${WEB_APP_URL}?action=getConfigAndBookings`);
             if (!response.ok) {
                 const errorText = await response.text();
@@ -102,12 +125,24 @@ document.addEventListener('DOMContentLoaded', () => {
             bookingData = data.bookings;
             noShowCount = data.noShowCount;
             if (!Array.isArray(configData.timeSlots)) configData.timeSlots = [];
-            renderCalendar(currentMonth, currentYear);
+            
+            // ⚡ โหลดเสร็จจริง ให้เต็ม 100% ทันที
+            clearInterval(progressInterval);
+            if (loadingPercentage) loadingPercentage.textContent = "100%";
+            
+            // หน่วงเวลาให้คนไข้เห็น 100% แป๊บหนึ่งก่อนปิดหน้าต่างโหลด
+            setTimeout(() => {
+                isInitialLoading = false;
+                renderCalendar(currentMonth, currentYear);
+                loadingSpinner.classList.add('hidden');
+            }, 200);
+
         } catch (error) {
+            clearInterval(progressInterval);
             formMessage.textContent = `ไม่สามารถโหลดข้อมูลได้: ${error.message}`;
             formMessage.className = 'form-message error';
+            isInitialLoading = false;
             renderCalendar(currentMonth, currentYear);
-        } finally {
             loadingSpinner.classList.add('hidden');
         }
     }
@@ -123,10 +158,18 @@ document.addEventListener('DOMContentLoaded', () => {
         bookingLimit.setDate(today.getDate() + 21);
         bookingLimit.setHours(0, 0, 0, 0);
 
+        // ⚡ ใช้ DocumentFragment เพื่อความเร็วสูงสุดในการวาดปฏิทิน
+        const fragment = document.createDocumentFragment();
+
         for (let i = 0; i < firstDayOfMonth; i++) {
             const emptyDiv = document.createElement('div');
             emptyDiv.classList.add('calendar-day', 'empty');
-            calendarGrid.appendChild(emptyDiv);
+            fragment.appendChild(emptyDiv);
+        }
+
+        // ตรวจสอบโครงสร้างข้อมูลพื้นฐานเพื่อป้องกัน Error กรณีข้อมูลยังไม่มา
+        if (!configData || !configData.unavailableWeekdays) {
+            configData = { unavailableWeekdays: [], unavailableDates: [], holidayNames: [], timeSlots: [] };
         }
 
         for (let day = 1; day <= daysInMonth; day++) {
@@ -166,7 +209,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            if (isUnavailable) {
+            // ⚡ ตรวจสอบสถานะ: หากอยู่ระหว่างโหลดข้อมูลแรกเข้า และวันนั้นไม่ใช่แค่วันที่ปิดทำการ/ผ่านมาแล้ว ให้ขึ้น "Wait"
+            if (isInitialLoading && !isUnavailable) {
+                dayDiv.classList.add('unavailable');
+                dayDiv.title = 'กำลังโหลดข้อมูลคิว...';
+                dayDiv.innerHTML += `<small style="color: #f4a261; font-weight: bold;">Wait</small>`;
+                dayDiv.style.cursor = 'wait';
+            } 
+            // แสดงผลตามปกติเมื่อโหลดเสร็จแล้ว
+            else if (isUnavailable) {
                 dayDiv.classList.add('unavailable');
                 dayDiv.title = tooltipReason;
                 if (displayReason) dayDiv.innerHTML += `<small>${displayReason}</small>`;
@@ -192,8 +243,112 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 dayDiv.appendChild(slotCountSpan);
             }
-            calendarGrid.appendChild(dayDiv);
+            fragment.appendChild(dayDiv);
         }
+        // ⚡ ยัดก้อนปฏิทินทั้งหมดลงหน้าเว็บจริง
+        calendarGrid.appendChild(fragment);
+    }
+
+    function renderCalendar(monthIndex, year) {
+        calendarGrid.innerHTML = '';
+        currentMonthYearDisplay.textContent = `${getMonthName(monthIndex)} ${year}`;
+        const firstDayOfMonth = new Date(year, monthIndex, 1).getDay();
+        const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const bookingLimit = new Date();
+        bookingLimit.setDate(today.getDate() + 21);
+        bookingLimit.setHours(0, 0, 0, 0);
+
+        // ⚡ ใช้ DocumentFragment เพื่อความเร็วสูงสุดในการวาดปฏิทิน
+        const fragment = document.createDocumentFragment();
+
+        for (let i = 0; i < firstDayOfMonth; i++) {
+            const emptyDiv = document.createElement('div');
+            emptyDiv.classList.add('calendar-day', 'empty');
+            fragment.appendChild(emptyDiv);
+        }
+
+        // ตรวจสอบโครงสร้างข้อมูลพื้นฐานเพื่อป้องกัน Error กรณีข้อมูลยังไม่มา
+        if (!configData || !configData.unavailableWeekdays) {
+            configData = { unavailableWeekdays: [], unavailableDates: [], holidayNames: [], timeSlots: [] };
+        }
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const date = new Date(year, monthIndex, day);
+            date.setHours(0, 0, 0, 0);
+            const dateString = formatDateForComparison(date);
+            const dayOfWeek = date.getDay();
+            const dayDiv = document.createElement('div');
+            dayDiv.classList.add('calendar-day', 'day');
+            dayDiv.innerHTML = `<span class="day-number">${day}</span>`;
+
+            if (date.getTime() === today.getTime()) dayDiv.classList.add('current-day');
+            if (dayOfWeek === 0 || dayOfWeek === 6) dayDiv.classList.add('day-weekend');
+
+            let isUnavailable = false;
+            let displayReason = '';
+            let tooltipReason = '';
+
+            if (date < today) {
+                isUnavailable = true;
+                tooltipReason = 'วันนี้ผ่านไปแล้ว';
+            } else if (date > bookingLimit) {
+                isUnavailable = true;
+                displayReason = 'รอเปิด';
+                tooltipReason = 'รอเปิด';
+            } else if (configData.unavailableWeekdays.includes(dayOfWeek)) {
+                isUnavailable = true;
+                displayReason = 'ปิดทำการ';
+                tooltipReason = 'ปิดทำการ (เสาร์-อาทิตย์)';
+            } else {
+                const holidayIndex = configData.unavailableDates.indexOf(dateString);
+                if (holidayIndex !== -1) {
+                    isUnavailable = true;
+                    const specificHolidayName = configData.holidayNames[holidayIndex] ? configData.holidayNames[holidayIndex].trim() : '';
+                    displayReason = specificHolidayName !== 'ปิด' ? specificHolidayName : 'ปิดทำการ';
+                    tooltipReason = displayReason;
+                }
+            }
+
+            // ⚡ ตรวจสอบสถานะ: หากอยู่ระหว่างโหลดข้อมูลแรกเข้า และวันนั้นไม่ใช่แค่วันที่ปิดทำการ/ผ่านมาแล้ว ให้ขึ้น "Wait"
+            if (isInitialLoading && !isUnavailable) {
+                dayDiv.classList.add('unavailable');
+                dayDiv.title = 'กำลังโหลดข้อมูลคิว...';
+                dayDiv.innerHTML += `<small style="color: #f4a261; font-weight: bold;">Wait</small>`;
+                dayDiv.style.cursor = 'wait';
+            } 
+            // แสดงผลตามปกติเมื่อโหลดเสร็จแล้ว
+            else if (isUnavailable) {
+                dayDiv.classList.add('unavailable');
+                dayDiv.title = tooltipReason;
+                if (displayReason) dayDiv.innerHTML += `<small>${displayReason}</small>`;
+                dayDiv.style.cursor = 'not-allowed';
+            } else {
+                const availableSlots = getAvailableSlotsCount(dateString);
+                const totalSlots = configData.timeSlots.length;
+                const slotCountSpan = document.createElement('span');
+                slotCountSpan.classList.add('slot-count');
+
+                if (totalSlots === 0) {
+                    slotCountSpan.textContent = `ไม่มีคิวตั้งค่า`;
+                    slotCountSpan.classList.add('full');
+                    dayDiv.classList.add('unavailable');
+                } else if (availableSlots > 0) {
+                    slotCountSpan.classList.add('available');
+                    slotCountSpan.textContent = `ว่าง ${availableSlots}`;
+                    dayDiv.addEventListener('click', () => showTimeSlots(date));
+                } else {
+                    slotCountSpan.classList.add('full');
+                    slotCountSpan.textContent = `เต็ม `;
+                    dayDiv.addEventListener('click', () => showTimeSlots(date));
+                }
+                dayDiv.appendChild(slotCountSpan);
+            }
+            fragment.appendChild(dayDiv);
+        }
+        // ⚡ ยัดก้อนปฏิทินทั้งหมดลงหน้าเว็บจริง
+        calendarGrid.appendChild(fragment);
     }
 
     function getAvailableSlotsCount(dateString) {
@@ -436,11 +591,32 @@ document.addEventListener('DOMContentLoaded', () => {
             confirmButton.innerText = 'กำลังส่งคำขอยกเลิก...';
         }
 
-        const spinnerMessage = loadingSpinner.querySelector('p');
-        if (spinnerMessage) {
-            spinnerMessage.innerHTML = '<i class="fas fa-trash-alt animate-pulse"></i> กำลังทำการลบคิวในระบบ กรุณารอสักครู่...';
+        // --- 🛠️ ส่วนที่แก้ไข: เพิ่มการจำลอง % ให้เหมือน fetchData ---
+        const loadingText = document.getElementById('loadingText');
+        const loadingPercentage = document.getElementById('loadingPercentage');
+        let progress = 0;
+        let progressInterval;
+
+        if (loadingText) {
+            loadingText.innerHTML = '<i class="fas fa-trash-alt animate-pulse"></i> กำลังทำการลบคิวในระบบ กรุณารอสักครู่...';
+        }
+        if (loadingPercentage) {
+            loadingPercentage.textContent = "0%";
         }
         loadingSpinner.classList.remove('hidden');
+
+        // เริ่มจำลองตัวเลข % วิ่ง
+        progressInterval = setInterval(() => {
+            if (progress < 70) {
+                progress += Math.floor(Math.random() * 15) + 5; // ช่วงแรกวิ่งเร็ว
+            } else if (progress < 93) {
+                progress += Math.floor(Math.random() * 3) + 1;  // ช่วงหลังค่อยๆ ชะลอลง
+            }
+            if (progress > 95) progress = 95; // ขังไว้ที่ 95% จนกว่าข้อมูลจะลบเสร็จจริง
+            
+            if (loadingPercentage) loadingPercentage.textContent = `${progress}%`;
+        }, 300);
+        // ---------------------------------------------------------
         
         const formData = new FormData();
         formData.append('action', 'cancelBooking');
@@ -452,8 +628,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(WEB_APP_URL, { method: 'POST', body: formData });
             const resultText = await response.text();
             
+            // ⚡ ลบเสร็จจริง ให้เต็ม 100% ทันที และหยุด Interval
+            clearInterval(progressInterval);
+            if (loadingPercentage) loadingPercentage.textContent = "100%";
+            
+            // หน่วงเวลาเล็กน้อยเพื่อให้ผู้ใช้เห็น 100% ก่อนทำงานต่อ
+            await new Promise(resolve => setTimeout(resolve, 300));
+            
             loadingSpinner.classList.add('hidden');
-            if (spinnerMessage) { spinnerMessage.innerText = 'กำลังประมวลผล...'; }
+            if (loadingText) { loadingText.innerText = 'กำลังประมวลผล...'; }
             if (confirmButton) {
                 confirmButton.disabled = false;
                 confirmButton.style.animation = 'none';
@@ -487,8 +670,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('❌ เกิดข้อผิดพลาดจากระบบ: ' + statusMessage);
             }
         } catch (error) {
+            // เคลียร์ Interval กรณีเกิด Error
+            clearInterval(progressInterval);
+            
             loadingSpinner.classList.add('hidden');
-            if (spinnerMessage) { spinnerMessage.innerText = 'กำลังประมวลผล...'; }
+            if (loadingText) { loadingText.innerText = 'กำลังประมวลผล...'; }
             if (confirmButton) {
                 confirmButton.disabled = false;
                 confirmButton.style.animation = 'none';
