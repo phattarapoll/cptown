@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             loadingSpinner.classList.remove('hidden');
-            if (loadingText) loadingText.textContent = "กำลังโหลดข้อมูลคิว...";
+            if (loadingText) loadingText.textContent = "กำลังโหลดคิว...";
             if (loadingPercentage) loadingPercentage.textContent = "0%";
             
             isInitialLoading = true;
@@ -106,9 +106,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // ⚡ เริ่มจำลองตัวเลข % วิ่ง
             progressInterval = setInterval(() => {
                 if (progress < 70) {
-                    progress += Math.floor(Math.random() * 15) + 5; // ช่วงแรกวิ่งเร็วหน่อย
+                    progress += Math.floor(Math.random() * 3)+5; // ช่วงแรกวิ่งเร็วหน่อย
                 } else if (progress < 93) {
-                    progress += Math.floor(Math.random() * 3) + 1;  // ช่วงหลังค่อยๆ ชะลอตัวลง
+                    progress += Math.floor(Math.random() * 3)+2;  // ช่วงหลังค่อยๆ ชะลอตัวลง
                 }
                 if (progress > 95) progress = 95; // ขังไว้ที่ 95% จนกว่าข้อมูลจะมาจริง
                 
