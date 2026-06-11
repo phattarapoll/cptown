@@ -107,13 +107,18 @@
             background-color: var(--primary-hover);
         }
 
+        button:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+        }
+
         /* ส่วนแสดงผลลัพธ์ */
         .result-box {
             margin-top: 25px;
             padding: 20px;
             background-color: #f1f5f9;
             border-radius: 10px;
-            display: none; /* ซ่อนไว้ก่อนจนกว่าจะมียกเลิกย่อลิงก์ */
+            display: none; 
             text-align: left;
             animation: fadeIn 0.4s ease;
         }
@@ -193,13 +198,13 @@
                 <label for="longUrl">วางลิงก์ขนาดยาวของคุณที่นี่</label>
                 <input type="url" id="longUrl" placeholder="https://example.com/very-long-link-address" required>
             </div>
-            <button type="submit">ย่อลิงก์เลย</button>
+            <button type="submit" id="submitBtn">ย่อลิงก์เลย</button>
         </form>
 
         <div class="result-box" id="resultBox">
             <p>ลิงก์ที่ย่อเสร็จแล้ว:</p>
             <div class="result-url-wrapper">
-                <div class="short-url" id="shortUrlText">https://tinyurl.com/xxxxxx</div>
+                <div class="short-url" id="shortUrlText">กำลังย่อลิงก์...</div>
                 <button type="button" class="btn-copy" onclick="copyToClipboard()">คัดลอก</button>
             </div>
         </div>
@@ -215,31 +220,52 @@
             const longUrl = document.getElementById('longUrl').value;
             const resultBox = document.getElementById('resultBox');
             const shortUrlText = document.getElementById('shortUrlText');
+            const submitBtn = document.getElementById('submitBtn');
             
+            // แสดงสถานะกำลังโหลด
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'กำลังประมวลผล...';
+            shortUrlText.innerText = 'กำลังสร้างลิงก์สั้น...';
+            resultBox.style.display = 'block';
+
+            // ดึงข้อมูลผ่าน Is.gd API (เปิดสิทธิ์แบบ CORS เพื่อให้เรียกจากหน้าเว็บได้โดยตรง)
+            const apiUrl = `https://is.gd/create.php?format=json&url=${encodeURIComponent(longUrl)}`;
+
             try {
-                // ใช้ API ฟรีของ TinyURL เพื่อย่อลิงก์จริง
-                const response = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`);
+                const response = await fetch(apiUrl);
                 
                 if (response.ok) {
-                    const shortUrl = await response.text();
-                    shortUrlText.innerText = shortUrl;
-                    resultBox.style.display = 'block';
+                    const data = await response.json();
+                    if (data.shorturl) {
+                        shortUrlText.innerText = data.shorturl;
+                    } else if (data.errormessage) {
+                        shortUrlText.innerText = 'เกิดข้อผิดพลาด: ' + data.errormessage;
+                    }
                 } else {
-                    alert('เกิดข้อผิดพลาดในการย่อลิงก์ กรุณาลองใหม่อีกครั้ง');
+                    throw new Error('Network response was not ok.');
                 }
             } catch (error) {
                 console.error(error);
-                alert('ไม่สามารถเชื่อมต่อระบบได้ในขณะนี้');
+                // หากยังติดปัญหาบล็อกจากระบบเครือข่ายอีก จะแนะนำทางเลือกให้กับผู้ใช้แทน
+                shortUrlText.style.whiteSpace = 'normal';
+                shortUrlText.innerHTML = `เครือข่ายอินเทอร์เน็ตนี้จำกัดการเข้าถึง API ย่อลิงก์ภายนอกอัตโนมัติ<br>แนะนำให้เข้าใช้งานโดยตรงที่เว็บสาธารณะแทนครับ`;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'ย่อลิงก์เลย';
             }
         }
 
         function copyToClipboard() {
             const shortUrl = document.getElementById('shortUrlText').innerText;
-            navigator.clipboard.writeText(shortUrl).then(() => {
-                alert('คัดลอกลิงก์ไปยังคลิปบอร์ดแล้ว!');
-            }).catch(err => {
-                alert('ไม่สามารถคัดลอกได้อัตโนมัติ กรุณาก๊อปปี้ด้วยตัวเอง');
-            });
+            if(shortUrl.startsWith('http')) {
+                navigator.clipboard.writeText(shortUrl).then(() => {
+                    alert('คัดลอกลิงก์ไปยังคลิปบอร์ดแล้ว!');
+                }).catch(err => {
+                    alert('ไม่สามารถคัดลอกได้อัตโนมัติ กรุณาก๊อปปี้ด้วยตัวเอง');
+                });
+            } else {
+                alert('ไม่มีลิงก์ที่สามารถคัดลอกได้ในขณะนี้');
+            }
         }
     </script>
 
