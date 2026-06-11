@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบย่อลิงก์ URL Shortener</title>
+    <title>ระบบคลังลิงก์ทางลัด URL Redirect</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary-color: #4f46e5;
-            --primary-hover: #4338ca;
+            --primary-color: #0ea5e9;
             --background: #f8fafc;
             --card-bg: #ffffff;
             --text-main: #1e293b;
@@ -19,194 +18,49 @@
             --border: #e2e8f0;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Sarabun', sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Sarabun', sans-serif; }
+        body { background-color: var(--background); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 20px; }
+        .container { background: var(--card-bg); padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); width: 100%; max-width: 600px; margin: auto; text-align: center; }
+        h1 { font-size: 1.8rem; color: var(--primary-color); margin-bottom: 8px; font-weight: 700; }
+        p.subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px; }
+        
+        .table-container { width: 100%; overflow-x: auto; margin-top: 20px; text-align: left; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
+        th, td { padding: 12px; border: 1px solid var(--border); text-align: left; }
+        th { background-color: #f1f5f9; color: var(--text-main); font-weight: 600; }
+        
+        .link-short { color: var(--primary-color); font-weight: 600; text-decoration: none; }
+        .link-short:hover { text-decoration: underline; }
+        
+        .btn-copy { background: #e2e8f0; border: none; padding: 4px 8px; font-size: 0.8rem; border-radius: 4px; cursor: pointer; margin-left: 5px; }
+        .btn-copy:hover { background: #cbd5e1; }
 
-        body {
-            background-color: var(--background);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: var(--card-bg);
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-            width: 100%;
-            max-width: 550px;
-            margin: auto;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: 1.8rem;
-            color: var(--primary-color);
-            margin-bottom: 8px;
-            font-weight: 700;
-        }
-
-        p.subtitle {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            margin-bottom: 30px;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 24px;
-            text-align: left;
-        }
-
-        label {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-main);
-        }
-
-        input[type="url"] {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            font-size: 1rem;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-
-        input[type="url"]:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-        }
-
-        button {
-            width: 100%;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 14px;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-
-        button:hover {
-            background-color: var(--primary-hover);
-        }
-
-        button:disabled {
-            background-color: #94a3b8;
-            cursor: not-allowed;
-        }
-
-        /* ส่วนแสดงผลลัพธ์ */
-        .result-box {
-            margin-top: 25px;
-            padding: 20px;
-            background-color: #f1f5f9;
-            border-radius: 10px;
-            display: none; 
-            text-align: left;
-            animation: fadeIn 0.4s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .result-box p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-            font-weight: 600;
-        }
-
-        .result-url-wrapper {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .short-url {
-            flex: 1;
-            padding: 10px 12px;
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 0.95rem;
-            color: var(--primary-color);
-            font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .btn-copy {
-            background: #e2e8f0;
-            color: var(--text-main);
-            padding: 10px 16px;
-            font-size: 0.9rem;
-            border-radius: 6px;
-            width: auto;
-            white-space: nowrap;
-        }
-
-        .btn-copy:hover {
-            background: #cbd5e1;
-        }
-
-        /* Footer เครดิต */
-        footer {
-            margin-top: 40px;
-            text-align: center;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            border-top: 1px solid var(--border);
-            padding-top: 15px;
-            width: 100%;
-            max-width: 550px;
-        }
-
-        footer strong {
-            color: var(--text-main);
-            font-weight: 600;
-        }
+        footer { margin-top: 40px; text-align: center; font-size: 0.9rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 15px; width: 100%; max-width: 600px; }
+        footer strong { color: var(--text-main); font-weight: 600; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>URL Shortener</h1>
-        <p class="subtitle">ย่อลิงก์ของคุณให้สั้นลง ง่ายต่อการแบ่งปันและใช้งาน</p>
+        <h1>ระบบลิงก์ทางลัดภายใน</h1>
+        <p class="subtitle">รวมลิงก์ด่วนและระบบส่งต่อ URL ปลอดภัยจากการบล็อกของเครือข่าย</p>
         
-        <form id="shortenForm" onsubmit="shortenURL(event)">
-            <div class="input-group">
-                <label for="longUrl">วางลิงก์ขนาดยาวของคุณที่นี่</label>
-                <input type="url" id="longUrl" placeholder="https://example.com/very-long-link-address" required>
-            </div>
-            <button type="submit" id="submitBtn">ย่อลิงก์เลย</button>
-        </form>
+        <div id="redirect-status" style="display:none; padding: 15px; background: #e0f2fe; color: #0369a1; border-radius: 8px; margin-bottom: 20px; font-weight: 500;">
+            กำลังนำทางไปยังลิงก์ปลายทาง...
+        </div>
 
-        <div class="result-box" id="resultBox">
-            <p>ลิงก์ที่ย่อเสร็จแล้ว:</p>
-            <div class="result-url-wrapper">
-                <div class="short-url" id="shortUrlText">กำลังย่อลิงก์...</div>
-                <button type="button" class="btn-copy" onclick="copyToClipboard()">คัดลอก</button>
-            </div>
+        <div class="table-container">
+            <h3>📋 รายการลิงก์สั้นที่ใช้งานได้</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ชื่อทางลัด</th>
+                        <th>ลิงก์สั้นสำหรับคัดลอกไปใช้</th>
+                    </tr>
+                </thead>
+                <tbody id="link-table-body">
+                    </tbody>
+            </table>
         </div>
     </div>
 
@@ -215,67 +69,49 @@
     </footer>
 
     <script>
-    async function shortenURL(event) {
-        event.preventDefault();
-        const longUrl = document.getElementById('longUrl').value;
-        const resultBox = document.getElementById('resultBox');
-        const shortUrlText = document.getElementById('shortUrlText');
-        const submitBtn = document.getElementById('submitBtn');
-        
-        submitBtn.disabled = true;
-        submitBtn.innerText = 'กำลังประมวลผล...';
-        shortUrlText.innerText = 'กำลังสร้างลิงก์สั้น...';
-        resultBox.style.display = 'block';
+        // 📝 ตรงนี้คือที่สำหรับให้คุณภัทรพลมาเพิ่ม/แก้ไข ลิงก์ที่ต้องการย่อครับ!
+        // รูปแบบคือ 'ชื่อย่อ': 'ลิงก์จริงขนาดยาว'
+        const urlMap = {
+            'dent': 'https://www.google.com', // แก้เป็นลิงก์โปรแกรม Dent-check หรือลิงก์ที่ต้องการได้เลย
+            'google': 'https://www.google.com',
+            'report': 'https://example.com/your-very-long-dental-report-link-2026' 
+        };
 
-        // เปลี่ยนมาใช้ API ย่อลิงก์ของ Chula.it โดยใช้การส่งแบบ FormData
-        const formData = new FormData();
-        formData.append('url', longUrl);
+        // รับค่าฐาน URL ของเว็บปัจจุบัน (เช่น https://phattarapoll.github.io/cptown/url.html)
+        const currentUrl = window.location.href.split('?')[0];
 
-        try {
-            const response = await fetch('https://chula.it/api/shorten', {
-                method: 'POST',
-                body: formData
-            });
-            
-            if (response.ok) {
-                const data = await response.json();
-                // Chula.it จะส่งค่ากลับมาเป็น { short_url: "..." }
-                if (data.short_url) {
-                    shortUrlText.innerText = data.short_url;
-                } else {
-                    shortUrlText.innerText = 'เกิดข้อผิดพลาดในการแปลงข้อมูล';
-                }
-            } else {
-                throw new Error('Network response was not ok.');
-            }
-        } catch (error) {
-            console.error(error);
-            // หากยังติดบล็อกจากเครือข่ายอีก จะสลับไปใช้แนวทางที่ 2 (ทำปุ่มลิงก์ตรง)
-            shortUrlText.style.whiteSpace = 'normal';
-            shortUrlText.innerHTML = `
-                <span style="color: #e11d48; font-weight: bold;">⚠️ เครือข่ายนี้บล็อกระบบย่อลิงก์อัตโนมัติ</span><br>
-                <p style="margin-top: 8px; font-size: 0.9rem; color: #475569;">คุณสามารถกดปุ่มด้านล่างเพื่อเปิดเว็บย่อลิงก์หลัก แล้ววางลิงก์ด้วยตนเองได้เลยครับ:</p>
-                <a href="https://chula.it" target="_blank" style="display: inline-block; margin-top: 10px; background: #db2777; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 0.9rem; font-weight: 600;">เปิดเว็บ Chula.it</a>
-            `;
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerText = 'ย่อลิงก์เลย';
-        }
-    }
+        // 1. ตรวจสอบว่ามีการเรียกใช้ลิงก์ย่อไหม (เช่น url.html?go=dent)
+        const urlParams = new URLSearchParams(window.location.search);
+        const target = urlParams.get('go');
 
-    function copyToClipboard() {
-        const shortUrl = document.getElementById('shortUrlText').innerText;
-        if(shortUrl.startsWith('http')) {
-            navigator.clipboard.writeText(shortUrl).then(() => {
-                alert('คัดลอกลิงก์ไปยังคลิปบอร์ดแล้ว!');
-            }).catch(err => {
-                alert('ไม่สามารถคัดลอกได้อัตโนมัติ กรุณาก๊อปปี้ด้วยตัวเอง');
-            });
+        if (target && urlMap[target]) {
+            // ถ้าเจอคำย่อที่ตรงกัน ให้เปิดลิงก์ปลายทางทันที
+            document.getElementById('redirect-status').style.display = 'block';
+            window.location.href = urlMap[target];
         } else {
-            alert('กรุณาใช้ปุ่มเปิดเว็บเพื่อย่อลิงก์ด้วยตนเองครับ');
+            // 2. ถ้าเข้าหน้าเว็บปกติ ให้แสดงตารางรายการลิงก์สั้นให้กดก๊อปปี้ไปใช้
+            const tbody = document.getElementById('link-table-body');
+            for (const key in urlMap) {
+                const shortLink = `${currentUrl}?go=${key}`;
+                const row = `
+                    <tr>
+                        <td><strong>${key}</strong></td>
+                        <td>
+                            <a class="link-short" href="${shortLink}" target="_blank">${shortLink}</a>
+                            <button class="btn-copy" onclick="copyText('${shortLink}')">คัดลอก</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            }
         }
-    }
-</script>
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('คัดลอกลิงก์ทางลัดแล้ว นำไปส่งต่อได้เลยครับ!');
+            });
+        }
+    </script>
 
 </body>
 </html>
