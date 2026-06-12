@@ -163,6 +163,18 @@
 
         .sidebar a i { color: var(--gold); width: 20px; text-align: center; opacity: 0.8; }
 
+        /* --- Style สำหรับแสดงข้อมูลเวลาที่กดคลิก --- */
+        .click-timestamp {
+            font-size: 0.75rem;
+            color: #a5a5a5;
+            display: block;
+            margin-left: 32px;
+            margin-top: -2px;
+            margin-bottom: 5px;
+            font-style: italic;
+            letter-spacing: 0.5px;
+        }
+
         /* --- Modern Minimalist Hero Section --- */
         .hero {
             flex: 1;
@@ -442,11 +454,21 @@
             <div class="menu-content">
                 <a href="https://script.google.com/macros/s/AKfycbxXQFmmVBtiZ5UjMNm2kEngaZHiXFnoZ9YsZBNNnekOr1vRtf7CtBFA9dxz4F1D8DR01A/exec" target="_blank">รับ-จ่าย งานต่างๆ</a>
                 <a href="https://ws2.tommasovietina.it/mg4/se/password.html" target="_blank">Engine MODE MG4</a>
-                <a href="https://phattarapoll.github.io/cptown/huy/index.html" target="_blank">สุ่มล็อตรี่</a>
-                <a href="https://pym-support.ntplc.co.th/QR/" target="_blank">NT 7751J4218 Internet</a>
-                <a href="https://epay.nc.ntplc.co.th/app/" target="_blank">NT SIM </a>
-                <a href="https://ufundportal.com/" target="_blank">UFUND</a>
-                <a href="https://cmpo.thaicoop.org/" target="_blank">สหกรณ์</a>
+                
+                <a href="https://pym-support.ntplc.co.th/QR/" target="_blank" class="track-time" data-id="internet">
+                    <i class="fas fa-wifi"></i> 7751J4218 Internet
+                </a>
+                <span id="time-internet" class="click-timestamp"></span>
+
+                <a href="https://epay.nc.ntplc.co.th/app/" target="_blank" class="track-time" data-id="nt-sim">
+                    <i class="fas fa-sim-card"></i> NT SIM
+                </a>
+                <span id="time-nt-sim" class="click-timestamp"></span>
+
+                <a href="https://cmpo.thaicoop.org/" target="_blank" class="track-time" data-id="coop">
+                    <i class="fas fa-building"></i> สหกรณ์
+                </a>
+                <span id="time-coop" class="click-timestamp"></span>
             </div>
         </div>
 
@@ -544,12 +566,46 @@
         
         // Right Nav Buttons
         document.getElementById('btn-history').onclick = (e) => {
-            // ป้องกันเปิด modal ทับถ้าเป็นลิงก์เฟสบุ๊คภายนอก (แต่คง logic เดิมไว้ตามต้นฉบับ)
             openModal('PAGE FB');
         };
         document.getElementById('btn-family').onclick = () => openModal('iframe', 'family.html');
         document.getElementById('btn-phat').onclick = () => openModal('iframe', 'Phattarapoll/index.html');
         document.getElementById('btn-tin').onclick = () => openModal('iframe', 'TIN/mainTIN.html');
+
+        // --- ฟังก์ชันบันทึกและแสดงเวลาที่กดคลิกใช้งาน ---
+        document.addEventListener("DOMContentLoaded", () => {
+            const trackedLinks = document.querySelectorAll('.track-time');
+
+            // 1. ดึงข้อมูลเวลาจากหน่วยความจำเดิมมาแสดง (ถ้ามี)
+            trackedLinks.forEach(link => {
+                const id = link.getAttribute('data-id');
+                const savedTime = localStorage.getItem(`clicked_${id}`);
+                if (savedTime) {
+                    const timeSpan = document.getElementById(`time-${id}`);
+                    if (timeSpan) timeSpan.innerText = `คลิกล่าสุดเมื่อ: ${savedTime}`;
+                }
+
+                // 2. จับเหตุการณ์บันทึกเวลาเมื่อกดลิงก์
+                link.addEventListener('click', () => {
+                    const now = new Date();
+                    const options = { 
+                        day: 'numeric', 
+                        month: 'short', 
+                        year: 'numeric', 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    };
+                    const formattedDateTime = now.toLocaleDateString('th-TH', options) + ' น.';
+
+                    // บันทึกเข้าเบราว์เซอร์
+                    localStorage.setItem(`clicked_${id}`, formattedDateTime);
+
+                    // แสดงผลทันทีที่หน้าจอ
+                    const timeSpan = document.getElementById(`time-${id}`);
+                    if (timeSpan) timeSpan.innerText = `คลิกล่าสุดเมื่อ: ${formattedDateTime}`;
+                });
+            });
+        });
     </script>
 </body>
 </html>
