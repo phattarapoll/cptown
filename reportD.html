@@ -43,6 +43,13 @@
             100% { box-shadow: 0 0 15px rgba(255, 0, 0, 0.5); }
         }
 
+        /* เพิ่ม Animation สำหรับกล่องข้อความกระพริบช้าๆ */
+        @keyframes slow-blink {
+            0% { opacity: 1; box-shadow: 0 5px 15px rgba(239, 68, 68, 0.2); }
+            50% { opacity: 0.6; box-shadow: 0 5px 25px rgba(239, 68, 68, 0.5); border-color: #ef4444; }
+            100% { opacity: 1; box-shadow: 0 5px 15px rgba(239, 68, 68, 0.2); }
+        }
+
         .container {
             max-width: 900px;
             width: 100%;
@@ -129,6 +136,21 @@
         .btn-blink { animation: blink-dark 1.5s infinite; color: white; }
         .btn-sub { background: white; color: #1e293b; border: 2px solid #1e293b; padding: 16px; }
 
+        /* ตกแต่งกล่องข้อความแจ้งเตือนพิเศษ */
+        .notice-box {
+            background-color: #fef2f2;
+            border: 2px solid #fee2e2;
+            color: #991b1b;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.05rem;
+            font-weight: 600;
+            line-height: 1.6;
+            margin: 25px 0;
+            animation: slow-blink 3s infinite ease-in-out;
+        }
+
         #admin-panel {
             background: #f8fafc;
             padding: 25px;
@@ -150,7 +172,7 @@
 </head>
 <body>
 
-	<div id="loading-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s;">
+<div id="loading-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s;">
     <div class="hourglass-icon">
         <i class="fas fa-hourglass-half"></i>
     </div>
@@ -160,7 +182,7 @@
 <style>
     .hourglass-icon {
         font-size: 4rem;
-        color: #3b82f6; /* สีน้ำเงิน Plan Color */
+        color: #3b82f6;
         animation: flip-hourglass 2s infinite ease-in-out;
     }
 
@@ -176,7 +198,7 @@
 <header>
     <img src="assets\images\tm.png" alt="Logo" class="logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3467/3467739.png'">
     <h1 style="color: #1e293b; margin-top: 15px;">ตรวจคัดกรองสุขภาพช่องปากในนักเรียน</h1>
-    <label>งานทันตสาธารณสุข ศูนย์บริการสาธารณสุขเทศบาลเมืองขุมพร(ตึกเก่า)</label>
+    <label>งานทันตสาธารณสุข ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร(ตึกเก่า)</label>
 </header>
 
 <div class="container">
@@ -213,7 +235,15 @@
     <a href="https://script.google.com/macros/s/AKfycbwstQtWNc0CHmAVwDMgOWUKvFxuMKX8JmiRdQzJHyomBLe-2S0seLuxfQctSZiWHDpK/exec" class="btn btn-blink">
         <i class="fas fa-list-check"></i> ตรวจสอบรายชื่อ/กดยอมรับบริการ
     </a>
-    
+	
+    <!-- กล่องข้อความแจ้งเตือนพิเศษที่ปรับปรุงใหม่ -->
+    <div class="notice-box">
+        <i class="fas fa-exclamation-triangle" style="margin-right: 8px; color: #dc2626;"></i>
+        เนื่องจากสภาวะปัจจุบันนักเรียนมีฟันผุจำนวนมาก จึงกำลังขออนุมัติเพื่อเปิดช่องทางพิเศษ (นอกเวลาราชการ) <br>
+        <strong>ทั้งนี้จึงขอให้ผู้ปกครองที่ยังไม่ทราบวันนัดบริการโปรดรอ และติดตามวันนัดบริการเป็นพิเศษ</strong>
+		<br>ระยะเวลาในการดำเนินการโครงการพิเศษ  กรกฏาคม - กันยายน 2569
+    </div>
+	
     <a href="https://cptown.6te.net/" class="btn btn-sub"><i class="fas fa-globe"></i> เว็บไซต์งานทันตสาธารณสุข</a>
 
     <div style="text-align: center; margin-top: 20px;">
@@ -271,7 +301,6 @@
         for(let el of yearElements) { el.innerText = yearBE; }
 
         try {
-            // เริ่มดึงข้อมูล
             const response = await fetch(SCRIPT_URL);
             const data = await response.json();
             
@@ -281,7 +310,6 @@
             
             updateUI(data.status, data.school, data.grade);
 
-            // ซ่อนหน้าจอโหลดเมื่อสำเร็จ
             loadingScreen.style.opacity = '0';
             setTimeout(() => loadingScreen.style.display = 'none', 500);
 
@@ -292,7 +320,6 @@
     }
 
     async function sync() {
-        // เมื่อมีการเปลี่ยนค่าในโหมด Admin ให้แสดง Loading เล็กน้อยเพื่อบอกว่ากำลังบันทึก
         const status = document.getElementById('set-status').value;
         const school = document.getElementById('set-school').value;
         const grade = document.getElementById('set-grade').value;
