@@ -78,6 +78,38 @@
     #submission-history p { margin: 0; padding: 4px 8px; border-radius: 5px; margin-bottom: 4px; background: rgba(255,255,255,0.9); box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-size: 0.9rem; }
     .hidden { display: none !important; }
     .blinking { opacity: 0.5; cursor: not-allowed; }
+
+    /* --- สไตล์ของหน้าต่างปุ่มกดรหัสตัวเลข (Code Keypad Modal) --- */
+    #code-keypad-modal {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.4); display: none; justify-content: center;
+      align-items: center; z-index: 1800; font-family: 'Sarabun', sans-serif;
+    }
+    .code-modal-content {
+      background: white; padding: 25px; border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 90%; max-width: 320px; text-align: center;
+      position: relative; /* ให้สามารถจัดตำแหน่งปุ่ม X เทียบกับกล่องนี้ได้ */
+    }
+    /* [เพิ่มใหม่] สไตล์ของปุ่มกากบาท X ปิดหน้าต่าง */
+    .close-modal-btn {
+      position: absolute; top: 12px; right: 15px; background: none; border: none;
+      font-size: 22px; color: #dc3545; cursor: pointer; padding: 5px; line-height: 1;
+      transition: 0.2s;
+    }
+    .close-modal-btn:hover { color: #bd2130; transform: scale(1.1); }
+
+    #code-display-box {
+      font-size: 28px; font-weight: bold; padding: 10px; background: #f8f9fa;
+      border: 2px solid #ddd; border-radius: 10px; margin-bottom: 15px; min-height: 42px; color: #007bff;
+    }
+    .code-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .code-key {
+      background: #ffffff; border: 1px solid #ccc; border-radius: 10px;
+      padding: 15px 5px; font-size: 22px; font-weight: bold; cursor: pointer; transition: 0.1s;
+    }
+    .code-key:active { background: #e9ecef; }
+    .code-key.act { background: #f1f3f5; font-size: 16px; color: #555; }
+    .code-key.done { background: #28a745; color: white; grid-column: span 3; font-size: 18px; margin-top: 5px; }
   </style>
 </head>
 <body>
@@ -117,6 +149,32 @@
     </div>
   </div>
 
+  <!-- --- หน้าต่างปุ่มกดตัวเลขสำหรับช่องรหัส (เพิ่มปุ่มกากบาท X สำหรับปิด) --- -->
+  <div id="code-keypad-modal" onclick="closeCodeModal(event)">
+    <div class="code-modal-content" onclick="event.stopPropagation()">
+      <!-- [เพิ่มใหม่] ปุ่มกากบาท X เพื่อปิดหน้าต่างแบบไม่ใส่รหัส -->
+      <button type="button" class="close-modal-btn" onclick="document.getElementById('code-keypad-modal').style.display='none'"><i class="fas fa-times-circle"></i></button>
+      
+      <h3 style="margin-top: 0; margin-bottom: 10px; color:#333; padding-right: 25px; text-align: left;">ID คัดกรอง</h3>
+      <div id="code-display-box"></div>
+      <div class="code-grid">
+        <button type="button" class="code-key" onclick="pressCodeKey('1')">1</button>
+        <button type="button" class="code-key" onclick="pressCodeKey('2')">2</button>
+        <button type="button" class="code-key" onclick="pressCodeKey('3')">3</button>
+        <button type="button" class="code-key" onclick="pressCodeKey('4')">4</button>
+        <button type="button" class="code-key" onclick="pressCodeKey('5')">5</button>
+        <button type="button" class="code-key" onclick="pressCodeKey('6')">6</button>
+        <button type="button" class="code-key" onclick="pressCodeKey('7')">7</button>
+        <button type="button" class="code-key" onclick="pressCodeKey('8')">8</button>
+        <button type="button" class="code-key" onclick="pressCodeKey('9')">9</button>
+        <button type="button" class="code-key act" onclick="clearCodeKey()">ล้าง</button>
+        <button type="button" class="code-key" onclick="pressCodeKey('0')">0</button>
+        <button type="button" class="code-key act" onclick="delCodeKey()"><i class="fas fa-backspace"></i></button>
+        <button type="button" class="code-key done" onclick="document.getElementById('code-keypad-modal').style.display='none'">ตกลง</button>
+      </div>
+    </div>
+  </div>
+
   <div id="offline-sync-bar">
     <div id="sync-info-text">⚠️ มีข้อมูลค้างในเครื่อง <span id="offline-count">0</span> รายการ</div>
     <div class="progress-wrapper" id="prog-wrapper">
@@ -142,7 +200,7 @@
         <div class="left-column">
           <div class="section gray1">
             <label>วันที่ <input type="date" id="date" name="date"> </label>
-            <label>รหัส <input type="number" id="code" name="id" required> </label>
+            <label>รหัส <input type="number" id="code" name="id" required onfocus="openCodeModal()" onclick="openCodeModal()"> </label>
             <label>ชั้น 
               <input type="text" id="class" name="grade" list="gradeOptions">
               <datalist id="gradeOptions">
@@ -297,28 +355,54 @@
 
     // ฟังก์ชันตรวจจับการกดคีย์บอร์ด
     window.addEventListener('keydown', function(e) {
-        // ทำงานเฉพาะเมื่อหน้า Login ยังไม่ถูกซ่อน และอยู่ในส่วน Keypad
         const loginVisible = !document.getElementById('login-overlay').classList.contains('hidden');
         const keypadSectionVisible = document.getElementById('keypad-section').style.display === 'block';
 
         if (loginVisible && keypadSectionVisible) {
-            // ถ้าเป็นตัวเลข 0-9
             if (e.key >= '0' && e.key <= '9') {
                 inputPass(e.key);
             } 
-            // ถ้าเป็นปุ่ม Enter
             else if (e.key === 'Enter') {
                 validateLogin();
             } 
-            // ถ้าเป็นปุ่ม Backspace
             else if (e.key === 'Backspace') {
                 delPass();
             }
-            // ถ้าเป็นปุ่ม Esc หรือ Delete (ให้ล้างรหัส)
             else if (e.key === 'Escape' || e.key === 'Delete') {
                 clearPass();
             }
         }
+    });
+
+    /* --- ฟังก์ชันควบคุมปุ่มกดตัวเลขสำหรับช่องรหัส (Code Keypad) --- */
+    const codeInput = document.getElementById('code');
+    const codeModal = document.getElementById('code-keypad-modal');
+    const codeDisplay = document.getElementById('code-display-box');
+
+    function openCodeModal() {
+        codeDisplay.textContent = codeInput.value;
+        codeModal.style.display = 'flex';
+    }
+    function closeCodeModal(e) {
+        codeModal.style.display = 'none';
+    }
+    function pressCodeKey(num) {
+        codeInput.value += num;
+        codeDisplay.textContent = codeInput.value;
+        saveFormDraft(); 
+    }
+    function clearCodeKey() {
+        codeInput.value = '';
+        codeDisplay.textContent = '';
+        saveFormDraft();
+    }
+    function delCodeKey() {
+        codeInput.value = codeInput.value.slice(0, -1);
+        codeDisplay.textContent = codeInput.value;
+        saveFormDraft();
+    }
+    codeInput.addEventListener('input', function() {
+        codeDisplay.textContent = this.value;
     });
 
     /* --- รักษา Logic เดิมของคุณไว้ทั้งหมด ห้ามแก้ไข --- */
@@ -402,6 +486,7 @@
 
     async function handleFormSubmit(e) {
         e.preventDefault(); submitButton.classList.add('blinking'); submitButton.disabled = true;
+        codeModal.style.display = 'none';
         const formData = new FormData(form);
         formData.append('CP', document.getElementById("cp").value);
         selectedButtons.forEach(name => formData.append(name, 'on'));
