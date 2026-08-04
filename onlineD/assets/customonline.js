@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyMo1ngt-tIJlVJ6OzHwLMqZwJDww9qW5YxkoWgCOcJaJkSTKJjYdmU3cj-Nb0fAxbu/exec';// --- ของเดิม🛠️ https://script.google.com/macros/s/AKfycbzsXJO9TBwcIdTz0_5nt_a044mk76VfAGn2eIt8xhsUStVLX_7V_U_ICalH3FxFBM7ZDw/exec ---
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzt81hm1QtYshcP3f81GUdHf62au7ZJyK_26DN2-AOrR-QKEXXdrhALO-pxQlqr5VobGw/exec';// --- ของเดิม🛠️ https://script.google.com/macros/s/AKfycbyMo1ngt-tIJlVJ6OzHwLMqZwJDww9qW5YxkoWgCOcJaJkSTKJjYdmU3cj-Nb0fAxbu/exec ---
 
     const calendarGrid = document.getElementById('calendarGrid');
     const currentMonthYearDisplay = document.getElementById('currentMonthYear');
@@ -465,7 +465,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { bookingPopup.classList.add('is-active'); }, 10);
     }
 
-    async function submitBooking(event) {
+async function submitBooking(event) {
         event.preventDefault();
 
         let fullName = document.getElementById('fullName').value.trim();
@@ -524,13 +524,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const resultText = await response.text();
             let cancellationCode = null;
             let isSuccess = false;
+            let statusMessage = ''; // 🛠️ เพิ่มตัวแปรสำหรับแกะข้อความแจ้งเตือน
 
             try {
                 const result = JSON.parse(resultText); 
-                isSuccess = result.status === 'Booking successful!' || result.status === 'Success';
+                statusMessage = result.status || '';
+                isSuccess = statusMessage === 'Booking successful!' || statusMessage === 'Success';
                 cancellationCode = result.cancellationCode || result.code;
             } catch (e) {
                 isSuccess = resultText.includes('Booking successful!') || resultText.includes('Success');
+                statusMessage = resultText;
             }
 
             if (isSuccess) {
@@ -552,7 +555,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 loadingSpinner.classList.add('hidden');
                 submitBtn.innerHTML = originalBtnContent;
                 submitBtn.classList.remove('is-submitting');
-                alert('เกิดข้อผิดพลาด: ' + resultText);
+                
+                // 🛠️ ตรวจสอบหากมีคนจองตัดหน้าหรือติดเงื่อนไขจาก Backend ให้แจ้งเตือนและรีเฟรชหน้าเว็บ
+                if (statusMessage.includes('ขออภัย') || statusMessage.includes('Error')) {
+                    alert(statusMessage.replace('Error: ', ''));
+                } else {
+                    alert('เกิดข้อผิดพลาด: ' + (statusMessage || resultText));
+                }
+                window.location.reload(); // รีเฟรชเพื่อให้สถานะช่องว่างอัปเดตเป็นปัจจุบัน
             }
         } catch (error) {
             loadingSpinner.classList.add('hidden');
