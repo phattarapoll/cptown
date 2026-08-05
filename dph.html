@@ -493,7 +493,7 @@
                     itemDiv.className = 'bg-red-50 p-3 rounded-xl border border-red-200 shadow-sm mb-2';
                     itemDiv.innerHTML = `
                         <p class="font-bold text-red-700 text-sm">${maskLastName(appt.patientName)}</p>
-                        <p class="text-xs text-gray-600"><i class="far fa-clock mr-1"></i>เวลานัด: ${appt.timeSlot}</p>
+                        <p class="text-xs text-gray-600"><i class="far fa-clock mr-1"></i>${appt.timeSlot}</p>
                         <p class="text-[11px] text-gray-500"><i class="far fa-calendar-alt mr-1"></i>${fullBookingDate} น.</p>
                         <span class="inline-block mt-1 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">สถานะ : ไม่ปกติ (ลงทะเบียนใหม่)</span>
                     `;
@@ -555,7 +555,7 @@
                             <span class="font-bold text-primary-navy text-base">${maskLastName(appt.patientName)}</span>
                             <span class="text-xs text-gray-500 font-normal mt-0.5">
                                 <i class="far fa-calendar-alt text-accent-gold mr-1"></i>${fullBookingDate} 
-                                <i class="far fa-clock text-accent-gold ml-2 mr-1"></i>เวลานัด: ${appt.timeSlot}
+                                <i class="far fa-clock text-accent-gold ml-2 mr-1"></i>${appt.timeSlot}
                             </span>
                         </div>
                         <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-500 text-white shrink-0">สถานะ : ปกติ</span>
