@@ -147,6 +147,26 @@
             padding-left: 2rem;
         }
 
+        /* เอฟเฟกต์กระพริบและเรืองแสงสะดุดตาสำหรับปุ่มตรวจสอบ */
+        @keyframes superPulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+                transform: translateY(-50%) scale(1);
+            }
+            50% {
+                box-shadow: 0 0 0 15px rgba(239, 68, 68, 0);
+                transform: translateY(-50%) scale(1.1);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+                transform: translateY(-50%) scale(1);
+            }
+        }
+
+        .super-flash-btn {
+            animation: superPulse 1.5s infinite;
+        }
+
         footer {
             background-color: var(--color-footer-bg);
             border-radius: 1rem;
@@ -192,21 +212,45 @@
         </div>
     </header>
 
-    <!-- เมนูด้านข้างซ้าย (บริการที่เปิด) -->
-    <div id="serviceStatusFloating" class="fixed top-1/2 left-0 -translate-y-1/2 w-80 glassy-panel p-6 rounded-r-3xl z-40 transition-transform duration-500 ease-out transform -translate-x-full">
+    <!-- เมนูด้านข้างซ้าย 1: บริการที่เปิด -->
+    <div id="serviceStatusFloating" class="fixed top-[40%] -translate-y-1/2 left-0 w-80 glassy-panel p-6 rounded-r-3xl z-40 transition-transform duration-500 ease-out transform -translate-x-full">
         <h2 class="text-2xl font-bold text-primary-navy mb-5 flex items-center">
             <i class="fas fa-tooth mr-2 text-accent-gold"></i>บริการที่เปิด
         </h2>
-        <div class="grid grid-cols-1 gap-3">
-            <div class="service-card p-3 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between"><span class="font-medium text-gray-700">ตรวจสุขภาพช่องปาก</span><span class="service-status px-2 py-0.5 rounded-lg text-xs font-bold service-status-open">OPEN</span></div>
-            <div class="service-card p-3 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between"><span class="font-medium text-gray-700">อุดฟัน</span><span class="service-status px-2 py-0.5 rounded-lg text-xs font-bold service-status-open">OPEN</span></div>
-            <div class="service-card p-3 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between"><span class="font-medium text-gray-700">ขูดหินน้ำลาย</span><span class="service-status px-2 py-0.5 rounded-lg text-xs font-bold service-status-open">OPEN</span></div>
-            <div class="service-card p-3 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between"><span class="font-medium text-gray-700">ถอนฟัน</span><span class="service-status px-2 py-0.5 rounded-lg text-xs font-bold service-status-open">OPEN</span></div>
+        <div class="grid grid-cols-1 gap-3 max-h-[60vh] overflow-y-auto pr-1">
+            <div class="service-card p-3 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
+                <span class="font-medium text-gray-700 flex items-center"><i class="fas fa-search text-accent-gold w-6 mr-2"></i>ตรวจสุขภาพช่องปาก</span>
+                <span class="service-status px-2.5 py-0.5 rounded-lg text-xs font-bold service-status-open">open</span>
+            </div>
+            <div class="service-card p-3 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
+                <span class="font-medium text-gray-700 flex items-center"><i class="fas fa-fill-drip text-accent-gold w-6 mr-2"></i>อุดฟัน</span>
+                <span class="service-status px-2.5 py-0.5 rounded-lg text-xs font-bold service-status-open">open</span>
+            </div>
+            <div class="service-card p-3 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
+                <span class="font-medium text-gray-700 flex items-center"><i class="fas fa-hand-sparkles text-accent-gold w-6 mr-2"></i>ขูดหินน้ำลาย</span>
+                <span class="service-status px-2.5 py-0.5 rounded-lg text-xs font-bold service-status-open">open</span>
+            </div>
+            <div class="service-card p-3 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
+                <span class="font-medium text-gray-700 flex items-center"><i class="fas fa-stethoscope text-accent-gold w-6 mr-2"></i>ถอนฟัน</span>
+                <span class="service-status px-2.5 py-0.5 rounded-lg text-xs font-bold service-status-open">open</span>
+            </div>
+            <div class="service-card p-3 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
+                <span class="font-medium text-gray-700 flex items-center"><i class="fas fa-shield-alt text-accent-gold w-6 mr-2"></i>เคลือบหลุมร่องฟัน</span>
+                <span class="service-status px-2.5 py-0.5 rounded-lg text-xs font-bold service-status-open">open</span>
+            </div>
+            <div class="service-card p-3 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
+                <span class="font-medium text-gray-700 flex items-center"><i class="fas fa-notes-medical text-accent-gold w-6 mr-2"></i>รักษารากฟัน</span>
+                <span class="service-status px-2.5 py-0.5 rounded-lg text-xs font-bold service-status-closed">closed</span>
+            </div>
+            <div class="service-card p-3 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
+                <span class="font-medium text-gray-700 flex items-center"><i class="fas fa-smile text-accent-gold w-6 mr-2"></i>ทำฟันปลอม</span>
+                <span class="service-status px-2.5 py-0.5 rounded-lg text-xs font-bold service-status-closed">closed</span>
+            </div>
         </div>
     </div>
 
-    <!-- เมนูด้านข้างขวา (กระดานข่าว) -->
-    <div id="newsFloatingPanel" class="fixed top-1/2 right-0 -translate-y-1/2 w-80 glassy-panel p-6 rounded-l-3xl z-40 transition-transform duration-500 ease-out transform translate-x-full">
+    <!-- เมนูด้านข้างซ้าย 2: กระดานข่าว -->
+    <div id="newsFloatingPanel" class="fixed top-[52%] -translate-y-1/2 left-0 w-80 glassy-panel p-6 rounded-r-3xl z-40 transition-transform duration-500 ease-out transform -translate-x-full">
         <h2 class="text-2xl font-bold text-primary-navy mb-5 flex items-center">
             <i class="fas fa-bullhorn mr-2 text-accent-gold"></i>กระดานข่าว
         </h2>
@@ -216,8 +260,8 @@
         </div>
     </div>
 
-    <!-- เมนูด้านขวาล่าง: แผงตรวจสอบเคสผิดปกติ -->
-    <div id="abnormalFloatingPanel" class="fixed top-[64%] -translate-y-1/2 right-0 w-80 glassy-panel p-6 rounded-l-3xl z-40 transition-transform duration-500 ease-out transform translate-x-full border-l-4 border-red-500">
+    <!-- เมนูด้านข้างซ้าย 3: แผงตรวจสอบเคสผิดปกติ (ซ่อนไว้ค่าเริ่มต้นตามเดิม) -->
+    <div id="abnormalFloatingPanel" class="fixed top-[64%] -translate-y-1/2 left-0 w-80 glassy-panel p-6 rounded-r-3xl z-40 transition-transform duration-500 ease-out transform -translate-x-full border-l-4 border-red-500">
         <h2 class="text-xl font-bold text-red-600 mb-4 flex items-center">
             <i class="fas fa-exclamation-triangle mr-2"></i>ตรวจสอบ (!)
         </h2>
@@ -226,15 +270,15 @@
         </div>
     </div>
 
-    <!-- ปุ่มกดเปิด-ปิด เมนูด้านข้างต่างๆ -->
-    <button id="toggleServicePanel" onclick="toggleServicePanel()" class="fixed top-1/2 -translate-y-1/2 left-0 p-4 rounded-r-2xl shadow-lg z-50 bg-primary-navy text-accent-gold hover:bg-accent-gold hover:text-white transition-all duration-300">
+    <!-- ปุ่มกดเปิด-ปิด เมนูด้านซ้ายทั้งหมด (เพิ่ม super-flash-btn ที่ปุ่มตรวจสอบให้กระพริบเด่นชัด) -->
+    <button id="toggleServicePanel" onclick="toggleServicePanel()" class="fixed top-[37%] -translate-y-1/2 left-0 p-4 rounded-r-2xl shadow-lg z-50 bg-primary-navy text-accent-gold hover:bg-accent-gold hover:text-white transition-all duration-300">
         <i id="toggleServiceIcon" class="fas fa-stethoscope"></i>
     </button>
-    <button id="toggleNewsPanel" onclick="toggleNewsPanel()" class="fixed top-[38%] -translate-y-1/2 right-0 p-4 rounded-l-2xl shadow-lg z-50 bg-primary-navy text-accent-gold hover:bg-accent-gold hover:text-white transition-all duration-300">
+    <button id="toggleNewsPanel" onclick="toggleNewsPanel()" class="fixed top-[49%] -translate-y-1/2 left-0 p-4 rounded-r-2xl shadow-lg z-50 bg-primary-navy text-accent-gold hover:bg-accent-gold hover:text-white transition-all duration-300">
         <i id="toggleNewsIcon" class="fas fa-newspaper"></i>
     </button>
-    <button id="toggleAbnormalPanel" onclick="toggleAbnormalPanel()" class="fixed top-[62%] -translate-y-1/2 right-0 p-4 rounded-l-2xl shadow-lg z-50 bg-primary-navy text-accent-gold hover:bg-accent-gold hover:text-white transition-all duration-300">
-        <i id="toggleAbnormalIcon" class="fas fa-exclamation-triangle text-red-500 animate-pulse text-lg"></i>
+    <button id="toggleAbnormalPanel" onclick="toggleAbnormalPanel()" class="fixed top-[61%] -translate-y-1/2 left-0 p-4 rounded-r-2xl shadow-lg z-50 bg-red-600 text-white hover:bg-red-700 transition-all duration-300 super-flash-btn border-2 border-yellow-300">
+        <i id="toggleAbnormalIcon" class="fas fa-exclamation-triangle text-yellow-300 text-xl"></i>
     </button>
 
     <main>
@@ -265,8 +309,8 @@
                 <i class="fas fa-hospital-user text-xl"></i>
             </div>
             <p class="service-text text-sm sm:text-base leading-relaxed font-medium">
-                <strong class="text-primary-navy font-bold border-b-2 border-accent-gold/30 pb-0.5">พื้นที่ให้บริการ:</strong> 
-                ให้บริการผู้ป่วยในเขตตำบลท่าตะเภา สิทธิ์ข้าราชการ และในเขตพื้นที่เทศบาลเมืองชุมพร
+                <strong class="text-primary-navy font-bold border-b-2 border-accent-gold/30 pb-0.5">เงื่อนไขการบริการ:</strong> 
+                ให้บริการผู้ป่วยในเขตตำบลท่าตะเภา, สิทธิ์ข้าราชการ, พนักงานเทศบาล, ครูและนักเรียนในเขตพื้นที่ 
             </p>
         </div>
     </main>
@@ -319,12 +363,12 @@
             const icon = document.getElementById('toggleNewsIcon');
             if (panel.classList.contains('translate-x-0')) {
                 panel.classList.remove('translate-x-0');
-                panel.classList.add('translate-x-full');
+                panel.classList.add('-translate-x-full');
                 icon.className = 'fas fa-newspaper';
             } else {
-                panel.classList.remove('translate-x-full');
+                panel.classList.remove('-translate-x-full');
                 panel.classList.add('translate-x-0');
-                icon.className = 'fas fa-chevron-right';
+                icon.className = 'fas fa-chevron-left';
             }
         }
 
@@ -333,12 +377,12 @@
             const icon = document.getElementById('toggleAbnormalIcon');
             if (panel.classList.contains('translate-x-0')) {
                 panel.classList.remove('translate-x-0');
-                panel.classList.add('translate-x-full');
-                icon.className = 'fas fa-exclamation-triangle text-red-500 animate-pulse text-lg';
+                panel.classList.add('-translate-x-full');
+                icon.className = 'fas fa-exclamation-triangle text-yellow-300 text-xl';
             } else {
-                panel.classList.remove('translate-x-full');
+                panel.classList.remove('-translate-x-full');
                 panel.classList.add('translate-x-0');
-                icon.className = 'fas fa-chevron-right';
+                icon.className = 'fas fa-chevron-left text-white';
             }
         }
 
