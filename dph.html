@@ -513,18 +513,14 @@
             const isToday = apptTimestamp.toDateString() === now.toDateString();
             const isPast = apptTimestamp < now;
 
+            // ข้ามการเรนเดอร์รายชื่อที่เสร็จสิ้นหรือผ่านไปแล้ว
+            if (isPast && isToday && !isCurrent) {
+                return;
+            }
+
             const card = document.createElement('div');
 
-            if (isPast && isToday && !isCurrent) {
-                card.className = 'queue-item-row flex items-center justify-between p-2.5 mb-2 rounded-xl bg-white border border-gray-200 shadow-sm opacity-75';
-                card.innerHTML = `
-                    <div class="flex items-center space-x-3 overflow-hidden">
-                        <span class="font-bold text-primary-navy text-sm sm:text-base truncate">${maskLastName(appt.patientName)}</span>
-                        <span class="text-xs text-gray-400 font-normal truncate"><i class="far fa-clock mr-1"></i>${appt.timeSlot} <i class="far fa-calendar-alt ml-2 mr-1"></i>${fullBookingDate}</span>
-                    </div>
-                    <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-gray-200 text-gray-600 shrink-0">เสร็จสิ้น/ผ่านไปแล้ว</span>
-                `;
-            } else if (isCurrent) {
+            if (isCurrent) {
                 card.className = 'queue-item-row flex items-center justify-between p-3 mb-2.5 rounded-xl bg-white border-l-8 border-blue-500 relative overflow-hidden border-t border-r border-b border-gray-200 shadow-sm';
                 card.innerHTML = `
                     <div class="absolute left-0 top-0 bottom-0 w-3 bg-blue-500 flex items-center justify-center">
@@ -554,8 +550,8 @@
                         <div class="flex flex-col">
                             <span class="font-bold text-primary-navy text-base">${maskLastName(appt.patientName)}</span>
                             <span class="text-xs text-gray-500 font-normal mt-0.5">
-                                <i class="far fa-calendar-alt text-accent-gold mr-1"></i>${fullBookingDate} 
-                                <i class="far fa-clock text-accent-gold ml-2 mr-1"></i>${appt.timeSlot}
+                                <br><i class="far fa-calendar-alt text-accent-gold mr-1"></i>${fullBookingDate} 
+                                <br><i class="far fa-clock text-accent-gold ml-2 mr-1"></i>${appt.timeSlot}
                             </span>
                         </div>
                         <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-500 text-white shrink-0">สถานะ : ปกติ</span>
