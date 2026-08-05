@@ -13,7 +13,7 @@ startButton.addEventListener('click', startPrediction);
 
 async function startPrediction() {
   startButton.disabled = true;
-  startButton.classList.remove('hide'); // เผื่อกรณีมีการเริ่มใหม่
+  startButton.classList.remove('hide');
   resultCard.classList.remove('show');
   wisdomText.classList.remove('hide');
   
@@ -36,7 +36,6 @@ function getRandomNumber(min, max) {
 
 function animateNumberShuffle() {
   return new Promise(resolve => {
-    numberDisplay.textContent = generateLongRandomNumber();
     numberDisplay.classList.add('spinning');
     numberDisplay.classList.remove('hide');
     wisdomText.classList.add('hide');
@@ -45,7 +44,8 @@ function animateNumberShuffle() {
     const maxSpins = 20;
 
     const interval = setInterval(() => {
-      numberDisplay.textContent = generateLongRandomNumber();
+      // สุ่มเลข 1-100 มาแสดงสลับไปเรื่อยๆ โดยความกว้างไม่ยืดออกข้าง
+      numberDisplay.textContent = getRandomNumber(1, 100);
       spinCount++;
       if (spinCount >= maxSpins) {
         clearInterval(interval);
@@ -56,19 +56,10 @@ function animateNumberShuffle() {
   });
 }
 
-function generateLongRandomNumber() {
-  let longNumber = '';
-  for (let i = 0; i < 50; i++) {
-    longNumber += Math.floor(Math.random() * 10);
-  }
-  return longNumber;
-}
-
 function showFinalNumber(number) {
   numberDisplay.textContent = number;
-  numberDisplay.style.fontSize = '8em';
-  numberDisplay.style.color = '#fff';
-  numberDisplay.style.textShadow = '0 0 20px #fff, 0 0 30px #fff, 0 0 40px #DAA520';
+  numberDisplay.style.fontSize = '5em';
+  numberDisplay.style.color = '#FFD700';
 }
 
 function fetchPrediction(number) {
@@ -93,14 +84,9 @@ function showPrediction(prediction) {
     predictionName.textContent = prediction.name;
     predictionText.innerHTML = prediction.prediction.replace(/\n/g, '<br>');
     setTimeout(() => {
-      // ซ่อนตัวเลขและสถานะ กำลังทำนาย
       numberDisplay.classList.add('hide');
       statusText.classList.remove('show');
-      
-      // ซ่อนปุ่มสุ่มคำทำนาย
       startButton.classList.add('hide');
-      
-      // แสดงผลคำทำนาย
       resultCard.classList.add('show');
     }, 100);
   } else {
