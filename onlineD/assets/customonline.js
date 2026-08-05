@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const bookingLimit = new Date();
-        bookingLimit.setDate(today.getDate() + 30);
+        bookingLimit.setDate(today.getDate() + 28);
         bookingLimit.setHours(0, 0, 0, 0);
 
         // ⚡ ใช้ DocumentFragment เพื่อความเร็วสูงสุดในการวาดปฏิทิน
