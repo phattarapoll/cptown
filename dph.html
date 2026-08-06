@@ -263,10 +263,10 @@
     <!-- เมนูด้านข้างซ้าย 3: แผงตรวจสอบเคสผิดปกติ (ซ่อนไว้ค่าเริ่มต้นตามเดิม) -->
     <div id="abnormalFloatingPanel" class="fixed top-[64%] -translate-y-1/2 left-0 w-80 glassy-panel p-6 rounded-r-3xl z-40 transition-transform duration-500 ease-out transform -translate-x-full border-l-4 border-red-500">
         <h2 class="text-xl font-bold text-red-600 mb-4 flex items-center">
-            <i class="fas fa-exclamation-triangle mr-2"></i>ตรวจสอบ (!)
+        <i class="fas fa-exclamation-triangle mr-2"></i> พบปัญหา
         </h2>
         <div id="abnormalBoard" class="space-y-3 max-h-96 overflow-y-auto text-gray-700">
-            <p class="text-center text-gray-500 text-sm py-4">ไม่มีเคสผิดปกติในขณะนี้</p>
+            <p class="text-center text-gray-500 text-sm py-4">ไม่พบความผิดปกติขณะนี้</p>
         </div>
     </div>
 
@@ -493,8 +493,6 @@
                     itemDiv.className = 'bg-red-50 p-3 rounded-xl border border-red-200 shadow-sm mb-2';
                     itemDiv.innerHTML = `
                         <p class="font-bold text-red-700 text-sm">${maskLastName(appt.patientName)}</p>
-                        <p class="text-xs text-gray-600"><i class="far fa-clock mr-1"></i>${appt.timeSlot}</p>
-                        <p class="text-[11px] text-gray-500"><i class="far fa-calendar-alt mr-1"></i>${fullBookingDate} น.</p>
                         <span class="inline-block mt-1 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">สถานะ : ไม่ปกติ (ลงทะเบียนใหม่)</span>
                     `;
                     abnormalBoard.appendChild(itemDiv);
