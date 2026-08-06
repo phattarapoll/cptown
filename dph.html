@@ -482,7 +482,15 @@
                 queueDisplay.innerHTML = '<p class="text-center text-gray-500 py-10">ไม่มีรายการนัดหมายในขณะนี้</p>';
             }
 
+            // จัดการสีพื้นหลังและการกระพริบของปุ่ม "พบปัญหา"
+            const toggleAbnormalBtn = document.getElementById('toggleAbnormalPanel');
+            const toggleAbnormalIcon = document.getElementById('toggleAbnormalIcon');
+
             if (abnormalList.length > 0) {
+                // ถ้ามีข้อมูล: เปลี่ยนเป็นสีแดง, กระพริบ, และไอคอนเป็นสีเหลือง
+                toggleAbnormalBtn.className = "fixed top-[61%] -translate-y-1/2 left-0 p-4 rounded-r-2xl shadow-lg z-50 bg-red-600 text-white hover:bg-red-750 transition-all duration-300 super-flash-btn border-2 border-yellow-300";
+                toggleAbnormalIcon.className = "fas fa-exclamation-triangle text-yellow-300 text-xl";
+
                 abnormalList.forEach(appt => {
                     const apptTimestamp = appt.parsedDate;
                     const fullBookingDate = apptTimestamp.toLocaleDateString('th-TH', {
@@ -498,6 +506,10 @@
                     abnormalBoard.appendChild(itemDiv);
                 });
             } else {
+                // ถ้าไม่มีข้อมูล: เปลี่ยนเป็นสีดำ/กรมท่าเข้ม, ยกเลิกการกระพริบ, ไอคอนปกติ
+                toggleAbnormalBtn.className = "fixed top-[61%] -translate-y-1/2 left-0 p-4 rounded-r-2xl shadow-lg z-50 bg-primary-navy text-accent-gold hover:bg-accent-gold hover:text-white transition-all duration-300";
+                toggleAbnormalIcon.className = "fas fa-exclamation-triangle text-accent-gold text-xl";
+
                 abnormalBoard.innerHTML = '<p class="text-center text-gray-500 text-sm py-4">ไม่พบความผิดปกติ</p>';
             }
         }
