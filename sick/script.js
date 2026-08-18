@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbyHl1Bny2wB--upeU0PBwafooNrmddwVrzLZz70r3sRUn6ep9CfCyVSJidtw-f_kEZsUw/exec';
+    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbxvbVlZq0HKnR6RhMvMPnIO-YkgeOrymcoudQKif7EcWsWEoPC3PyPsDykXcZQgc9tEKw/exec';
 
     // Elements
     const loginContainer = document.getElementById('login-container');
@@ -31,9 +31,27 @@ document.addEventListener('DOMContentLoaded', function() {
         return `${y} ปี ${m} เดือน ${d} วัน`;
     }
 
-    function calculateWorkingDays(start, end) {
+    // ปรับปรุงการคำนวณวันทำการตามระเบียบราชการ (ไม่นับวันเสาร์-อาทิตย์)
+    // หมายเหตุ: หากต้องการตัดวันหยุดนักขัตฤกษ์ด้วย สามารถเพิ่มอาเรย์วันหยุด,ตรวจสอบในลูปได้
+    function calculateWorkingDays(start, end, leaveType) {
         let count = 0, cur = new Date(start), fin = new Date(end);
-        while (cur <= fin) { if (cur.getDay() !== 0 && cur.getDay() !== 6) count++; cur.setDate(cur.getDate() + 1); }
+        
+        // ตรวจสอบความถูกต้องของช่วงวันที่
+        if (cur > fin) return 0;
+
+        while (cur <= fin) {
+            const dayOfWeek = cur.getDay();
+            // ลาป่วย: ตามระเบียบนับวันหยุดที่อยู่ระหว่างการลาป่วยรวมด้วย (ยกเว้นวันหยุดราชการประจำปีตามประกาศ)
+            // ลากิจ / ลาพักผ่อน: นับเฉพาะวันทำการ (ไม่นับ เสาร์-อาทิตย์)
+            if (leaveType === 'ลาป่วย') {
+                count++; // ลาป่วยนับรวมวันหยุดเสาร์-อาทิตย์ที่อยู่ระหว่างการลาตามระเบียบ
+            } else {
+                if (dayOfWeek !== 0 && dayOfWeek !== 6) { // ไม่ใช่วันอาทิตย์ (0) และวันเสาร์ (6)
+                    count++;
+                }
+            }
+            cur.setDate(cur.getDate() + 1);
+        }
         return count;
     }
 
@@ -75,7 +93,6 @@ document.addEventListener('DOMContentLoaded', function() {
         keypadContainer.appendChild(delBtn);
     }
 
-    // รองรับการพิมพ์ผ่าน Keyboard
     document.addEventListener('keydown', (e) => {
         if (loginModal.style.display === 'flex') {
             if (e.key >= '0' && e.key <= '9') handleInput(e.key);
@@ -114,36 +131,42 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function renderDashboard(user, history) {
-        document.getElementById('user-name').textContent = user.name;
-        document.getElementById('nav-user-name').textContent = user.name;
-        document.getElementById('user-position').textContent = user.position;
-        document.getElementById('user-organization').textContent = user.organization;
-        document.getElementById('user-phone').textContent = user.phone;
-        document.getElementById('user-address').textContent = user.address || '-';
-        
-        document.getElementById('work-start-date').textContent = formatDate(user.workStartDate);
-        document.getElementById('old-work-duration').textContent = calculateWorkDuration(user.workStartDate, user.workTransferDate);
-        document.getElementById('new-work-duration').textContent = calculateWorkDuration(user.workTransferDate, new Date());
-        document.getElementById('total-work-duration').textContent = calculateWorkDuration(user.workStartDate, new Date());
+function renderDashboard(user, history) {
+    // 1. แสดงข้อมูลผู้ใช้งานทั่วไป
+    document.getElementById('user-name').textContent = user.name;
+    document.getElementById('nav-user-name').textContent = user.name;
+    document.getElementById('user-position').textContent = user.position;
+    document.getElementById('user-organization').textContent = user.organization;
+    document.getElementById('user-phone').textContent = user.phone;
+    document.getElementById('user-address').textContent = user.address || '-';
+    
+    document.getElementById('work-start-date').textContent = formatDate(user.workStartDate);
+    document.getElementById('old-work-duration').textContent = calculateWorkDuration(user.workStartDate, user.workTransferDate);
+    document.getElementById('new-work-duration').textContent = calculateWorkDuration(user.workTransferDate, new Date());
+    document.getElementById('total-work-duration').textContent = calculateWorkDuration(user.workStartDate, new Date());
 
-        const today = new Date();
-        const fStart = new Date(today.getMonth() >= 9 ? today.getFullYear() : today.getFullYear() - 1, 9, 1);
-        const fEnd = new Date(fStart.getFullYear() + 1, 8, 30);
-        
-        const approved = history.filter(l => l.status === 'อนุมัติแล้ว' && new Date(l.startDate) >= fStart && new Date(l.startDate) <= fEnd);
-        const sick = approved.filter(l => l.leaveType === 'ลาป่วย').reduce((sum, l) => sum + (parseInt(l.duration)||0), 0);
-        const vacation = approved.filter(l => l.leaveType === 'ลาพักผ่อน').reduce((sum, l) => sum + (parseInt(l.duration)||0), 0);
-        const personal = approved.filter(l => l.leaveType === 'ลากิจ').reduce((sum, l) => sum + (parseInt(l.duration)||0), 0);
+    // 2. ดึงค่าจำนวนวันที่ใช้ไปแล้วจากฐานข้อมูลโดยตรง (คอลัมน์ M, N, O ที่ส่งมาผ่าน object user)
+    const vacationUsed = parseFloat(user.currentAnnualLeave) || 0;   // คอลัมน์ M (index 12)
+    const sickUsed = parseFloat(user.currentSickLeave) || 0;           // คอลัมน์ N (index 13)
+    const personalUsed = parseFloat(user.currentPersonalLeave) || 0;   // คอลัมน์ O (index 14)
 
-        document.getElementById('sick-leave-used').textContent = sick;
-        document.getElementById('sick-leave-remaining').textContent = 30 - sick;
-        document.getElementById('vacation-leave-used').textContent = vacation;
-        document.getElementById('vacation-leave-remaining').textContent = (user.annualLeave + user.accumulatedLeave) - vacation;
-        document.getElementById('personal-leave-used').textContent = personal;
+    // 3. แสดงผล "วันที่ใช้ไป" ลงในหน้าเว็บ
+    document.getElementById('vacation-leave-used').textContent = vacationUsed;
+    document.getElementById('sick-leave-used').textContent = sickUsed;
+    document.getElementById('personal-leave-used').textContent = personalUsed;
 
-        renderHistory(history);
-    }
+    // 4. คำนวณวันลาคงเหลือ
+    // - ลาพักผ่อนคงเหลือ = (สิทธิ์ประจำปี + วันสะสม) - วันที่ใช้ไป
+    const totalVacationRights = (parseFloat(user.annualLeave) || 0) + (parseFloat(user.accumulatedLeave) || 0);
+    document.getElementById('vacation-leave-remaining').textContent = totalVacationRights - vacationUsed;
+
+    // - ลาป่วยคงเหลือ = สมมติสิทธิ์ลาป่วย 30 วัน - ที่ใช้ไป (หรือปรับเปลี่ยนตามโควต้าจริงของคุณ)
+    document.getElementById('sick-leave-remaining').textContent = 30 - sickUsed;
+
+    // 5. แสดงตารางประวัติการลาทั้งหมด
+    renderHistory(history);
+}
+
 
     function renderHistory(history) {
         leaveHistoryTableBody.innerHTML = history.length > 0 ? history.map(l => `
@@ -174,10 +197,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Events ---
     document.getElementById('leave-form').onsubmit = async (e) => {
         e.preventDefault();
-        const duration = calculateWorkingDays(document.getElementById('leave-start-date').value, document.getElementById('leave-end-date').value);
+        const leaveTypeVal = document.getElementById('leave-type').value;
+        const startDateVal = document.getElementById('leave-start-date').value;
+        const endDateVal = document.getElementById('leave-end-date').value;
+
+        // คำนวณวันตามประเภทการลาที่ถูกต้องตามระเบียบ
+        const duration = calculateWorkingDays(startDateVal, endDateVal, leaveTypeVal);
+
         const body = new URLSearchParams({
-            action: 'submitLeave', id: currentUser.id, leaveType: document.getElementById('leave-type').value,
-            startDate: document.getElementById('leave-start-date').value, endDate: document.getElementById('leave-end-date').value,
+            action: 'submitLeave', id: currentUser.id, leaveType: leaveTypeVal,
+            startDate: startDateVal, endDate: endDateVal,
             phone: document.getElementById('leave-phone').value, reason: document.getElementById('leave-reason').value, duration: duration
         });
         const res = await fetch(appsScriptUrl, { method: 'POST', body });
