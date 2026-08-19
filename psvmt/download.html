@@ -356,30 +356,29 @@
     dots.forEach((dot, idx) => dot.classList.toggle("active", idx < enteredPassword.length));
   }
 
-  function handleInput(num) {
+function handleInput(num) {
     if (enteredPassword.length < 4) {
       enteredPassword += num;
       updateDisplay();
       if (enteredPassword.length === 4) {
-        setTimeout(() => {
-          if (enteredPassword === correctPassword) {
-            document.getElementById("password-overlay").style.display = "none";
-            document.getElementById("mainContent").style.display = "block";
-          } else {
-            authCard.classList.add("shake");
-            errorMsg.textContent = "รหัสผ่านไม่ถูกต้อง";
-            errorMsg.style.color = "red";
-            setTimeout(() => {
-              authCard.classList.remove("shake");
-              enteredPassword = "";
-              updateDisplay();
-            }, 600);
-          }
-        }, 200);
+        // นำ setTimeout ออกและให้ตรวจสอบรหัสผ่านทันที
+        if (enteredPassword === correctPassword) {
+          document.getElementById("password-overlay").style.display = "none";
+          document.getElementById("mainContent").style.display = "block";
+        } else {
+          authCard.classList.add("shake");
+          errorMsg.textContent = "รหัสผ่านไม่ถูกต้อง";
+          errorMsg.style.color = "red";
+          setTimeout(() => {
+            authCard.classList.remove("shake");
+            enteredPassword = "";
+            updateDisplay();
+          }, 600);
+        }
       }
     }
   }
-
+  
   document.querySelectorAll(".keypad-button").forEach(btn => {
     btn.addEventListener("click", () => {
       const val = btn.dataset.num;
