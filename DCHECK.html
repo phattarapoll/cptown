@@ -314,7 +314,6 @@
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxNLQtxKoubT-aJt2uHTL-LYGdm9TJtG-p08zng2FvkBBvDyzF0sYB5Z0iQw9KQowXJFA/exec";
 
-
     let tempPass = "";
     const fieldsToRemember = ["date", "grade", "school", "NP", "NM", "CM"];
     const form = document.getElementById("dataForm");
@@ -323,6 +322,7 @@
     const selectedButtons = new Set();
     let submissionHistory = [];
 
+    // --- ฟังก์ชันสำหรับ Admin Keypad ---
     function showAdminKeypad() {
         document.getElementById('mode-selection').style.display = 'none';
         document.getElementById('keypad-section').style.display = 'block';
@@ -340,30 +340,50 @@
     }
 
     async function validateLogin() {
-    const msgEl = document.getElementById('message');
-    msgEl.textContent = "กำลังตรวจสอบ...";
-    
-    try {
-        const response = await fetch(WEB_APP_URL, {
-            method: 'POST',
-            body: new URLSearchParams({ 'action': 'login', 'pass': tempPass })
-        });
-        const result = await response.json();
-        
-        if (result.status === "success") {
-            // ส่ง ID ที่ได้จาก Server ไปแสดงผล
-            launchApp(result.id); 
-        } else {
-            msgEl.textContent = "❌ รหัสผ่านไม่ถูกต้อง";
+        const msgEl = document.getElementById('message');
+        msgEl.textContent = "กำลังตรวจสอบ...";
+        try {
+            const response = await fetch(WEB_APP_URL, {
+                method: 'POST',
+                body: new URLSearchParams({ 'action': 'login', 'pass': tempPass })
+            });
+            const result = await response.json();
+            if (result.status === "success") {
+                launchApp(result.id); 
+            } else {
+                msgEl.textContent = "❌ รหัสผ่านไม่ถูกต้อง";
+                clearPass();
+            }
+        } catch (e) {
+            msgEl.textContent = "❌ เกิดข้อผิดพลาดในการเชื่อมต่อ";
             clearPass();
         }
-    } catch (e) {
-        msgEl.textContent = "❌ เกิดข้อผิดพลาดในการเชื่อมต่อ";
-        clearPass();
     }
-}
 
+    // --- ฟังก์ชันสำหรับ ID คัดกรอง (Modal) ---
+    function openCodeModal() { 
+        document.getElementById('code-keypad-modal').style.display = 'flex'; 
+    }
+    
+    function pressCodeKey(num) { 
+        const codeInput = document.getElementById('code');
+        codeInput.value += num; 
+        document.getElementById('code-display-box').textContent = codeInput.value;
+    }
 
+    function clearCodeKey() { 
+        const codeInput = document.getElementById('code');
+        codeInput.value = ""; 
+        document.getElementById('code-display-box').textContent = "";
+    }
+
+    function delCodeKey() { 
+        const codeInput = document.getElementById('code');
+        codeInput.value = codeInput.value.slice(0, -1); 
+        document.getElementById('code-display-box').textContent = codeInput.value;
+    }
+
+    // --- ฟังก์ชันหลักอื่นๆ ---
     function accessAsGuest() {
         document.getElementById('interactive-form-grid').classList.add('read-only-overlay');
         document.getElementById('guest-notice').classList.remove('hidden');
@@ -381,11 +401,14 @@
         }, 600);
     }
 
-    function initialSetup() {
+function initialSetup() {
         checkConnectivity();
         setInterval(checkConnectivity, 5000);
         actionButtons.forEach(btn => btn.addEventListener('click', handleActionButtonClick));
         form.addEventListener("submit", handleFormSubmit);
+        document.getElementById('code').addEventListener('input', function() {
+            document.getElementById('code-display-box').textContent = this.value;
+        });
     }
 
     async function checkConnectivity() {
@@ -423,6 +446,7 @@
             form.reset();
             selectedButtons.clear();
             actionButtons.forEach(b => b.classList.remove('selected'));
+            document.getElementById("cp").value = "";
         } catch (err) {
             alert("เกิดข้อผิดพลาดในการส่งข้อมูล");
         }
@@ -436,13 +460,6 @@
             else if (e.key === 'Backspace') delPass();
         }
     });
-
-    function openCodeModal() { document.getElementById('code-keypad-modal').style.display = 'flex'; }
-    function pressCodeKey(num) { 
-        const codeInput = document.getElementById('code');
-        codeInput.value += num; 
-        document.getElementById('code-display-box').textContent = codeInput.value;
-    }
 </script>
 </body>
 </html>
