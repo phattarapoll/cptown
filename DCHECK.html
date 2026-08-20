@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dent_ChecK V.5.1</title>
+  <title>Dent_ChecK V.5.2</title>
   <link rel="stylesheet" href="assets/css/styleDcheck.css">
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -118,7 +118,7 @@
     <div id="login-box">
         <div id="mode-selection">
             <i class="fas fa-tooth fa-4x" style="color: #007bff; margin-bottom: 20px;"></i>
-            <h2 style="margin-bottom: 25px;">Dent-Check V.5.1 Program</h2>
+            <h2 style="margin-bottom: 25px;">Dent-Check V.5.2 Program</h2>
             <button class="mode-btn btn-admin" onclick="showAdminKeypad()"><i class="fas fa-user-md"></i> เจ้าหน้าที่</button>
             <button class="mode-btn btn-guest" onclick="accessAsGuest()"><i class="fas fa-eye"></i> บุคคลทั่วไป (ดูเท่านั้น)</button>
         </div>
@@ -193,7 +193,7 @@
     <div id="guest-notice" class="hidden" style="text-align:center;">
         <span class="guest-label"><i class="fas fa-lock"></i> โหมดอ่านอย่างเดียว</span>
     </div>
-    <h1> PROGRAM DENTCHECK V.5.1 </h1>
+    <h1> PROGRAM DENTCHECK V.5.2 </h1>
     
     <form id="dataForm">
       <div class="main-content-grid" id="interactive-form-grid">
@@ -298,20 +298,30 @@
         <div id="status-dot" class="dot"></div>
         <div id="status-pulse" class="pulse"></div>
       </div>
+	  
       <div class="status-info">
         <span id="status-label">Connectivity</span>
         <strong id="status-text">Checking Status...</strong>
       </div>
     </div>
+		  	<div id="welcome-msg" style="text-align:center; font-weight:bold; color:#007bff; margin-bottom:10px;"></div>
+
 
     <br>
     <h6 style="text-align:center; color:#888;">ผู้สร้างและพัฒนา...นายภัทรพล ไพศาลวัชรเมธี ทันตสาธารณสุขอาวุโส</h6>
   </div>
 
-  <script>
-    /* --- ส่วนควบคุมการ Login และ Keyboard Support --- */
-    const CORRECT_PASSCODE = "122333";
+<script>
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxNLQtxKoubT-aJt2uHTL-LYGdm9TJtG-p08zng2FvkBBvDyzF0sYB5Z0iQw9KQowXJFA/exec";
+
+
     let tempPass = "";
+    const fieldsToRemember = ["date", "grade", "school", "NP", "NM", "CM"];
+    const form = document.getElementById("dataForm");
+    const submitButton = document.getElementById("main-submit-btn");
+    const actionButtons = document.querySelectorAll('.action-button');
+    const selectedButtons = new Set();
+    let submissionHistory = [];
 
     function showAdminKeypad() {
         document.getElementById('mode-selection').style.display = 'none';
@@ -327,23 +337,41 @@
     function delPass() { tempPass = tempPass.slice(0, -1); updatePassUI(); }
     function updatePassUI() { 
         document.getElementById('passcode-display').textContent = "*".repeat(tempPass.length); 
-        document.getElementById('message').textContent = "";
     }
 
-    function validateLogin() {
-        if (tempPass === CORRECT_PASSCODE) {
-            launchApp();
+    async function validateLogin() {
+    const msgEl = document.getElementById('message');
+    msgEl.textContent = "กำลังตรวจสอบ...";
+    
+    try {
+        const response = await fetch(WEB_APP_URL, {
+            method: 'POST',
+            body: new URLSearchParams({ 'action': 'login', 'pass': tempPass })
+        });
+        const result = await response.json();
+        
+        if (result.status === "success") {
+            // ส่ง ID ที่ได้จาก Server ไปแสดงผล
+            launchApp(result.id); 
         } else {
-            document.getElementById('message').textContent = "❌ รหัสผ่านไม่ถูกต้อง";
+            msgEl.textContent = "❌ รหัสผ่านไม่ถูกต้อง";
             clearPass();
         }
+    } catch (e) {
+        msgEl.textContent = "❌ เกิดข้อผิดพลาดในการเชื่อมต่อ";
+        clearPass();
     }
+}
+
+
     function accessAsGuest() {
         document.getElementById('interactive-form-grid').classList.add('read-only-overlay');
         document.getElementById('guest-notice').classList.remove('hidden');
-        launchApp();
+        launchApp("บุคคลทั่วไป");
     }
-    function launchApp() {
+
+    function launchApp(id) {
+        document.getElementById('welcome-msg').textContent = "ยินดีต้อนรับ: " + id;
         const overlay = document.getElementById('login-overlay');
         overlay.style.transform = "translateY(-100%)";
         setTimeout(() => {
@@ -353,216 +381,68 @@
         }, 600);
     }
 
-    // ฟังก์ชันตรวจจับการกดคีย์บอร์ด
-    window.addEventListener('keydown', function(e) {
-        const loginVisible = !document.getElementById('login-overlay').classList.contains('hidden');
-        const keypadSectionVisible = document.getElementById('keypad-section').style.display === 'block';
-
-        if (loginVisible && keypadSectionVisible) {
-            if (e.key >= '0' && e.key <= '9') {
-                inputPass(e.key);
-            } 
-            else if (e.key === 'Enter') {
-                validateLogin();
-            } 
-            else if (e.key === 'Backspace') {
-                delPass();
-            }
-            else if (e.key === 'Escape' || e.key === 'Delete') {
-                clearPass();
-            }
-        }
-    });
-
-    /* --- ฟังก์ชันควบคุมปุ่มกดตัวเลขสำหรับช่องรหัส (Code Keypad) --- */
-    const codeInput = document.getElementById('code');
-    const codeModal = document.getElementById('code-keypad-modal');
-    const codeDisplay = document.getElementById('code-display-box');
-
-    function openCodeModal() {
-        codeDisplay.textContent = codeInput.value;
-        codeModal.style.display = 'flex';
+    function initialSetup() {
+        checkConnectivity();
+        setInterval(checkConnectivity, 5000);
+        actionButtons.forEach(btn => btn.addEventListener('click', handleActionButtonClick));
+        form.addEventListener("submit", handleFormSubmit);
     }
-    function closeCodeModal(e) {
-        codeModal.style.display = 'none';
-    }
-    function pressCodeKey(num) {
-        codeInput.value += num;
-        codeDisplay.textContent = codeInput.value;
-        saveFormDraft(); 
-    }
-    function clearCodeKey() {
-        codeInput.value = '';
-        codeDisplay.textContent = '';
-        saveFormDraft();
-    }
-    function delCodeKey() {
-        codeInput.value = codeInput.value.slice(0, -1);
-        codeDisplay.textContent = codeInput.value;
-        saveFormDraft();
-    }
-    codeInput.addEventListener('input', function() {
-        codeDisplay.textContent = this.value;
-    });
-
-    /* --- รักษา Logic เดิมของคุณไว้ทั้งหมด ห้ามแก้ไข --- */
-    const scriptURL = "https://script.google.com/macros/s/AKfycbwgNSARmEVj9bZU9euDyAkkuOb8PeJOtsHKHVjFcUR0AhP1ZQcOKcs4f4JmKk3H_fv-xg/exec";
-    const OFFLINE_STORAGE_KEY = 'dentcheck_offline_queue';
-    const HISTORY_STORAGE_KEY = 'dentalSubmissionHistory';
-    const DRAFT_STORAGE_KEY = 'dentcheck_form_draft';
-    const fieldsToRemember = ["date", "grade", "school", "NP", "NM", "CM"];
-
-    const form = document.getElementById("dataForm");
-    const submitButton = document.getElementById("main-submit-btn");
-    const offlineBar = document.getElementById("offline-sync-bar");
-    const offlineCountSpan = document.getElementById("offline-count");
-    const progWrapper = document.getElementById("prog-wrapper");
-    const progBar = document.getElementById("prog-bar");
-    const syncStatusDetail = document.getElementById("sync-status-detail");
-    const selectedButtons = new Set();
-    const actionButtons = document.querySelectorAll('.action-button');
-
-    let submissionHistory = [];
 
     async function checkConnectivity() {
-        const container = document.querySelector('.status-card');
         const statusText = document.getElementById('status-text');
-        let isActuallyOnline = false;
-        if (navigator.onLine) {
-            try { await fetch("https://www.google.com/favicon.ico", { mode: 'no-cors', cache: 'no-store' }); isActuallyOnline = true; }
-            catch (e) { isActuallyOnline = false; }
-        }
-        if (isActuallyOnline) {
-            container.classList.remove('offline-mode'); container.classList.add('online-mode');
-            statusText.textContent = "online";
-        } else {
-            container.classList.remove('online-mode'); container.classList.add('offline-mode');
-            statusText.textContent = "off line";
-        }
-        updateOfflineUI();
-    }
-
-    function getOfflineQueue() { return JSON.parse(localStorage.getItem(OFFLINE_STORAGE_KEY) || "[]"); }
-    function updateOfflineUI() {
-        const queue = getOfflineQueue();
-        if (queue.length > 0) { offlineBar.style.display = 'block'; offlineCountSpan.textContent = queue.length; }
-        else { offlineBar.style.display = 'none'; }
-    }
-
-    async function syncOfflineData() {
-        let queue = getOfflineQueue();
-        if (queue.length === 0) return;
-        const syncBtn = document.getElementById("sync-btn");
-        syncBtn.disabled = true; progWrapper.style.display = 'block';
-        let total = queue.length;
-
-        while (queue.length > 0) {
-            const item = queue[0];
-            const percent = Math.round(((total - queue.length) / total) * 100);
-            progBar.style.width = percent + "%"; progBar.textContent = percent + "%";
-            syncStatusDetail.innerHTML = `ส่งรหัส: <strong>${item.data.id}</strong> (${total - queue.length + 1}/${total})`;
-            const formData = new URLSearchParams();
-            for (const key in item.data) formData.append(key, item.data[key]);
-            try {
-                const res = await fetch(scriptURL, { method: 'POST', body: formData });
-                if (res.ok) { queue.shift(); localStorage.setItem(OFFLINE_STORAGE_KEY, JSON.stringify(queue)); updateOfflineUI(); } 
-                else { break; }
-            } catch (e) { break; }
-        }
-        progBar.style.width = "100%"; progBar.textContent = "100%";
-        setTimeout(() => { progWrapper.style.display = 'none'; syncBtn.disabled = false; }, 800);
-    }
-
-    function clearOfflineData() { if (confirm("ต้องการล้างข้อมูลค้างส่งทั้งหมด?")) { localStorage.removeItem(OFFLINE_STORAGE_KEY); updateOfflineUI(); } }
-
-    function initialSetup() {
-        loadSubmissionHistory(); updateSubmissionHistoryDisplay(); loadAndSetRememberedFields();
-        loadFormDraft(); checkConnectivity(); setInterval(checkConnectivity, 5000);
-        actionButtons.forEach(btn => btn.addEventListener('click', handleActionButtonClick));
-        document.getElementById("class").addEventListener('change', handleClassChange);
-        form.addEventListener("submit", handleFormSubmit);
-        form.querySelectorAll('input, select').forEach(el => el.addEventListener('input', saveFormDraft));
-    }
-
-    async function handleFormSubmit(e) {
-        e.preventDefault(); submitButton.classList.add('blinking'); submitButton.disabled = true;
-        codeModal.style.display = 'none';
-        const formData = new FormData(form);
-        formData.append('CP', document.getElementById("cp").value);
-        selectedButtons.forEach(name => formData.append(name, 'on'));
-        const dataObj = {}; formData.forEach((val, key) => dataObj[key] = val);
-        const code = dataObj.id; const timeStr = new Date().toLocaleTimeString("th-TH");
-        let isOnline = navigator.onLine;
-        if (isOnline) { try { await fetch("https://www.google.com/favicon.ico", { mode: 'no-cors', cache: 'no-store' }); } catch(err){ isOnline = false; } }
-        if (!isOnline) { saveToOffline(dataObj); afterSubmit(code, timeStr); return; }
-        try {
-            const res = await fetch(scriptURL, { method: 'POST', body: new URLSearchParams(dataObj) });
-            if (res.ok) { afterSubmit(code, timeStr); } else { throw Error(); }
-        } catch (err) { saveToOffline(dataObj); afterSubmit(code, timeStr); }
-    }
-
-    function saveToOffline(data) {
-        const queue = getOfflineQueue(); queue.push({ data: data });
-        localStorage.setItem(OFFLINE_STORAGE_KEY, JSON.stringify(queue));
-    }
-
-    function afterSubmit(code, time) {
-        fieldsToRemember.forEach(f => { const el = document.querySelector(`[name="${f}"]`); if(el) localStorage.setItem(f, el.value); });
-        addSubmissionToHistory(code, time); localStorage.removeItem(DRAFT_STORAGE_KEY);
-        form.reset(); actionButtons.forEach(btn => btn.classList.remove('selected')); selectedButtons.clear();
-        updateCpCount(); loadAndSetRememberedFields();
-        submitButton.classList.remove('blinking'); submitButton.disabled = false; updateOfflineUI();
+        const container = document.querySelector('.status-card');
+        const isOnline = navigator.onLine;
+        container.className = 'status-card ' + (isOnline ? 'online-mode' : 'offline-mode');
+        statusText.textContent = isOnline ? "online" : "off line";
     }
 
     function handleActionButtonClick() {
         this.classList.toggle('selected');
         const name = this.dataset.name;
         this.classList.contains('selected') ? selectedButtons.add(name) : selectedButtons.delete(name);
-        updateCpCount(); saveFormDraft();
-    }
-
-    function updateCpCount() {
-        let count = 0; document.querySelectorAll('.tooth-treatment-grid .action-button.selected').forEach(btn => {
-            const num = parseInt(btn.dataset.name.substring(1));
-            if (btn.dataset.name.startsWith('t') && num >= 11 && num <= 48) count++;
-        });
-        document.getElementById("cp").value = count;
-    }
-
-    function handleClassChange() {
-        const g = this.value; const np = document.getElementById("np"), nm = document.getElementById("nm");
-        const r = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-        if (g === "ป.1") { np.value = r(4,6); nm.value = r(18,20); }
-        else if (g === "ป.3") { np.value = r(12,16); nm.value = r(12,14); }
-        else if (g === "ป.6") { np.value = r(24,26); nm.value = r(2,6); }
-        else if (g === "ม.1") { np.value = 28; nm.value = 0; }
-        saveFormDraft();
-    }
-
-    function saveFormDraft() {
-        const data = {}; new FormData(form).forEach((v, k) => data[k] = v);
-        data.selectedButtons = Array.from(selectedButtons);
-        localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(data));
-    }
-
-    function loadFormDraft() {
-        const saved = localStorage.getItem(DRAFT_STORAGE_KEY); if (!saved) return;
-        const data = JSON.parse(saved);
-        Object.keys(data).forEach(k => { const el = document.getElementsByName(k)[0]; if (el && k !== 'selectedButtons') el.value = data[k]; });
-        if (data.selectedButtons) data.selectedButtons.forEach(n => {
-            const b = document.querySelector(`[data-name="${n}"]`); if (b) { b.classList.add('selected'); selectedButtons.add(n); }
-        });
         updateCpCount();
     }
 
-    function loadAndSetRememberedFields() { fieldsToRemember.forEach(f => { const v = localStorage.getItem(f); if (v) { const el = document.querySelector(`[name="${f}"]`); if(el) el.value = v; } }); }
-    function addSubmissionToHistory(c, t) { submissionHistory.push({ code: c, time: t }); if (submissionHistory.length > 2) submissionHistory.shift(); localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(submissionHistory)); updateSubmissionHistoryDisplay(); }
-    function loadSubmissionHistory() { const s = localStorage.getItem(HISTORY_STORAGE_KEY); if (s) submissionHistory = JSON.parse(s); }
-    function updateSubmissionHistoryDisplay() {
-        const c = document.getElementById('submission-history'); c.innerHTML = ''; if (submissionHistory.length === 0) { c.style.display = 'none'; return; }
-        c.style.display = 'block'; submissionHistory.slice().reverse().forEach(i => { const p = document.createElement('p'); p.innerHTML = `ล่าสุด: <strong>${i.code}</strong> | ${i.time}`; c.appendChild(p); });
+    function updateCpCount() {
+        let count = 0; 
+        document.querySelectorAll('.tooth-treatment-grid .action-button.selected').forEach(() => count++);
+        document.getElementById("cp").value = count;
     }
-    window.addEventListener('online', checkConnectivity); window.addEventListener('offline', checkConnectivity);
-  </script>
+
+    async function handleFormSubmit(e) {
+        e.preventDefault();
+        submitButton.disabled = true;
+        const formData = new FormData(form);
+        formData.append('action', 'submitData');
+        formData.append('CP', document.getElementById("cp").value);
+        selectedButtons.forEach(name => formData.append(name, 'on'));
+        
+        try {
+            await fetch(WEB_APP_URL, { method: 'POST', body: new URLSearchParams(formData) });
+            alert("บันทึกข้อมูลเรียบร้อย");
+            form.reset();
+            selectedButtons.clear();
+            actionButtons.forEach(b => b.classList.remove('selected'));
+        } catch (err) {
+            alert("เกิดข้อผิดพลาดในการส่งข้อมูล");
+        }
+        submitButton.disabled = false;
+    }
+
+    window.addEventListener('keydown', (e) => {
+        if (!document.getElementById('login-overlay').classList.contains('hidden') && document.getElementById('keypad-section').style.display === 'block') {
+            if (e.key >= '0' && e.key <= '9') inputPass(e.key);
+            else if (e.key === 'Enter') validateLogin();
+            else if (e.key === 'Backspace') delPass();
+        }
+    });
+
+    function openCodeModal() { document.getElementById('code-keypad-modal').style.display = 'flex'; }
+    function pressCodeKey(num) { 
+        const codeInput = document.getElementById('code');
+        codeInput.value += num; 
+        document.getElementById('code-display-box').textContent = codeInput.value;
+    }
+</script>
 </body>
 </html>
