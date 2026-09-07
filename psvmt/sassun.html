@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบทดสอบเศษส่วน 20 ข้อ พร้อมสถิติ</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 650px;
+        }
+        h2 {
+            text-align: center;
+            color: #1a365d;
+            margin-bottom: 10px;
+        }
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #edf2f7;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        .quiz-card {
+            background-color: #f7fafc;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .math-expr {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+        .fraction {
+            display: inline-flex;
+            flex-direction: column;
+            text-align: center;
+            vertical-align: middle;
+            margin: 0 8px;
+        }
+        .numerator {
+            border-bottom: 2px solid #2d3748;
+            padding-bottom: 2px;
+        }
+        .denominator {
+            padding-top: 2px;
+        }
+        .operator {
+            margin: 0 10px;
+            color: #3182ce;
+        }
+        .equals {
+            margin: 0 10px;
+            color: #4a5568;
+        }
+        .choices {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .choice-btn {
+            background-color: #ffffff;
+            border: 2px solid #cbd5e0;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            display: flex;
+            align-items: center;
+        }
+        .choice-btn:hover:not(:disabled) {
+            border-color: #3182ce;
+            background-color: #ebf8ff;
+        }
+        .choice-btn.correct {
+            border-color: #38a169;
+            background-color: #f0fff4;
+            color: #22543d;
+        }
+        .choice-btn.incorrect {
+            border-color: #e53e3e;
+            background-color: #fff5f5;
+            color: #742a2a;
+        }
+        .action-container {
+            text-align: center;
+        }
+        .btn-main {
+            background-color: #3182ce;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-main:hover {
+            background-color: #2b6cb0;
+        }
+        .explanation {
+            font-size: 15px;
+            color: #2d3748;
+            line-height: 1.6;
+            background-color: #fff;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #3182ce;
+            margin-top: 10px;
+        }
+        .step-arrow {
+            color: #3182ce;
+            font-weight: bold;
+            margin: 0 4px;
+        }
+        .stats-box {
+            background-color: #edf2f7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #2d3748;
+        }
+        #summary-screen {
+            display: none;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>แบบทดสอบเศษส่วน (ชุด 20 ข้อ)</h2>
+        
+        <!-- หน้าทำข้อสอบ -->
+        <div id="quiz-screen">
+            <div class="quiz-header">
+                <span id="progress-text">ข้อที่ 1 / 20</span>
+                <span id="timer-text">⏱️ เวลา: 00:00</span>
+            </div>
+
+            <div class="quiz-card">
+                <div class="math-expr" id="question-display"></div>
+                <div class="choices" id="choices-container"></div>
+
+                <div id="result-container" style="display: none;">
+                    <div id="result-message" style="font-weight: bold; font-size: 18px; margin-bottom: 8px;"></div>
+                    <div class="explanation" id="explanation-box"></div>
+                    <div style="text-align: right; margin-top: 15px;">
+                        <button class="btn-main" onclick="nextQuestion()">ข้อถัดไป ➔</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- หน้าสรุปผลลัพธ์ -->
+        <div id="summary-screen">
+            <h3 style="color: #2b6cb0; margin-bottom: 10px;">🎉 สรุปผลการทดสอบ</h3>
+            <div id="summary-content" style="font-size: 18px; line-height: 1.8; margin-bottom: 20px;"></div>
+            
+            <div class="stats-box" id="daily-stats">
+                <!-- ข้อมูลสถิติสะสมของวันนี้ -->
+            </div>
+            
+            <br>
+            <button class="btn-main" onclick="startExam()">ทำข้อสอบชุดใหม่อีกครั้ง</button>
+        </div>
+    </div>
+
+    <script>
+        const TOTAL_QUESTIONS = 20;
+        let currentIdx = 0;
+        let score = 0;
+        let wrongCount = 0;
+        let startTime = 0;
+        let questionStartTime = 0;
+        let totalTimeSpent = 0; // วินาทีรวม
+        let timerInterval;
+
+        let currentCorrectChoice = '';
+        let currentExplanationText = '';
+        let quizDataList = [];
+
+        function gcd(a, b) {
+            return b === 0 ? a : gcd(b, a % b);
+        }
+
+        function simplify(num, den) {
+            if (den === 0) return { num: 0, den: 1 };
+            let sign = 1;
+            if ((num < 0) ^ (den < 0)) sign = -1;
+            num = Math.abs(num);
+            den = Math.abs(den);
+            let common = gcd(num, den);
+            return { num: (num / common) * sign, den: den / common };
+        }
+
+        function createFractionHtml(num, den) {
+            if (den === 1) return `<span>${num}</span>`;
+            return `
+                <div class="fraction">
+                    <span class="numerator">${num}</span>
+                    <span class="denominator">${den}</span>
+                </div>
+            `;
+        }
+
+        // สร้างชุดข้อสอบ 20 ข้อล่วงหน้า
+        function generateQuizSet() {
+            quizDataList = [];
+            for (let q = 0; q < TOTAL_QUESTIONS; q++) {
+                let n1 = Math.floor(Math.random() * 8) + 1;
+                let d1 = Math.floor(Math.random() * 8) + 2;
+                let n2 = Math.floor(Math.random() * 8) + 1;
+                let d2 = Math.floor(Math.random() * 8) + 2;
+
+                const ops = ['+', '-', '×', '÷'];
+                let op = ops[Math.floor(Math.random() * ops.length)];
+
+                let ansNum, ansDen, explanation = "";
+
+                if (op === '+') {
+                    ansNum = n1 * d2 + n2 * d1;
+                    ansDen = d1 * d2;
+                    explanation = `<b>วิธีคิด (บวก):</b> ค.ร.น. ส่วนคือ ${ansDen} | ตัวเศษ: (${n1}×${d2}) + (${n2}×${d1}) = ${ansNum} <span class="step-arrow">→</span> ${ansNum}/${ansDen}`;
+                } else if (op === '-') {
+                    ansNum = n1 * d2 - n2 * d1;
+                    ansDen = d1 * d2;
+                    explanation = `<b>วิธีคิด (ลบ):</b> ค.ร.น. ส่วนคือ ${ansDen} | ตัวเศษ: (${n1}×${d2}) - (${n2}×${d1}) = ${ansNum} <span class="step-arrow">→</span> ${ansNum}/${ansDen}`;
+                } else if (op === '×') {
+                    ansNum = n1 * n2;
+                    ansDen = d1 * d2;
+                    explanation = `<b>วิธีคิด (คูณ):</b> เศษคูณเศษ (${n1}×${n2}=${ansNum}) ส่วนคูณส่วน (${d1}×${d2}=${ansDen})`;
+                } else {
+                    ansNum = n1 * d2;
+                    ansDen = d1 * n2;
+                    explanation = `<b>วิธีคิด (หาร):</b> กลับเศษเป็นส่วนตัวหลัง (${n2}/${d2} เป็น ${d2}/${n2}) แล้วคูณกันได้ ${ansNum}/${ansDen}`;
+                }
+
+                let simplified = simplify(ansNum, ansDen);
+                if (simplified.num !== ansNum || simplified.den !== ansDen) {
+                    explanation += ` <span class="step-arrow">→</span> ทอนเป็นเศษส่วนอย่างต่ำได้ <b>${simplified.den === 1 ? simplified.num : simplified.num + '/' + simplified.den}</b>`;
+                }
+
+                let correctValueText = simplified.den === 1 ? `${simplified.num}` : `${simplified.num}/${simplified.den}`;
+
+                // สสร้างตัวเลือก 4 ข้อ
+                let choicesSet = new Set();
+                choicesSet.add(correctValueText);
+                let offsets = [-3, -2, -1, 1, 2, 3];
+                offsets.sort(() => Math.random() - 0.5);
+
+                for (let i = 0; i < offsets.length && choicesSet.size < 4; i++) {
+                    let fakeN = simplified.num + offsets[i];
+                    if (fakeN <= 0) fakeN = 1;
+                    let fakeSimp = simplify(fakeN, simplified.den);
+                    choicesSet.add(fakeSimp.den === 1 ? `${fakeSimp.num}` : `${fakeSimp.num}/${fakeSimp.den}`);
+                }
+
+                let choicesArray = Array.from(choicesSet);
+                choicesArray.sort(() => Math.random() - 0.5);
+
+                quizDataList.push({
+                    n1, d1, n2, d2, op,
+                    correctValueText,
+                    explanation,
+                    choices: choicesArray
+                });
+            }
+        }
+
+        function startExam() {
+            currentIdx = 0;
+            score = 0;
+            wrongCount = 0;
+            totalTimeSpent = 0;
+            startTime = Date.now();
+
+            generateQuizSet();
+
+            document.getElementById('quiz-screen').style.display = 'block';
+            document.getElementById('summary-screen').style.display = 'none';
+
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+
+            loadQuestion();
+        }
+
+        function updateTimer() {
+            let elapsedSec = Math.floor((Date.now() - startTime) / 1000);
+            let min = String(Math.floor(elapsedSec / 60)).padStart(2, '0');
+            let sec = String(elapsedSec % 60).padStart(2, '0');
+            document.getElementById('timer-text').innerText = `⏱️ เวลา: ${min}:${sec}`;
+        }
+
+        function loadQuestion() {
+            document.getElementById('result-container').style.display = 'none';
+            document.getElementById('progress-text').innerText = `ข้อที่ ${currentIdx + 1} / ${TOTAL_QUESTIONS}`;
+
+            let q = quizDataList[currentIdx];
+
+            let qHtml = `
+                ${createFractionHtml(q.n1, q.d1)}
+                <span class="operator">${q.op}</span>
+                ${createFractionHtml(q.n2, q.d2)}
+                <span class="equals">=</span>
+                <span style="color: #a0aec0;">?</span>
+            `;
+            document.getElementById('question-display').innerHTML = qHtml;
+
+            const letters = ['ก', 'ข', 'ค', 'ง'];
+            let choicesContainer = document.getElementById('choices-container');
+            choicesContainer.innerHTML = '';
+
+            q.choices.forEach((choice, index) => {
+                let letter = letters[index];
+                if (choice === q.correctValueText) {
+                    currentCorrectChoice = letter;
+                }
+
+                let displayChoiceText = choice;
+                if (choice.includes('/')) {
+                    let parts = choice.split('/');
+                    displayChoiceText = `<div class="fraction" style="font-size: 18px;"><span class="numerator">${parts[0]}</span><span class="denominator">${parts[1]}</span></div>`;
+                }
+
+                let btn = document.createElement('button');
+                btn.className = 'choice-btn';
+                btn.innerHTML = `<span style="margin-right: 10px; color: #4a5568;">${letter}.</span> ${displayChoiceText}`;
+                btn.onclick = function() {
+                    checkAnswer(letter, btn);
+                };
+                choicesContainer.appendChild(btn);
+            });
+
+            currentExplanationText = q.explanation;
+        }
+
+        function checkAnswer(selectedLetter, clickedBtn) {
+            let allBtns = document.querySelectorAll('.choice-btn');
+            allBtns.forEach(b => {
+                b.disabled = true;
+                if (b.innerHTML.includes(currentCorrectChoice + '.')) {
+                    b.classList.add('correct');
+                }
+            });
+
+            let resContainer = document.getElementById('result-container');
+            resContainer.style.display = 'block';
+            let msg = document.getElementById('result-message');
+            document.getElementById('explanation-box').innerHTML = currentExplanationText;
+
+            if (selectedLetter === currentCorrectChoice) {
+                score++;
+                msg.style.color = '#38a169';
+                msg.innerText = '🎉 ถูกต้อง!';
+            } else {
+                wrongCount++;
+                clickedBtn.classList.add('incorrect');
+                msg.style.color = '#e53e3e';
+                msg.innerText = `❌ ผิดครับ คำตอบที่ถูกต้องคือข้อ ${currentCorrectChoice}`;
+            }
+        }
+
+        function nextQuestion() {
+            currentIdx++;
+            if (currentIdx < TOTAL_QUESTIONS) {
+                loadQuestion();
+            } else {
+                endExam();
+            }
+        }
+
+        function endExam() {
+            clearInterval(timerInterval);
+            let totalSec = Math.floor((Date.now() - startTime) / 1000);
+            let avgSecPerQuestion = (totalSec / TOTAL_QUESTIONS).toFixed(1);
+            let avgMinute = (avgSecPerQuestion / 60).toFixed(2);
+
+            document.getElementById('quiz-screen').style.display = 'none';
+            document.getElementById('summary-screen').style.display = 'block';
+
+            let summaryHtml = `
+                ✅ ทำถูก: <b>${score}</b> ข้อ<br>
+                ❌ ทำผิด: <b>${wrongCount}</b> ข้อ<br>
+                ⏱️ ใช้เวลาทั้งหมด: <b>${Math.floor(totalSec/60)} นาที ${totalSec%60} วินาที</b><br>
+                ⚡ เฉลี่ยข้อละ: <b>${avgSecPerQuestion} วินาที</b> (${avgMinute} นาที/ข้อ)
+            `;
+            document.getElementById('summary-content').innerHTML = summaryHtml;
+
+            // บันทึกสถิติลง LocalStorage ของวันนี้
+            saveDailyStats(score, wrongCount, totalSec);
+        }
+
+        function saveDailyStats(newScore, newWrong, newSec) {
+            let todayKey = new Date().toISOString().slice(0, 10); // รูปแบบ YYYY-MM-DD
+            let savedData = JSON.parse(localStorage.getItem('fraction_stats_' + todayKey)) || {
+                totalSets: 0,
+                totalScore: 0,
+                totalWrong: 0,
+                totalTimeSec: 0
+            };
+
+            savedData.totalSets += 1;
+            savedData.totalScore += newScore;
+            savedData.totalWrong += newWrong;
+            savedData.totalTimeSec += newSec;
+
+            localStorage.setItem('fraction_stats_' + todayKey, JSON.stringify(savedData));
+
+            // แสดงสถิติรวมของวันนี้
+            let avgTimeToday = (savedData.totalTimeSec / (savedData.totalSets * TOTAL_QUESTIONS)).toFixed(1);
+            let statsHtml = `
+                <b>📊 สถิติสะสมของคุณวันนี้ (${todayKey}):</b><br>
+                - ทำไปแล้วทั้งหมด: <b>${savedData.totalSets} ชุด</b> (${savedData.totalSets * TOTAL_QUESTIONS} ข้อ)<br>
+                - ถูกสะสม: <b>${savedData.totalScore}</b> ข้อ | ผิดสะสม: <b>${savedData.totalWrong}</b> ข้อ<br>
+                - เวลาเฉลี่ยโดยรวม: <b>${avgTimeToday} วินาที ต่อข้อ</b>
+            `;
+            document.getElementById('daily-stats').innerHTML = statsHtml;
+        }
+
+        window.onload = startExam;
+    </script>
+</body>
+</html>
