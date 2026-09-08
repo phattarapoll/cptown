@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบทดสอบวิชาวิทยาศาสตร์ทั่วไป (20 ข้อ)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 650px;
+        }
+        h2 {
+            text-align: center;
+            color: #2b6cb0;
+            margin-bottom: 10px;
+        }
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #edf2f7;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        .quiz-card {
+            background-color: #f7fafc;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .shape-container {
+            margin: 15px 0;
+            display: flex;
+            justify-content: center;
+        }
+        .question-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+        .choices {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .choice-btn {
+            background-color: #ffffff;
+            border: 2px solid #cbd5e0;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            display: flex;
+            align-items: center;
+        }
+        .choice-btn:hover:not(:disabled) {
+            border-color: #3182ce;
+            background-color: #ebf8ff;
+        }
+        .choice-btn.correct {
+            border-color: #38a169;
+            background-color: #f0fff4;
+            color: #22543d;
+        }
+        .choice-btn.incorrect {
+            border-color: #e53e3e;
+            background-color: #fff5f5;
+            color: #742a2a;
+        }
+        .btn-main {
+            background-color: #3182ce;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-main:hover {
+            background-color: #2b6cb0;
+        }
+        .explanation {
+            font-size: 15px;
+            color: #2d3748;
+            line-height: 1.6;
+            background-color: #fff;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #3182ce;
+            margin-top: 10px;
+            text-align: left;
+        }
+        .stats-box {
+            background-color: #edf2f7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #2d3748;
+            text-align: left;
+        }
+        #summary-screen {
+            display: none;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>🔬 แบบทดสอบวิชาวิทยาศาสตร์ทั่วไป</h2>
+        
+        <!-- หน้าทำข้อสอบ -->
+        <div id="quiz-screen">
+            <div class="quiz-header">
+                <span id="progress-text">ข้อที่ 1 / 20</span>
+                <span id="timer-text">⏱️ เวลา: 00:00</span>
+            </div>
+
+            <div class="quiz-card">
+                <div class="question-text" id="question-text"></div>
+                <div class="shape-container" id="shape-display"></div>
+                
+                <div class="choices" id="choices-container"></div>
+
+                <div id="result-container" style="display: none;">
+                    <div id="result-message" style="font-weight: bold; font-size: 18px; margin-bottom: 8px;"></div>
+                    <div class="explanation" id="explanation-box"></div>
+                    <div style="text-align: right; margin-top: 15px;">
+                        <button class="btn-main" onclick="nextQuestion()">ข้อถัดไป ➔</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- หน้าสรุปผลลัพธ์ -->
+        <div id="summary-screen">
+            <h3 style="color: #2b6cb0; margin-bottom: 10px;">🎉 สรุปผลการทดสอบวิทยาศาสตร์</h3>
+            <div id="summary-content" style="font-size: 18px; line-height: 1.8; margin-bottom: 20px;"></div>
+            <div class="stats-box" id="daily-stats"></div>
+            <br>
+            <button class="btn-main" onclick="startExam()">ทำข้อสอบชุดใหม่อีกครั้ง</button>
+        </div>
+    </div>
+
+    <script>
+        const TOTAL_QUESTIONS = 20;
+        let currentIdx = 0;
+        let score = 0;
+        let wrongCount = 0;
+        let startTime = 0;
+        let timerInterval;
+
+        let currentCorrectChoice = '';
+        let currentExplanationText = '';
+        let quizDataList = [];
+
+        function generateQuizSet() {
+            quizDataList = [];
+            const types = [
+                'speed_calc',     // คำนวณความเร็ว (v = s/t)
+                'force_calc',     // คำนวณแรง (F = ma)
+                'kinetic_energy', // พลังงานจลน์ (Ek = 1/2 mv^2)
+                'gravity_weight', // น้ำหนักวัตถุบนดาวต่างๆ (W = mg)
+                'work_calc'       // งาน (W = Fs)
+            ];
+
+            for (let q = 0; q < TOTAL_QUESTIONS; q++) {
+                let type = types[Math.floor(Math.random() * types.length)];
+                let questionText = "";
+                let svgHtml = "";
+                let correctAns = 0;
+                let explanation = "";
+                let unit = "";
+
+                // 1. คำนวณความเร็ว (v = s/t)
+                if (type === 'speed_calc') {
+                    let t = Math.floor(Math.random() * 4) + 2; 
+                    let v = Math.floor(Math.random() * 15) + 5; 
+                    let s = v * t; 
+                    correctAns = v;
+                    unit = "เมตร/วินาที";
+
+                    questionText = `วัตถุเคลื่อนที่ได้ระยะทาง <b>${s} เมตร</b> ภายในเวลา <b>${t} วินาที</b> จงหาอัตราเร็วของวัตถุนี้`;
+                    svgHtml = `
+                        <svg width="180" height="70" viewBox="0 0 180 70">
+                            <rect x="20" y="20" width="140" height="30" rx="6" fill="#ebf8ff" stroke="#2b6cb0" stroke-width="2"/>
+                            <text x="90" y="40" font-size="14" font-weight="bold" text-anchor="middle" fill="#2d3748">s = ${s}m, t = ${t}s</text>
+                        </svg>
+                    `;
+                    // ปรับข้อความอธิบายให้อ่านง่าย เป็นข้อความธรรมดา
+                    explanation = `<b>วิธีคิด:</b> จากสูตร อัตราเร็ว = ระยะทาง (s) ÷ เวลา (t)<br>&bull; นำ ${s} ÷ ${t} = <b>${correctAns} เมตร/วินาที</b>`;
+                } 
+                // 2. คำนวณแรง (F = ma)
+                else if (type === 'force_calc') {
+                    let m = Math.floor(Math.random() * 8) + 2; 
+                    let a = Math.floor(Math.random() * 5) + 2; 
+                    let f = m * a;
+                    correctAns = f;
+                    unit = "นิวตัน";
+
+                    questionText = `วัตถุมวล <b>${m} กิโลกรัม</b> วางอยู่บนพื้นราบ ถูกแรงมากระทำจนมีความเร่ง <b>${a} เมตร/วินาที²</b> จงหาขนาดของแรงลัพธ์ที่มากระทำ`;
+                    svgHtml = `
+                        <svg width="180" height="70" viewBox="0 0 180 70">
+                            <rect x="50" y="20" width="80" height="30" rx="4" fill="#f0fff4" stroke="#38a169" stroke-width="2"/>
+                            <text x="90" y="40" font-size="13" font-weight="bold" text-anchor="middle" fill="#22543d">m = ${m} kg</text>
+                        </svg>
+                    `;
+                    explanation = `<b>วิธีคิด:</b> จากสูตร แรง = มวล (m) × ความเร่ง (a)<br>&bull; นำ ${m} × ${a} = <b>${correctAns} นิวตัน</b>`;
+                } 
+                // 3. พลังงานจลน์
+                else if (type === 'kinetic_energy') {
+                    let m = 2; 
+                    let v = Math.floor(Math.random() * 5) + 3; 
+                    let ek = 0.5 * m * (v * v);
+                    correctAns = ek;
+                    unit = "จูล";
+
+                    questionText = `วัตถุมวล <b>${m} กิโลกรัม</b> กำลังเคลื่อนที่ด้วยอัตราเร็ว <b>${v} เมตร/วินาที</b> จงหาพลังงานจลน์ของวัตถุนี้`;
+                    svgHtml = `
+                        <svg width="180" height="70" viewBox="0 0 180 70">
+                            <circle cx="90" cy="35" r="25" fill="#ebf8ff" stroke="#2b6cb0" stroke-width="2"/>
+                            <text x="90" y="40" font-size="13" font-weight="bold" text-anchor="middle" fill="#2d3748">v = ${v} m/s</text>
+                        </svg>
+                    `;
+                    explanation = `<b>วิธีคิด:</b> จากสูตร พลังงานจลน์ = 0.5 × มวล (m) × (ความเร็ว)²<br>&bull; 0.5 × ${m} × (${v} × ${v}) = <b>${correctAns} จูล</b>`;
+                }
+                // 4. น้ำหนักวัตถุ (W = mg)
+                else if (type === 'gravity_weight') {
+                    let m = Math.floor(Math.random() * 10) + 5; 
+                    let g = 10; 
+                    let w = m * g;
+                    correctAns = w;
+                    unit = "นิวตัน";
+
+                    questionText = `วัตถุมวล <b>${m} กิโลกรัม</b> อยู่บนผิวโลกที่มีค่าความเร่งโน้มถ่วง 10 เมตร/วินาที² วัตถุนี้จะมีน้ำหนักเท่าใด`;
+                    svgHtml = `
+                        <svg width="180" height="70" viewBox="0 0 180 70">
+                            <ellipse cx="90" cy="35" rx="40" ry="20" fill="#edf2f7" stroke="#4a5568" stroke-width="2"/>
+                            <text x="90" y="40" font-size="13" font-weight="bold" text-anchor="middle" fill="#2d3748">g = 10 m/s²</text>
+                        </svg>
+                    `;
+                    explanation = `<b>วิธีคิด:</b> จากสูตร น้ำหนัก = มวล (m) × ค่าความเร่งโน้มถ่วง (g)<br>&bull; นำ ${m} × 10 = <b>${correctAns} นิวตัน</b>`;
+                }
+                // 5. งาน (W = Fs)
+                else {
+                    let f = Math.floor(Math.random() * 10) + 5; 
+                    let s = Math.floor(Math.random() * 5) + 2;  
+                    let work = f * s;
+                    correctAns = work;
+                    unit = "จูล";
+
+                    questionText = `ออกแรงขนาด <b>${f} นิวตัน</b> ลากวัตถุไปตามแนวราบเป็นระยะทาง <b>${s} เมตร</b> ในทิศทางเดียวกับแรง งานของแรงนี้มีค่าเท่าใด`;
+                    svgHtml = `
+                        <svg width="180" height="70" viewBox="0 0 180 70">
+                            <rect x="40" y="25" width="100" height="25" rx="4" fill="#fff5f5" stroke="#e53e3e" stroke-width="2"/>
+                            <text x="90" y="42" font-size="12" font-weight="bold" text-anchor="middle" fill="#742a2a">F=${f}N, s=${s}m</text>
+                        </svg>
+                    `;
+                    explanation = `<b>วิธีคิด:</b> จากสูตร งาน = แรง (F) × ระยะทาง (s)<br>&bull; นำ ${f} × ${s} = <b>${correctAns} จูล</b>`;
+                }
+
+                // สุ่มตัวเลือก 4 ตัว
+                let choicesSet = new Set();
+                choicesSet.add(correctAns);
+                let offsets = [-3, -1, 1, 3, 5];
+                offsets.sort(() => Math.random() - 0.5);
+
+                for (let i = 0; i < offsets.length && choicesSet.size < 4; i++) {
+                    let fake = correctAns + offsets[i];
+                    if (fake > 0 && fake !== correctAns) choicesSet.add(fake);
+                }
+                while(choicesSet.size < 4) {
+                    choicesSet.add(correctAns + Math.floor(Math.random() * 5) + 1);
+                }
+
+                let choicesArray = Array.from(choicesSet);
+                choicesArray.sort(() => Math.random() - 0.5);
+
+                quizDataList.push({
+                    questionText,
+                    svgHtml,
+                    correctAns,
+                    unit,
+                    explanation,
+                    choices: choicesArray
+                });
+            }
+        }
+
+        function startExam() {
+            currentIdx = 0;
+            score = 0;
+            wrongCount = 0;
+            startTime = Date.now();
+
+            generateQuizSet();
+
+            document.getElementById('quiz-screen').style.display = 'block';
+            document.getElementById('summary-screen').style.display = 'none';
+
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+
+            loadQuestion();
+        }
+
+        function updateTimer() {
+            let elapsedSec = Math.floor((Date.now() - startTime) / 1000);
+            let min = String(Math.floor(elapsedSec / 60)).padStart(2, '0');
+            let sec = String(elapsedSec % 60).padStart(2, '0');
+            document.getElementById('timer-text').innerText = `⏱️ เวลา: ${min}:${sec}`;
+        }
+
+        function loadQuestion() {
+            document.getElementById('result-container').style.display = 'none';
+            document.getElementById('progress-text').innerText = `ข้อที่ ${currentIdx + 1} / ${TOTAL_QUESTIONS}`;
+
+            let q = quizDataList[currentIdx];
+            document.getElementById('question-text').innerHTML = q.questionText;
+            document.getElementById('shape-display').innerHTML = q.svgHtml;
+
+            const letters = ['ก', 'ข', 'ค', 'ง'];
+            let choicesContainer = document.getElementById('choices-container');
+            choicesContainer.innerHTML = '';
+
+            q.choices.forEach((choice, index) => {
+                let letter = letters[index];
+                if (choice === q.correctAns) {
+                    currentCorrectChoice = letter;
+                }
+
+                let btn = document.createElement('button');
+                btn.className = 'choice-btn';
+                btn.innerHTML = `<span style="margin-right: 10px; color: #4a5568;">${letter}.</span> ${choice} ${q.unit}`;
+                btn.onclick = function() {
+                    checkAnswer(letter, btn);
+                };
+                choicesContainer.appendChild(btn);
+            });
+
+            currentExplanationText = q.explanation;
+        }
+
+        function checkAnswer(selectedLetter, clickedBtn) {
+            let allBtns = document.querySelectorAll('.choice-btn');
+            allBtns.forEach(b => {
+                b.disabled = true;
+                if (b.innerHTML.includes(currentCorrectChoice + '.')) {
+                    b.classList.add('correct');
+                }
+            });
+
+            let resContainer = document.getElementById('result-container');
+            resContainer.style.display = 'block';
+            let msg = document.getElementById('result-message');
+            document.getElementById('explanation-box').innerHTML = currentExplanationText;
+
+            if (selectedLetter === currentCorrectChoice) {
+                score++;
+                msg.style.color = '#38a169';
+                msg.innerText = '🎉 ถูกต้อง!';
+            } else {
+                wrongCount++;
+                clickedBtn.classList.add('incorrect');
+                msg.style.color = '#e53e3e';
+                msg.innerText = `❌ ผิดครับ คำตอบที่ถูกต้องคือข้อ ${currentCorrectChoice}`;
+            }
+        }
+
+        function nextQuestion() {
+            currentIdx++;
+            if (currentIdx < TOTAL_QUESTIONS) {
+                loadQuestion();
+            } else {
+                endExam();
+            }
+        }
+
+        function endExam() {
+            clearInterval(timerInterval);
+            let totalSec = Math.floor((Date.now() - startTime) / 1000);
+            let avgSecPerQuestion = (totalSec / TOTAL_QUESTIONS).toFixed(1);
+            let avgMinute = (avgSecPerQuestion / 60).toFixed(2);
+
+            document.getElementById('quiz-screen').style.display = 'none';
+            document.getElementById('summary-screen').style.display = 'block';
+
+            let summaryHtml = `
+                ✅ ทำถูก: <b>${score}</b> ข้อ<br>
+                ❌ ทำผิด: <b>${wrongCount}</b> ข้อ<br>
+                ⏱️ ใช้เวลาทั้งหมด: <b>${Math.floor(totalSec/60)} นาที ${totalSec%60} วินาที</b><br>
+                ⚡ เฉลี่ยข้อละ: <b>${avgSecPerQuestion} วินาที</b> (${avgMinute} นาที/ข้อ)
+            `;
+            document.getElementById('summary-content').innerHTML = summaryHtml;
+
+            saveDailyStats(score, wrongCount, totalSec);
+        }
+
+        function saveDailyStats(newScore, newWrong, newSec) {
+            let todayKey = new Date().toISOString().slice(0, 10);
+            let savedData = JSON.parse(localStorage.getItem('science_quiz_stats_' + todayKey)) || {
+                totalSets: 0, totalScore: 0, totalWrong: 0, totalTimeSec: 0
+            };
+
+            savedData.totalSets += 1;
+            savedData.totalScore += newScore;
+            savedData.totalWrong += newWrong;
+            savedData.totalTimeSec += newSec;
+
+            localStorage.setItem('science_quiz_stats_' + todayKey, JSON.stringify(savedData));
+
+            let avgTimeToday = (savedData.totalTimeSec / (savedData.totalSets * TOTAL_QUESTIONS)).toFixed(1);
+            let statsHtml = `
+                <b>📊 สถิติการทำแบบทดสอบวิทยาศาสตร์ของคุณวันนี้ (${todayKey}):</b><br>
+                - ทำไปแล้วทั้งหมด: <b>${savedData.totalSets} ชุด</b> (${savedData.totalSets * TOTAL_QUESTIONS} ข้อ)<br>
+                - ถูกสะสม: <b>${savedData.totalScore}</b> ข้อ | ผิดสะสม: <b>${savedData.totalWrong}</b> ข้อ<br>
+                - เวลาเฉลี่ย: <b>${avgTimeToday} วินาที ต่อข้อ</b>
+            `;
+            document.getElementById('daily-stats').innerHTML = statsHtml;
+        }
+
+        window.onload = startExam;
+    </script>
+</body>
+</html>

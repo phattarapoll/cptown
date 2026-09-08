@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>คลังข้อสอบภาษาไทย ม.1 </title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ebf8ff;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 700px;
+        }
+        h2 {
+            text-align: center;
+            color: #2b6cb0;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: #4a5568;
+            margin-bottom: 20px;
+        }
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ebf8ff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #2c5282;
+            border: 1px solid #bee3f8;
+        }
+        .quiz-card {
+            background-color: #f7fafc;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .shape-container {
+            margin: 15px 0;
+            display: flex;
+            justify-content: center;
+        }
+        .question-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .choices {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .choice-btn {
+            background-color: #ffffff;
+            border: 2px solid #cbd5e0;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            display: flex;
+            align-items: center;
+        }
+        .choice-btn:hover:not(:disabled) {
+            border-color: #3182ce;
+            background-color: #ebf8ff;
+        }
+        .choice-btn.correct {
+            border-color: #38a169;
+            background-color: #f0fff4;
+            color: #22543d;
+        }
+        .choice-btn.incorrect {
+            border-color: #e53e3e;
+            background-color: #fff5f5;
+            color: #742a2a;
+        }
+        .btn-main {
+            background-color: #3182ce;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-main:hover {
+            background-color: #2b6cb0;
+        }
+        .explanation {
+            font-size: 15px;
+            color: #2d3748;
+            line-height: 1.6;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #3182ce;
+            margin-top: 10px;
+            text-align: left;
+        }
+        .stats-box {
+            background-color: #ebf8ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #2c5282;
+            text-align: left;
+            border: 1px solid #bee3f8;
+        }
+        #summary-screen {
+            display: none;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>📚 คลังข้อสอบภาษาไทย ม.1</h2>
+        <div class="subtitle">ขยันหน่อยนะลูกพ่อ คลังความรู้จะได้เยอะๆ</div>
+
+        <!-- หน้าทำข้อสอบ -->
+        <div id="quiz-screen">
+            <div class="quiz-header">
+                <span id="progress-text">ข้อที่ 1 / 10</span>
+                <span id="timer-text">⏱️ เวลา: 00:00</span>
+            </div>
+
+            <div class="quiz-card">
+                <div class="question-text" id="question-text"></div>
+                <div class="shape-container" id="shape-display"></div>
+                
+                <div class="choices" id="choices-container"></div>
+
+                <div id="result-container" style="display: none;">
+                    <div id="result-message" style="font-weight: bold; font-size: 18px; margin-bottom: 8px;"></div>
+                    <div class="explanation" id="explanation-box"></div>
+                    <div style="text-align: right; margin-top: 15px;">
+                        <button class="btn-main" onclick="nextQuestion()">ข้อถัดไป ➔</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- หน้าสรุปผลลัพธ์ -->
+        <div id="summary-screen">
+            <h3 style="color: #2b6cb0; margin-bottom: 10px;">🎉 สรุปผลการทดสอบ ม.1</h3>
+            <div id="summary-content" style="font-size: 18px; line-height: 1.8; margin-bottom: 20px;"></div>
+            <div class="stats-box" id="daily-stats"></div>
+            <br>
+            <button class="btn-main" onclick="startExam()">ทำข้อสอบชุดใหม่อีกครั้ง (สุ่ม 10 ข้อใหม่)</button>
+        </div>
+    </div>
+
+    <script>
+        const QUESTIONS_PER_SESSION = 10; 
+        let currentIdx = 0;
+        let score = 0;
+        let wrongCount = 0;
+        let startTime = 0;
+        let timerInterval;
+
+        let currentExplanationText = '';
+        let quizDataList = [];
+
+        // ฐานข้อมูลข้อสอบ ม.1 แบบจัดเต็ม 50 ข้อ
+        const masterBank = [
+            {
+                tag: "เสียงในภาษา",
+                q: "ข้อใดมีคำที่เป็น <b>'คำตาย'</b> ทั้งหมด?",
+                svg: `<svg width="340" height="50" viewBox="0 0 340 50"><rect x="10" y="5" width="320" height="40" rx="6" fill="#ebf8ff" stroke="#3182ce" stroke-width="2"/><text x="170" y="30" font-size="13" font-weight="bold" text-anchor="middle" fill="#2d3748">💡 คำใบ้: แม่ กก กด กบ + สระเสียงสั้น</text></svg>`,
+                choices: ["กะทิ, ลาภ, ธูป", "กาแฟ, มะม่วง, ดิน", "บ้าน, รถ, แมว", "ปลา, เสือ, วัว"],
+                ans: "กะทิ, ลาภ, ธูป",
+                exp: "<b>📚 คำอธิบาย:</b> คำตายประสมด้วยสระเสียงสั้นหรือมีตัวสะกดแม่ กก กด กบ"
+            },
+            {
+                tag: "ชนิดของคำ",
+                q: "คำในข้อใดเกิดจากกระบวนการสร้างคำแบบ <b>'คำประสม'</b> ทุกคำ?",
+                svg: `<svg width="340" height="50" viewBox="0 0 340 50"><rect x="10" y="5" width="320" height="40" rx="6" fill="#f0fff4" stroke="#38a169" stroke-width="2"/><text x="170" y="30" font-size="13" font-weight="bold" text-anchor="middle" fill="#22543d">💡 คำใบ้: คำมูลมารวมกันเกิดความหมายใหม่</text></svg>`,
+                choices: ["แม่น้ำ, รถไฟ, พัดลม", "สวยงาม, ขาวผ่อง, เดินเหิน", "ก.ไก่, ป.ปลา, น.หนู", "จะ, ได้, และ, หรือ"],
+                ans: "แม่น้ำ, รถไฟ, พัดลม",
+                exp: "<b>📚 คำอธิบาย:</b> เกิดจากการนำคำมูลตั้งแต่ 2 คำมารวมกันจนเกิดความหมายใหม่"
+            },
+            {
+                tag: "สำนวนไทย",
+                q: "สำนวนในข้อใดหมายถึง <b>'คนทำความผิดแล้วกลบเกลื่อนความชั่วแต่ไม่มิด'</b>?",
+                svg: `<svg width="340" height="50" viewBox="0 0 340 50"><rect x="10" y="5" width="320" height="40" rx="6" fill="#f0fff4" stroke="#38a169" stroke-width="2"/><text x="170" y="30" font-size="13" font-weight="bold" text-anchor="middle" fill="#22543d">💡 คำใบ้: เกี่ยวกับซากสัตว์ขนาดใหญ่</text></svg>`,
+                choices: ["เอาช้างตายทั้งตัวเอาใบบัวมาปิด", "เอากระออมทรายมาถมทะเล", "วัวหายล้อมคอก", "ชักน้ำเข้าลึกชักศึกเข้าบ้าน"],
+                ans: "เอาช้างตายทั้งตัวเอาใบบัวมาปิด",
+                exp: "<b>📚 คำอธิบาย:</b> เปรียบความผิดใหญ่หลวง จะหาอะไรมาปิดบังก็ไม่อาจมิด"
+            },
+            {
+                tag: "วรรณคดี",
+                q: "กวีเอกผู้ประพันธ์ <b>'กาพย์ห่อโคลงประพาสธารทองแดง'</b> คือใคร?",
+                svg: `<svg width="340" height="50" viewBox="0 0 340 50"><rect x="10" y="5" width="320" height="40" rx="6" fill="#ebf8ff" stroke="#3182ce" stroke-width="2"/><text x="170" y="30" font-size="13" font-weight="bold" text-anchor="middle" fill="#2d3748">💡 คำใบ้: พระราชโอรสในสมัยอยุธยาตอนปลาย</text></svg>`,
+                choices: ["เจ้าฟ้าธรรมธิเบศร (เจ้าฟ้ากุ้ง)", "สุนทรภู่", "สมเด็จพระนารายณ์มหาราช", "รัชกาลที่ 2"],
+                ans: "เจ้าฟ้าธรรมธิเบศร (เจ้าฟ้ากุ้ง)",
+                exp: "<b>📚 คำอธิบาย:</b> เจ้าฟ้ากุ้งทรงนิพนธ์ขึ้นขณะเสด็จประพาสธารทองแดง"
+            },
+            {
+                tag: "ภาษาถิ่น",
+                q: "คำภาษาถิ่นใต้ข้อใดตรงกับคำว่า <b>'อร่อย'</b> ในภาษาไทยกลาง?",
+                svg: `<svg width="340" height="50" viewBox="0 0 340 50"><rect x="10" y="5" width="320" height="40" rx="6" fill="#ebf8ff" stroke="#3182ce" stroke-width="2"/><text x="170" y="30" font-size="13" font-weight="bold" text-anchor="middle" fill="#2d3748">💡 คำใบ้: คำถิ่นใต้รสชาติถูกปาก</text></svg>`,
+                choices: ["หรอย", "ลำ", "แซ่บ", "นัว"],
+                ans: "หรอย",
+                exp: "<b>📚 คำอธิบาย:</b> 'หรอย' แปลว่า อร่อย ('ลำ' เหนือ, 'แซ่บ' อีสาน)"
+            },
+            {
+                tag: "คำพ้อง",
+                q: "ข้อความ <b>'เขานั่งขัดสมาธิบนเสื่อสาด'</b> คำว่า 'สาด' คือคำพ้องประเภทใด?",
+                svg: `<svg width="340" height="50" viewBox="0 0 340 50"><rect x="10" y="5" width="320" height="40" rx="6" fill="#faf5ff" stroke="#6b46c1" stroke-width="2"/><text x="170" y="30" font-size="13" font-weight="bold" text-anchor="middle" fill="#553c9a">💡 คำใบ้: เขียนเหมือน แต่อ่านหรือความหมายต่าง</text></svg>`,
+                choices: ["พ้องรูป", "พ้องเสียง", "คำประสม", "คำซ้อน"],
+                ans: "พ้องรูป",
+                exp: "<b>📚 คำอธิบาย:</b> พ้องรูปคือเขียนสะกดเหมือนกันแต่ความหมายต่างกันตามบริบท"
+            },
+            {
+                tag: "อักษรควบกล้ำ",
+                q: "ข้อใดมีคำที่เป็น <b>'คำควบกล้ำแท้'</b> ทุกคำ?",
+                svg: `<svg width="340" height="50" viewBox="0 0 340 50"><rect x="10" y="5" width="320" height="40" rx="6" fill="#f0fff4" stroke="#38a169" stroke-width="2"/><text x="170" y="30" font-size="13" font-weight="bold" text-anchor="middle" fill="#22543d">💡 คำใบ้: ออกเสียงควบกับ ร ล ว พร้อมกัน</text></svg>`,
+                choices: ["กราบ, ปลอม, ความ", "จริง, เศร้า, ไซร้", "สรรเสริญ, ทราบ, จริง", "สรงน้ำ, เสริม, ศรัทธา"],
+                ans: "กราบ, ปลอม, ความ",
+                exp: "<b>📚 คำอธิบาย:</b> ควบกล้ำแท้ออกเสียงพยัญชนะต้นควบกับ ร ล ว สนิทกัน"
+            },
+            {
+                tag: "ชนิดของคำ",
+                q: "คำว่า <b>'ซึ่ง'</b> ในประโยครถยนต์คัน<u>ซึ่ง</u>จอดอยู่หน้าบ้าน เป็นคำชนิดใด?",
+                svg: `<svg width="340" height="50" viewBox="0 0 340 50"><rect x="10" y="5" width="320" height="40" rx="6" fill="#ebf8ff" stroke="#3182ce" stroke-width="2"/><text x="170" y="30" font-size="13" font-weight="bold" text-anchor="middle" fill="#2d3748">💡 คำใบ้: สรรพนามเชื่อมประโยค</text></svg>`,
+                choices: ["ประพันธสรรพนาม", "คำบุพบท", "คำวิเศษณ์", "คำสันธาน"],
+                ans: "ประพันธสรรพนาม",
+                exp: "<b>📚 คำอธิบาย:</b> ทำหน้าที่แทนคำนามข้างหน้าและเชื่อมประโยคย่อยเข้าด้วยกัน"
+            },
+            {
+                tag: "นิราศสุพรรณ",
+                q: "กวีท่านใดเป็นผู้แต่ง <b>'นิราศสุพรรณ'</b> ด้วยคำประพันธ์ประเภทโคลง?",
+                svg: `<svg width="340" height="50" viewBox="0 0 340 50"><rect x="10" y="5" width="320" height="40" rx="6" fill="#fffaf0" stroke="#dd6b20" stroke-width="2"/><text x="170" y="30" font-size="13" font-weight="bold" text-anchor="middle" fill="#9c4221">💡 คำใบ้: กวีเอกสุนทรภู่</text></svg>`,
+                choices: ["สุนทรภู่", "เจ้าฟ้าธรรมธิเบศร", "กรมพระยาดำรงราชานุภาพ", "พระบาทสมเด็จพระพุทธเลิศหล้านภาลัย"],
+                ans: "สุนทรภู่",
+                exp: "<b>📚 คำอธิบาย:</b> สุนทรภู่แต่งนิราศสุพรรณด้วยโคลงสุภาพตลอดเรื่อง"
+            },
+            {
+                tag: "อักษรนำ",
+                q: "ข้อใดมีคำที่เป็น <b>'อักษรนำ'</b> ทุกคำ?",
+                svg: `<svg width="340" height="50" viewBox="0 0 340 50"><rect x="10" y="5" width="320" height="40" rx="6" fill="#ebf8ff" stroke="#3182ce" stroke-width="2"/><text x="170" y="30" font-size="13" font-weight="bold" text-anchor="middle" fill="#2d3748">💡 คำใบ้: ห นำ หรือ อ นำ ย</text></svg>`,
+                choices: ["ขนุน, ฉลาด, หรูหรา", "กราบ, พระ, ครอบ", "จริง, ไซร้, เศร้า", "บล็อก, เครป, แปรง"],
+                ans: "ขนุน, ฉลาด, หรูหรา",
+                exp: "<b>📚 คำอธิบาย:</b> ห นำ (หรูหรา) และอักษรนำเสียงเดี่ยว (ขนุน, ฉลาด) ออกเสียงพยัญชนะตัวแรกนำหน้า"
+            },
+            // ข้อ 11-50 เพิ่มเติมเพื่อให้ครบ 50 ข้อ
+            { tag: "เสียงในภาษา", q: "ข้อใดมีเฉพาะคำเป็นทั้งหมด?", svg: "", choices: ["กา, มา, ปี", "กะ, กิ, กุ", "ตบ, ติก, ตุต", "จบ, ลาภ, ธูป"], ans: "กา, มา, ปี", exp: "คำเป็นประสมด้วยสระเสียงยาวหรือแม่ กน, กม, กง, กฎ, เกย, เกอว์" },
+            { tag: "ชนิดของคำ", q: "คำสรรพนามใช้สำหรับถามเรียกว่าอะไร?", svg: "", choices: ["ปุจฉาสรรพนาม", "อนิยมสรรพนาม", "วิภาคสรรพนาม", "ประพันธสรรพนาม"], ans: "ปุจฉาสรรพนาม", exp: "ปุจฉาสรรพนามคือคำสรรพนามบอกความสงสัยหรือใช้ถาม" },
+            { tag: "ชนิดของคำ", q: "คำว่า 'ใคร' ในประโยค 'ใครๆ ก็อยากประสบความสำเร็จ' เป็นสรรพนามใด?", svg: "", choices: ["อนิยมสรรพนาม (ไม่ชี้เฉพาะ)", "ปุจฉาสรรพนาม", "บุรุษสรรพนาม", "นิยมสรรพนาม"], ans: "อนิยมสรรพนาม (ไม่ชี้เฉพาะ)", exp: "ใช้กล่าวลอยๆ ไม่เจาะจงตัวบุคคล" },
+            { tag: "คำประสม", q: "ข้อใดไม่ใช่คำประสม?", svg: "", choices: ["กินนอน", "ชาวสวน", "พ่อครัว", "กินข้าว"], ans: "กินข้าว", exp: "กินข้าวเป็นกลุ่มคำหรือประโยคย่อยในภาษาไทย" },
+            { tag: "คำซ้อน", q: "ข้อใดเป็นคำซ้อนเพื่อเสียง?", svg: "", choices: ["โยกเยก", "บ้านเรือน", "อ้วนพี", "พี่น้อง"], ans: "โยกเยก", exp: "คำซ้อนเพื่อเสียงจะใช้ออกเสียงคล้องจองกันเพื่อความไพเราะ" },
+            { tag: "คำซ้ำ", q: "ข้อใดใช้ไม้ยมก ( ๅ ) ได้ถูกต้องตามหลักภาษา?", svg: "", choices: ["เด็กๆ กำลังวิ่งเล่น", "ไฟไหม้บ้านวอดวาย", "วันนี้อากาศดีมากๆ", "เขาร้องเพลงเก่งๆ"], ans: "เด็กๆ กำลังวิ่งเล่น", "exp": "ไม้ยมกใช้ซ้ำคำหน้าเพื่อเน้นย้ำหรือพหูพจน์" },
+            { tag: "สำนวนไทย", q: "สำนวน 'กบในกะลาครอบ' หมายถึงอะไร?", svg: "", choices: ["คนที่มีความรู้น้อยแต่คิดว่าตนรู้มาก", "คนเก่งที่ซ่อนตัว", "คนหัวสูง", "คนใจแคบ"], ans: "คนที่มีความรู้น้อยแต่คิดว่าตนรู้มาก", exp: "เปรียบเหมือนกบที่อยู่แต่ในกะลาไม่เห็นโลกกว้าง" },
+            { tag: "สำนวนไทย", q: "สำนวน 'น้ำพึ่งเรือเสือพึ่งป่า' สอนเรื่องใด?", svg: "", choices: ["การพึ่งพาอาศัยกัน", "การระวังอันตราย", "ความยากลำบาก", "ความขยันหมั่นเพียร"], ans: "การพึ่งพาอาศัยกัน", exp: "หมายถึงคนเราต้องพึ่งพาอาศัยช่วยเหลือซึ่งกันและกัน" },
+            { tag: "สุภาษิต", q: "สุภาษิต 'คมในฝัก' หมายถึงอะไร?", svg: "", choices: ["คนเก่งแต่ไม่แสดงออกจนกว่าจะถึงเวลา", "คนปากร้ายใจดี", "คนมีอาวุธซ่อนอยู่", "คนเจ้าเล่ห์"], ans: "คนเก่งแต่ไม่แสดงออกจนกว่าจะถึงเวลา", exp: "เปรียบเหมือนมีดที่คมแต่เก็บไว้ในฝัก" },
+            { tag: "ราชาศัพท์", q: "คำราชาศัพท์คำว่า 'พระพักตร์' หมายถึงส่วนใดของร่างกาย?", svg: "", choices: ["หน้า", "มือ", "เท้า", "หู"], ans: "หน้า", exp: "พระพักตร์ แปลว่า ใบหน้า" },
+            { tag: "ราชาศัพท์", q: "คำกริยาราชาศัพท์ข้อใดถูกต้อง?", svg: "", choices: ["เสด็จ", "ทรงเสด็จ", "ทรงพระดำเนินเดิน", "ทรงกินข้าว"], ans: "เสด็จ", exp: "คำว่าเสด็จมีความหมายในตัวอยู่แล้วไม่ต้องเติมทรง" },
+            { tag: "วรรณคดี", q: "วรรณคดีเรื่อง 'ราชาธิราช' ตอน สมิงพระรามอาสา แต่งด้วยร้อยแก้วหรือร้อยกรอง?", svg: "", choices: ["ร้อยแก้ว", "ร้อยกรอง", "โคลงสี่สุภาพ", "กาพย์ยานี 11"], ans: "ร้อยแก้ว", exp: "ราชาธิราชเป็นพงศาวดารแปลที่แต่งเป็นร้อยแก้วสำนวนสุภาพไพเราะ" },
+            { tag: "วรรณคดี", q: "สุภาษิตคำพังเพยใน 'โคลงโลกนิติ' แต่งด้วยคำประพันธ์ประเภทใด?", svg: "", choices: ["โคลงสุภาพ (โคลงสี่สุภาพ)", "กลอนสุภาพ", "กาพย์ฉบัง 16", "อินทรวิเชียรฉันท์"], ans: "โคลงสุภาพ (โคลงสี่สุภาพ)", exp: "โคลงโลกนิติแต่งด้วยโคลงสี่สุภาพทั้งหมด" },
+            { tag: "ภาษาถิ่น", q: "คำว่า 'บ่าเก่า' ในภาษาถิ่นเหนือหมายถึงอะไร?", svg: "", choices: ["สมัยก่อน / สมัยโบราณ", "หัวไหล่", "ผลไม้", "กระเป๋า"], ans: "สมัยก่อน / สมัยโบราณ", exp: "บ่าเก่าแปลว่าคนโบราณหรือสมัยก่อน" },
+            { tag: "ภาษาถิ่น", q: "คำว่า 'แหลง' เป็นภาษาถิ่นของภาคใด?", svg: "", choices: ["ภาคใต้", "ภาคเหนือ", "ภาคอีสาน", "ภาคกลาง"], ans: "ภาคใต้", exp: "แหลง แปลว่า พูดคุย" },
+            { tag: "คำพ้อง", q: "คำว่า 'การ' และ 'กาล' เป็นคำพ้องประเภทใด?", svg: "", choices: ["พ้องเสียง", "พ้องรูป", "คำตรงข้าม", "คำไวพจน์"], ans: "พ้องเสียง", exp: "อ่านออกเสียงเหมือนกัน (กาน) แต่เขียนและหมายถึงต่างกัน" },
+            { tag: "คำพ้อง", q: "คำว่า 'สระ' (สฺระ) กับ 'สระ' (สระน้ำ) เป็นคำพ้องประเภทใด?", svg: "", choices: ["พ้องรูป", "พ้องเสียง", "คำประสม", "คำมูล"], ans: "พ้องรูป", exp: "เขียนสะกดเหมือนกันแต่ความหมายและการอ่านต่างกัน" },
+            { tag: "ประโยค", q: "ประโยคสามัญประกอบด้วยอะไรบ้าง?", svg: "", choices: ["ภาคประธาน และ ภาคแสดง", "ประโยคหลัก และ ประโยคย่อย", "ประโยคสองประโยคเชื่อมด้วยสันธาน", "คำนาม และ คำกริยา"], ans: "ภาคประธาน และ ภาคแสดง", exp: "ประโยคความเดียวหรือสามัญมีใจความเดียวสมบูรณ์" },
+            { tag: "ประโยค", q: "ประโยคความรวมมักใช้สิ่งใดเชื่อมความ?", svg: "", choices: ["คำสันธาน", "คำบุพบท", "คำวิเศษณ์", "คำอุทาน"], ans: "คำสันธาน", exp: "ใช้สันธานเชื่อมประโยคตั้งแต่ 2 ประโยคขึ้นไปเข้าด้วยกัน" },
+            { tag: "การเขียน", q: "มารยาทในการฟังที่ดีควรปฏิบัติอย่างไร?", svg: "", choices: ["ตั้งใจฟังและไม่พูดแทรกขณะผู้พูดกำลังพูด", "ลุกขึ้นเดินไปมา", "คุยกับเพื่อนข้างๆ เบาๆ", "หลับตาเพื่อสมาธิที่ดี"], ans: "ตั้งใจฟังและไม่พูดแทรกขณะผู้พูดกำลังพูด", exp: "มารยาทการฟังต้องให้เกียรติผู้พูดและตั้งใจฟัง" },
+            { tag: "การพูด", q: "การพูดอวยพรควรมีลักษณะอย่างไร?", svg: "", choices: ["ใช้วาจาสุภาพ ไพเราะ และจริงใจ", "พูดตลกขบขันล้อเลียน", "พูดสั้นๆ ให้จบไป", "พูดตักเตือนข้อเสียของผู้รับ"], ans: "ใช้วาจาสุภาพ ไพเราะ และจริงใจ", exp: "การอวยพรเน้นความสุภาพและความปรารถนาดี" },
+            { tag: "หลักภาษา", q: "ข้อใดเป็นคำสรรพนามบุรุษที่ 1?", svg: "", choices: ["ฉัน, ผม, อาตมา", "เธอ, คุณ, ท่าน", "เขา, มัน, แก", "นี่, นั่น, โน่น"], ans: "ฉัน, ผม, อาตมา", exp: "บุรุษที่ 1 ใช้แทนตัวผู้พูด" },
+            { tag: "หลักภาษา", q: "ข้อใดเป็นคำสรรพนามบุรุษที่ 2?", svg: "", choices: ["ท่าน, เธอ, คุณ", "ฉัน, ผม", "เขา, มัน", "นี่, นั่น"], ans: "ท่าน, เธอ, คุณ", exp: "บุรุษที่ 2 ใช้แทนผู้ฟัง" },
+            { tag: "หลักภาษา", q: "ข้อใดเป็นคำสรรพนามบุรุษที่ 3?", svg: "", choices: ["เขา, มัน, ท่าน (ผู้ที่ถูกกล่าวถึง)", "ฉัน, ดิฉัน", "คุณ, เธอ", "เรา, พวกเรา"], ans: "เขา, มัน, ท่าน (ผู้ที่ถูกกล่าวถึง)", exp: "บุรุษที่ 3 ใช้แทนผู้ที่ถูกกล่าวถึง" },
+            { tag: "วรรณคดี", q: "นิราศภูเขาทองแต่งด้วยคำประพันธ์ประเภทใด?", svg: "", choices: ["กลอนสุภาพ (กลอนนิราศ)", "โคลงสี่สุภาพ", "กาพย์ยานี 11", "ฉันท์"], ans: "กลอนสุภาพ (กลอนนิราศ)", exp: "สุนทรภู่แต่งนิราศภูเขาทองด้วยกลอนสุภาพ" },
+            { tag: "วรรณคดี", q: "สุภาษิตพระร่วงแต่งด้วยคำประพันธ์ประเภทใด?", svg: "", choices: ["ร่ายยาว / โคลง", "กลอนสุภาพ", "กาพย์ฉบัง", "ลิลิต"], ans: "ร่ายยาว / โคลง", exp: "สุภาษิตพระร่วงแต่งด้วยคำประพันธ์ประเภทร่ายสุภาพ" },
+            { tag: "คำวิเศษณ์", q: "คำว่า 'เร็ว' ในประโยค 'เขาวิ่งเร็วมาก' ทำหน้าที่เป็นคำชนิดใด?", svg: "", choices: ["คำวิเศษณ์", "คำกริยา", "คำนาม", "คำบุพบท"], ans: "คำวิเศษณ์", exp: "ทำหน้าที่ขยายคำกริยา 'วิ่ง' ให้ชัดเจนขึ้น" },
+            { tag: "คำบุพบท", q: "คำว่า 'บน' ในประโยค 'หนังสือวางอยู่บนโต๊ะ' เป็นคำชนิดใด?", svg: "", choices: ["คำบุพบท", "คำวิเศษณ์", "คำสันธาน", "คำสรรพนาม"], ans: "คำบุพบท", exp: "บอกตำแหน่งที่ตั้งสัมพันธ์กับคำนามข้างหลัง" },
+            { tag: "คำสันธาน", q: "ข้อใดเป็นคำสันธานแสดงความขัดแย้ง?", svg: "", choices: ["แต่, แม้ว่า, ถึง...ก็", "และ, กับ, แล้วก็", "จึง, เพราะฉะนั้น", "หรือ, มิฉะนั้น"], ans: "แต่, แม้ว่า, ถึง...ก็", exp: "เชื่อมประโยคที่มีใจความขัดแย้งกัน" },
+            { tag: "คำอุทาน", q: "คำอุทานในข้อใดแสดงความตกใจ?", svg: "", choices: ["อุ๊ย! ตายแล้ว!", "ไชโย! สำเร็จแล้ว", "โอ๊ย! เจ็บจัง", "พุทโธเอ๋ย น่าสงสาร"], ans: "อุ๊ย! ตายแล้ว!", exp: "อุ๊ย! เป็นคำอุทานบอกอาการตกใจ" },
+            { tag: "การอ่าน", q: "การอ่านในใจมีประโยชน์อย่างไรมากที่สุด?", svg: "", choices: ["จับใจความสำคัญได้รวดเร็วและใช้สมาธิสูง", "ฝึกออกเสียงให้ชัดเจน", "ทำให้ผู้อื่นฟังได้ด้วย", "ฝึกความกล้าแสดงออก"], ans: "จับใจความสำคัญได้รวดเร็วและใช้สมาธิสูง", exp: "การอ่านในใจช่วยให้กวาดสายตาและรับรู้ความหมายได้รวดเร็ว" },
+            { tag: "การเขียน", q: "ข้อใดคือหลักสำคัญที่สุดในการเขียนย่อหน้า?", svg: "", choices: ["ใจความสำคัญต้องมีเพียงประเด็นเดียวในหนึ่งย่อหน้า", "ต้องเขียนให้ยาวที่สุด", "ต้องมีคำศัพท์ยากๆ", "ต้องใส่รูปภาพประกอบ"], ans: "ใจความสำคัญต้องมีเพียงประเด็นเดียวในหนึ่งย่อหน้า", exp: "หนึ่งย่อหน้าควรมีใจความหลักเพียงประเด็นเดียวเพื่อไม่ให้สับสน" },
+            { tag: "ภาษาไทย", q: "พยัญชนะไทยมีทั้งหมดกี่ตัว?", svg: "", choices: ["44 ตัว", "32 ตัว", "21 ตัว", "40 ตัว"], ans: "44 ตัว", exp: "พยัญชนะไทยมี 44 รูป ตั้งแต่ ก ถึง ฮ" },
+            { tag: "ภาษาไทย", q: "สระแท้ในภาษาไทยมีกี่เสียง?", svg: "", choices: ["32 เสียง", "21 เสียง", "44 เสียง", "18 เสียง"], ans: "32 เสียง", exp: "เสียงสระเดี่ยวและสระประสมรวมกันเป็น 32 เสียง" },
+            { tag: "วรรณคดี", q: "บทเสภาเรื่องขุนช้างขุนแผน ตอน กำเนิดพลายงาม แต่งด้วยคำประพันธ์ประเภทใด?", svg: "", choices: ["กลอนเสภา", "กลอนสุภาพ", "กาพย์ฉบัง 16", "โคลงสี่สุภาพ"], ans: "กลอนเสภา", exp: "ขับเสภาใช้กลอนเสภาที่มีจังหวะการอ่านเฉพาะตัว" },
+            { tag: "สำนวนไทย", q: "สำนวน 'ตักน้ำใส่กะโหลก ชะโงกดูเงา' หมายถึงอะไร?", svg: "", choices: ["ให้รู้จักเจียมตัวดูฐานะและเงาหัวของตนเอง", "ความพยายามอยู่ที่ไหนความสำเร็จอยู่ที่นั่น", "การเดินทางไกล", "การทำบุญตักบาตร"], ans: "ให้รู้จักเจียมตัวดูฐานะและเงาหัวของตนเอง", exp: "สอนให้รู้จักสำรวจตัวเองและเจียมตัว" },
+            { tag: "คำราชาศัพท์", q: "คำว่า 'พระโอษฐ์' ตรงกับอวัยวะใด?", svg: "", choices: ["ปาก", "ตา", "หู", "จมูก"], ans: "ปาก", exp: "พระโอษฐ์ แปลว่า ปาก" },
+            { tag: "คำราชาศัพท์", q: "คำว่า 'ทรงพระสำราญ' ใช้ในความหมายใด?", svg: "", choices: ["มีความสุขสบาย / สบายพระองค์", "ทรงพระอาพาธ", "ทรงกรรแสง", "ทรงพระดำเนิน"], ans: "มีความสุขสบาย / สบายพระองค์", exp: "ทรงพระสำราญหมายถึงมีความสุขหรือทรงสบายดี" },
+            { tag: "คำยืมภาษาต่างประเทศ", q: "คำว่า 'ถนน' เป็นคำยืมมาจากภาษาใด?", svg: "", choices: ["เขมร", "บาลี", "จีน", "อังกฤษ"], ans: "เขมร", exp: "ถนนเป็นคำที่ยืมมาจากภาษาเขมร" },
+            { tag: "คำยืมภาษาต่างประเทศ", q: "คำว่า 'กงสุล' หรือ 'เต้าหู้' เป็นคำยืมจากภาษาใด?", svg: "", choices: ["จีน", "เขมร", "บาลี", "อังกฤษ"], ans: "จีน", exp: "คำที่เกี่ยวกับอาหารหรือการค้ามักมาจากภาษาจีน" }
+        ];
+
+        function startExam() {
+            currentIdx = 0;
+            score = 0;
+            wrongCount = 0;
+            startTime = Date.now();
+            quizDataList = [];
+
+            generateQuizSet();
+
+            document.getElementById('quiz-screen').style.display = 'block';
+            document.getElementById('summary-screen').style.display = 'none';
+
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+
+            loadQuestion();
+        }
+
+        function generateQuizSet() {
+            let tempBank = [...masterBank];
+            tempBank.sort(() => Math.random() - 0.5); // สุ่มสลับข้อในคลัง 50 ข้อ
+
+            let targetCount = Math.min(QUESTIONS_PER_SESSION, tempBank.length);
+            let selectedQuestions = [];
+
+            for(let i = 0; i < targetCount; i++) {
+                selectedQuestions.push(JSON.parse(JSON.stringify(tempBank[i])));
+            }
+
+            selectedQuestions.forEach((item) => {
+                let correctAns = item.ans;
+                let choicesArray = [...item.choices];
+                choicesArray.sort(() => Math.random() - 0.5); // สุ่มตำแหน่งช้อยส์ ก ข ค ง
+
+                quizDataList.push({
+                    questionText: `<b>[${item.tag}]</b><br>` + item.q,
+                    svgHtml: item.svg,
+                    correctAns: correctAns,
+                    explanation: item.exp,
+                    choices: choicesArray
+                });
+            });
+        }
+
+        function updateTimer() {
+            let elapsedSec = Math.floor((Date.now() - startTime) / 1000);
+            let min = String(Math.floor(elapsedSec / 60)).padStart(2, '0');
+            let sec = String(elapsedSec % 60).padStart(2, '0');
+            document.getElementById('timer-text').innerText = `⏱️ เวลา: ${min}:${sec}`;
+        }
+
+        function loadQuestion() {
+            document.getElementById('result-container').style.display = 'none';
+            document.getElementById('progress-text').innerText = `ข้อที่ ${currentIdx + 1} / ${quizDataList.length}`;
+
+            let q = quizDataList[currentIdx];
+            document.getElementById('question-text').innerHTML = q.questionText;
+            document.getElementById('shape-display').innerHTML = q.svgHtml;
+
+            const letters = ['ก', 'ข', 'ค', 'ง'];
+            let choicesContainer = document.getElementById('choices-container');
+            choicesContainer.innerHTML = '';
+
+            q.choices.forEach((choice, index) => {
+                let letter = letters[index];
+                let btn = document.createElement('button');
+                btn.className = 'choice-btn';
+                btn.innerHTML = `<span style="margin-right: 10px; color: #4a5568; min-width: 20px;">${letter}.</span> <span>${choice}</span>`;
+                btn.onclick = function() {
+                    checkAnswer(choice, btn);
+                };
+                choicesContainer.appendChild(btn);
+            });
+
+            currentExplanationText = q.explanation;
+        }
+
+        function checkAnswer(selectedChoice, clickedBtn) {
+            let q = quizDataList[currentIdx];
+            let allBtns = document.querySelectorAll('.choice-btn');
+            
+            let correctLetter = '';
+            const letters = ['ก', 'ข', 'ค', 'ง'];
+
+            allBtns.forEach((b, idx) => {
+                b.disabled = true;
+                if (b.innerHTML.includes(q.correctAns)) {
+                    b.classList.add('correct');
+                    correctLetter = letters[idx];
+                }
+            });
+
+            let resContainer = document.getElementById('result-container');
+            resContainer.style.display = 'block';
+            let msg = document.getElementById('result-message');
+            document.getElementById('explanation-box').innerHTML = currentExplanationText;
+
+            if (selectedChoice === q.correctAns) {
+                score++;
+                msg.style.color = '#38a169';
+                msg.innerText = '🎉 ถูกต้อง!';
+            } else {
+                wrongCount++;
+                clickedBtn.classList.add('incorrect');
+                msg.style.color = '#e53e3e';
+                msg.innerText = `❌ ผิดครับ คำตอบที่ถูกต้องคือข้อ ${correctLetter}: ${q.correctAns}`;
+            }
+        }
+
+        function nextQuestion() {
+            currentIdx++;
+            if (currentIdx < quizDataList.length) {
+                loadQuestion();
+            } else {
+                endExam();
+            }
+        }
+
+        function endExam() {
+            clearInterval(timerInterval);
+            let totalSec = Math.floor((Date.now() - startTime) / 1000);
+            let totalQ = quizDataList.length;
+            let avgSecPerQuestion = (totalSec / totalQ).toFixed(1);
+
+            document.getElementById('quiz-screen').style.display = 'none';
+            document.getElementById('summary-screen').style.display = 'block';
+
+            let summaryHtml = `
+                📌 ระดับชั้น: <b>ม.1 (จากคลัง 50 ข้อ)</b><br>
+                ✅ ทำถูก: <b>${score}</b> / ${totalQ} ข้อ<br>
+                ❌ ทำผิด: <b>${wrongCount}</b> ข้อ<br>
+                ⏱️ ใช้เวลาทั้งหมด: <b>${Math.floor(totalSec/60)} นาที ${totalSec%60} วินาที</b><br>
+                ⚡ เฉลี่ยข้อละ: <b>${avgSecPerQuestion} วินาที</b>
+            `;
+            document.getElementById('summary-content').innerHTML = summaryHtml;
+
+            saveDailyStats(score, wrongCount, totalSec);
+        }
+
+        function saveDailyStats(newScore, newWrong, newSec) {
+            let todayKey = new Date().toISOString().slice(0, 10);
+            let savedData = JSON.parse(localStorage.getItem('thai_m1_stats_' + todayKey)) || {
+                totalSets: 0, totalScore: 0, totalWrong: 0, totalTimeSec: 0
+            };
+
+            savedData.totalSets += 1;
+            savedData.totalScore += newScore;
+            savedData.totalWrong += newWrong;
+            savedData.totalTimeSec += newSec;
+
+            localStorage.setItem('thai_m1_stats_' + todayKey, JSON.stringify(savedData));
+
+            let statsHtml = `
+                <b>📊 สถิติสะสมวันนี้ (${todayKey}):</b><br>
+                - ทำข้อสอบ ม.1 ไปแล้ว: <b>${savedData.totalSets} ชุด</b><br>
+                - ถูกสะสม: <b>${savedData.totalScore}</b> ข้อ | ผิดสะสม: <b>${savedData.totalWrong}</b> ข้อ
+            `;
+            document.getElementById('daily-stats').innerHTML = statsHtml;
+        }
+
+        window.onload = startExam;
+    </script>
+</body>
+</html>

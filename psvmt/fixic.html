@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>แบบทดสอบเรขาคณิตและพื้นที่ทรงต่างๆ (20 ข้อ)</title>
+    <title>แบบทดสอบวิชาฟิสิกส์พื้นฐาน (20 ข้อ)</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -134,7 +134,7 @@
 <body>
 
     <div class="container">
-        <h2>แบบทดสอบเรขาคณิต (ครบทุกรูปทรง)</h2>
+        <h2>⚡ แบบทดสอบวิชาฟิสิกส์พื้นฐาน</h2>
         
         <!-- หน้าทำข้อสอบ -->
         <div id="quiz-screen">
@@ -161,7 +161,7 @@
 
         <!-- หน้าสรุปผลลัพธ์ -->
         <div id="summary-screen">
-            <h3 style="color: #2b6cb0; margin-bottom: 10px;">🎉 สรุปผลการทดสอบ</h3>
+            <h3 style="color: #2b6cb0; margin-bottom: 10px;">🎉 สรุปผลการทดสอบฟิสิกส์</h3>
             <div id="summary-content" style="font-size: 18px; line-height: 1.8; margin-bottom: 20px;"></div>
             <div class="stats-box" id="daily-stats"></div>
             <br>
@@ -184,14 +184,12 @@
         function generateQuizSet() {
             quizDataList = [];
             const types = [
-                'triangle_angle', 
-                'triangle_side', 
-                'triangle_area', 
-                'square_shape', 
-                'trapezoid_area', 
-                'parallelogram_area', 
-                'circle_shape', 
-                'circle_area'
+                'velocity',     // ความเร็ว v = s/t
+                'newton',       // กฎการเคลื่อนที่ F = ma
+                'kinetic_en',   // พลังงานจลน์ Ek = 1/2 mv^2
+                'potential_en', // พลังงานศักย์ Ep = mgh
+                'ohm_law',      // กฎของโอห์ม V = IR
+                'density'       // ความหนาแน่น D = m/V
             ];
 
             for (let q = 0; q < TOTAL_QUESTIONS; q++) {
@@ -200,164 +198,118 @@
                 let svgHtml = "";
                 let correctAns = 0;
                 let explanation = "";
-                let unit = "หน่วย";
+                let unit = "";
 
-                // 1. มุมภายในสามเหลี่ยม
-                if (type === 'triangle_angle') {
-                    let a = Math.floor(Math.random() * 40) + 40;
-                    let b = Math.floor(Math.random() * 40) + 40;
-                    if (a + b >= 160) b = 150 - a;
-                    correctAns = 180 - (a + b);
-                    unit = "องศา";
+                // 1. ความเร็ว (v = s/t)
+                if (type === 'velocity') {
+                    let t = Math.floor(Math.random() * 5) + 2; // เวลา
+                    let v = Math.floor(Math.random() * 15) + 5; // ความเร็ว
+                    let s = v * t; // ระยะทาง
+                    correctAns = v;
+                    unit = "เมตร/วินาที";
 
-                    questionText = `จงหาขนาดของมุม x ในรูปสามเหลี่ยมนี้`;
+                    questionText = `วัตถุเคลื่อนที่ได้ระยะทาง ${s} เมตร ภายในเวลา ${t} วินาที จงหาอัตราเร็วของวัตถุนี้`;
                     svgHtml = `
-                        <svg width="180" height="130" viewBox="0 0 180 130">
-                            <polygon points="20,115 160,115 90,20" stroke="#2b6cb0" stroke-width="3" fill="#ebf8ff"/>
-                            <text x="35" y="105" font-size="14" font-weight="bold" fill="#2d3748">${a}&deg;</text>
-                            <text x="125" y="105" font-size="14" font-weight="bold" fill="#2d3748">${b}&deg;</text>
-                            <text x="83" y="55" font-size="14" font-weight="bold" fill="#e53e3e">x&deg;</text>
+                        <svg width="200" height="80" viewBox="0 0 200 80">
+                            <line x1="20" y1="50" x2="180" y2="50" stroke="#cbd5e0" stroke-width="4" stroke-dasharray="6"/>
+                            <circle cx="50" cy="50" r="15" fill="#3182ce"/>
+                            <text x="45" y="55" font-size="12" fill="white">🚗</text>
+                            <text x="100" y="30" font-size="14" font-weight="bold" text-anchor="middle" fill="#2d3748">s = ${s} m, t = ${t} s</text>
                         </svg>
                     `;
-                    explanation = `<b>วิธีคิด:</b> ผลรวมมุมภายในของรูปสามเหลี่ยมเท่ากับ 180&deg;<br>&bull; x = 180&deg; - (${a}&deg; + ${b}&deg;)<br>&bull; x = 180&deg; - ${a + b}&deg; = <b>${correctAns} องศา</b>`;
+                    explanation = `<b>วิธีคิด:</b> จากสูตร อัตราเร็ว v = s / t<br>&bull; v = ${s} / ${t} = <b>${correctAns} เมตร/วินาที</b>`;
                 } 
-                // 2. พิทาโกรัส สามเหลี่ยมมุมฉาก
-                else if (type === 'triangle_side') {
-                    let baseTriples = [[3, 4, 5], [6, 8, 10], [5, 12, 13]];
-                    let triple = baseTriples[Math.floor(Math.random() * baseTriples.length)];
-                    let m = Math.floor(Math.random() * 2) + 1;
-                    let a = triple[0] * m, b = triple[1] * m, c = triple[2] * m;
-                    
-                    correctAns = c;
-                    questionText = `จากรูปสามเหลี่ยมมุมฉาก จงหาความยาวด้านตรงข้ามมุมฉาก (c)`;
+                // 2. กฎการเคลื่อนที่ของนิวตัน (F = ma)
+                else if (type === 'newton') {
+                    let m = Math.floor(Math.random() * 8) + 2; // มวล kg
+                    let a = Math.floor(Math.random() * 5) + 2; // ความเร่ง m/s^2
+                    correctAns = m * a;
+                    unit = "นิวตัน";
+
+                    questionText = `วัตถุมวล ${m} กิโลกรัม วางอยู่บนพื้นราบ ถูกแรงมากระทำจนมีความเร่ง ${a} เมตร/วินาที² จงหาขนาดของแรงลัพธ์ (F)`;
                     svgHtml = `
-                        <svg width="160" height="130" viewBox="0 0 160 130">
-                            <polygon points="20,115 140,115 20,20" stroke="#2b6cb0" stroke-width="3" fill="#ebf8ff"/>
-                            <rect x="20" y="95" width="20" height="20" stroke="#2b6cb0" stroke-width="2" fill="none"/>
-                            <text x="70" y="130" font-size="14" font-weight="bold" fill="#2d3748">${a}</text>
-                            <text x="0" y="70" font-size="14" font-weight="bold" fill="#2d3748">${b}</text>
-                            <text x="85" y="65" font-size="14" font-weight="bold" fill="#e53e3e">c = ?</text>
+                        <svg width="200" height="80" viewBox="0 0 200 80">
+                            <rect x="60" y="30" width="80" height="40" rx="4" fill="#ebf8ff" stroke="#2b6cb0" stroke-width="2"/>
+                            <text x="100" y="55" font-size="13" font-weight="bold" text-anchor="middle" fill="#2d3748">m = ${m} kg</text>
+                            <path d="M 20 50 L 50 50" stroke="#e53e3e" stroke-width="3" marker-end="url(#arrow)"/>
+                            <text x="35" y="40" font-size="12" font-weight="bold" fill="#e53e3e">F = ?</text>
                         </svg>
                     `;
-                    explanation = `<b>วิธีคิด (ทฤษฎีบทพิทาโกรัส):</b><br>&bull; สูตร: c<sup>2</sup> = a<sup>2</sup> + b<sup>2</sup><br>&bull; แทนค่า: c<sup>2</sup> = ${a}<sup>2</sup> + ${b}<sup>2</sup> = ${a*a} + ${b*b} = ${c*c}<br>&bull; ถอดสแควร์รูท: c = &radic;${c*c} = <b>${correctAns} หน่วย</b>`;
+                    explanation = `<b>วิธีคิด:</b> จากกฎข้อที่ 2 ของนิวตัน F = m &times; a<br>&bull; F = ${m} &times; ${a} = <b>${correctAns} นิวตัน</b>`;
                 } 
-                // 3. พื้นที่สามเหลี่ยม
-                else if (type === 'triangle_area') {
-                    let base = (Math.floor(Math.random() * 5) + 2) * 2; // เลขคู่หาร 2 ลงตัว
-                    let height = Math.floor(Math.random() * 8) + 4;
-                    correctAns = 0.5 * base * height;
-                    unit = "ตารางหน่วย";
+                // 3. พลังงานจลน์ (Ek = 1/2 m v^2)
+                else if (type === 'kinetic_en') {
+                    let m = (Math.floor(Math.random() * 4) + 1) * 2; // มวลเลขคู่เพื่อให้หาร 2 ลงตัว
+                    let v = Math.floor(Math.random() * 5) + 2; // ความเร็ว
+                    correctAns = 0.5 * m * (v * v);
+                    unit = "จูล";
 
-                    questionText = `จงหาพื้นที่ของรูปสามเหลี่ยมนี้`;
+                    questionText = `วัตถุมวล ${m} กิโลกรัม กำลังเคลื่อนที่ด้วยความเร็ว ${v} เมตร/วินาที จงหาพลังงานจลน์ของวัตถุนี้`;
                     svgHtml = `
-                        <svg width="160" height="130" viewBox="0 0 160 130">
-                            <polygon points="20,115 140,115 90,25" stroke="#2b6cb0" stroke-width="3" fill="#ebf8ff"/>
-                            <line x1="90" y1="25" x2="90" y2="115" stroke="#e53e3e" stroke-width="1.5" stroke-dasharray="4"/>
-                            <text x="70" y="127" font-size="14" font-weight="bold" fill="#2d3748">ฐาน = ${base}</text>
-                            <text x="95" y="75" font-size="14" font-weight="bold" fill="#e53e3e">สูง = ${height}</text>
+                        <svg width="180" height="70" viewBox="0 0 180 70">
+                            <circle cx="90" cy="35" r="25" fill="#ebf8ff" stroke="#2b6cb0" stroke-width="2"/>
+                            <text x="90" y="40" font-size="12" font-weight="bold" text-anchor="middle" fill="#2d3748">v = ${v} m/s</text>
                         </svg>
                     `;
-                    explanation = `<b>วิธีคิด:</b> พื้นที่รูปสามเหลี่ยม = 1/2 &times; ฐาน &times; สูง<br>&bull; 1/2 &times; ${base} &times; ${height} = <b>${correctAns} ตารางหน่วย</b>`;
+                    explanation = `<b>วิธีคิด:</b> จากสูตร พลังงานจลน์ Ek = (1/2) &times; m &times; v<sup>2</sup><br>&bull; Ek = (1/2) &times; ${m} &times; (${v} &times; ${v})<br>&bull; Ek = <b>${correctAns} จูล</b>`;
                 }
-                // 4. สี่เหลี่ยมจัตุรัส / ผืนผ้า
-                else if (type === 'square_shape') {
-                    let side = Math.floor(Math.random() * 10) + 4;
-                    let askArea = Math.random() > 0.5;
-                    
-                    if (askArea) {
-                        correctAns = side * side;
-                        unit = "ตารางหน่วย";
-                        questionText = `จงหาพื้นที่ของรูปสี่เหลี่ยมจัตุรัสนี้`;
-                        explanation = `<b>วิธีคิด:</b> พื้นที่สี่เหลี่ยมจัตุรัส = ด้าน &times; ด้าน<br>&bull; ${side} &times; ${side} = <b>${correctAns} ตารางหน่วย</b>`;
-                    } else {
-                        correctAns = side * 4;
-                        questionText = `จงหาความยาวรอบรูปของสี่เหลี่ยมจัตุรัสนี้`;
-                        explanation = `<b>วิธีคิด:</b> ความยาวรอบรูป = 4 &times; ด้าน<br>&bull; 4 &times; ${side} = <b>${correctAns} หน่วย</b>`;
-                    }
+                // 4. พลังงานศักย์โน้มถ่วง (Ep = mgh)
+                else if (type === 'potential_en') {
+                    let m = Math.floor(Math.random() * 5) + 2; // มวล
+                    let h = Math.floor(Math.random() * 10) + 2; // ความสูง
+                    let g = 10; // ค่าคงที่ g
+                    correctAns = m * g * h;
+                    unit = "จูล";
 
+                    questionText = `วัตถุมวล ${m} กิโลกรัม อยู่สูงจากพื้นดิน ${h} เมตร (กำหนดให้ค่า g = 10 เมตร/วินาที²) จงหาพลังงานศักย์โน้มถ่วง`;
                     svgHtml = `
-                        <svg width="130" height="130" viewBox="0 0 130 130">
-                            <rect x="20" y="20" width="90" height="90" stroke="#2b6cb0" stroke-width="3" fill="#ebf8ff"/>
-                            <text x="65" y="15" font-size="14" font-weight="bold" text-anchor="middle" fill="#2d3748">ด้าน = ${side}</text>
+                        <svg width="150" height="100" viewBox="0 0 150 100">
+                            <line x1="20" y1="90" x2="130" y2="90" stroke="#4a5568" stroke-width="3"/>
+                            <rect x="65" y="30" width="20" height="20" fill="#2b6cb0"/>
+                            <line x1="95" y1="30" x2="95" y2="90" stroke="#e53e3e" stroke-dasharray="3"/>
+                            <text x="102" y="65" font-size="12" font-weight="bold" fill="#e53e3e">h = ${h} m</text>
                         </svg>
                     `;
-                } 
-                // 5. สี่เหลี่ยมคางหมู (พื้นที่)
-                else if (type === 'trapezoid_area') {
-                    let a = (Math.floor(Math.random() * 4) + 2) * 2; // ด้านขนานสั้น
-                    let b = a + (Math.floor(Math.random() * 4) + 2) * 2; // ด้านขนานยาว
-                    let h = Math.floor(Math.random() * 5) + 4; // สูง
-                    correctAns = 0.5 * (a + b) * h;
-                    unit = "ตารางหน่วย";
+                    explanation = `<b>วิธีคิด:</b> จากสูตร พลังงานศักย์ Ep = m &times; g &times; h<br>&bull; Ep = ${m} &times; 10 &times; ${h} = <b>${correctAns} จูล</b>`;
+                }
+                // 5. กฎของโอห์ม (V = IR)
+                else if (type === 'ohm_law') {
+                    let I = Math.floor(Math.random() * 5) + 1; // กระแสไฟฟ้า A
+                    let R = Math.floor(Math.random() * 10) + 2; // ความต้านทาน โอห์ม
+                    correctAns = I * R;
+                    unit = "โวลต์";
 
-                    questionText = `จงหาพื้นที่ของรูปสี่เหลี่ยมคางหมูนี้`;
+                    questionText = `ลวดตัวนำมีความต้านทาน ${R} โอห์ม มีกระแสไฟฟ้าไหลผ่าน ${I} แอมแปร์ จงหาความต่างศักย์ไฟฟ้า (V) คร่อมลวดตัวนำนี้`;
                     svgHtml = `
-                        <svg width="180" height="130" viewBox="0 0 180 130">
-                            <polygon points="50,25 130,25 160,115 20,115" stroke="#2b6cb0" stroke-width="3" fill="#ebf8ff"/>
-                            <text x="90" y="20" font-size="14" font-weight="bold" text-anchor="middle" fill="#2d3748">ด้านขนาน a = ${a}</text>
-                            <text x="90" y="128" font-size="14" font-weight="bold" text-anchor="middle" fill="#2d3748">ด้านขนาน b = ${b}</text>
-                            <line x1="50" y1="25" x2="50" y2="115" stroke="#e53e3e" stroke-width="1.5" stroke-dasharray="4"/>
-                            <text x="35" y="75" font-size="14" font-weight="bold" fill="#e53e3e">สูง=${h}</text>
+                        <svg width="180" height="70" viewBox="0 0 180 70">
+                            <path d="M 20 35 L 50 35 L 60 20 L 80 50 L 100 20 L 120 50 L 130 35 L 160 35" stroke="#2b6cb0" stroke-width="3" fill="none"/>
+                            <text x="90" y="20" font-size="12" font-weight="bold" text-anchor="middle" fill="#2d3748">R = ${R} &Omega;</text>
                         </svg>
                     `;
-                    explanation = `<b>วิธีคิด:</b> พื้นที่สี่เหลี่ยมคางหมู = 1/2 &times; สูง &times; (ผลบวกของด้านคู่ขนาน)<br>&bull; 1/2 &times; ${h} &times; (${a} + ${b})<br>&bull; 1/2 &times; ${h} &times; ${a + b} = <b>${correctAns} ตารางหน่วย</b>`;
+                    explanation = `<b>วิธีคิด:</b> จากกฎของโอห์ม V = I &times; R<br>&bull; V = ${I} &times; ${R} = <b>${correctAns} โวลต์</b>`;
                 }
-                // 6. สี่เหลี่ยมด้านขนาน (พื้นที่)
-                else if (type === 'parallelogram_area') {
-                    let base = Math.floor(Math.random() * 8) + 5;
-                    let height = Math.floor(Math.random() * 6) + 4;
-                    correctAns = base * height;
-                    unit = "ตารางหน่วย";
-
-                    questionText = `จงหาพื้นที่ของรูปสี่เหลี่ยมด้านขนานนี้`;
-                    svgHtml = `
-                        <svg width="180" height="130" viewBox="0 0 180 130">
-                            <polygon points="50,30 160,30 130,115 20,115" stroke="#2b6cb0" stroke-width="3" fill="#ebf8ff"/>
-                            <line x1="50" y1="30" x2="50" y2="115" stroke="#e53e3e" stroke-width="1.5" stroke-dasharray="4"/>
-                            <text x="105" y="23" font-size="14" font-weight="bold" text-anchor="middle" fill="#2d3748">ฐาน = ${base}</text>
-                            <text x="35" y="75" font-size="14" font-weight="bold" fill="#e53e3e">สูง=${height}</text>
-                        </svg>
-                    `;
-                    explanation = `<b>วิธีคิด:</b> พื้นที่สี่เหลี่ยมด้านขนาน = ฐาน &times; สูง<br>&bull; ${base} &times; ${height} = <b>${correctAns} ตารางหน่วย</b>`;
-                }
-                // 7. วงกลม (เส้นรอบวง)
-                else if (type === 'circle_shape') {
-                    let r = (Math.floor(Math.random() * 4) + 1) * 7;
-                    correctAns = 2 * (22 / 7) * r;
-                    questionText = `จงหาความยาวรอบรูปวงกลม (กำหนดค่า &pi; &approx; 22/7)`;
-                    svgHtml = `
-                        <svg width="140" height="140" viewBox="0 0 140 140">
-                            <circle cx="70" cy="70" r="50" stroke="#2b6cb0" stroke-width="3" fill="#ebf8ff"/>
-                            <line x1="70" y1="70" x2="120" y2="70" stroke="#e53e3e" stroke-width="2" stroke-dasharray="4"/>
-                            <circle cx="70" cy="70" r="3" fill="#2b6cb0"/>
-                            <text x="90" y="62" font-size="14" font-weight="bold" fill="#e53e3e">r = ${r}</text>
-                        </svg>
-                    `;
-                    explanation = `<b>วิธีคิด:</b> เส้นรอบวง = 2 &times; &pi; &times; r<br>&bull; 2 &times; (22/7) &times; ${r} = <b>${correctAns} หน่วย</b>`;
-                }
-                // 8. วงกลม (พื้นที่)
+                // 6. ความหนาแน่น (D = m/V)
                 else {
-                    let r = Math.floor(Math.random() * 6) + 2;
-                    let areaVal = (3.14 * r * r).toFixed(1);
-                    correctAns = parseFloat(areaVal);
-                    unit = "ตารางหน่วย";
+                    let volume = Math.floor(Math.random() * 5) + 2; // ปริมาตร
+                    let density = Math.floor(Math.random() * 5) + 2; // ความหนาแน่น
+                    let mass = volume * density; // มวล
+                    correctAns = density;
+                    unit = "กิโลกรัม/ลูกบาศก์เมตร";
 
-                    questionText = `จงหาพื้นที่ของรูปวงกลม (กำหนดค่า &pi; &approx; 3.14)`;
+                    questionText = `วัตถุก้อนหนึ่งมีมวล ${mass} กิโลกรัม และมีปริมาตร ${volume} ลูกบาศก์เมตร จงหาความหนาแน่นของวัตถุนี้`;
                     svgHtml = `
-                        <svg width="140" height="140" viewBox="0 0 140 140">
-                            <circle cx="70" cy="70" r="50" stroke="#2b6cb0" stroke-width="3" fill="#ebf8ff"/>
-                            <line x1="70" y1="70" x2="120" y2="70" stroke="#e53e3e" stroke-width="2" stroke-dasharray="4"/>
-                            <circle cx="70" cy="70" r="3" fill="#2b6cb0"/>
-                            <text x="90" y="62" font-size="14" font-weight="bold" fill="#e53e3e">r = ${r}</text>
+                        <svg width="150" height="90" viewBox="0 0 150 90">
+                            <rect x="50" y="20" width="50" height="50" rx="8" fill="#ebf8ff" stroke="#2b6cb0" stroke-width="2"/>
+                            <text x="75" y="50" font-size="12" font-weight="bold" text-anchor="middle" fill="#2d3748">m=${mass}kg</text>
                         </svg>
                     `;
-                    explanation = `<b>วิธีคิด:</b> พื้นที่วงกลม = &pi; &times; r &times; r<br>&bull; 3.14 &times; ${r} &times; ${r} = <b>${correctAns} ตารางหน่วย</b>`;
+                    explanation = `<b>วิธีคิด:</b> จากสูตร ความหนาแน่น (D) = มวล (m) / ปริมาตร (V)<br>&bull; D = ${mass} / ${volume} = <b>${correctAns} กิโลกรัม/ลูกบาศก์เมตร</b>`;
                 }
 
                 // สุ่มตัวเลือก 4 ตัว
                 let choicesSet = new Set();
                 choicesSet.add(correctAns);
-                let offsets = [-5, -3, 3, 5, 10];
+                let offsets = [-5, -2, 2, 5, 10];
                 offsets.sort(() => Math.random() - 0.5);
 
                 for (let i = 0; i < offsets.length && choicesSet.size < 4; i++) {
@@ -493,7 +445,7 @@
 
         function saveDailyStats(newScore, newWrong, newSec) {
             let todayKey = new Date().toISOString().slice(0, 10);
-            let savedData = JSON.parse(localStorage.getItem('geometry_complete_stats_' + todayKey)) || {
+            let savedData = JSON.parse(localStorage.getItem('physics_quiz_stats_' + todayKey)) || {
                 totalSets: 0, totalScore: 0, totalWrong: 0, totalTimeSec: 0
             };
 
@@ -502,11 +454,11 @@
             savedData.totalWrong += newWrong;
             savedData.totalTimeSec += newSec;
 
-            localStorage.setItem('geometry_complete_stats_' + todayKey, JSON.stringify(savedData));
+            localStorage.setItem('physics_quiz_stats_' + todayKey, JSON.stringify(savedData));
 
             let avgTimeToday = (savedData.totalTimeSec / (savedData.totalSets * TOTAL_QUESTIONS)).toFixed(1);
             let statsHtml = `
-                <b>📊 สถิติเรขาคณิตของคุณวันนี้ (${todayKey}):</b><br>
+                <b>📊 สถิติการทำแบบทดสอบฟิสิกส์ของคุณวันนี้ (${todayKey}):</b><br>
                 - ทำไปแล้วทั้งหมด: <b>${savedData.totalSets} ชุด</b> (${savedData.totalSets * TOTAL_QUESTIONS} ข้อ)<br>
                 - ถูกสะสม: <b>${savedData.totalScore}</b> ข้อ | ผิดสะสม: <b>${savedData.totalWrong}</b> ข้อ<br>
                 - เวลาเฉลี่ย: <b>${avgTimeToday} วินาที ต่อข้อ</b>
