@@ -152,121 +152,157 @@ header p {
     box-shadow: var(--shadow-hover);
 }
 
-/* CALENDAR STYLES */
+/* --- iOS Style Calendar Design --- */
+
+/* กล่องครอบปฏิทินหลัก */
+.calendar-wrapper {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 24px !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+    padding: 24px !important;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+/* ส่วนหัวเดือนและปี (Header) */
 .calendar-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
+    padding: 0 8px;
 }
+
 .calendar-header h2 {
-    font-family: var(--font-heading);
-    color: var(--primary-color);
+    font-family: var(--font-heading, 'Kanit', sans-serif);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1d1d1f;
+    letter-spacing: -0.3px;
     margin: 0;
-    font-size: 1.5rem;
 }
-.nav-btn {
-    background: white;
-    border: 1px solid #e2e8f0;
-    width: 44px;
-    height: 44px;
-    border-radius: var(--radius-sm);
+
+/* ปุ่มเลื่อนซ้าย-ขวาแบบ iOS มินิมอล */
+.calendar-header .nav-btn {
+    background: rgba(0, 0, 0, 0.04);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    color: #1d1d1f;
     cursor: pointer;
-    color: var(--secondary-color);
     transition: all 0.2s ease;
 }
-.nav-btn:hover {
-    background: #f8fafc;
-    color: var(--accent-color);
-    border-color: var(--accent-color);
+
+.calendar-header .nav-btn:hover {
+    background: rgba(0, 0, 0, 0.08);
+    transform: scale(1.05);
 }
 
+/* แถวชื่อวัน (อา. - ส.) */
 .day-names {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     text-align: center;
-    font-family: var(--font-heading);
-    font-weight: 600;
     margin-bottom: 12px;
 }
+
 .day-name {
-    color: #64748b;
-    padding: 8px 0;
-}
-.day-names .day-name:nth-child(1), .day-names .day-name:nth-child(7) {
-    color: var(--danger-color);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #86868b;
 }
 
+/* ตารางวันในปฏิทิน */
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 12px;
+    gap: 8px;
 }
+
+/* ช่องวันแต่ละวัน */
 .calendar-day {
-    min-height: 90px;
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: var(--radius-sm);
-    padding: 10px;
+    aspect-ratio: 1;
+    background: transparent;
+    border-radius: 14px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    align-items: center;
+    justify-content: center;
     position: relative;
-}
-.calendar-day.day:not(.unavailable):hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
-    border-color: var(--accent-color);
     cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+    border: 1px solid transparent;
 }
+
+.calendar-day:hover:not(.empty):not(.unavailable) {
+    background: rgba(0, 113, 227, 0.08);
+    transform: scale(1.06);
+}
+
+/* ตัวเลขวันที่ */
 .calendar-day .day-number {
-    font-family: var(--font-heading);
-    font-weight: 600;
-    font-size: 1.1rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1d1d1f;
+    font-family: var(--font-body, 'Sarabun', sans-serif);
 }
-.calendar-day.day-weekend .day-number {
-    color: var(--danger-color);
-}
+
+/* วันปัจจุบัน (Today) ไฮไลต์แบบ iOS วงกลมสีเด่นชัด */
 .calendar-day.current-day {
-    background: #f0f9ff;
-    border: 2px solid var(--accent-color);
+    background: #0071e3 !important;
+    box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
 }
+
 .calendar-day.current-day .day-number {
-    color: var(--accent-color);
-}
-
-.slot-count {
-    font-size: 0.8rem;
+    color: #ffffff !important;
     font-weight: 600;
-    padding: 2px 6px;
-    border-radius: 6px;
-    text-align: center;
-    display: block;
-}
-.slot-count.available {
-    background-color: #d1fae5;
-    color: #065f46;
-}
-.slot-count.full {
-    background-color: #fee2e2;
-    color: #991b1b;
 }
 
+.calendar-day.current-day .slot-count {
+    color: #e0f2fe !important;
+}
+
+/* วันหยุดสุดสัปดาห์ (สีตัวอักษรซอฟต์ลง) */
+.calendar-day.day-weekend .day-number {
+    color: #ff3b30;
+}
+
+/* วันที่ปิดทำการ / ผ่านไปแล้ว / เต็ม */
 .calendar-day.unavailable {
-    background-color: #f1f5f9;
-    color: #94a3b8;
-    opacity: 0.75;
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: rgba(0, 0, 0, 0.02);
 }
-.calendar-day.unavailable small {
-    font-size: 0.75rem;
-    color: #64748b;
+
+.calendar-day.empty {
+    cursor: default;
+    pointer-events: none;
+}
+
+/* ป้ายบอกจำนวนคิวว่าง / เต็ม ใต้ตัวเลขวัน */
+.calendar-day .slot-count {
+    font-size: 0.65rem;
     font-weight: 600;
-    word-break: break-all;
-    line-height: 1.2;
+    margin-top: 2px;
+    padding: 1px 6px;
+    border-radius: 6px;
+}
+
+.calendar-day .slot-count.available {
+    color: #34c759;
+    background: rgba(52, 199, 89, 0.1);
+}
+
+.calendar-day .slot-count.full {
+    color: #ff3b30;
+    background: rgba(255, 59, 48, 0.1);
 }
 
 /* TIME SLOTS STYLES */

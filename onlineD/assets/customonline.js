@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentYear = new Date().getFullYear();
     let selectedDate = null;
     let selectedTimeSlot = null;
+	let isInitialLoading = true;
 
     let configData = { unavailableDates: [], unavailableWeekdays: [], timeSlots: [], holidayNames: [] };
     let bookingData = {};
@@ -89,31 +90,40 @@ document.addEventListener('DOMContentLoaded', () => {
         return maxCount;
     }
 
-    async function fetchData() {
+async function fetchData() {
         const loadingText = document.getElementById('loadingText');
         const loadingPercentage = document.getElementById('loadingPercentage');
+        const refreshBtn = document.getElementById('loadingRefreshBtn'); // ดึงปุ่ม Refresh มาควบคุม
+        
         let progress = 0;
         let progressInterval;
+        let timeoutTrigger;
 
         try {
             loadingSpinner.classList.remove('hidden');
             if (loadingText) loadingText.textContent = "กำลังโหลดคิว...";
             if (loadingPercentage) loadingPercentage.textContent = "0%";
+            if (refreshBtn) refreshBtn.classList.add('hidden'); // ซ่อนปุ่มไว้ก่อนทุกครั้งที่เริ่มโหลด
             
             isInitialLoading = true;
             renderCalendar(currentMonth, currentYear);
 
+            // ⚡ ตั้งเวลา 7 วินาที: ถ้ายังโหลดไม่เสร็จ ให้แสดงปุ่ม Refresh ขึ้นมาให้ผู้ใช้กด
+            timeoutTrigger = setTimeout(() => {
+                if (refreshBtn) refreshBtn.classList.remove('hidden');
+            }, 15000);
+
             // ⚡ เริ่มจำลองตัวเลข % วิ่ง
             progressInterval = setInterval(() => {
                 if (progress < 70) {
-                    progress += Math.floor(Math.random() * 3)+5; // ช่วงแรกวิ่งเร็วหน่อย
+                    progress += Math.floor(Math.random() * 3)+5; 
                 } else if (progress < 93) {
-                    progress += Math.floor(Math.random() * 3)+2;  // ช่วงหลังค่อยๆ ชะลอตัวลง
+                    progress += Math.floor(Math.random() * 3)+2;  
                 }
-                if (progress > 95) progress = 95; // ขังไว้ที่ 95% จนกว่าข้อมูลจะมาจริง
+                if (progress > 95) progress = 95; 
                 
                 if (loadingPercentage) loadingPercentage.textContent = `${progress}%`;
-            }, 300); // อัปเดตทุกๆ 0.3 วินาที
+            }, 300);
 
             const response = await fetch(`${WEB_APP_URL}?action=getConfigAndBookings`);
             if (!response.ok) {
@@ -121,135 +131,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(`Server Error: ${errorText || response.statusText}`);
             }
             const data = await response.json();
+            
+            // ✅ โหลดสำเร็จ: เคลียร์ตัวนับเวลาค้างและซ่อนปุ่ม Refresh
+            clearTimeout(timeoutTrigger);
+            if (refreshBtn) refreshBtn.classList.add('hidden');
+
             configData = data.config;
             bookingData = data.bookings;
             noShowCount = data.noShowCount;
             if (!Array.isArray(configData.timeSlots)) configData.timeSlots = [];
             
-            // ⚡ โหลดเสร็จจริง ให้เต็ม 100% ทันที
             clearInterval(progressInterval);
             if (loadingPercentage) loadingPercentage.textContent = "100%";
             
-            // หน่วงเวลาให้คนไข้เห็น 100% แป๊บหนึ่งก่อนปิดหน้าต่างโหลด
+            isInitialLoading = false;
+            renderCalendar(currentMonth, currentYear);
+            
             setTimeout(() => {
-                isInitialLoading = false;
-                renderCalendar(currentMonth, currentYear);
                 loadingSpinner.classList.add('hidden');
-            }, 200);
+            }, 100);
 
         } catch (error) {
+            clearTimeout(timeoutTrigger);
             clearInterval(progressInterval);
+            
+            // หากเกิด Error ให้แสดงปุ่ม Refresh ทันทีเพื่อให้ผู้ใช้กดลองใหม่ได้
+            if (refreshBtn) refreshBtn.classList.remove('hidden');
+            
             formMessage.textContent = `ไม่สามารถโหลดข้อมูลได้: ${error.message}`;
             formMessage.className = 'form-message error';
             isInitialLoading = false;
             renderCalendar(currentMonth, currentYear);
-            loadingSpinner.classList.add('hidden');
         }
     }
-
-    function renderCalendar(monthIndex, year) {
-        calendarGrid.innerHTML = '';
-        currentMonthYearDisplay.textContent = `${getMonthName(monthIndex)} ${year}`;
-        const firstDayOfMonth = new Date(year, monthIndex, 1).getDay();
-        const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const bookingLimit = new Date();
-        bookingLimit.setDate(today.getDate() + 21);
-        bookingLimit.setHours(0, 0, 0, 0);
-
-        // ⚡ ใช้ DocumentFragment เพื่อความเร็วสูงสุดในการวาดปฏิทิน
-        const fragment = document.createDocumentFragment();
-
-        for (let i = 0; i < firstDayOfMonth; i++) {
-            const emptyDiv = document.createElement('div');
-            emptyDiv.classList.add('calendar-day', 'empty');
-            fragment.appendChild(emptyDiv);
-        }
-
-        // ตรวจสอบโครงสร้างข้อมูลพื้นฐานเพื่อป้องกัน Error กรณีข้อมูลยังไม่มา
-        if (!configData || !configData.unavailableWeekdays) {
-            configData = { unavailableWeekdays: [], unavailableDates: [], holidayNames: [], timeSlots: [] };
-        }
-
-        for (let day = 1; day <= daysInMonth; day++) {
-            const date = new Date(year, monthIndex, day);
-            date.setHours(0, 0, 0, 0);
-            const dateString = formatDateForComparison(date);
-            const dayOfWeek = date.getDay();
-            const dayDiv = document.createElement('div');
-            dayDiv.classList.add('calendar-day', 'day');
-            dayDiv.innerHTML = `<span class="day-number">${day}</span>`;
-
-            if (date.getTime() === today.getTime()) dayDiv.classList.add('current-day');
-            if (dayOfWeek === 0 || dayOfWeek === 6) dayDiv.classList.add('day-weekend');
-
-            let isUnavailable = false;
-            let displayReason = '';
-            let tooltipReason = '';
-
-            if (date < today) {
-                isUnavailable = true;
-                tooltipReason = 'วันนี้ผ่านไปแล้ว';
-            } else if (date > bookingLimit) {
-                isUnavailable = true;
-                displayReason = 'รอเปิด';
-                tooltipReason = 'รอเปิด';
-            } else if (configData.unavailableWeekdays.includes(dayOfWeek)) {
-                isUnavailable = true;
-                displayReason = 'ปิดทำการ';
-                tooltipReason = 'ปิดทำการ (เสาร์-อาทิตย์)';
-            } else {
-                const holidayIndex = configData.unavailableDates.indexOf(dateString);
-                if (holidayIndex !== -1) {
-                    isUnavailable = true;
-                    const specificHolidayName = configData.holidayNames[holidayIndex] ? configData.holidayNames[holidayIndex].trim() : '';
-                    displayReason = specificHolidayName !== 'ปิด' ? specificHolidayName : 'ปิดทำการ';
-                    tooltipReason = displayReason;
-                }
-            }
-
-            // ⚡ ตรวจสอบสถานะ: หากอยู่ระหว่างโหลดข้อมูลแรกเข้า และวันนั้นไม่ใช่แค่วันที่ปิดทำการ/ผ่านมาแล้ว ให้ขึ้น "Wait"
-            if (isInitialLoading && !isUnavailable) {
-                dayDiv.classList.add('unavailable');
-                dayDiv.title = 'กำลังโหลดข้อมูลคิว...';
-                dayDiv.innerHTML += `<small style="color: #f4a261; font-weight: bold;">Wait</small>`;
-                dayDiv.style.cursor = 'wait';
-            } 
-            // แสดงผลตามปกติเมื่อโหลดเสร็จแล้ว
-            else if (isUnavailable) {
-                dayDiv.classList.add('unavailable');
-                dayDiv.title = tooltipReason;
-                if (displayReason) dayDiv.innerHTML += `<small>${displayReason}</small>`;
-                dayDiv.style.cursor = 'not-allowed';
-            } else {
-                const availableSlots = getAvailableSlotsCount(dateString);
-                const totalSlots = configData.timeSlots.length;
-                const slotCountSpan = document.createElement('span');
-                slotCountSpan.classList.add('slot-count');
-
-                if (totalSlots === 0) {
-                    slotCountSpan.textContent = `ไม่มีคิวตั้งค่า`;
-                    slotCountSpan.classList.add('full');
-                    dayDiv.classList.add('unavailable');
-                } else if (availableSlots > 0) {
-                    slotCountSpan.classList.add('available');
-                    slotCountSpan.textContent = `ว่าง ${availableSlots}`;
-                    dayDiv.addEventListener('click', () => showTimeSlots(date));
-                } else {
-                    slotCountSpan.classList.add('full');
-                    slotCountSpan.textContent = `เต็ม `;
-                    dayDiv.addEventListener('click', () => showTimeSlots(date));
-                }
-                dayDiv.appendChild(slotCountSpan);
-            }
-            fragment.appendChild(dayDiv);
-        }
-        // ⚡ ยัดก้อนปฏิทินทั้งหมดลงหน้าเว็บจริง ปรับวันเปิดปิด-----------------------------------------------------------------------------------------------------------------------------
-        calendarGrid.appendChild(fragment);
-    }
-
-    function renderCalendar(monthIndex, year) {
+	
+	
+function renderCalendar(monthIndex, year) {
         calendarGrid.innerHTML = '';
         currentMonthYearDisplay.textContent = `${getMonthName(monthIndex)} ${year}`;
         const firstDayOfMonth = new Date(year, monthIndex, 1).getDay();
@@ -260,7 +177,6 @@ document.addEventListener('DOMContentLoaded', () => {
         bookingLimit.setDate(today.getDate() + 22);
         bookingLimit.setHours(0, 0, 0, 0);
 
-        // ⚡ ใช้ DocumentFragment เพื่อความเร็วสูงสุดในการวาดปฏิทิน
         const fragment = document.createDocumentFragment();
 
         for (let i = 0; i < firstDayOfMonth; i++) {
@@ -269,7 +185,6 @@ document.addEventListener('DOMContentLoaded', () => {
             fragment.appendChild(emptyDiv);
         }
 
-        // ตรวจสอบโครงสร้างข้อมูลพื้นฐานเพื่อป้องกัน Error กรณีข้อมูลยังไม่มา
         if (!configData || !configData.unavailableWeekdays) {
             configData = { unavailableWeekdays: [], unavailableDates: [], holidayNames: [], timeSlots: [] };
         }
@@ -311,15 +226,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // ⚡ ตรวจสอบสถานะ: หากอยู่ระหว่างโหลดข้อมูลแรกเข้า และวันนั้นไม่ใช่แค่วันที่ปิดทำการ/ผ่านมาแล้ว ให้ขึ้น "Wait"
             if (isInitialLoading && !isUnavailable) {
                 dayDiv.classList.add('unavailable');
                 dayDiv.title = 'กำลังโหลดข้อมูลคิว...';
                 dayDiv.innerHTML += `<small style="color: #f4a261; font-weight: bold;">Wait</small>`;
                 dayDiv.style.cursor = 'wait';
-            } 
-            // แสดงผลตามปกติเมื่อโหลดเสร็จแล้ว
-            else if (isUnavailable) {
+            } else if (isUnavailable) {
                 dayDiv.classList.add('unavailable');
                 dayDiv.title = tooltipReason;
                 if (displayReason) dayDiv.innerHTML += `<small>${displayReason}</small>`;
@@ -347,10 +259,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             fragment.appendChild(dayDiv);
         }
-        // ⚡ ยัดก้อนปฏิทินทั้งหมดลงหน้าเว็บจริง
         calendarGrid.appendChild(fragment);
     }
-
+	
+	
     function getAvailableSlotsCount(dateString) {
         if (!configData.timeSlots || configData.timeSlots.length === 0) return 0;
         let availableCount = configData.timeSlots.length;
@@ -606,16 +518,15 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingSpinner.classList.remove('hidden');
 
         // เริ่มจำลองตัวเลข % วิ่ง
-        progressInterval = setInterval(() => {
-            if (progress < 70) {
-                progress += Math.floor(Math.random() * 15) + 5; // ช่วงแรกวิ่งเร็ว
-            } else if (progress < 93) {
-                progress += Math.floor(Math.random() * 3) + 1;  // ช่วงหลังค่อยๆ ชะลอลง
-            }
-            if (progress > 95) progress = 95; // ขังไว้ที่ 95% จนกว่าข้อมูลจะลบเสร็จจริง
-            
-            if (loadingPercentage) loadingPercentage.textContent = `${progress}%`;
-        }, 300);
+		progressInterval = setInterval(() => {
+        if (progress < 85) {
+            progress += Math.floor(Math.random() * 2) + 1; // ช่วงแรกขยับเนียนๆ
+        } else if (progress < 98) {
+            progress += 1; // ช่วงท้ายค่อยๆ ไต่ระดับช้าๆ แบบสมูท
+        }
+        
+        if (loadingPercentage) loadingPercentage.textContent = `${progress}%`;
+    }, 120); // ลดความเร็วรอบลงเหลือทุกๆ 0.12 วินาที เพื่อให้ตัวเลขวิ่งนิ่มขึ้น
         // ---------------------------------------------------------
         
         const formData = new FormData();
