@@ -108,10 +108,10 @@ async function fetchData() {
             isInitialLoading = true;
             renderCalendar(currentMonth, currentYear);
 
-            // ⚡ ตั้งเวลา 7 วินาที: ถ้ายังโหลดไม่เสร็จ ให้แสดงปุ่ม Refresh ขึ้นมาให้ผู้ใช้กด
+            // ⚡ ตั้งเวลา 20 วินาที: ถ้ายังโหลดไม่เสร็จ ให้แสดงปุ่ม Refresh ขึ้นมาให้ผู้ใช้กด
             timeoutTrigger = setTimeout(() => {
                 if (refreshBtn) refreshBtn.classList.remove('hidden');
-            }, 15000);
+            }, 20000);
 
             // ⚡ เริ่มจำลองตัวเลข % วิ่ง
             progressInterval = setInterval(() => {
