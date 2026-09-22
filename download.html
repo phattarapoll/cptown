@@ -3,269 +3,275 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ดาวน์โหลดเอกสารราชการ</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Prompt', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        /* General Body Styles */
         body {
             font-family: 'Prompt', sans-serif;
-            background-color: #f0f2f5; /* Light gray background for a clean look */
-            margin: 0;
-            padding-top: 20px; /* Space for the back button */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            background: linear-gradient(135deg, #121420 0%, #1e2640 50%, #0d0f17 100%);
             min-height: 100vh;
-            color: #333;
-        }
-
-        /* Container for Document Cards */
-        .document-cards-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            padding: 20px;
-            max-width: 1200px;
-            width: 90%;
-            margin-top: 20px;
-        }
-
-        /* Styles for individual Document Cards */
-        .document-card {
-            background-color: #ffffff;
-            border-radius: 12px; /* Slightly more rounded corners */
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* Soft, subtle shadow */
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 25px; /* Increased padding */
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .document-card:hover {
-            transform: translateY(-7px); /* Lift up slightly on hover */
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* More pronounced shadow on hover */
-        }
-
-        .document-card-icon {
-            font-size: 55px; /* Slightly larger icon */
-            color: #007bff; /* Primary blue color */
-            margin-bottom: 20px;
-        }
-
-        .document-card-title {
-            font-size: 1.4em; /* Larger title font */
-            color: #2c3e50; /* Darker title color */
-            margin-bottom: 12px;
-            font-weight: 700; /* Bolder title */
-        }
-
-        .document-card-description {
-            font-size: 0.95em;
-            color: #7f8c8d; /* Muted description color */
-            margin-bottom: 20px;
-            flex-grow: 1; /* Allows description to take available space */
-            line-height: 1.6; /* Improved readability */
-        }
-
-        .document-card-button {
-            display: inline-block;
-            background-color: #007bff;
             color: #ffffff;
-            padding: 12px 25px; /* Larger button padding */
-            border-radius: 8px; /* More rounded button */
-            text-decoration: none;
-            font-weight: 600; /* Bolder button text */
-            letter-spacing: 0.5px; /* Slight letter spacing */
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3); /* Subtle button shadow */
+            overflow-x: hidden;
         }
 
-        .document-card-button:hover {
-            background-color: #0056b3; /* Darker blue on hover */
-            transform: translateY(-2px); /* Slight lift on hover */
-            box-shadow: 0 6px 15px rgba(0, 123, 255, 0.4);
+        .ios-blur {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.35);
         }
 
-        .document-card-button i {
-            margin-right: 8px; /* Space between icon and text */
+        .ios-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Back button styles */
-        .back-button-container {
-            position: absolute;
-            top: 25px; /* Adjusted position */
-            left: 25px; /* Adjusted position */
-            z-index: 100;
+        .ios-card:hover {
+            background: rgba(255, 255, 255, 0.18);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 35px 0 rgba(0, 198, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
         }
 
-        .back-button {
-            font-size: 2.8em; /* Slightly larger icon */
-            color: #007bff;
-            cursor: pointer;
-            transition: transform 0.2s ease, color 0.2s ease;
-            text-decoration: none;
+        .ios-icon-box {
+            background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.05) 100%);
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.5);
         }
 
-        .back-button:hover {
-            transform: scale(1.1);
-            color: #0056b3; /* Darker blue on hover */
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.08); }
         }
-
-        /* Hide the navbar (as it's not present in the current request) */
-        .navbar {
-            display: none;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .document-cards-container {
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 20px;
-                padding: 15px;
-            }
-            .document-card {
-                padding: 20px;
-            }
-            .document-card-title {
-                font-size: 1.2em;
-            }
-            .document-card-description {
-                font-size: 0.9em;
-            }
-            .document-card-button {
-                padding: 10px 20px;
-            }
-            .back-button {
-                font-size: 2.2em;
-                top: 20px;
-                left: 20px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .document-cards-container {
-                grid-template-columns: 1fr; /* Single column on very small screens */
-                padding: 10px;
-            }
-            .back-button {
-                font-size: 2em;
-                top: 15px;
-                left: 15px;
-            }
+        .glow-bg {
+            animation: pulseGlow 7s infinite ease-in-out;
         }
     </style>
 </head>
-<body>
-    <div class="back-button-container">
-        <a href="index.html" class="back-button" title="ย้อนกลับ">
-            <i class="fas fa-arrow-circle-left"></i>
-        </a>
-    </div>
+<body class="relative flex flex-col justify-between items-center p-4 md:p-8 min-h-screen">
 
-    <div class="document-cards-container">
-        <div class="document-card">
-            <i class="fas fa-file-alt document-card-icon"></i>
-            <div class="document-card-title">ใบรับรองแพทย์ทั่วไป</div>
-            <div class="document-card-description">ดาวน์โหลดแบบฟอร์มใบรับรองแพทย์สำหรับใช้ในกรณีทั่วไป เช่น การยื่นสมัครงาน หรือขอใบลา.</div>
-            <a href="https://drive.google.com/file/d/1ZGW_-52Qh_YQVsLkunB75H1I6Ls9Pd6x/view?usp=sharing" target="_blank" class="document-card-button">
-                <i class="fas fa-download"></i> ดาวน์โหลด
+    <div class="absolute top-10 left-10 w-72 h-72 bg-emerald-500 rounded-full mix-blend-multiply filter blur-3xl opacity-25 glow-bg pointer-events-none"></div>
+    <div class="absolute bottom-10 right-10 w-80 h-80 bg-cyan-600 rounded-full mix-blend-multiply filter blur-3xl opacity-25 glow-bg pointer-events-none" style="animation-delay: 2.5s;"></div>
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 glow-bg pointer-events-none" style="animation-delay: 5s;"></div>
+
+    <header class="w-full max-w-6xl mx-auto flex justify-between items-center mb-8 ios-blur px-6 py-4 rounded-3xl z-10">
+        <div class="flex items-center space-x-3">
+            <a href="index.html" class="w-12 h-12 rounded-2xl ios-icon-box flex items-center justify-center text-cyan-300 text-xl font-bold shadow-lg hover:scale-105 transition-transform" title="ย้อนกลับหน้าหลัก">
+                <i class="fa-solid fa-arrow-left"></i>
             </a>
+            <div>
+                <h1 class="text-lg md:text-xl font-bold tracking-wide text-white">ศูนย์ดาวน์โหลดเอกสาร</h1>
+                <p class="text-xs text-gray-300">แบบฟอร์มและโปรแกรมบริการทันตกรรม</p>
+            </div>
         </div>
-        <div class="document-card">
-            <i class="fas fa-file-alt document-card-icon"></i>
-            <div class="document-card-title">ใบรับรองแพทย์ใบขับขี่</div>
-            <div class="document-card-description">แบบฟอร์มใบรับรองแพทย์สำหรับการทำหรือต่อใบขับขี่.</div>
-            <a href="https://drive.google.com/file/d/13T5nACSD2GnD56IAo1PXihfJVzaEtiF3/view?usp=sharing" target="_blank" class="document-card-button">
-                <i class="fas fa-download"></i> ดาวน์โหลด
-            </a>
+        <div class="flex items-center space-x-2">
+            <div class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_12px_#34d399]"></div>
+            <span class="text-xs text-gray-300 font-medium hidden sm:inline">online</span>
         </div>
-        <div class="document-card">
-            <i class="fas fa-file-alt document-card-icon"></i>
-            <div class="document-card-title">แบบลาป่วย ลากิจ</div>
-            <div class="document-card-description">แบบฟอร์มสำหรับยื่นขอลาป่วยหรือลากิจ.</div>
-            <a href="https://drive.google.com/file/d/1oZH9nERuvi0w5GORxwuPf1mbheBGZ4HF/view?usp=sharing" target="_blank" class="document-card-button">
-                <i class="fas fa-download"></i> ดาวน์โหลด
-            </a>
-        </div>
-        <div class="document-card">
-            <i class="fas fa-file-alt document-card-icon"></i>
-            <div class="document-card-title">แบบตรวจ Covid-19</div>
-            <div class="document-card-description">แบบฟอร์มบันทึกผลการตรวจหาเชื้อ Covid-19.</div>
-            <a href="https://drive.google.com/file/d/1KJT4IelBtvUbXFFEIc85dzzFOOJHD4FK/view?usp=sharing" target="_blank" class="document-card-button">
-                <i class="fas fa-download"></i> ดาวน์โหลด
-            </a>
-        </div>
-        <div class="document-card">
-            <i class="fas fa-file-alt document-card-icon"></i>
-            <div class="document-card-title">แบบตรวจฟันทั่วไป</div>
-            <div class="document-card-description">แบบฟอร์มสำหรับบันทึกผลการตรวจสุขภาพช่องปากและฟันทั่วไป.</div>
-            <a href="https://drive.google.com/file/d/1gBPlIQfMClNwOtp-Te1YUb01fdOz4dg4/view?usp=sharing" target="_blank" class="document-card-button">
-                <i class="fas fa-download"></i> ดาวน์โหลด
-            </a>
-        </div>
-        <div class="document-card">
-            <i class="fas fa-file-alt document-card-icon"></i>
-            <div class="document-card-title">แบบตรวจฟันหลังคัดกรอง</div>
-            <div class="document-card-description">ใช้เมื่อออกตรวจในเขตพื้นที่ รร. ที่รับผิดชอบ.</div>
-            <a href="https://drive.google.com/file/d/1MSN_TbncutPSaZ_6D6oLqBigAoyZetgl/view?usp=sharing" target="_blank" class="document-card-button">
-                <i class="fas fa-download"></i> ดาวน์โหลด
-            </a>
-        </div>
-        <div class="document-card">
-            <i class="fas fa-file-alt document-card-icon"></i>
-            <div class="document-card-title">แบบนัดทันตกรรม</div>
-            <div class="document-card-description">แบบฟอร์มสำหรับบันทึกการนัดหมายทางทันตกรรม.</div>
-            <a href="https://drive.google.com/file/d/1jryMwEC0AAXSLDop2QxbtLEs237vSkp-/view?usp=sharing" target="_blank" class="document-card-button">
-                <i class="fas fa-download"></i> ดาวน์โหลด
-            </a>
-        </div>
-        <div class="document-card">
-            <i class="fas fa-file-alt document-card-icon"></i>
-            <div class="document-card-title">แบบอนุญาตทาฟลูออไรด์วานิช</div>
-            <div class="document-card-description">แบบฟอร์มยินยอมสำหรับผู้ปกครองอนุญาตให้บุตรหลานรับการทาฟลูออไรด์วานิช.</div>
-            <a href="https://drive.google.com/file/d/1bvSfegl-8h-VeiVSG96ePX4GHnL2b7zo/view?usp=sharing" target="_blank" class="document-card-button">
-                <i class="fas fa-download"></i> ดาวน์โหลด
+    </header>
+
+    <main class="w-full max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-6 z-10 mb-12">
+        
+        <!-- 1. ใบรับรองแพทย์ทั่วไป -->
+        <div class="ios-card rounded-3xl p-5 flex flex-col justify-between items-center text-center group relative overflow-hidden">
+            <div>
+                <div class="w-16 h-16 mx-auto rounded-full ios-icon-box flex items-center justify-center text-cyan-300 text-2xl group-hover:scale-110 transition-all duration-300 shadow-xl mb-4">
+                    <i class="fa-solid fa-file-alt"></i>
+                </div>
+                <h3 class="text-base font-semibold text-white tracking-wide group-hover:text-cyan-200 transition-colors mb-2">ใบรับรองแพทย์ทั่วไป</h3>
+                <p class="text-xs text-gray-300 mb-4 line-clamp-3">ดาวน์โหลดแบบฟอร์มใบรับรองแพทย์สำหรับใช้ในกรณีทั่วไป เช่น การยื่นสมัครงาน หรือขอใบลา.</p>
+            </div>
+            <a href="https://drive.google.com/file/d/1ZGW_-52Qh_YQVsLkunB75H1I6Ls9Pd6x/view?usp=sharing" target="_blank" class="w-full py-2.5 px-4 rounded-2xl bg-white/10 hover:bg-cyan-500 hover:text-white text-cyan-300 text-xs font-semibold border border-white/20 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg">
+                <i class="fa-solid fa-download"></i>
+                <span>ดาวน์โหลด</span>
             </a>
         </div>
 
-        <div class="document-card">
-            <i class="fas fa-file-invoice document-card-icon"></i>
-            <div class="document-card-title">แบบฟอร์มเสนอโครงการ</div>
-            <div class="document-card-description">แบบฟอร์มมาตรฐานสำหรับใช้เสนอโครงการต่างๆ.</div>
-            <a href="https://drive.google.com/file/d/1iEEVSvEgCqsQ-xcVnwjZjelA2amwiy46/view?usp=sharing" target="_blank" class="document-card-button">
-                <i class="fas fa-download"></i> ดาวน์โหลด
+        <!-- 2. ใบรับรองแพทย์ใบขับขี่ -->
+        <div class="ios-card rounded-3xl p-5 flex flex-col justify-between items-center text-center group relative overflow-hidden">
+            <div>
+                <div class="w-16 h-16 mx-auto rounded-full ios-icon-box flex items-center justify-center text-blue-300 text-2xl group-hover:scale-110 transition-all duration-300 shadow-xl mb-4">
+                    <i class="fa-solid fa-id-card"></i>
+                </div>
+                <h3 class="text-base font-semibold text-white tracking-wide group-hover:text-blue-200 transition-colors mb-2">ใบรับรองแพทย์ใบขับขี่</h3>
+                <p class="text-xs text-gray-300 mb-4 line-clamp-3">แบบฟอร์มใบรับรองแพทย์สำหรับการทำหรือต่อใบขับขี่.</p>
+            </div>
+            <a href="https://drive.google.com/file/d/13T5nACSD2GnD56IAo1PXihfJVzaEtiF3/view?usp=sharing" target="_blank" class="w-full py-2.5 px-4 rounded-2xl bg-white/10 hover:bg-blue-500 hover:text-white text-blue-300 text-xs font-semibold border border-white/20 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg">
+                <i class="fa-solid fa-download"></i>
+                <span>ดาวน์โหลด</span>
             </a>
         </div>
 
-        <div class="document-card">
-            <i class="fas fa-file-pdf document-card-icon"></i>
-            <div class="document-card-title">ประกาศคณะกรรมการ</div>
-            <div class="document-card-description">เอกสารประกาศจากคณะกรรมการต่างๆ.</div>
-            <a href="https://drive.google.com/file/d/1qEE-Cxmvn-1dQSGBIutkKQZmU6IKmwjo/view?usp=sharing" target="_blank" class="document-card-button">
-                <i class="fas fa-download"></i> ดาวน์โหลด
+        <!-- 3. แบบลาป่วย ลากิจ -->
+        <div class="ios-card rounded-3xl p-5 flex flex-col justify-between items-center text-center group relative overflow-hidden">
+            <div>
+                <div class="w-16 h-16 mx-auto rounded-full ios-icon-box flex items-center justify-center text-teal-300 text-2xl group-hover:scale-110 transition-all duration-300 shadow-xl mb-4">
+                    <i class="fa-solid fa-calendar-days"></i>
+                </div>
+                <h3 class="text-base font-semibold text-white tracking-wide group-hover:text-teal-200 transition-colors mb-2">แบบลาป่วย ลากิจ</h3>
+                <p class="text-xs text-gray-300 mb-4 line-clamp-3">แบบฟอร์มสำหรับยื่นขอลาป่วยหรือลากิจ.</p>
+            </div>
+            <a href="https://drive.google.com/file/d/1oZH9nERuvi0w5GORxwuPf1mbheBGZ4HF/view?usp=sharing" target="_blank" class="w-full py-2.5 px-4 rounded-2xl bg-white/10 hover:bg-teal-500 hover:text-white text-teal-300 text-xs font-semibold border border-white/20 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg">
+                <i class="fa-solid fa-download"></i>
+                <span>ดาวน์โหลด</span>
             </a>
         </div>
 
-        <div class="document-card">
-            <i class="fas fa-file-contract document-card-icon"></i>
-            <div class="document-card-title">APK DENT-CHECK V.4</div>
-            <div class="document-card-description">โปรแกรมDENT-CHECKลงเฉพาะ android เท่านั้น</div>
-            <a href="https://drive.google.com/file/d/1lxT95-dtUSfos4bqYiX0jaMO_uFsuo1s/view?usp=sharing" target="_blank" class="document-card-button">
-                <i class="fas fa-download"></i> ดาวน์โหลด
+        <!-- 4. แบบตรวจ Covid-19 -->
+        <div class="ios-card rounded-3xl p-5 flex flex-col justify-between items-center text-center group relative overflow-hidden">
+            <div>
+                <div class="w-16 h-16 mx-auto rounded-full ios-icon-box flex items-center justify-center text-indigo-300 text-2xl group-hover:scale-110 transition-all duration-300 shadow-xl mb-4">
+                    <i class="fa-solid fa-viruses"></i>
+                </div>
+                <h3 class="text-base font-semibold text-white tracking-wide group-hover:text-indigo-200 transition-colors mb-2">แบบตรวจ Covid-19</h3>
+                <p class="text-xs text-gray-300 mb-4 line-clamp-3">แบบฟอร์มบันทึกผลการตรวจหาเชื้อ Covid-19.</p>
+            </div>
+            <a href="https://drive.google.com/file/d/1KJT4IelBtvUbXFFEIc85dzzFOOJHD4FK/view?usp=sharing" target="_blank" class="w-full py-2.5 px-4 rounded-2xl bg-white/10 hover:bg-indigo-500 hover:text-white text-indigo-300 text-xs font-semibold border border-white/20 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg">
+                <i class="fa-solid fa-download"></i>
+                <span>ดาวน์โหลด</span>
             </a>
         </div>
 
-        <div class="document-card">
-            <i class="fas fa-file-archive document-card-icon"></i> <div class="document-card-title">โปรแกรมDENT-CHECK V.4</div>
-            <div class="document-card-description">ดาวน์โหลดโปรแกรม DENT-CHECK V.4 ในรูปแบบไฟล์ ZIP.</div>
-            <a href="https://drive.google.com/file/d/1pKD3XVY6bA_2WTCrU6M1InMkfYcoZh9H/view?usp=sharing" target="_blank" class="document-card-button">
-                <i class="fas fa-download"></i> ดาวน์โหลด
+        <!-- 5. แบบตรวจฟันทั่วไป -->
+        <div class="ios-card rounded-3xl p-5 flex flex-col justify-between items-center text-center group relative overflow-hidden">
+            <div>
+                <div class="w-16 h-16 mx-auto rounded-full ios-icon-box flex items-center justify-center text-purple-300 text-2xl group-hover:scale-110 transition-all duration-300 shadow-xl mb-4">
+                    <i class="fa-solid fa-tooth"></i>
+                </div>
+                <h3 class="text-base font-semibold text-white tracking-wide group-hover:text-purple-200 transition-colors mb-2">แบบตรวจฟันทั่วไป</h3>
+                <p class="text-xs text-gray-300 mb-4 line-clamp-3">แบบฟอร์มสำหรับบันทึกผลการตรวจสุขภาพช่องปากและฟันทั่วไป.</p>
+            </div>
+            <a href="https://drive.google.com/file/d/1gBPlIQfMClNwOtp-Te1YUb01fdOz4dg4/view?usp=sharing" target="_blank" class="w-full py-2.5 px-4 rounded-2xl bg-white/10 hover:bg-purple-500 hover:text-white text-purple-300 text-xs font-semibold border border-white/20 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg">
+                <i class="fa-solid fa-download"></i>
+                <span>ดาวน์โหลด</span>
             </a>
         </div>
-    </div>
+
+        <!-- 6. แบบตรวจฟันหลังคัดกรอง -->
+        <div class="ios-card rounded-3xl p-5 flex flex-col justify-between items-center text-center group relative overflow-hidden">
+            <div>
+                <div class="w-16 h-16 mx-auto rounded-full ios-icon-box flex items-center justify-center text-pink-300 text-2xl group-hover:scale-110 transition-all duration-300 shadow-xl mb-4">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i>
+                </div>
+                <h3 class="text-base font-semibold text-white tracking-wide group-hover:text-pink-200 transition-colors mb-2">แบบตรวจฟันหลังคัดกรอง</h3>
+                <p class="text-xs text-gray-300 mb-4 line-clamp-3">ใช้เมื่อออกตรวจในเขตพื้นที่ รร. ที่รับผิดชอบ.</p>
+            </div>
+            <a href="https://drive.google.com/file/d/1MSN_TbncutPSaZ_6D6oLqBigAoyZetgl/view?usp=sharing" target="_blank" class="w-full py-2.5 px-4 rounded-2xl bg-white/10 hover:bg-pink-500 hover:text-white text-pink-300 text-xs font-semibold border border-white/20 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg">
+                <i class="fa-solid fa-download"></i>
+                <span>ดาวน์โหลด</span>
+            </a>
+        </div>
+
+        <!-- 7. แบบนัดทันตกรรม -->
+        <div class="ios-card rounded-3xl p-5 flex flex-col justify-between items-center text-center group relative overflow-hidden">
+            <div>
+                <div class="w-16 h-16 mx-auto rounded-full ios-icon-box flex items-center justify-center text-amber-300 text-2xl group-hover:scale-110 transition-all duration-300 shadow-xl mb-4">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+                <h3 class="text-base font-semibold text-white tracking-wide group-hover:text-amber-200 transition-colors mb-2">แบบนัดทันตกรรม</h3>
+                <p class="text-xs text-gray-300 mb-4 line-clamp-3">แบบฟอร์มสำหรับบันทึกการนัดหมายทางทันตกรรม.</p>
+            </div>
+            <a href="https://drive.google.com/file/d/1jryMwEC0AAXSLDop2QxbtLEs237vSkp-/view?usp=sharing" target="_blank" class="w-full py-2.5 px-4 rounded-2xl bg-white/10 hover:bg-amber-500 hover:text-white text-amber-300 text-xs font-semibold border border-white/20 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg">
+                <i class="fa-solid fa-download"></i>
+                <span>ดาวน์โหลด</span>
+            </a>
+        </div>
+
+        <!-- 8. แบบอนุญาตทาฟลูออไรด์วานิช -->
+        <div class="ios-card rounded-3xl p-5 flex flex-col justify-between items-center text-center group relative overflow-hidden">
+            <div>
+                <div class="w-16 h-16 mx-auto rounded-full ios-icon-box flex items-center justify-center text-emerald-300 text-2xl group-hover:scale-110 transition-all duration-300 shadow-xl mb-4">
+                    <i class="fa-solid fa-shield-heart"></i>
+                </div>
+                <h3 class="text-base font-semibold text-white tracking-wide group-hover:text-emerald-200 transition-colors mb-2">แบบอนุญาตทาฟลูออไรด์วานิช</h3>
+                <p class="text-xs text-gray-300 mb-4 line-clamp-3">แบบฟอร์มยินยอมสำหรับผู้ปกครองอนุญาตให้บุตรหลานรับการทาฟลูออไรด์วานิช.</p>
+            </div>
+            <a href="https://drive.google.com/file/d/1bvSfegl-8h-VeiVSG96ePX4GHnL2b7zo/view?usp=sharing" target="_blank" class="w-full py-2.5 px-4 rounded-2xl bg-white/10 hover:bg-emerald-500 hover:text-white text-emerald-300 text-xs font-semibold border border-white/20 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg">
+                <i class="fa-solid fa-download"></i>
+                <span>ดาวน์โหลด</span>
+            </a>
+        </div>
+
+        <!-- 9. แบบฟอร์มเสนอโครงการ -->
+        <div class="ios-card rounded-3xl p-5 flex flex-col justify-between items-center text-center group relative overflow-hidden">
+            <div>
+                <div class="w-16 h-16 mx-auto rounded-full ios-icon-box flex items-center justify-center text-sky-300 text-2xl group-hover:scale-110 transition-all duration-300 shadow-xl mb-4">
+                    <i class="fa-solid fa-file-invoice"></i>
+                </div>
+                <h3 class="text-base font-semibold text-white tracking-wide group-hover:text-sky-200 transition-colors mb-2">แบบฟอร์มเสนอโครงการ</h3>
+                <p class="text-xs text-gray-300 mb-4 line-clamp-3">แบบฟอร์มมาตรฐานสำหรับใช้เสนอโครงการต่างๆ.</p>
+            </div>
+            <a href="https://drive.google.com/file/d/1iEEVSvEgCqsQ-xcVnwjZjelA2amwiy46/view?usp=sharing" target="_blank" class="w-full py-2.5 px-4 rounded-2xl bg-white/10 hover:bg-sky-500 hover:text-white text-sky-300 text-xs font-semibold border border-white/20 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg">
+                <i class="fa-solid fa-download"></i>
+                <span>ดาวน์โหลด</span>
+            </a>
+        </div>
+
+        <!-- 10. ประกาศคณะกรรมการ -->
+        <div class="ios-card rounded-3xl p-5 flex flex-col justify-between items-center text-center group relative overflow-hidden">
+            <div>
+                <div class="w-16 h-16 mx-auto rounded-full ios-icon-box flex items-center justify-center text-rose-300 text-2xl group-hover:scale-110 transition-all duration-300 shadow-xl mb-4">
+                    <i class="fa-solid fa-bullhorn"></i>
+                </div>
+                <h3 class="text-base font-semibold text-white tracking-wide group-hover:text-rose-200 transition-colors mb-2">ประกาศคณะกรรมการ</h3>
+                <p class="text-xs text-gray-300 mb-4 line-clamp-3">เอกสารประกาศจากคณะกรรมการต่างๆ.</p>
+            </div>
+            <a href="https://drive.google.com/file/d/1qEE-Cxmvn-1dQSGBIutkKQZmU6IKmwjo/view?usp=sharing" target="_blank" class="w-full py-2.5 px-4 rounded-2xl bg-white/10 hover:bg-rose-500 hover:text-white text-rose-300 text-xs font-semibold border border-white/20 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg">
+                <i class="fa-solid fa-download"></i>
+                <span>ดาวน์โหลด</span>
+            </a>
+        </div>
+
+        <!-- 11. APK DENT-CHECK V.4 -->
+        <div class="ios-card rounded-3xl p-5 flex flex-col justify-between items-center text-center group relative overflow-hidden">
+            <div>
+                <div class="w-16 h-16 mx-auto rounded-full ios-icon-box flex items-center justify-center text-lime-300 text-2xl group-hover:scale-110 transition-all duration-300 shadow-xl mb-4">
+                    <i class="fa-brands fa-android"></i>
+                </div>
+                <h3 class="text-base font-semibold text-white tracking-wide group-hover:text-lime-200 transition-colors mb-2">APK DENT-CHECK V.4</h3>
+                <p class="text-xs text-gray-300 mb-4 line-clamp-3">โปรแกรม DENT-CHECK ลงเฉพาะ Android เท่านั้น</p>
+            </div>
+            <a href="https://drive.google.com/file/d/1lxT95-dtUSfos4bqYiX0jaMO_uFsuo1s/view?usp=sharing" target="_blank" class="w-full py-2.5 px-4 rounded-2xl bg-white/10 hover:bg-lime-500 hover:text-white text-lime-300 text-xs font-semibold border border-white/20 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg">
+                <i class="fa-solid fa-download"></i>
+                <span>ดาวน์โหลด</span>
+            </a>
+        </div>
+
+        <!-- 12. โปรแกรมDENT-CHECK V.4 (ZIP) -->
+        <div class="ios-card rounded-3xl p-5 flex flex-col justify-between items-center text-center group relative overflow-hidden">
+            <div>
+                <div class="w-16 h-16 mx-auto rounded-full ios-icon-box flex items-center justify-center text-yellow-300 text-2xl group-hover:scale-110 transition-all duration-300 shadow-xl mb-4">
+                    <i class="fa-solid fa-file-zipper"></i>
+                </div>
+                <h3 class="text-base font-semibold text-white tracking-wide group-hover:text-yellow-200 transition-colors mb-2">โปรแกรม DENT-CHECK V.4</h3>
+                <p class="text-xs text-gray-300 mb-4 line-clamp-3">ดาวน์โหลดโปรแกรม DENT-CHECK V.4 ในรูปแบบไฟล์ ZIP.</p>
+            </div>
+            <a href="https://drive.google.com/file/d/1pKD3XVY6bA_2WTCrU6M1InMkfYcoZh9H/view?usp=sharing" target="_blank" class="w-full py-2.5 px-4 rounded-2xl bg-white/10 hover:bg-yellow-500 hover:text-white text-yellow-300 text-xs font-semibold border border-white/20 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg">
+                <i class="fa-solid fa-download"></i>
+                <span>ดาวน์โหลด</span>
+            </a>
+        </div>
+
+    </main>
+
+    <footer class="w-full max-w-6xl mx-auto text-center text-xs text-gray-400 py-4 z-10 border-t border-white/10">
+        <p>ผู้สร้างและพัฒนา นายภัทรพล ไพศาลวัชรเมธี กองสาธารณสุขและสิ่งแวดล้อม 2023 • ระบบดาวน์โหลดเอกสารทันตกรรม</p>
+    </footer>
+
 </body>
 </html>
