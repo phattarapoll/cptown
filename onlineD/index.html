@@ -69,7 +69,7 @@
                     <input type="hidden" id="bookingReason" name="bookingReason" required>
                     <div class="reason-button-grid">
     <button type="button" class="reason-btn" data-value="ตรวจฟัน">
-        <i class="fas fa-stethoscope fa-2x"></i> <!-- ปรับจาก teeth ให้เป็น stethoscope ที่สื่อถึงการตรวจ -->
+        <i class="fas fa-stethoscope fa-2x"></i>
         <span>ตรวจฟัน</span>
     </button>
     <button type="button" class="reason-btn" data-value="อุดฟัน">
@@ -77,12 +77,12 @@
         <span>อุดฟัน</span>
     </button>
     <button type="button" class="reason-btn" data-value="ถอนฟัน">
-        <i class="fas fa-牙-open fa-2x" style="display:none;"></i> <!-- ใช้ไอคอนนี้แทน -->
-        <i class="fas fa-user-injured fa-2x"></i> <!-- แนะนำตัวนี้แทนถอนฟัน จะดูซอฟต์กว่า -->
+        <i class="fas fa-牙-open fa-2x" style="display:none;"></i> 
+        <i class="fas fa-user-injured fa-2x"></i> 
         <span>ถอนฟัน</span>
     </button>
     <button type="button" class="reason-btn" data-value="ขูดหินปูน">
-        <i class="fas fa-magic fa-2x"></i> <!-- sparkles เปลี่ยนเป็น magic จะแสดงผลชัดกว่า -->
+        <i class="fas fa-magic fa-2x"></i> 
         <span>ขูดหินปูน</span>
     </button>
     <button type="button" class="reason-btn" data-value="อื่นๆ">
@@ -131,10 +131,10 @@
 
     <div id="loadingSpinner" class="loading-spinner hidden">
         <div class="spinner-ring"></div>
-        <p id="loadingText">กำลังประมวลผล...</p>
+        <p id="loadingText">กำลังติดต่อฐานข้อมูล...</p>
         <div id="loadingPercentage" style="font-size: 20px; font-weight: bold; color: #e76f51; margin-top: 5px;">0%</div>
         <button id="loadingRefreshBtn" class="hidden" onclick="window.location.reload();" style="margin-top: 15px; padding: 8px 16px; background: #e63946; color: white; border: none; border-radius: 8px; cursor: pointer; font-family: 'Kanit', sans-serif; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
-            <i class="fas fa-redo-alt"></i> "ระบบอาจใช้เวลาโหลดสักครู่ หากพบอาการหน่วง สามารถปุ่มนี้ได้ทันที"
+            <i class="fas fa-redo-alt"></i> "กดเพื่อเริ่มใหม่"
         </button>
     </div>
 	
