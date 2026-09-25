@@ -9,11 +9,26 @@ document.addEventListener('DOMContentLoaded', function() {
     const passwordDisplay = document.getElementById('password-display');
     const keypadContainer = document.getElementById('keypad-container');
     const leaveHistoryTableBody = document.querySelector('#leave-history-table tbody');
+    
+    // Progress Overlay Elements
+    const loadingOverlay = document.getElementById('loading-progress-overlay');
+    const progressMainText = document.getElementById('progress-main-text');
+    const progressSubText = document.getElementById('progress-sub-text');
 
     let currentPassword = '';
     let selectedOfficerId = '';
     let currentUser = null;
     let allLeaveHistory = [];
+
+    function showLoading(title, subtitle) {
+        progressMainText.textContent = title || 'กำลังประมวลผล...';
+        progressSubText.textContent = subtitle || 'กรุณารอสักครู่';
+        loadingOverlay.classList.add('active');
+    }
+
+    function hideLoading() {
+        loadingOverlay.classList.remove('active');
+    }
 
     // --- Helper Functions ---
     function formatDate(d) {
@@ -52,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Fetch Officers ---
     async function fetchOfficerList() {
         try {
-            officerListContainer.innerHTML = '<p style="grid-column: 1/-1; color: white;">กำลังโหลดรายชื่อ...</p>';
+            showLoading('กำลังโหลดรายชื่อเจ้าหน้าที่', 'ติดต่อฐานข้อมูล');
             const res = await fetch(appsScriptUrl, { method: 'POST', body: 'action=getOfficerList', headers: {'Content-Type': 'application/x-www-form-urlencoded'} });
             const data = await res.json();
             if (data.success) {
@@ -73,6 +88,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             officerListContainer.innerHTML = '<p style="grid-column: 1/-1; color: #ff3b30;">ไม่สามารถโหลดรายชื่อได้ กรุณาลองใหม่อีกครั้ง</p>';
+        } finally {
+            hideLoading();
         }
     }
 
@@ -112,8 +129,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (currentPassword.length === 4) {
                 passwordDisplay.textContent = 'ตรวจสอบ...';
                 try {
+                    showLoading('กำลังตรวจสอบรหัสผ่าน', 'กำลังยืนยันตัวตนเข้าสู่ระบบ...');
                     const res = await fetch(appsScriptUrl, { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: `action=login&id=${selectedOfficerId}&password=${currentPassword}` });
                     const data = await res.json();
+                    hideLoading();
+                    
                     if (data.success) {
                         loginModal.style.display = 'none'; 
                         loginContainer.classList.add('hidden');
@@ -126,6 +146,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         passwordDisplay.textContent = ''; 
                     }
                 } catch (err) {
+                    hideLoading();
                     alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
                     currentPassword = ''; 
                     passwordDisplay.textContent = '';
@@ -136,6 +157,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function fetchUserData(id) {
         try {
+            showLoading('กำลังโหลดข้อมูลผู้ใช้งาน', 'ดึงข้อมูลสถิติและประวัติการลา...');
             const res = await fetch(appsScriptUrl, { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: `action=getUserData&id=${id}` });
             const data = await res.json();
             if (data.success) {
@@ -145,6 +167,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (err) {
             console.error('Failed to fetch user data', err);
+        } finally {
+            hideLoading();
         }
     }
 
@@ -187,7 +211,6 @@ document.addEventListener('DOMContentLoaded', function() {
             </tr>
         `).join('') : '<tr><td colspan="5" style="text-align:center; padding: 20px;">ไม่พบข้อมูล</td></tr>';
 
-        // Event listener สำหรับปุ่มยกเลิกแบบปลอดภัย ป้องกันปัญหา Click หน่วง
         document.querySelectorAll('.btn-cancel').forEach(btn => {
             btn.onclick = (e) => {
                 const leaveId = e.currentTarget.getAttribute('data-id');
@@ -213,9 +236,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Leave Form Submit ---
     document.getElementById('leave-form').onsubmit = async (e) => {
         e.preventDefault();
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังส่งข้อมูล...';
+        showLoading('กำลังส่งคำขอลา', 'กำลังบันทึกข้อมูลลงฐานข้อมูล...');
 
         const leaveTypeVal = document.getElementById('leave-type').value;
         const startDateVal = document.getElementById('leave-start-date').value;
@@ -231,18 +252,18 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const res = await fetch(appsScriptUrl, { method: 'POST', body });
             const result = await res.json();
+            hideLoading();
+            
             if (result.success) { 
                 alert('ส่งใบลาสำเร็จ'); 
                 document.getElementById('leave-form').reset();
-                fetchUserData(currentUser.id); // ดึงข้อมูลใหม่แทนการรีโหลดหน้าจอทั้งเว็บ ช่วยให้ไวขึ้นมาก
+                fetchUserData(currentUser.id); 
             } else {
                 alert('เกิดข้อผิดพลาด: ' + (result.message || 'ไม่สามารถบันทึกได้'));
             }
         } catch (err) {
+            hideLoading();
             alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> ส่งคำขออนุมัติ';
         }
     };
 
