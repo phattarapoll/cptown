@@ -181,19 +181,21 @@
             <h2><i class="fa-solid fa-clock-rotate-left"></i> ประวัติการขอลา</h2>
             <span id="close-history-panel" class="panel-close">&times;</span>
         </div>
-        <div class="filter-section-refined">
+		
+		<div class="filter-section-refined">
             <div class="filter-group">
                 <label>เริ่มต้น (พ.ศ.)</label>
-                <input type="number" id="history-start-year" class="filter-input" placeholder="2566">
+                <input type="number" id="history-start-year" class="filter-input year-input-small" placeholder="2568" min="2500" max="2599">
             </div>
             <div class="filter-group">
                 <label>สิ้นสุด (พ.ศ.)</label>
-                <input type="number" id="history-end-year" class="filter-input" placeholder="2567">
+                <input type="number" id="history-end-year" class="filter-input year-input-small" placeholder="2569" min="2500" max="2599">
             </div>
             <button id="btn-filter-history" class="btn-filter">
                 <i class="fa-solid fa-filter"></i> กรอง
             </button>
         </div>
+		
         <div class="table-container">
             <table id="leave-history-table">
                 <thead>
