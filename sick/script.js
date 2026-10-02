@@ -37,6 +37,15 @@ document.addEventListener('DOMContentLoaded', function() {
         return isNaN(date.getTime()) ? d : `${date.getDate().toString().padStart(2,'0')}/${(date.getMonth()+1).toString().padStart(2,'0')}/${date.getFullYear()+543}`;
     }
 
+    function calculateWorkDuration(start, end) {
+        if (!start) return '-';
+        const s = new Date(start), e = new Date(end);
+        let y = e.getFullYear() - s.getFullYear(), m = e.getMonth() - s.getMonth(), d = e.getDate() - s.getDate();
+        if (d < 0) { m--; d += new Date(e.getFullYear(), e.getMonth(), 0).getDate(); }
+        if (m < 0) { y--; m += 12; }
+        return `${y} ปี ${m} เดือน ${d} วัน`;
+    }
+
     function calculateWorkingDays(start, end, leaveType) {
         let count = 0, cur = new Date(start), fin = new Date(end);
         if (cur > fin) return 0;
@@ -172,58 +181,9 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('user-address').textContent = user.address || '-';
         
         document.getElementById('work-start-date').textContent = formatDate(user.workStartDate);
-        
-        // 1. ล็อกช่วง รพ.ชุมพร ไว้ตายตัว (10 ปี 0 เดือน 2 วัน)
-        const oldYears = 10;
-        const oldMonths = 0;
-        const oldDays = 2;
-        document.getElementById('old-work-duration').textContent = `${oldYears} ปี ${oldMonths} เดือน ${oldDays} วัน`;
-
-        // 2. ช่วงเทศบาล คำนวณแบบเรียลไทม์จากวันย้ายถึงปัจจุบัน
-        const newStart = new Date(user.workTransferDate);
-        const today = new Date();
-        
-        let y2 = today.getFullYear() - newStart.getFullYear();
-        let m2 = today.getMonth() - newStart.getMonth();
-        let d2 = today.getDate() - newStart.getDate() + 1; // นับชนวันตามหลักราชการ
-
-        if (d2 > 30) {
-            m2 += Math.floor(d2 / 30);
-            d2 = d2 % 30;
-        } else if (d2 < 0) {
-            m2 -= 1;
-            let prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
-            d2 += prevMonth.getDate();
-        }
-        if (m2 < 0) {
-            y2 -= 1;
-            m2 += 12;
-        }
-
-        document.getElementById('new-work-duration').textContent = `${y2} ปี ${m2} เดือน ${d2} วัน`;
-
-        // 3. รวมยอด (รพ.ชุมพร + เทศบาล) พร้อมทดเดือนและปัดเศษวันให้ถูกต้อง
-        let totalYears = oldYears + y2;
-        let totalMonths = oldMonths + m2;
-        let totalDays = oldDays + d2;
-
-        // ถ้าวันรวมกันเกิน 30 ให้ปัดทดเป็น 1 เดือน (ปรับแก้ตรงนี้เพื่อให้เศษวันไม่หาย)
-        if (totalDays >= 31) {
-            totalMonths += Math.floor(totalDays / 30);
-            totalDays = totalDays % 30;
-            // ปรับแก้เคสเฉพาะถ้ายอดรวมวันชนเดือนพอดี
-            if (totalDays === 0) {
-                totalDays = 30;
-                totalMonths -= 1;
-            }
-        }
-        
-        if (totalMonths >= 12) {
-            totalYears += Math.floor(totalMonths / 12);
-            totalMonths = totalMonths % 12;
-        }
-
-        document.getElementById('total-work-duration').textContent = `${totalYears} ปี ${totalMonths} เดือน 29 วัน`;
+        document.getElementById('old-work-duration').textContent = calculateWorkDuration(user.workStartDate, user.workTransferDate);
+        document.getElementById('new-work-duration').textContent = calculateWorkDuration(user.workTransferDate, new Date());
+        document.getElementById('total-work-duration').textContent = calculateWorkDuration(user.workStartDate, new Date());
 
         const vacationUsed = parseFloat(user.currentAnnualLeave) || 0;
         const sickUsed = parseFloat(user.currentSickLeave) || 0;
@@ -239,8 +199,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         renderHistory(history);
     }
-	
-	
 
     function renderHistory(history) {
         leaveHistoryTableBody.innerHTML = history.length > 0 ? history.map(l => `
