@@ -46,14 +46,32 @@
                     </div>
                 </div>
 
-                <div class="glass-card work-info">
+				<div class="glass-card work-info">
                     <h3><i class="fa-solid fa-briefcase"></i> ข้อมูลการทำงาน</h3>
-                    <div class="work-row"><span>วันบรรจุ:</span> <strong id="work-start-date"></strong></div>
-                    <div class="work-row"><span>รพ.ชุมพร:</span> <strong id="old-work-duration"></strong></div>
-                    <div class="work-row"><span>เทศบาล:</span> <strong id="new-work-duration"></strong></div>
-                    <div class="work-total">รวม: <span id="total-work-duration"></span></div>
-                </div>
-            </aside>
+                    
+                    <!-- ช่วงที่ 1 -->
+                    <div style="margin-bottom: 8px; border-bottom: 1px dashed #e0e0e0; padding-bottom: 6px;">
+                        <div class="work-row"><span>เริ่ม1:</span> <strong id="work-start-date-1"></strong></div>
+                        <div class="work-row"><span>ออก1:</span> <strong id="work-end-date-1"></strong></div>
+                        <div class="work-row" style="font-size: 0.9rem; color: #555;"><span>ระยะเวลา:</span> <strong id="work-duration-1" style="color: var(--primary);"></strong></div>
+                    </div>
+
+                    <!-- ช่วงที่ 2 (จะแสดงเมื่อมีข้อมูล) -->
+                    <div style="margin-bottom: 8px; border-bottom: 1px dashed #e0e0e0; padding-bottom: 6px;">
+                        <div class="work-row"><span>เริ่ม2:</span> <strong id="work-start-date-2">-</strong></div>
+                        <div class="work-row"><span>ออก2:</span> <strong id="work-end-date-2">-</strong></div>
+                        <div class="work-row" style="font-size: 0.9rem; color: #555;"><span>ระยะเวลา:</span> <strong id="work-duration-2" style="color: var(--primary);">-</strong></div>
+                    </div>
+
+                    <!-- ช่วงที่ 3 (จะแสดงเมื่อมีข้อมูล) -->
+                    <div style="margin-bottom: 8px; border-bottom: 1px dashed #e0e0e0; padding-bottom: 6px;">
+                        <div class="work-row"><span>เริ่ม3:</span> <strong id="work-start-date-3">-</strong></div>
+                        <div class="work-row"><span>ออก3:</span> <strong id="work-end-date-3">-</strong></div>
+                        <div class="work-row" style="font-size: 0.9rem; color: #555;"><span>ระยะเวลา:</span> <strong id="work-duration-3" style="color: var(--primary);">-</strong></div>
+                    </div>
+
+                    <div class="work-total" style="margin-top: 10px;">เริ่มงาน 1 ถึงปัจจุบัน: <span id="total-work-duration"></span></div>
+                </div>            </aside>
 
             <main class="content-area">
                 <div class="stats-grid">

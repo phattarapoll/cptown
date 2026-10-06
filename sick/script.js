@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbxvbVlZq0HKnR6RhMvMPnIO-YkgeOrymcoudQKif7EcWsWEoPC3PyPsDykXcZQgc9tEKw/exec';
+    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbwIYjO3vURrg61ZoHr6_-bXhAK4g5pAVUW78uNB3q4Y539SNsCVkpFtPjwMLhdVzvh8Zw/exec';
 
     // Elements
     const loginContainer = document.getElementById('login-container');
@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function renderDashboard(user, history) {
+function renderDashboard(user, history) {
         document.getElementById('user-name').textContent = user.name;
         document.getElementById('nav-user-name').textContent = user.name;
         document.getElementById('user-position').textContent = user.position;
@@ -180,26 +180,49 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('user-phone').textContent = user.phone;
         document.getElementById('user-address').textContent = user.address || '-';
         
-        document.getElementById('work-start-date').textContent = formatDate(user.workStartDate);
-        document.getElementById('old-work-duration').textContent = calculateWorkDuration(user.workStartDate, user.workTransferDate);
-        document.getElementById('new-work-duration').textContent = calculateWorkDuration(user.workTransferDate, new Date());
-        document.getElementById('total-work-duration').textContent = calculateWorkDuration(user.workStartDate, new Date());
+        // แสดงผลและคำนวณช่วงการทำงานแต่ละช่วง (ระยะเวลาเริ่มต้น 1-3 และยอดรวมถึงปัจจุบัน)
+        // ช่วงที่ 1
+        const elStart1 = document.getElementById('work-start-date-1');
+        const elEnd1 = document.getElementById('work-end-date-1');
+        const elDur1 = document.getElementById('work-duration-1');
+        if (elStart1) elStart1.textContent = formatDate(user.workStartDate1);
+        if (elEnd1) elEnd1.textContent = formatDate(user.workEndDate1);
+        if (elDur1) elDur1.textContent = calculateWorkDuration(user.workStartDate1, user.workEndDate1 || new Date());
+
+        // ช่วงที่ 2
+        const elStart2 = document.getElementById('work-start-date-2');
+        const elEnd2 = document.getElementById('work-end-date-2');
+        const elDur2 = document.getElementById('work-duration-2');
+        if (elStart2) elStart2.textContent = formatDate(user.workStartDate2);
+        if (elEnd2) elEnd2.textContent = formatDate(user.workEndDate2);
+        if (elDur2) elDur2.textContent = user.workStartDate2 ? calculateWorkDuration(user.workStartDate2, user.workEndDate2 || new Date()) : '-';
+
+        // ช่วงที่ 3
+        const elStart3 = document.getElementById('work-start-date-3');
+        const elEnd3 = document.getElementById('work-end-date-3');
+        const elDur3 = document.getElementById('work-duration-3');
+        if (elStart3) elStart3.textContent = formatDate(user.workStartDate3);
+        if (elEnd3) elEnd3.textContent = formatDate(user.workEndDate3);
+        if (elDur3) elDur3.textContent = user.workStartDate3 ? calculateWorkDuration(user.workStartDate3, user.workEndDate3 || new Date()) : '-';
+
+        // รวมระยะเวลาตั้งแต่วันเริ่มงาน 1 จนถึงปัจจุบัน
+        const elTotalDur = document.getElementById('total-work-duration');
+        if (elTotalDur) {
+            elTotalDur.textContent = calculateWorkDuration(user.workStartDate1, new Date());
+        }
 
         const vacationUsed = parseFloat(user.currentAnnualLeave) || 0;
-        const sickUsed = parseFloat(user.currentSickLeave) || 0;
+        const sickUsed = parseFloat(user.currentSickLayer || user.currentSickLeave) || 0;
         const personalUsed = parseFloat(user.currentPersonalLeave) || 0;
 
         document.getElementById('vacation-leave-used').textContent = vacationUsed;
         document.getElementById('sick-leave-used').textContent = sickUsed;
         document.getElementById('personal-leave-used').textContent = personalUsed;
 
-        const totalVacationRights = (parseFloat(user.annualLeave) || 0) + (parseFloat(user.accumulatedLeave) || 0);
-        document.getElementById('vacation-leave-remaining').textContent = totalVacationRights - vacationUsed;
-        document.getElementById('sick-leave-remaining').textContent = 30 - sickUsed;
-
+        // หากหน้า HTML มีช่องแสดงวันลาคงเหลือ สามารถปรับคำนวณต่อได้ตามโครงสร้างเดิม
         renderHistory(history);
     }
-
+	
     function renderHistory(history) {
         leaveHistoryTableBody.innerHTML = history.length > 0 ? history.map(l => `
             <tr>
