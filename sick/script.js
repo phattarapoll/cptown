@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbwIYjO3vURrg61ZoHr6_-bXhAK4g5pAVUW78uNB3q4Y539SNsCVkpFtPjwMLhdVzvh8Zw/exec';
+    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbw5AdGYUwNVI3kjLdGirvG9gXyeO1wiWZtZ5NalSHSD9aBMb0HufeNHHbeNVAeO35PblA/exec';
 
     // Elements
     const loginContainer = document.getElementById('login-container');
@@ -37,15 +37,34 @@ document.addEventListener('DOMContentLoaded', function() {
         return isNaN(date.getTime()) ? d : `${date.getDate().toString().padStart(2,'0')}/${(date.getMonth()+1).toString().padStart(2,'0')}/${date.getFullYear()+543}`;
     }
 
-    function calculateWorkDuration(start, end) {
+	function calculateWorkDuration(start, end, periodIndex) {
         if (!start) return '-';
-        const s = new Date(start), e = new Date(end);
-        let y = e.getFullYear() - s.getFullYear(), m = e.getMonth() - s.getMonth(), d = e.getDate() - s.getDate();
-        if (d < 0) { m--; d += new Date(e.getFullYear(), e.getMonth(), 0).getDate(); }
-        if (m < 0) { y--; m += 12; }
-        return `${y} ปี ${m} เดือน ${d} วัน`;
-    }
+        const s = new Date(start);
+        // หากไม่มีวันที่สิ้นสุด (ยังไม่ออกจากงาน) ให้ใช้วันที่ปัจจุบัน
+        const e = (end && end !== '-' && end !== '' && !isNaN(new Date(end).getTime())) ? new Date(end) : new Date();
+        
+        if (isNaN(s.getTime()) || isNaN(e.getTime())) return '-';
 
+        let y = e.getFullYear() - s.getFullYear();
+        let m = e.getMonth() - s.getMonth();
+        let d = e.getDate() - s.getDate();
+
+        // บวกเพิ่ม 2 วันเฉพาะช่วงที่ 2 และช่วงที่ 3 (ช่วงที่ 1 ไม่บวก)
+        if (periodIndex === 2 || periodIndex === 3) {
+            d += 2;
+        }
+
+        if (d < 0) { 
+            m--; 
+            d += new Date(e.getFullYear(), e.getMonth(), 0).getDate(); 
+        }
+        if (m < 0) { 
+            y--; 
+            m += 12; 
+        }
+        return `${y} ปี ${m} เดือน ${d} วัน`;
+    }	
+	
     function calculateWorkingDays(start, end, leaveType) {
         let count = 0, cur = new Date(start), fin = new Date(end);
         if (cur > fin) return 0;
@@ -62,6 +81,37 @@ document.addEventListener('DOMContentLoaded', function() {
             cur.setDate(cur.getDate() + 1);
         }
         return count;
+    }
+	
+    function sumWorkDurations(durationStrings) {
+        let totalYears = 0;
+        let totalMonths = 0;
+        let totalDays = 0;
+
+        durationStrings.forEach(str => {
+            if (!str || str === '-') return;
+            // แยกข้อความเช่น "10 ปี 1 เดือน 1 วัน" ออกมาเป็นตัวเลข
+            const matches = str.match(/(\d+)\s*ปี\s*(\d+)\s*เดือน\s*(\d+)\s*วัน/);
+            if (matches) {
+                totalYears += parseInt(matches[1]) || 0;
+                totalMonths += parseInt(matches[2]) || 0;
+                totalDays += parseInt(matches[3]) || 0;
+            }
+        });
+
+        // ทดเศษวันเป็นเดือน (ตีเป็น 30 วัน หรือทดตามระบบปฏิทิน)
+        if (totalDays >= 30) {
+            totalMonths += Math.floor(totalDays / 30);
+            totalDays = totalDays % 30;
+        }
+
+        // ทดเศษเดือนเป็นปี
+        if (totalMonths >= 12) {
+            totalYears += Math.floor(totalMonths / 12);
+            totalMonths = totalMonths % 12;
+        }
+
+        return `${totalYears} ปี ${totalMonths} เดือน ${totalDays} วัน`;
     }
 
     // --- Fetch Officers ---
@@ -172,7 +222,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-function renderDashboard(user, history) {
+	function renderDashboard(user, history) {
         document.getElementById('user-name').textContent = user.name;
         document.getElementById('nav-user-name').textContent = user.name;
         document.getElementById('user-position').textContent = user.position;
@@ -180,48 +230,73 @@ function renderDashboard(user, history) {
         document.getElementById('user-phone').textContent = user.phone;
         document.getElementById('user-address').textContent = user.address || '-';
         
-        // แสดงผลและคำนวณช่วงการทำงานแต่ละช่วง (ระยะเวลาเริ่มต้น 1-3 และยอดรวมถึงปัจจุบัน)
-        // ช่วงที่ 1
+        // คำนวณช่วงแต่ละช่วง
+        const dur1 = calculateWorkDuration(user.workStartDate1, user.workEndDate1, 1);
+        const dur2 = user.workStartDate2 ? calculateWorkDuration(user.workStartDate2, user.workEndDate2, 2) : null;
+        const dur3 = user.workStartDate3 ? calculateWorkDuration(user.workStartDate3, user.workEndDate3, 3) : null;
+
+        // แสดงผลแต่ละช่วง
         const elStart1 = document.getElementById('work-start-date-1');
         const elEnd1 = document.getElementById('work-end-date-1');
         const elDur1 = document.getElementById('work-duration-1');
         if (elStart1) elStart1.textContent = formatDate(user.workStartDate1);
         if (elEnd1) elEnd1.textContent = formatDate(user.workEndDate1);
-        if (elDur1) elDur1.textContent = calculateWorkDuration(user.workStartDate1, user.workEndDate1 || new Date());
+        if (elDur1) elDur1.textContent = dur1;
 
-        // ช่วงที่ 2
         const elStart2 = document.getElementById('work-start-date-2');
         const elEnd2 = document.getElementById('work-end-date-2');
         const elDur2 = document.getElementById('work-duration-2');
         if (elStart2) elStart2.textContent = formatDate(user.workStartDate2);
         if (elEnd2) elEnd2.textContent = formatDate(user.workEndDate2);
-        if (elDur2) elDur2.textContent = user.workStartDate2 ? calculateWorkDuration(user.workStartDate2, user.workEndDate2 || new Date()) : '-';
+        if (elDur2) elDur2.textContent = dur2 || '-';
 
-        // ช่วงที่ 3
         const elStart3 = document.getElementById('work-start-date-3');
         const elEnd3 = document.getElementById('work-end-date-3');
         const elDur3 = document.getElementById('work-duration-3');
         if (elStart3) elStart3.textContent = formatDate(user.workStartDate3);
         if (elEnd3) elEnd3.textContent = formatDate(user.workEndDate3);
-        if (elDur3) elDur3.textContent = user.workStartDate3 ? calculateWorkDuration(user.workStartDate3, user.workEndDate3 || new Date()) : '-';
+        if (elDur3) elDur3.textContent = dur3 || '-';
 
-        // รวมระยะเวลาตั้งแต่วันเริ่มงาน 1 จนถึงปัจจุบัน
+        // รวมระยะเวลาทั้งหมด (นำ dur1, dur2, dur3 มาบวกกันเพื่อให้รวมวันรอยต่ออย่างถูกต้อง)
         const elTotalDur = document.getElementById('total-work-duration');
         if (elTotalDur) {
-            elTotalDur.textContent = calculateWorkDuration(user.workStartDate1, new Date());
+            elTotalDur.textContent = sumWorkDurations([dur1, dur2, dur3]);
         }
 
         const vacationUsed = parseFloat(user.currentAnnualLeave) || 0;
         const sickUsed = parseFloat(user.currentSickLayer || user.currentSickLeave) || 0;
         const personalUsed = parseFloat(user.currentPersonalLeave) || 0;
 
+        // --- คำนวณวันลาพักผ่อนคงเหลือ (หักจากคอลัมน์ J ก่อน แล้วค่อยหักจาก I) ---
+        let leaveJ = parseFloat(user.annualLeaveJ) || 0; // วันลาสะสม (คอลัมน์ J)
+        let leaveI = parseFloat(user.annualLeaveI) || 0; // วันลาปกติ (คอลัมน์ I)
+        let remainingToDeduct = vacationUsed;
+
+        if (remainingToDeduct >= leaveJ) {
+            remainingToDeduct -= leaveJ;
+            leaveJ = 0;
+            if (remainingToDeduct >= leaveI) {
+                leaveI = 0;
+            } else {
+                leaveI -= remainingToDeduct;
+            }
+        } else {
+            leaveJ -= remainingToDeduct;
+        }
+
+        const totalVacationRemaining = leaveI + leaveJ;
+        // -------------------------------------------------------------
+
         document.getElementById('vacation-leave-used').textContent = vacationUsed;
+        document.getElementById('vacation-leave-remaining').textContent = totalVacationRemaining;
+        
         document.getElementById('sick-leave-used').textContent = sickUsed;
         document.getElementById('personal-leave-used').textContent = personalUsed;
 
-        // หากหน้า HTML มีช่องแสดงวันลาคงเหลือ สามารถปรับคำนวณต่อได้ตามโครงสร้างเดิม
         renderHistory(history);
     }
+	
+	
 	
     function renderHistory(history) {
         leaveHistoryTableBody.innerHTML = history.length > 0 ? history.map(l => `
