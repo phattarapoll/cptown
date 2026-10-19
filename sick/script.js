@@ -40,7 +40,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	function calculateWorkDuration(start, end, periodIndex) {
         if (!start) return '-';
         const s = new Date(start);
-        // หากไม่มีวันที่สิ้นสุด (ยังไม่ออกจากงาน) ให้ใช้วันที่ปัจจุบัน
         const e = (end && end !== '-' && end !== '' && !isNaN(new Date(end).getTime())) ? new Date(end) : new Date();
         
         if (isNaN(s.getTime()) || isNaN(e.getTime())) return '-';
@@ -49,7 +48,6 @@ document.addEventListener('DOMContentLoaded', function() {
         let m = e.getMonth() - s.getMonth();
         let d = e.getDate() - s.getDate();
 
-        // บวกเพิ่ม 2 วันเฉพาะช่วงที่ 2 และช่วงที่ 3 (ช่วงที่ 1 ไม่บวก)
         if (periodIndex === 2 || periodIndex === 3) {
             d += 2;
         }
@@ -90,7 +88,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         durationStrings.forEach(str => {
             if (!str || str === '-') return;
-            // แยกข้อความเช่น "10 ปี 1 เดือน 1 วัน" ออกมาเป็นตัวเลข
             const matches = str.match(/(\d+)\s*ปี\s*(\d+)\s*เดือน\s*(\d+)\s*วัน/);
             if (matches) {
                 totalYears += parseInt(matches[1]) || 0;
@@ -99,19 +96,49 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // ทดเศษวันเป็นเดือน (ตีเป็น 30 วัน หรือทดตามระบบปฏิทิน)
         if (totalDays >= 30) {
             totalMonths += Math.floor(totalDays / 30);
             totalDays = totalDays % 30;
         }
 
-        // ทดเศษเดือนเป็นปี
         if (totalMonths >= 12) {
             totalYears += Math.floor(totalMonths / 12);
             totalMonths = totalMonths % 12;
         }
 
         return `${totalYears} ปี ${totalMonths} เดือน ${totalDays} วัน`;
+    }
+
+    // --- ตรวจสอบรอบวันที่ลาตามช่วง 1 ต.ค. - 31 มี.ค. และ 1 เม.ย. - 30 ก.ย. ---
+    function isDateInCurrentLeaveCycle(dateStr) {
+        if (!dateStr) return false;
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return false;
+
+        const month = d.getMonth() + 1; // 1-12
+        const day = d.getDate();
+        const year = d.getFullYear();
+
+        // กำหนดรอบปัจจุบันอิงจากวันที่ปัจจุบัน
+        const now = new Date();
+        const curMonth = now.getMonth() + 1;
+        const curYear = now.getFullYear();
+
+        let cycleStart, cycleEnd;
+
+        if (curMonth >= 10 || curMonth <= 3) {
+            // รอบปัจจุบัน: 1 ตุลาคม ปีที่แล้ว - 31 มีนาคม ปีนี้ (หรือหากอยู่ ม.ค.-มี.ค. คือ ต.ค.ปีก่อนถึง มี.ค.ปีนี้)
+            let startYear = curMonth >= 10 ? curYear : curYear - 1;
+            let endYear = curMonth >= 10 ? curYear + 1 : curYear;
+            cycleStart = new Date(startYear, 9, 1);   // 1 ต.ค.
+            cycleEnd = new Date(endYear, 2, 31, 23, 59, 59);     // 31 มี.ค.
+        } else {
+            // รอบปัจจุบัน: 1 เมษายน - 30 กันยายน ปีเดียวกัน
+            cycleStart = new Date(curYear, 3, 1);   // 1 เม.ย.
+            cycleEnd = new Date(curYear, 8, 30, 23, 59, 59);     // 30 ก.ย.
+        }
+
+        return d >= cycleStart && d <= cycleEnd;
     }
 
     // --- Fetch Officers ---
@@ -230,12 +257,10 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('user-phone').textContent = user.phone;
         document.getElementById('user-address').textContent = user.address || '-';
         
-        // คำนวณช่วงแต่ละช่วง
         const dur1 = calculateWorkDuration(user.workStartDate1, user.workEndDate1, 1);
         const dur2 = user.workStartDate2 ? calculateWorkDuration(user.workStartDate2, user.workEndDate2, 2) : null;
         const dur3 = user.workStartDate3 ? calculateWorkDuration(user.workStartDate3, user.workEndDate3, 3) : null;
 
-        // แสดงผลแต่ละช่วง
         const elStart1 = document.getElementById('work-start-date-1');
         const elEnd1 = document.getElementById('work-end-date-1');
         const elDur1 = document.getElementById('work-duration-1');
@@ -257,17 +282,36 @@ document.addEventListener('DOMContentLoaded', function() {
         if (elEnd3) elEnd3.textContent = formatDate(user.workEndDate3);
         if (elDur3) elDur3.textContent = dur3 || '-';
 
-        // รวมระยะเวลาทั้งหมด (นำ dur1, dur2, dur3 มาบวกกันเพื่อให้รวมวันรอยต่ออย่างถูกต้อง)
         const elTotalDur = document.getElementById('total-work-duration');
         if (elTotalDur) {
             elTotalDur.textContent = sumWorkDurations([dur1, dur2, dur3]);
         }
 
-        const vacationUsed = parseFloat(user.currentAnnualLeave) || 0;
-        const sickUsed = parseFloat(user.currentSickLayer || user.currentSickLeave) || 0;
-        const personalUsed = parseFloat(user.currentPersonalLeave) || 0;
+        // --- กรองและคำนวณวันลาเฉพาะในรอบปัจจุบัน (1 ต.ค. - 31 มี.ค. / 1 เม.ย. - 30 ก.ย.) จากประวัติการลา ---
+        let calculatedSickUsed = 0;
+        let calculatedVacationUsed = 0;
+        let calculatedPersonalUsed = 0;
 
-        // --- คำนวณวันลาพักผ่อนคงเหลือ (หักจากคอลัมน์ J ก่อน แล้วค่อยหักจาก I) ---
+        history.forEach(l => {
+            // พิจารณาเฉพาะรายการที่อนุมัติแล้ว และอยู่ในช่วงรอบวันที่กำหนด
+            if (l.status === 'อนุมัติแล้ว' && isDateInCurrentLeaveCycle(l.startDate)) {
+                const dur = parseFloat(l.duration) || 0;
+                if (l.leaveType === 'ลาป่วย') {
+                    calculatedSickUsed += dur;
+                } else if (l.leaveType === 'ลาพักผ่อน') {
+                    calculatedVacationUsed += dur;
+                } else if (l.leaveType === 'ลากิจ') {
+                    calculatedPersonalUsed += dur;
+                }
+            }
+        });
+
+        // หากต้องการใช้ค่าจากระบบหลังบ้านร่วมด้วย สามารถสลับมาใช้ค่าจาก user object หรือผลรวมที่กรองตามรอบนี้ได้
+        const vacationUsed = calculatedVacationUsed > 0 ? calculatedVacationUsed : (parseFloat(user.currentAnnualLeave) || 0);
+        const sickUsed = calculatedSickUsed > 0 ? calculatedSickUsed : (parseFloat(user.currentSickLayer || user.currentSickLeave) || 0);
+        const personalUsed = calculatedPersonalUsed > 0 ? calculatedPersonalUsed : (parseFloat(user.currentPersonalLeave) || 0);
+
+        // --- คำนวณวันลาพักผ่อนคงเหลือ (หักจากคอลัมน์ J ก่อน แล้วค่อยหักจาก I ตามโจทย์) ---
         let leaveJ = parseFloat(user.annualLeaveJ) || 0; // วันลาสะสม (คอลัมน์ J)
         let leaveI = parseFloat(user.annualLeaveI) || 0; // วันลาปกติ (คอลัมน์ I)
         let remainingToDeduct = vacationUsed;
@@ -285,7 +329,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const totalVacationRemaining = leaveI + leaveJ;
-        // -------------------------------------------------------------
 
         document.getElementById('vacation-leave-used').textContent = vacationUsed;
         document.getElementById('vacation-leave-remaining').textContent = totalVacationRemaining;
@@ -295,8 +338,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         renderHistory(history);
     }
-	
-	
 	
     function renderHistory(history) {
         leaveHistoryTableBody.innerHTML = history.length > 0 ? history.map(l => `
