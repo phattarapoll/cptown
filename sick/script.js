@@ -339,16 +339,25 @@ document.addEventListener('DOMContentLoaded', function() {
         renderHistory(history);
     }
 	
-    function renderHistory(history) {
-        leaveHistoryTableBody.innerHTML = history.length > 0 ? history.map(l => `
+	function renderHistory(history) {
+        // คัดลอกและเรียงลำดับจากวันที่ลาใหม่สุด ไปเก่าสุด
+        const sortedHistory = [...history].sort((a, b) => {
+            const dateA = new Date(a.startDate);
+            const dateB = new Date(b.startDate);
+            return dateB - dateA; // ถ้าต้องการให้เก่าสุดไปใหม่สุด ให้สลับเป็น dateA - dateB
+        });
+
+        leaveHistoryTableBody.innerHTML = sortedHistory.length > 0 ? sortedHistory.map(l => `
             <tr>
                 <td>${l.leaveType}</td>
                 <td style="font-size: 0.85rem">${formatDate(l.startDate)}</td>
+                <td style="font-size: 0.85rem">${formatDate(l.endDate)}</td>
+                <td style="font-size: 0.85rem">${formatDate(l.recordDate || l.timestamp || l.createdDate)}</td>
                 <td style="text-align: center">${l.duration}</td>
                 <td><span class="status-badge ${l.status === 'อนุมัติแล้ว' ? 'success' : 'pending'}">${l.status}</span></td>
                 <td><button class="btn-cancel" data-id="${l.leaveId}"><i class="fa-solid fa-trash"></i></button></td>
             </tr>
-        `).join('') : '<tr><td colspan="5" style="text-align:center; padding: 20px;">ไม่พบข้อมูล</td></tr>';
+        `).join('') : '<tr><td colspan="7" style="text-align:center; padding: 20px;">ไม่พบข้อมูล</td></tr>';
 
         document.querySelectorAll('.btn-cancel').forEach(btn => {
             btn.onclick = (e) => {

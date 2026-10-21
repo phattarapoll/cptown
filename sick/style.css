@@ -469,7 +469,7 @@ body {
     right: -100%;
     top: 0;
     width: 100%;
-    max-width: 480px;
+    max-width: 680px;
     height: 100%;
     background: rgba(255, 255, 255, 0.92);
     backdrop-filter: blur(30px);
