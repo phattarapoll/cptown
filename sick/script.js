@@ -344,12 +344,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const sortedHistory = [...history].sort((a, b) => {
             const dateA = new Date(a.startDate);
             const dateB = new Date(b.startDate);
-            return dateB - dateA; // ถ้าต้องการให้เก่าสุดไปใหม่สุด ให้สลับเป็น dateA - dateB
+            return dateB - dateA;
         });
 
-        leaveHistoryTableBody.innerHTML = sortedHistory.length > 0 ? sortedHistory.map(l => `
+        leaveHistoryTableBody.innerHTML = sortedHistory.length > 0 ? sortedHistory.map((l, index) => `
             <tr>
-                <td>${l.leaveType}</td>
+                <td>
+                    ${l.leaveType}
+                    ${index === 0 ? '<span class="badge-new">NEW</span>' : ''}
+                </td>
                 <td style="font-size: 0.85rem">${formatDate(l.startDate)}</td>
                 <td style="font-size: 0.85rem">${formatDate(l.endDate)}</td>
                 <td style="font-size: 0.85rem">${formatDate(l.recordDate || l.timestamp || l.createdDate)}</td>

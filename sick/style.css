@@ -72,6 +72,26 @@ body {
     border-color: rgba(0, 113, 227, 0.3);
 }
 
+/* ---  NEW กระพริบ --- */
+.badge-new {
+    background-color: var(--danger);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 6px;
+    display: inline-block;
+    vertical-align: middle;
+    animation: blink-animation 1.2s infinite ease-in-out;
+}
+
+@keyframes blink-animation {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
 /* --- iOS Style Progress Loader --- */
 .progress-overlay {
     position: fixed;
