@@ -268,7 +268,29 @@ header p {
     word-break: break-all;
     line-height: 1.2;
 }
+@keyframes currentDayGlow {
+    0%, 100% {
+        border-color: var(--success-color);
+        box-shadow: 0 0 5px rgba(16, 185, 129, 0.4), inset 0 0 5px rgba(16, 185, 129, 0.2);
+        background-color: #ecfdf5;
+    }
+    50% {
+        border-color: #059669;
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.8), inset 0 0 10px rgba(16, 185, 129, 0.4);
+        background-color: #d1fae5;
+    }
+}
 
+/* ปรับแต่งช่องวันปัจจุบัน (Current Day) ให้กระพริบสีเขียวเด่นชัด */
+.calendar-day.current-day {
+    border: 2px solid var(--success-color);
+    animation: currentDayGlow 2s infinite ease-in-out;
+}
+
+.calendar-day.current-day .day-number {
+    color: #047857;
+    font-weight: bold;
+}
 /* TIME SLOTS STYLES */
 .slots-header {
     display: flex;
