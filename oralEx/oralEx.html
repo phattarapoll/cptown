@@ -345,7 +345,8 @@
         <div class="inline-fields">
             <div class="form-group">
                 <label for="fullname">ชื่อ - สกุล</label>
-                <input type="text" id="fullname" name="fullname" placeholder="กรอกชื่อ - สกุล">
+                <!-- เพิ่มฟังก์ชัน oninput เพื่อซิงค์ชื่ออัตโนมัติ -->
+                <input type="text" id="fullname" name="fullname" placeholder="กรอกชื่อ - สกุล" oninput="syncPatientName(this)">
             </div>
             <div class="form-group">
                 <label for="idcard">เลขประจำตัวประชาชน</label>
@@ -478,6 +479,7 @@
         <div class="inline-fields">
             <div class="form-group">
                 <label for="patient_name">ข้าพเจ้า (ชื่อผู้ป่วย)</label>
+                <!-- ช่องชื่อผู้ป่วยจะซิงค์ข้อมูลอัตโนมัติจากช่องด้านบน -->
                 <input type="text" id="patient_name" name="patient_name" placeholder="ชื่อ - สกุล ผู้ป่วย">
             </div>
             <div class="form-group" style="flex: 0.3;">
@@ -542,6 +544,14 @@
                 box.innerText = '⭕';
                 hiddenInput.value = 'เคลือบ';
             }
+        }
+    }
+
+    // ฟังก์ชันเชื่อมโยงชื่อ-สกุลอัตโนมัติ
+    function syncPatientName(inputElement) {
+        const patientNameInput = document.getElementById('patient_name');
+        if (patientNameInput) {
+            patientNameInput.value = inputElement.value;
         }
     }
 </script>
