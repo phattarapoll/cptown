@@ -336,7 +336,6 @@
 
 <div class="container">
     <form>
-        <!-- ส่วนที่ 1: แบบบันทึกสภาวะโรคฟันผุ -->
         <h2>บันทึกสภาวะโรคฟันผุ</h2>
         <div class="header-info">
             <span>งานทันตสาธารณสุข กองสาธารณสุขและสิ่งแวดล้อม เทศบาลเมืองชุมพร</span>
@@ -345,26 +344,25 @@
 
         <div class="inline-fields">
             <div class="form-group">
-                <label for="fullname">ชื่อ - สกุล:</label>
+                <label for="fullname">ชื่อ - สกุล</label>
                 <input type="text" id="fullname" name="fullname" placeholder="กรอกชื่อ - สกุล">
             </div>
             <div class="form-group">
-                <label for="idcard">เลขประจำตัวประชาชน:</label>
+                <label for="idcard">เลขประจำตัวประชาชน</label>
                 <input type="text" id="idcard" name="idcard" maxlength="13" placeholder="เลขประจำตัวประชาชน 13 หลัก">
             </div>
         </div>
 
         <h3>แผนผังฟัน (จำลองช่องปาก)</h3>
         
-        <!-- แถบเลือกโหมดการบันทึกฟัน -->
         <div class="mode-selector-bar">
             <div class="mode-options">
-                <span style="font-weight: normal; color: #555;">เลือกสถานะเพื่อบันทึก:</span>
+                <span style="font-weight: normal; color: #555;">เลือกสถานะเพื่อบันทึก</span>
                 <label><input type="radio" name="tooth_mode" value="decay" checked> <span style="color: #c0392b;">ผุ (✔)</span></label>
                 <label><input type="radio" name="tooth_mode" value="sealant"> <span style="color: #1f618d;">เคลือบ (⭕)</span></label>
             </div>
             <div class="symbol-legend">
-                <span><strong>สัญลักษณ์:</strong></span>
+                <span><strong>สัญลักษณ์</strong></span>
                 <span style="color: #e74c3c;">✔ = ฟันผุ</span>
                 <span style="color: #2980b9;">⭕ = เคลือบหลุมร่องฟัน</span>
             </div>
@@ -372,12 +370,11 @@
 
         <!-- สำหรับการพิมพ์ -->
         <div class="print-legend">
-            <span><strong>สัญลักษณ์:</strong> <span style="color: #e74c3c;">✔ = ผุ</span> | <span style="color: #2980b9;">⭕ = เคลือบหลุมร่องฟัน</span></span>
+            <span><strong>สัญลักษณ์</strong> <span style="color: #e74c3c;">✔ = ผุ</span> | <span style="color: #2980b9;">⭕ = เคลือบหลุมร่องฟัน</span></span>
         </div>
 
         <div class="tooth-chart">
             <p><strong>ฟันแท้ (Permanent Teeth)</strong></p>
-            <!-- ฟันแท้ แถวที่ 1 -->
             <div class="tooth-row">
                 <div class="tooth-item" onclick="toggleTooth(this)"><input type="hidden" name="tooth_17">17<div class="tooth-box"></div></div>
                 <div class="tooth-item" onclick="toggleTooth(this)"><input type="hidden" name="tooth_16">16<div class="tooth-box"></div></div>
@@ -394,7 +391,6 @@
                 <div class="tooth-item" onclick="toggleTooth(this)"><input type="hidden" name="tooth_26">26<div class="tooth-box"></div></div>
                 <div class="tooth-item" onclick="toggleTooth(this)"><input type="hidden" name="tooth_27">27<div class="tooth-box"></div></div>
             </div>
-            <!-- ฟันแท้ แถวที่ 2 -->
             <div class="tooth-row">
                 <div class="tooth-item" onclick="toggleTooth(this)"><input type="hidden" name="tooth_47">47<div class="tooth-box"></div></div>
                 <div class="tooth-item" onclick="toggleTooth(this)"><input type="hidden" name="tooth_46">46<div class="tooth-box"></div></div>
@@ -413,7 +409,6 @@
             </div>
 
             <p><strong>ฟันน้ำนม (Primary Teeth)</strong></p>
-            <!-- ฟันน้ำนม แถวที่ 1 -->
             <div class="tooth-row">
                 <div class="tooth-item" onclick="toggleTooth(this)"><input type="hidden" name="tooth_55">55<div class="tooth-box"></div></div>
                 <div class="tooth-item" onclick="toggleTooth(this)"><input type="hidden" name="tooth_54">54<div class="tooth-box"></div></div>
@@ -426,7 +421,6 @@
                 <div class="tooth-item" onclick="toggleTooth(this)"><input type="hidden" name="tooth_64">64<div class="tooth-box"></div></div>
                 <div class="tooth-item" onclick="toggleTooth(this)"><input type="hidden" name="tooth_65">65<div class="tooth-box"></div></div>
             </div>
-            <!-- ฟันน้ำนม แถวที่ 2 -->
             <div class="tooth-row">
                 <div class="tooth-item" onclick="toggleTooth(this)"><input type="hidden" name="tooth_85">85<div class="tooth-box"></div></div>
                 <div class="tooth-item" onclick="toggleTooth(this)"><input type="hidden" name="tooth_84">84<div class="tooth-box"></div></div>
@@ -440,7 +434,6 @@
                 <div class="tooth-item" onclick="toggleTooth(this)"><input type="hidden" name="tooth_75">75<div class="tooth-box"></div></div>
             </div>
 
-            <!-- QR Code พร้อมข้อความใต้ภาพ มุมล่างขวา -->
             <div class="qr-container">
                 <img src="QR.png" alt="QR Code" class="qr-bottom-right">
                 <div class="qr-text">SCAN เพื่อจองคิวบริการ</div>
@@ -454,7 +447,7 @@
 
         <div class="inline-fields">
             <div class="form-group">
-                <label>ผู้ดำเนินการตรวจ:</label>
+                <label>ผู้ดำเนินการตรวจ</label>
                 <div class="signature-box" style="width: 100%; text-align: left; padding: 2px;">
                     <img src="cptown.png" alt="Seal Watermark" class="watermark-stamp" style="left: 35%;">
                     <div class="signature-content">
@@ -463,14 +456,13 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="exam_date_1">วันที่ตรวจ:</label>
+                <label for="exam_date_1">วันที่ตรวจ</label>
                 <input type="date" id="exam_date_1" name="exam_date_1">
             </div>
         </div>
 
         <hr>
 
-        <!-- ส่วนที่ 2: ใบรับรองการตรวจช่องปาก -->
         <h2>ใบรับรองการตรวจสุขภาพช่องปาก</h2>
         <p style="text-align: center; font-size: 11px; color: #555; margin: 2px 0 8px 0;">
            งานทันตสาธารณสุข กองสาธารณสุขและสิ่งแวดล้อม เทศบาลเมืองชุมพร (333 ต.ท่าตะเภา อ.เมือง จ.ชุมพร 86000)
@@ -478,33 +470,33 @@
 
         <div class="inline-fields">
             <div class="form-group" style="max-width: 250px;">
-                <label for="cert_date">วันที่:</label>
+                <label for="cert_date">วันที่</label>
                 <input type="date" id="cert_date" name="cert_date">
             </div>
         </div>
 
         <div class="inline-fields">
             <div class="form-group">
-                <label for="patient_name">ข้าพเจ้า (ชื่อผู้ป่วย):</label>
+                <label for="patient_name">ข้าพเจ้า (ชื่อผู้ป่วย)</label>
                 <input type="text" id="patient_name" name="patient_name" placeholder="ชื่อ - สกุล ผู้ป่วย">
             </div>
             <div class="form-group" style="flex: 0.3;">
-                <label for="age">อายุ:</label>
+                <label for="age">อายุ</label>
                 <input type="text" id="age" name="age" placeholder="ปี">
             </div>
             <div class="form-group" style="flex: 0.5;">
-                <label for="hn">HN:</label>
+                <label for="hn">HN</label>
                 <input type="text" id="hn" name="hn" placeholder="HN">
             </div>
         </div>
 
         <div class="inline-fields">
             <div class="form-group" style="flex: 2;">
-                <label for="address">ที่อยู่ปัจจุบัน:</label>
+                <label for="address">ที่อยู่ปัจจุบัน</label>
                 <input type="text" id="address" name="address" placeholder="ที่อยู่">
             </div>
             <div class="form-group" style="flex: 1.5;">
-                <label for="exam_date_2">วันที่ตรวจ / รักษา:</label>
+                <label for="exam_date_2">วันที่ตรวจ / รักษา</label>
                 <input type="date" id="exam_date_2" name="exam_date_2">
             </div>
         </div>
