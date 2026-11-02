@@ -144,7 +144,7 @@
             border: 1px inset rgba(0,0,0,0.02);
             overflow-y: auto;
             overflow-x: visible;
-            padding-left: 2rem;
+            padding: 1.5rem;
         }
 
         @keyframes superPulse {
@@ -164,6 +164,18 @@
 
         .super-flash-btn {
             animation: superPulse 1.5s infinite;
+        }
+
+        /* อนิเมชันกระพริบสีเหลืองสำหรับเตรียมรับบริการ */
+        @keyframes yellowGlowPulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.7); }
+            70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(234, 179, 8, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(234, 179, 8, 0); }
+        }
+        .yellow-flashing {
+            animation: yellowGlowPulse 1.5s infinite;
+            border: 2px solid #EAB308 !important;
+            background-color: #FEF08A !important;
         }
 
         .header-title-container {
@@ -328,7 +340,7 @@
             </div>
 
             <div id="scrollingQueueContainer" class="relative">
-                <div id="queueDisplay" class="h-80 sm:h-[450px] p-6 relative">
+                <div id="queueDisplay" class="h-80 sm:h-[450px] relative overflow-y-auto">
                     <div id="queueLoading" class="absolute inset-0 flex flex-col items-center justify-center bg-white/80 z-10 rounded-xl">
                         <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent-gold mb-3"></div>
                         <p class="text-gray-500 font-medium">กำลังเตรียมข้อมูลคิว...</p>
@@ -489,31 +501,79 @@
             const upcoming = [];
             const abnormalList = [];
 
-            finalizedBookings.forEach(booking => {
-                const bStart = booking.parsedDate;
+            const validBookings = finalizedBookings.filter(b => !b.isDuplicate);
+            
+            validBookings.forEach((booking, index) => {
+                const bStart = new Date(booking.parsedDate);
                 const timeParts = String(booking.timeSlot).split('-');
+                if (timeParts[0]) {
+                    const [h, m] = timeParts[0].trim().split(':').map(Number);
+                    if (!isNaN(h)) {
+                        bStart.setHours(h, m || 0, 0, 0);
+                    }
+                }
+
                 const bEnd = new Date(bStart);
                 if (timeParts[1]) {
                     const [h, m] = timeParts[1].split(':').map(Number);
                     bEnd.setHours(h || 0, m || 0, 0, 0);
+                } else {
+                    bEnd.setHours(bStart.getHours() + 1);
                 }
                 
-                if (booking.isDuplicate) {
-                    abnormalList.push(booking);
-                } else if (now >= bStart && now < bEnd) {
+                booking.isLastQueue = (index === validBookings.length - 1);
+                booking.queueIndex = index;
+
+                if (now >= bStart && now < bEnd) {
                     currentAppt = booking;
-                } else {
+                } else if (bStart >= now) {
                     upcoming.push(booking);
                 }
             });
 
-            if (currentAppt) renderQueueCard(currentAppt, true, now);
-            if (upcoming.length > 0) {
-                queueDisplay.innerHTML += `<div class="text-lg font-bold text-primary-navy mt-4 mb-2 border-b border-gray-200 pb-1 px-3 flex items-center"><i class="fas fa-list-ol mr-2 text-accent-gold"></i>รายการคิวทั้งหมด</div>`;
-                upcoming.forEach(appt => renderQueueCard(appt, false, now));
-            } else if (!currentAppt && abnormalList.length === 0) {
-                queueDisplay.innerHTML = '<p class="text-center text-gray-500 py-10">ไม่มีรายการนัดหมายในขณะนี้</p>';
+            finalizedBookings.forEach(booking => {
+                if (booking.isDuplicate) {
+                    abnormalList.push(booking);
+                }
+            });
+
+            let gridContainer = document.createElement('div');
+            gridContainer.className = 'flex flex-col gap-6';
+
+            if (currentAppt) {
+                const currentCard = createChairCard(currentAppt, 'current', now);
+                gridContainer.appendChild(currentCard);
             }
+
+            if (upcoming.length > 0) {
+                let sectionTitle = document.createElement('div');
+                sectionTitle.className = 'text-base font-bold text-primary-navy border-b border-gray-200 pb-1 px-1 flex items-center mt-2';
+                sectionTitle.innerHTML = `<i class="fas fa-users mr-2 text-accent-gold"></i>ผังรอรับบริการ`;
+                gridContainer.appendChild(sectionTitle);
+
+                let rowDiv = document.createElement('div');
+                rowDiv.className = 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4';
+
+                upcoming.forEach((appt, index) => {
+                    const isFirstUpcoming = (index === 0);
+                    const chairCard = createChairCard(appt, isFirstUpcoming ? 'upcoming_first' : 'upcoming_normal', now);
+                    rowDiv.appendChild(chairCard);
+
+                    if ((index + 1) % 4 === 0) {
+                        gridContainer.appendChild(rowDiv);
+                        rowDiv = document.createElement('div');
+                        rowDiv.className = 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4';
+                    }
+                });
+
+                if (rowDiv.children.length > 0) {
+                    gridContainer.appendChild(rowDiv);
+                }
+            } else if (!currentAppt && abnormalList.length === 0) {
+                gridContainer.innerHTML = '<p class="text-center text-gray-500 py-10">ไม่มีรายการนัดหมายในขณะนี้</p>';
+            }
+
+            queueDisplay.appendChild(gridContainer);
 
             const toggleAbnormalBtn = document.getElementById('toggleAbnormalPanel');
             const toggleAbnormalIcon = document.getElementById('toggleAbnormalIcon');
@@ -523,11 +583,6 @@
                 toggleAbnormalIcon.className = "fas fa-exclamation-triangle text-yellow-300 text-xl";
 
                 abnormalList.forEach(appt => {
-                    const apptTimestamp = appt.parsedDate;
-                    const fullBookingDate = apptTimestamp.toLocaleDateString('th-TH', {
-                        day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
-                    });
-                    
                     const itemDiv = document.createElement('div');
                     itemDiv.className = 'bg-red-50 p-3 rounded-xl border border-red-200 shadow-sm mb-2';
                     itemDiv.innerHTML = `
@@ -544,65 +599,101 @@
             }
         }
 
-        function renderQueueCard(appt, isCurrent, now) {
-            const apptTimestamp = appt.parsedDate;
-            const fullBookingDate = apptTimestamp.toLocaleDateString('th-TH', {
-                day: '2-digit', month: 'long', year: 'numeric'
-            });
-
-            const isToday = apptTimestamp.toDateString() === now.toDateString();
-            const isPast = apptTimestamp < now;
-
-            if (isPast && isToday && !isCurrent) {
-                return;
+        function createChairCard(appt, type, now) {
+            const apptTimestamp = new Date(appt.parsedDate);
+            const timeParts = String(appt.timeSlot).split('-');
+            if (timeParts[0]) {
+                const [startH, startM] = timeParts[0].trim().split(':').map(Number);
+                if (!isNaN(startH)) {
+                    apptTimestamp.setHours(startH, startM || 0, 0, 0);
+                }
             }
 
             const card = document.createElement('div');
 
-            if (isCurrent) {
-                card.className = 'queue-item-row flex items-center justify-between p-3 mb-2.5 rounded-xl bg-white border-l-8 border-blue-500 relative overflow-hidden border-t border-r border-b border-gray-200 shadow-sm';
+            if (type === 'current') {
+                let waitMinutes = 15;
+                if (appt.queueIndex === 0 || appt.queueIndex === 1) waitMinutes = 30;
+                else if (appt.queueIndex === 2) waitMinutes = 15;
+
+                const timeLimitLater = new Date(apptTimestamp.getTime() + waitMinutes * 60000);
+                const isOvertime = now >= timeLimitLater;
+
+                let statusText = "";
+                let badgeColor = "";
+                let borderColor = "";
+                let iconClass = "fa-user-injured";
+
+                if (appt.isLastQueue) {
+                    statusText = "พักรับบริการ";
+                    badgeColor = "bg-purple-300 text-black";
+                    borderColor = "border-purple-500";
+                    iconClass = "fas fa-coffee";
+                } else {
+                    statusText = isOvertime ? "คิวถัดไปเตรียมติดต่อห้องบริการ" : "คิวปัจจุบัน";
+                    badgeColor = isOvertime ? "bg-amber-300 text-black animate-pulse" : "bg-blue-300 text-black";
+                    borderColor = isOvertime ? "border-amber-500" : "border-blue-500";
+                }
+
+                card.className = `p-5 rounded-2xl bg-white border-2 ${borderColor} shadow-md flex flex-col items-center relative overflow-hidden w-full mb-3 pt-6`;
                 card.innerHTML = `
-                    <div class="absolute left-0 top-0 bottom-0 w-3 bg-blue-500 flex items-center justify-center">
-                        <i class="fas fa-tooth text-xs text-white/90"></i>
+                    <!-- ป้ายสถานะ: ด้านบนกึ่งกลาง ชิดเส้นขอบบน -->
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2">
+                        <span class="px-3 py-0.5 rounded-b-xl text-xs font-bold ${badgeColor} shadow-sm border-t-0 inline-block text-center">
+                            ${statusText}
+                        </span>
                     </div>
-                    <div class="flex items-center space-x-3 overflow-hidden pl-2">
-                        <span class="font-bold text-primary-navy text-base sm:text-lg truncate">${maskLastName(appt.patientName)}</span>
-                        <span class="text-xs text-gray-500 font-medium truncate"><i class="far fa-clock mr-1"></i>${appt.timeSlot}</span>
-                    </div>
-                    <div class="flex items-center space-x-2 shrink-0">
-                        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-500 text-white">คิวปัจจุบัน</span>
+                    
+                    <div class="flex items-center space-x-4 w-full justify-between mt-2">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-2xl shadow-inner shrink-0">
+                                <i class="fas ${iconClass}"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs text-blue-600 font-bold uppercase tracking-wider">กำลังเข้ารับบริการ</span>
+                                <h3 class="text-lg font-bold text-primary-navy">${maskLastName(appt.patientName)}</h3>
+                                <p class="text-xs text-gray-500"><i class="far fa-clock mr-1"></i>${appt.timeSlot}</p>
+                            </div>
+                        </div>
                     </div>
                 `;
             } else {
+                const isFirst = (type === 'upcoming_first');
+                const cardStyle = isFirst ? 'yellow-flashing rounded-2xl' : 'bg-white/80 border border-gray-200 rounded-2xl shadow-sm';
+                const statusLabel = isFirst ? 'สถานะ : เตรียมรับบริการ' : 'สถานะ : ปกติ';
+                const badgeStyle = isFirst ? 'bg-yellow-300 text-black font-bold animate-pulse' : 'bg-green-300 text-black';
+                const iconColor = isFirst ? 'text-yellow-600 bg-yellow-100' : 'text-green-600 bg-green-100';
+
                 let timeDiff = apptTimestamp - now;
                 let formattedTime = formatTimeRemaining(timeDiff);
                 let timeRemainingHtml = formattedTime !== "" 
-                    ? `<span class="time-remaining font-bold text-green-600" data-timestamp="${apptTimestamp.getTime()}">ในอีก: ${formattedTime}</span>` 
-                    : `<span class="time-remaining font-bold text-gray-400" data-timestamp="${apptTimestamp.getTime()}"></span>`;
+                    ? `<span class="time-remaining font-semibold text-gray-600" data-timestamp="${apptTimestamp.getTime()}">ในอีก: ${formattedTime}</span>` 
+                    : `<span class="time-remaining font-semibold text-gray-400" data-timestamp="${apptTimestamp.getTime()}">ถึงคิวแล้ว</span>`;
 
-                card.className = 'queue-item-row flex flex-col p-3.5 mb-3 rounded-2xl bg-white border-l-8 border-green-500 relative overflow-hidden border-t border-r border-b border-gray-200 shadow-sm';
+                card.className = `p-4 pt-6 flex flex-col justify-between ${cardStyle} transition-all duration-300 relative items-center text-center`;
                 card.innerHTML = `
-                    <div class="absolute left-0 top-0 bottom-0 w-3 bg-green-500 flex items-center justify-center">
-                        <i class="fas fa-tooth text-xs text-white/90"></i>
+                    <!-- ป้ายสถานะ: ด้านบนกึ่งกลาง ชิดเส้นขอบบน -->
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2">
+                        <span class="px-3 py-0.5 rounded-b-xl ${badgeStyle} text-[10px] shadow-sm inline-block whitespace-nowrap">
+                            ${statusLabel}
+                        </span>
                     </div>
-                    <div class="flex items-center justify-between mb-1 pl-2">
-                        <div class="flex flex-col">
-                            <span class="font-bold text-primary-navy text-base">${maskLastName(appt.patientName)}</span>
-                            <span class="text-xs text-gray-500 font-normal mt-0.5">
-                                <br><i class="far fa-calendar-alt text-accent-gold mr-1"></i>${fullBookingDate} 
-                                <br><i class="far fa-clock text-accent-gold ml-2 mr-1"></i>${appt.timeSlot}
-                            </span>
+
+                    <div class="flex flex-col items-center w-full mt-1 mb-2">
+                        <div class="w-12 h-12 rounded-full ${iconColor} flex items-center justify-center text-lg shrink-0 shadow-inner mb-2">
+                            <i class="fas fa-user"></i>
                         </div>
-                        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-500 text-white shrink-0">สถานะ : ปกติ</span>
+                        <h4 class="font-bold text-primary-navy text-sm truncate w-full">${maskLastName(appt.patientName)}</h4>
+                        <p class="text-[11px] text-gray-500 mt-0.5"><i class="far fa-clock mr-1"></i>${appt.timeSlot}</p>
                     </div>
-                    <div class="flex items-center justify-between mt-1 pt-1 border-t border-gray-100 text-xs pl-2">
-                        <span class="text-gray-600 font-semibold">นัดทำฟัน : ห้องตรวจ 2</span>
+
+                    <div class="flex items-center justify-center w-full pt-2 border-t border-gray-100 text-[11px]">
                         ${timeRemainingHtml}
                     </div>
                 `;
             }
 
-            queueDisplay.appendChild(card);
+            return card;
         }
 
         async function fetchNewsFromGoogleSheet() {
@@ -643,7 +734,7 @@
             } catch (error) {
                 console.error('Fetch News Error:', error);
                 if (newsLoading) newsLoading.classList.add('hidden');
-                if (newsError) newsError.classList.remove('hidden');
+                if (newsError) newsError.classList.add('hidden');
             }
         }
 
@@ -687,7 +778,7 @@
                     if (formatted !== "") {
                         span.textContent = 'ในอีก: ' + formatted;
                     } else {
-                        span.textContent = '';
+                        span.textContent = 'ถึงคิวแล้ว';
                     }
                 });
             }, 10000);
