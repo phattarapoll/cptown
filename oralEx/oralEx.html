@@ -4,69 +4,78 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>แบบบันทึกสภาวะโรคฟันผุและใบรับรองการตรวจช่องปาก</title>
+    <!-- นำเข้าฟอนต์ Sarabun จาก Google Fonts เพิ่มความคมชัดทุกน้ำหนัก -->
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Sarabun', sans-serif;
             background-color: #eef2f7;
             margin: 0;
             padding: 15px;
-            color: #333;
+            color: #2c3e50;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         .container {
             max-width: 850px;
             background: #fff;
             margin: 0 auto;
-            padding: 20px 30px;
+            padding: 25px 35px;
             border-radius: 12px;
             box-shadow: 0 6px 20px rgba(0,0,0,0.08);
         }
         h2 {
             text-align: center;
             color: #1a5276;
-            font-size: 18px;
-            margin: 5px 0;
+            font-size: 20px;
+            font-weight: 700;
+            margin: 8px 0;
         }
         h3 {
             color: #2980b9;
-            font-size: 14px;
+            font-size: 15px;
+            font-weight: 600;
             border-bottom: 2px solid #ebf5fb;
-            padding-bottom: 3px;
-            margin: 10px 0 6px 0;
+            padding-bottom: 4px;
+            margin: 14px 0 8px 0;
         }
         .header-info {
             display: flex;
             justify-content: space-between;
             background: #f8f9fa;
-            padding: 8px 12px;
+            padding: 10px 14px;
             border-radius: 6px;
             font-size: 13px;
             color: #555;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
         .form-group {
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
         label {
             font-weight: 600;
             display: inline-block;
-            margin-bottom: 3px;
-            color: #2c3e50;
+            margin-bottom: 4px;
+            color: #34495e;
             font-size: 13px;
         }
         input[type="text"], input[type="date"], select {
             width: 100%;
-            padding: 6px 8px;
+            padding: 8px 10px;
             box-sizing: border-box;
             border: 1px solid #ccd1d1;
             border-radius: 6px;
-            font-size: 13px;
+            font-size: 14px;
             font-family: 'Sarabun', sans-serif;
-            transition: all 0.3s;
+            color: #2c3e50;
+            background-color: #fafbfc;
+            transition: all 0.25s ease-in-out;
         }
-        input[type="text"]:focus, input[type="date"]:focus {
+        input[type="text"]:focus, input[type="date"]:focus, select:focus {
             border-color: #3498db;
+            background-color: #fff;
             outline: none;
-            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+            box-shadow: 0 0 6px rgba(52, 152, 219, 0.25);
         }
         .inline-fields {
             display: flex;
@@ -79,13 +88,13 @@
         hr {
             border: 0;
             border-top: 1.5px dashed #d5dbdb;
-            margin: 12px 0;
+            margin: 15px 0;
         }
         
         /* สไตล์เลือกโหมด และแผนผังฟัน */
         .tooth-chart {
             text-align: center;
-            margin: 8px 0;
+            margin: 10px 0;
             background: #fdfefe;
             padding: 10px 10px 45px 10px;
             border: 1px solid #eaeded;
@@ -93,8 +102,9 @@
             position: relative;
         }
         .tooth-chart p {
-            margin: 4px 0;
-            font-size: 12px;
+            margin: 6px 0;
+            font-size: 13px;
+            font-weight: 600;
         }
         
         /* แถบเลือกโหมด และสัญลักษณ์ */
@@ -103,9 +113,9 @@
             justify-content: space-between;
             align-items: center;
             background: #eaf2f8;
-            padding: 6px 12px;
+            padding: 8px 14px;
             border-radius: 6px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             border: 1px solid #d4e6f1;
         }
         .mode-options {
@@ -119,7 +129,7 @@
             margin: 0;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
         }
         .symbol-legend {
             font-size: 12px;
@@ -137,7 +147,7 @@
             display: flex;
             justify-content: center;
             gap: 5px;
-            margin: 4px 0;
+            margin: 5px 0;
             flex-wrap: wrap;
         }
         
@@ -147,15 +157,15 @@
             flex-direction: column;
             align-items: center;
             font-size: 11px;
-            font-weight: 600;
+            font-weight: 700;
             color: #566573;
             cursor: pointer;
             user-select: none;
             width: 24px;
         }
         .tooth-box {
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             border: 1px solid #bdc3c7;
             border-radius: 4px;
             margin-top: 2px;
@@ -163,7 +173,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: bold;
             transition: all 0.2s;
         }
@@ -215,10 +225,11 @@
 
         .checkbox-group {
             background: #f8f9fa;
-            padding: 8px 12px;
+            padding: 10px 14px;
             border-radius: 6px;
-            margin: 8px 0;
+            margin: 10px 0;
             font-size: 13px;
+            border: 1px solid #eaeded;
         }
         .checkbox-group label {
             font-weight: normal;
@@ -226,12 +237,12 @@
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
         }
 
         /* ส่วนลายเซ็นและตราประทับ */
         .signature-section {
-            margin-top: 5px;
+            margin-top: 8px;
             display: flex;
             justify-content: flex-end;
         }
@@ -248,7 +259,7 @@
             left: 50%;
             transform: translate(-50%, -50%) rotate(-10deg);
             width: 90px;
-            opacity: 0.25;
+            opacity: 0.22;
             pointer-events: none;
             z-index: 1;
         }
@@ -260,31 +271,36 @@
         button {
             background-color: #27ae60;
             color: white;
-            padding: 10px 20px;
+            padding: 12px 20px;
             border: none;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 600;
             width: 100%;
-            margin-top: 15px;
+            margin-top: 20px;
             font-family: 'Sarabun', sans-serif;
-            transition: background 0.3s;
+            box-shadow: 0 4px 10px rgba(39, 174, 96, 0.2);
+            transition: background 0.3s, transform 0.1s;
         }
         button:hover {
             background-color: #219653;
         }
+        button:active {
+            transform: scale(0.99);
+        }
 
-        /* ตั้งค่าการพิมพ์ A4 ให้จบในหน้าเดียว */
+        /* ตั้งค่าการพิมพ์ A4 ให้จบในหน้าเดียวและสวยงามคมชัด */
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 6mm;
+                margin: 5mm;
             }
             body {
                 background-color: #fff;
                 padding: 0;
                 margin: 0;
+                color: #000;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
@@ -302,28 +318,40 @@
                 justify-content: flex-end;
                 font-size: 11px;
                 margin-bottom: 4px;
+                font-weight: 600;
             }
+            /* ปรับแต่งช่องกรอกข้อมูลขณะพิมพ์ให้ดูเรียบร้อยแบบฟอร์มทางการ */
             input[type="text"], input[type="date"], select {
                 border: none;
-                border-bottom: 1px dotted #666;
+                border-bottom: 1px dotted #444;
                 border-radius: 0;
-                padding: 1px 3px;
+                padding: 2px 4px;
                 background: transparent;
-                font-size: 12px;
+                font-size: 13px;
+                font-family: 'Sarabun', sans-serif;
+                color: #000;
             }
             .header-info, .checkbox-group, .tooth-chart {
-                border: 1px solid #ddd;
+                border: 1px solid #bbb;
                 padding: 6px 10px;
+                background: #fff !important;
             }
             h2 {
                 font-size: 16px;
+                color: #000;
             }
             h3 {
                 font-size: 13px;
+                color: #000;
+                border-bottom: 1px solid #000;
                 margin: 6px 0 4px 0;
             }
             hr {
+                border-top: 1px solid #777;
                 margin: 8px 0;
+            }
+            .watermark-stamp {
+                opacity: 0.15;
             }
         }
 
@@ -336,6 +364,68 @@
 
 <div class="container">
     <form>
+	
+	
+	        <h2>ใบรับรองการตรวจสุขภาพช่องปาก</h2>
+        <p style="text-align: center; font-size: 12px; color: #555; margin: 2px 0 8px 0;">
+           งานทันตสาธารณสุข กองสาธารณสุขและสิ่งแวดล้อม เทศบาลเมืองชุมพร (333 ต.ท่าตะเภา อ.เมืองชุมพร จ.ชุมพร 86000)
+        </p>
+
+        <div class="inline-fields">
+            <div class="form-group" style="max-width: 250px;">
+                <label for="cert_date">วันที่</label>
+                <input type="date" id="cert_date" name="cert_date">
+            </div>
+		</div>
+			
+        <div class="inline-fields">
+            <div class="form-group">
+                <label for="patient_name">ชื่อผู้ป่วย</label>
+                <input type="text" id="patient_name" name="patient_name" placeholder="ชื่อ - สกุล ผู้ป่วย">
+            </div>
+            <div class="form-group" style="flex: 0.3;">
+                <label for="age">อายุ</label>
+                <input type="text" id="age" name="age" placeholder="ปี">
+            </div>
+            <div class="form-group" style="flex: 0.5;">
+                <label for="hn">HN</label>
+                <input type="text" id="hn" name="hn" placeholder="HN">
+            </div>
+        </div>
+
+        <div class="inline-fields">
+            <div class="form-group" style="flex: 2;">
+                <label for="address">ที่อยู่ปัจจุบัน</label>
+                <input type="text" id="address" name="address" placeholder="ที่อยู่">
+            </div>
+            <div class="form-group" style="flex: 1.5;">
+                <label for="exam_date_2">วันที่ตรวจ / รักษา</label>
+                <input type="date" id="exam_date_2" name="exam_date_2">
+            </div><br>
+        </div>
+					<p style="text-align: center ; font-size: 14px; color: #555; margin: 1px 0 8px 0;">
+           ได้เข้ารับบริการตรวจสุขภาพช่องปาก และวางแผนการรักษา " จริง " และมีความเห็นดังนี้
+        </p>
+
+
+        <div class="form-group checkbox-group" style="padding: 8px 12px; margin: 6px 0;">
+            <label style="margin-right: 10px;"><input type="checkbox" name="result" value="normal">ปกติ (ให้คำแนะนำ วางแผนการส่งเสริมป้องกัน)</label>
+            <label style="margin-right: 10px;"><input type="checkbox" name="result" value="decay"> พบฟันผุ</label>
+            <label style="margin-right: 10px;"><input type="checkbox" name="result" value="tartar"> พบหินน้ำลาย</label>
+            <label><input type="checkbox" name="result" value="other"> อื่นๆ: <input type="text" name="other_detail" style="width: 350px; display: inline-block; padding: 4px;" placeholder="ระบุ"></label>
+        </div>
+
+        <div class="signature-section" style="margin-top: 5px;">
+            <div class="signature-box">
+                <img src="cptown.png" alt="Seal Watermark" class="watermark-stamp">
+                <div class="signature-content">
+                    <p style="margin: 0 0 3px 0; font-size: 13px;">ลงชื่อ .......................................................</p>
+                    <p style="margin: 0; font-size: 12px; color: #555;">ผู้มีหน้าที่/รับรอง</p>
+                </div>
+            </div>
+        </div>
+		<br>
+		<hr>
         <h2>บันทึกสภาวะโรคฟันผุ</h2>
         <div class="header-info">
             <span>งานทันตสาธารณสุข กองสาธารณสุขและสิ่งแวดล้อม เทศบาลเมืองชุมพร</span>
@@ -345,7 +435,6 @@
         <div class="inline-fields">
             <div class="form-group">
                 <label for="fullname">ชื่อ - สกุล</label>
-                <!-- เพิ่มฟังก์ชัน oninput เพื่อซิงค์ชื่ออัตโนมัติ -->
                 <input type="text" id="fullname" name="fullname" placeholder="กรอกชื่อ - สกุล" oninput="syncPatientName(this)">
             </div>
             <div class="form-group">
@@ -462,65 +551,8 @@
             </div>
         </div>
 
-        <hr>
 
-        <h2>ใบรับรองการตรวจสุขภาพช่องปาก</h2>
-        <p style="text-align: center; font-size: 11px; color: #555; margin: 2px 0 8px 0;">
-           งานทันตสาธารณสุข กองสาธารณสุขและสิ่งแวดล้อม เทศบาลเมืองชุมพร (333 ต.ท่าตะเภา อ.เมืองชุมพร จ.ชุมพร 86000)
-        </p>
-
-        <div class="inline-fields">
-            <div class="form-group" style="max-width: 250px;">
-                <label for="cert_date">วันที่</label>
-                <input type="date" id="cert_date" name="cert_date">
-            </div>
-        </div>
-
-        <div class="inline-fields">
-            <div class="form-group">
-                <label for="patient_name">ข้าพเจ้า (ชื่อผู้ป่วย)</label>
-                <!-- ช่องชื่อผู้ป่วยจะซิงค์ข้อมูลอัตโนมัติจากช่องด้านบน -->
-                <input type="text" id="patient_name" name="patient_name" placeholder="ชื่อ - สกุล ผู้ป่วย">
-            </div>
-            <div class="form-group" style="flex: 0.3;">
-                <label for="age">อายุ</label>
-                <input type="text" id="age" name="age" placeholder="ปี">
-            </div>
-            <div class="form-group" style="flex: 0.5;">
-                <label for="hn">HN</label>
-                <input type="text" id="hn" name="hn" placeholder="HN">
-            </div>
-        </div>
-
-        <div class="inline-fields">
-            <div class="form-group" style="flex: 2;">
-                <label for="address">ที่อยู่ปัจจุบัน</label>
-                <input type="text" id="address" name="address" placeholder="ที่อยู่">
-            </div>
-            <div class="form-group" style="flex: 1.5;">
-                <label for="exam_date_2">วันที่ตรวจ / รักษา</label>
-                <input type="date" id="exam_date_2" name="exam_date_2">
-            </div>
-        </div>
-
-        <div class="form-group checkbox-group" style="padding: 6px 12px; margin: 6px 0;">
-            <label style="margin-right: 10px;"><input type="checkbox" name="result" value="normal">ปกติ (ให้คำแนะนำ วางแผนการส่งเสริมป้องกัน)</label>
-            <label style="margin-right: 10px;"><input type="checkbox" name="result" value="decay"> พบฟันผุ</label>
-            <label style="margin-right: 10px;"><input type="checkbox" name="result" value="tartar"> พบหินน้ำลาย</label>
-            <label><input type="checkbox" name="result" value="other"> อื่นๆ: <input type="text" name="other_detail" style="width: 400px; display: inline-block; padding: 4px;" placeholder="ระบุ"></label>
-        </div>
-
-        <div class="signature-section" style="margin-top: 5px;">
-            <div class="signature-box">
-                <img src="cptown.png" alt="Seal Watermark" class="watermark-stamp">
-                <div class="signature-content">
-                    <p style="margin: 0 0 3px 0; font-size: 13px;">ลงชื่อ .......................................................</p>
-                    <p style="margin: 0; font-size: 12px; color: #555;">ผู้มีหน้าที่/รับรอง</p>
-                </div>
-            </div>
-        </div>
-
-        <button type="button" onclick="window.print();">พิมพ์</button>
+        <button type="button" onclick="window.print();">พิมพ์เอกสาร</button>
     </form>
 </div>
 
@@ -547,7 +579,6 @@
         }
     }
 
-    // ฟังก์ชันเชื่อมโยงชื่อ-สกุลอัตโนมัติ
     function syncPatientName(inputElement) {
         const patientNameInput = document.getElementById('patient_name');
         if (patientNameInput) {
@@ -557,4 +588,5 @@
 </script>
 
 </body>
+</html>
 </html>
