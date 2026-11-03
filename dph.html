@@ -624,8 +624,11 @@
                 let borderColor = "";
                 let iconClass = "fa-user-injured";
 
-                if (appt.isLastQueue) {
-                    statusText = "พักรับบริการ";
+                // ตรวจสอบคิวช่วงเวลาสุดท้าย 11:00-11:30 หรือคิวสุดท้าย
+                const isLastSlot = appt.isLastQueue || (appt.timeSlot && appt.timeSlot.includes('11:00'));
+
+                if (isLastSlot) {
+                    statusText = "พักบริการหลังจากคิวนี้";
                     badgeColor = "bg-purple-300 text-black";
                     borderColor = "border-purple-500";
                     iconClass = "fas fa-coffee";
@@ -637,7 +640,6 @@
 
                 card.className = `p-5 rounded-2xl bg-white border-2 ${borderColor} shadow-md flex flex-col items-center relative overflow-hidden w-full mb-3 pt-6`;
                 card.innerHTML = `
-                    <!-- ป้ายสถานะ: ด้านบนกึ่งกลาง ชิดเส้นขอบบน -->
                     <div class="absolute top-0 left-1/2 -translate-x-1/2">
                         <span class="px-3 py-0.5 rounded-b-xl text-xs font-bold ${badgeColor} shadow-sm border-t-0 inline-block text-center">
                             ${statusText}
@@ -672,7 +674,6 @@
 
                 card.className = `p-4 pt-6 flex flex-col justify-between ${cardStyle} transition-all duration-300 relative items-center text-center`;
                 card.innerHTML = `
-                    <!-- ป้ายสถานะ: ด้านบนกึ่งกลาง ชิดเส้นขอบบน -->
                     <div class="absolute top-0 left-1/2 -translate-x-1/2">
                         <span class="px-3 py-0.5 rounded-b-xl ${badgeStyle} text-[10px] shadow-sm inline-block whitespace-nowrap">
                             ${statusLabel}

@@ -87,28 +87,32 @@
 
 <script>
     const drugDb = {
-        "Albendazole": { symptom: "ถ่ายพยาธิ (ตัวกลม, ตัวตืด, เส้นด้าย)", str: 200, dose: 400, freq: "ครั้งเดียว", timing: "หลังอาหาร", note: "เด็ก > 2 ปี ใช้ขนาดเท่าผู้ใหญ่", side: "ปวดท้อง, คลื่นไส้, เวียนศีรษะ" },
-        "Amoxycillin (250)": { symptom: "ติดเชื้อแบคทีเรีย, เจ็บคอ, ทางเดินหายใจอักเสบ", str: 250, dose: 37.5, freq: "แบ่งทาน 2 ครั้ง/วัน", timing: "ก่อนหรือหลังอาหาร", note: "ต้องกินติดต่อกันจนหมด", side: "ท้องเสีย, ผื่นคัน (หากแพ้ยาจะมีอาการบวมหน้า/ตา)" },
-        "Amoxycillin (500)": { symptom: "ติดเชื้อแบคทีเรียรุนแรงปานกลาง", str: 500, dose: 40, freq: "แบ่งทาน 2-3 ครั้ง/วัน", timing: "ก่อนหรือหลังอาหาร", note: "ห้ามหยุดยาเองแม้จะหายดีแล้ว", side: "คลื่นไส้, อาเจียน, ท้องเสีย" },
-        "Bromhexine": { symptom: "ละลายเสมหะ, ช่วยขับเสมหะให้ไอออกง่าย", str: 8, dose: 0.7, freq: "แบ่งทาน 3 ครั้ง/วัน", timing: "หลังอาหาร", note: "ควรดื่มน้ำอุ่นตามมากๆ", side: "มวนท้อง, ระคายเคืองทางเดินอาหาร" },
-        "Co-trimoxazole": { symptom: "ติดเชื้อในทางเดินปัสสาวะ, ทางเดินหายใจ", str: 80, dose: 9, freq: "แบ่งทาน 2 ครั้ง/วัน", timing: "หลังอาหาร", note: "ระวังการแพ้ยากลุ่มซัลฟา", side: "คลื่นไส้, ผื่นแพ้แสงแดด" },
-        "CPM": { symptom: "แก้แพ้, ลดน้ำมูก, คันตามผิวหนัง", str: 2, dose: 0.35, freq: "แบ่งทาน 3 ครั้ง/วัน", timing: "หลังอาหาร", note: "ระวังการใช้ในคนไข้หอบหืดบางราย", side: "ง่วงนอนมาก, ปากแห้ง, ปัสสาวะคั่ง" },
-        "Dextromethorphan": { symptom: "แก้ไอแห้ง (ไอแบบไม่มีเสมหะ)", str: 15, dose: 1, freq: "แบ่งทาน 3 ครั้ง/วัน", timing: "หลังอาหาร", note: "ห้ามใช้ในกรณีที่ไอแบบมีเสมหะมาก", side: "ง่วงซึม, เวียนศีรษะ, ท้องผูก" },
-        "Dicloxacillin": { symptom: "ติดเชื้อแบคทีเรียที่ผิวหนัง, ฝีหนอง", str: 250, dose: 31, freq: "แบ่งทาน 4 ครั้ง/วัน", timing: "ก่อนอาหาร 1 ชม. หรือ หลัง 2 ชม.", note: "ดูดซึมได้ดีที่สุดตอนท้องว่าง", side: "แสบท้อง, คลื่นไส้, ผื่นแพ้ยา" },
-        "Dimenhydrinate": { symptom: "แก้เมารถ, เมาเรือ, คลื่นไส้จากการเดินทาง", str: 50, dose: 5, freq: "แบ่งทาน 3 ครั้ง/วัน", timing: "หลังอาหาร", note: "ควรกินก่อนเดินทาง 30 นาที", side: "ง่วงนอนมาก, ปากแห้ง" },
-        "Domperidone": { symptom: "แก้คลื่นไส้, อาเจียน, ท้องอืด, อาหารไม่ย่อย", str: 10, dose: 1, freq: "แบ่งทาน 3 ครั้ง/วัน", timing: "ก่อนอาหาร 15-30 นาที", note: "ช่วยให้กระเพาะบีบตัวดีขึ้น", side: "ปากแห้ง, ปวดศีรษะ" },
-        "Erythromycin": { symptom: "ติดเชื้อแบคทีเรีย (สำหรับคนแพ้เพนนิซิลิน)", str: 250, dose: 40, freq: "แบ่งทาน 4 ครั้ง/วัน", timing: "หลังอาหาร", note: "มักทำให้ปวดท้องหรือมวนท้อง", side: "ปวดมวนท้องรุนแรง, ท้องเสีย" },
-        "Hydroxyzine": { symptom: "แก้แพ้, ผื่นคัน, ลดความวิตกกังวล", str: 10, dose: 1.5, freq: "แบ่งทาน 3 ครั้ง/วัน", timing: "หลังอาหาร", note: "ฤทธิ์กดประสาทส่วนกลางสูงกว่า CPM", side: "ง่วงซึมมาก, คอแห้ง" },
-        "Hyoscine": { symptom: "แก้ปวดเกร็งช่องท้อง, ปวดเมนส์, ปวดนิ่ว", str: 10, dose: 1.8, freq: "ทุก 6-8 ชม.", timing: "หลังอาหาร", note: "ช่วยคลายกล้ามเนื้อเรียบในท้อง", side: "ใจสั่น, ตาพร่า, ท้องผูก" },
-        "Ibuprofen": { symptom: "ลดไข้สูง, แก้ปวดอักเสบ, ปวดข้อ, ปวดฟัน", str: 200, dose: 30, freq: "ทุก 6 ชม.", timing: "หลังอาหารทันที", note: "ห้ามใช้ในคนไข้สงสัยไข้เลือดออก", side: "ระคายเคืองกระเพาะ (อาจทำให้เลือดออกในกระเพาะ)" },
-        "Ketoconazole": { symptom: "เชื้อราตามผิวหนัง, เชื้อราในกระแสเลือด", str: 200, dose: 5, freq: "วันละ 1 ครั้ง", timing: "หลังอาหารทันที", note: "ห้ามดื่มแอลกอฮอล์ระหว่างใช้ยา", side: "คลื่นไส้, พิษต่อตับ (ตัวเหลือง)" },
-        "Norfloxacin": { symptom: "ท้องเสียจากเชื้อแบคทีเรีย, ทางเดินปัสสาวะอักเสบ", str: 200, dose: 15, freq: "แบ่งทาน 2 ครั้ง/วัน", timing: "ก่อนอาหาร 1 ชม. หรือ หลัง 2 ชม.", note: "ห้ามทานพร้อมนมหรือยาลดกรด", side: "คลื่นไส้, ปวดตามข้อ" },
-        "Paracetamol (325/500)": { symptom: "ลดไข้ตัวร้อน, แก้ปวดเล็กน้อยถึงปานกลาง", str: 500, dose: 12.5, freq: "ทุก 4-6 ชม. (เมื่อมีอาการ)", timing: "หลังอาหาร", note: "ห้ามใช้เกิน 4,000 mg ต่อวัน", side: "หากใช้เกินขนาดจะเป็นพิษต่อตับอย่างรุนแรง" },
-        "Penicillin V": { symptom: "เจ็บคอจากเชื้อแบคทีเรีย, คออักเสบ", str: 250, dose: 37.5, freq: "แบ่งทาน 4 ครั้ง/วัน", timing: "ก่อนอาหาร", note: "ควรทานตอนท้องว่างเพื่อให้ยาดูดซึมดี", side: "ผื่นคัน, ลมพิษ" },
-        "Prednisolone": { symptom: "ลดการอักเสบ, ภูมิแพ้รุนแรง, หอบหืด", str: 5, dose: 1, freq: "วันละ 1-3 ครั้ง", timing: "หลังอาหารทันที", note: "ต้องค่อยๆ ลดขนาดยาเมื่อจะหยุด (ตามสั่งแพทย์)", side: "หน้าบวม (Moon face), ภูมิคุ้มกันต่ำ" },
-        "Ranitidine": { symptom: "แผลในกระเพาะอาหาร, กรดไหลย้อน", str: 150, dose: 3, freq: "วันละ 1-2 ครั้ง", timing: "หลังอาหาร", note: "ช่วยลดการหลั่งกรด", side: "มึนงง, ท้องผูก" },
-        "Roxithromycin": { symptom: "ติดเชื้อทางเดินหายใจ, อวัยวะสืบพันธุ์", str: 150, dose: 7.2, freq: "แบ่งทาน 2 ครั้ง/วัน", timing: "ก่อนอาหาร 15 นาที", note: "ใช้สะดวกวันละ 2 ครั้ง", side: "ปวดหัว, คลื่นไส้" },
-        "Salbutamol": { symptom: "ขยายหลอดลม, แก้หอบหืด, หลอดลมอักเสบ", str: 2, dose: 0.45, freq: "แบ่งทาน 3 ครั้ง/วัน", timing: "หลังอาหาร", note: "หากใช้แล้วใจสั่นมากควรปรึกษาแพทย์", side: "มือสั่น, ใจสั่น, กระสับกระส่าย" }
+        "Albendazole": { symptom: "ถ่ายพยาธิ (ตัวกลม, ตัวตืด, เส้นด้าย)", str: 200, dose: 400, freq: "ครั้งเดียว", timing: "หลังอาหาร", note: "เด็ก > 2 ปี ใช้ขนาดเท่าผู้ใหญ่", side: "ปวดท้อง, คลื่นไส้, เวียนศีรษะ", unit: "เม็ด", type: "fixed" },
+        "Amoxycillin (250)": { symptom: "ติดเชื้อแบคทีเรีย, เจ็บคอ, ทางเดินหายใจอักเสบ", str: 250, dose: 37.5, freq: "แบ่งทาน 2 ครั้ง/วัน", timing: "ก่อนหรือหลังอาหาร", note: "ต้องกินติดต่อกันจนหมด", side: "ท้องเสีย, ผื่นคัน (หากแพ้ยาจะมีอาการบวมหน้า/ตา)", unit: "เม็ด", type: "calc" },
+        "Amoxycillin (500)": { symptom: "ติดเชื้อแบคทีเรียรุนแรงปานกลาง", str: 500, dose: 40, freq: "แบ่งทาน 2-3 ครั้ง/วัน", timing: "ก่อนหรือหลังอาหาร", note: "ห้ามหยุดยาเองแม้จะหายดีแล้ว", side: "คลื่นไส้, อาเจียน, ท้องเสีย", unit: "เม็ด", type: "calc" },
+        "Amoxicillin Syrup (125mg/5mL) [ยาแก้อักเสบน้ำ]": { symptom: "ติดเชื้อแบคทีเรียในเด็ก (เจ็บคอ, หูอักเสบ, หอบหืดติดเชื้อ)", str: 25, dose: 40, freq: "แบ่งทาน 3 ครั้ง/วัน (ทุก 8 ชม.)", timing: "ก่อนหรือหลังอาหาร", note: "เขย่าขวดก่อนรินยา และต้องรับประทานจนหมดตามแพทย์สั่ง", side: "ท้องเสีย, ผื่นคัน, คลื่นไส้", unit: "ช้อนชา (tsp)", type: "syrup" },
+        "Bromhexine": { symptom: "ละลายเสมหะ, ช่วยขับเสมหะให้ไอออกง่าย", str: 8, dose: 0.7, freq: "แบ่งทาน 3 ครั้ง/วัน", timing: "หลังอาหาร", note: "ควรดื่มน้ำอุ่นตามมากๆ", side: "มวนท้อง, ระคายเคืองทางเดินอาหาร", unit: "เม็ด", type: "calc" },
+        "Co-trimoxazole": { symptom: "ติดเชื้อในทางเดินปัสสาวะ, ทางเดินหายใจ", str: 80, dose: 9, freq: "แบ่งทาน 2 ครั้ง/วัน", timing: "หลังอาหาร", note: "ระวังการแพ้ยากลุ่มซัลฟา", side: "คลื่นไส้, ผื่นแพ้แสงแดด", unit: "เม็ด", type: "calc" },
+        "CPM": { symptom: "แก้แพ้, ลดน้ำมูก, คันตามผิวหนัง", str: 2, dose: 0.35, freq: "แบ่งทาน 3 ครั้ง/วัน", timing: "หลังอาหาร", note: "ระวังการใช้ในคนไข้หอบหืดบางราย", side: "ง่วงนอนมาก, ปากแห้ง, ปัสสาวะคั่ง", unit: "เม็ด", type: "calc" },
+        "Dextromethorphan": { symptom: "แก้ไอแห้ง (ไอแบบไม่มีเสมหะ)", str: 15, dose: 1, freq: "แบ่งทาน 3 ครั้ง/วัน", timing: "หลังอาหาร", note: "ห้ามใช้ในกรณีที่ไอแบบมีเสมหะมาก", side: "ง่วงซึม, เวียนศีรษะ, ท้องผูก", unit: "เม็ด", type: "calc" },
+        "Dicloxacillin": { symptom: "ติดเชื้อแบคทีเรียที่ผิวหนัง, ฝีหนอง", str: 250, dose: 31, freq: "แบ่งทาน 4 ครั้ง/วัน", timing: "ก่อนอาหาร 1 ชม. หรือ หลัง 2 ชม.", note: "ดูดซึมได้ดีที่สุดตอนท้องว่าง", side: "แสบท้อง, คลื่นไส้, ผื่นแพ้ยา", unit: "เม็ด", type: "calc" },
+        "Dimenhydrinate": { symptom: "แก้เมารถ, เมาเรือ, คลื่นไส้จากการเดินทาง", str: 50, dose: 5, freq: "แบ่งทาน 3 ครั้ง/วัน", timing: "หลังอาหาร", note: "ควรกินก่อนเดินทาง 30 นาที", side: "ง่วงนอนมาก, ปากแห้ง", unit: "เม็ด", type: "calc" },
+        "Domperidone": { symptom: "แก้คลื่นไส้, อาเจียน, ท้องอืด, อาหารไม่ย่อย", str: 10, dose: 1, freq: "แบ่งทาน 3 ครั้ง/วัน", timing: "ก่อนอาหาร 15-30 นาที", note: "ช่วยให้กระเพาะบีบตัวดีขึ้น", side: "ปากแห้ง, ปวดศีรษะ", unit: "เม็ด", type: "calc" },
+        "Erythromycin": { symptom: "ติดเชื้อแบคทีเรีย (สำหรับคนแพ้เพนนิซิลิน)", str: 250, dose: 40, freq: "แบ่งทาน 4 ครั้ง/วัน", timing: "หลังอาหาร", note: "มักทำให้ปวดท้องหรือมวนท้อง", side: "ปวดมวนท้องรุนแรง, ท้องเสีย", unit: "เม็ด", type: "calc" },
+        "Hydroxyzine": { symptom: "แก้แพ้, ผื่นคัน, ลดความวิตกกังวล", str: 10, dose: 1.5, freq: "แบ่งทาน 3 ครั้ง/วัน", timing: "หลังอาหาร", note: "ฤทธิ์กดประสาทส่วนกลางสูงกว่า CPM", side: "ง่วงซึมมาก, คอแห้ง", unit: "เม็ด", type: "calc" },
+        "Hyoscine": { symptom: "แก้ปวดเกร็งช่องท้อง, ปวดเมนส์, ปวดนิ่ว", str: 10, dose: 1.8, freq: "ทุก 6-8 ชม.", timing: "หลังอาหาร", note: "ช่วยคลายกล้ามเนื้อเรียบในท้อง", side: "ใจสั่น, ตาพร่า, ท้องผูก", unit: "เม็ด", type: "calc" },
+        "Ibuprofen (200)": { symptom: "ลดไข้สูง, แก้ปวดอักเสบ, ปวดข้อ, ปวดฟัน", str: 200, dose: 30, freq: "ทุก 6 ชม.", timing: "หลังอาหารทันที", note: "ห้ามใช้ในคนไข้สงสัยไข้เลือดออก", side: "ระคายเคืองกระเพาะ (อาจทำให้เลือดออกในกระเพาะ)", unit: "เม็ด", type: "calc" },
+        "Ibuprofen (400)": { symptom: "แก้ปวดอักเสบระดับปานกลางถึงรุนแรง, ปวดฟัน, ปวดข้อ, ปวดประจำเดือน", str: 400, dose: 10, freq: "วันละ 3 ครั้ง (ทุก 6-8 ชม.)", timing: "หลังอาหารทันทีและดื่มน้ำตามมากๆ", note: "ทานเมื่อมีอาการปวด/อักเสบ ห้ามใช้ในผู้ที่มีแผลในกระเพาะอาหารหรือสงสัยไข้เลือดออก", side: "แสบท้อง, ปวดท้อง, คลื่นไส้, เลือดออกในทางเดินอาหาร", unit: "เม็ด", type: "fixed_adult" },
+        "Ketoconazole": { symptom: "เชื้อราตามผิวหนัง, เชื้อราในกระแสเลือด", str: 200, dose: 5, freq: "วันละ 1 ครั้ง", timing: "หลังอาหารทันที", note: "ห้ามดื่มแอลกอฮอล์ระหว่างใช้ยา", side: "คลื่นไส้, พิษต่อตับ (ตัวเหลือง)", unit: "เม็ด", type: "calc" },
+        "Norfloxacin": { symptom: "ท้องเสียจากเชื้อแบคทีเรีย, ทางเดินปัสสาวะอักเสบ", str: 200, dose: 15, freq: "แบ่งทาน 2 ครั้ง/วัน", timing: "ก่อนอาหาร 1 ชม. หรือ หลัง 2 ชม.", note: "ห้ามทานพร้อมนมหรือยาลดกรด", side: "คลื่นไส้, ปวดตามข้อ", unit: "เม็ด", type: "calc" },
+        "Paracetamol (325/500)": { symptom: "ลดไข้ตัวร้อน, แก้ปวดเล็กน้อยถึงปานกลาง", str: 500, dose: 12.5, freq: "ทุก 4-6 ชม. (เมื่อมีอาการ)", timing: "หลังอาหาร", note: "ห้ามใช้เกิน 4,000 mg ต่อวัน", side: "หากใช้เกินขนาดจะเป็นพิษต่อตับอย่างรุนแรง", unit: "เม็ด", type: "calc" },
+        "Paracetamol Syrup (120mg/5mL) [ยาพาราน้ำ]": { symptom: "ลดไข้ ตัวร้อน แก้ปวด สำหรับเด็ก", str: 24, dose: 12.5, freq: "ทุก 4-6 ชม. เวลา มีไข้หรือปวด", timing: "ก่อนหรือหลังอาหารก็ได้", note: "ห้ามกินเกิน 5 ครั้งต่อวัน และห้ามทานติดต่อกันเกิน 5 วันโดยไม่พบแพทย์", side: "หากใช้เกินขนาดอาจส่งผลเสียต่อตับ", unit: "ช้อนชา (tsp)", type: "syrup" },
+        "Penicillin V": { symptom: "เจ็บคอจากเชื้อแบคทีเรีย, คออักเสบ", str: 250, dose: 37.5, freq: "แบ่งทาน 4 ครั้ง/วัน", timing: "ก่อนอาหาร", note: "ควรทานตอนท้องว่างเพื่อให้ยาดูดซึมดี", side: "ผื่นคัน, ลมพิษ", unit: "เม็ด", type: "calc" },
+        "Prednisolone": { symptom: "ลดการอักเสบ, ภูมิแพ้รุนแรง, หอบหืด", str: 5, dose: 1, freq: "วันละ 1-3 ครั้ง", timing: "หลังอาหารทันที", note: "ต้องค่อยๆ ลดขนาดยาเมื่อจะหยุด (ตามสั่งแพทย์)", side: "หน้าบวม (Moon face), ภูมิคุ้มกันต่ำ", unit: "เม็ด", type: "calc" },
+        "Ranitidine": { symptom: "แผลในกระเพาะอาหาร, กรดไหลย้อน", str: 150, dose: 3, freq: "วันละ 1-2 ครั้ง", timing: "หลังอาหาร", note: "ช่วยลดการหลั่งกรด", side: "มึนงง, ท้องผูก", unit: "เม็ด", type: "calc" },
+        "Roxithromycin": { symptom: "ติดเชื้อทางเดินหายใจ, อวัยวะสืบพันธุ์", str: 150, dose: 7.2, freq: "แบ่งทาน 2 ครั้ง/วัน", timing: "ก่อนอาหาร 15 นาที", note: "ใช้สะดวกวันละ 2 ครั้ง", side: "ปวดหัว, คลื่นไส้", unit: "เม็ด", type: "calc" },
+        "Salbutamol": { symptom: "ขยายหลอดลม, แก้หอบหืด, หลอดลมอักเสบ", str: 2, dose: 0.45, freq: "แบ่งทาน 3 ครั้ง/วัน", timing: "หลังอาหาร", note: "หากใช้แล้วใจสั่นมากควรปรึกษาแพทย์", side: "มือสั่น, ใจสั่น, กระสับกระส่าย", unit: "เม็ด", type: "calc" },
+        "Triamcinolone Acetonide (Kenalog/Kinalog) [ยาป้ายปาก]": { symptom: "แผลร้อนใน แผลอักเสบในช่องปาก", str: 0, dose: 0, freq: "วันละ 2-3 ครั้ง", timing: "หลังอาหารและก่อนนอน", note: "ซับแผลให้แห้งก่อนป้ายยา แล้วแตะยาป้ายเบาๆ ให้เป็นฟิล์มบางๆ ปกคลุมแผล ห้ามถูไปมา", side: "แสบบริเวณที่ทาเล็กน้อย (หากใช้ติดต่อกันนานอาจเสี่ยงต่อการติดเชื้อราในปาก)", unit: "การป้าย", type: "topical" }
     };
 
     const select = document.getElementById('medicine');
@@ -124,17 +128,50 @@
         const medName = document.getElementById('medicine').value;
         const card = document.getElementById('resultCard');
 
-        if (weight > 0 && medName) {
+        if (medName) {
             const med = drugDb[medName];
-            let tablets = (medName === "Albendazole") ? 2 : (weight * med.dose) / med.str;
+            
+            // กรณีเป็นยาป้ายปาก / ยาใช้ภายนอก
+            if (med.type === "topical") {
+                document.getElementById('resSymptom').innerText = "🩺 อาการที่ใช้: " + med.symptom;
+                document.getElementById('resDose').innerText = "ป้ายบางๆ บริเวณแผล";
+                document.getElementById('resFreq').innerText = med.freq;
+                document.getElementById('resTiming').innerText = med.timing;
+                document.getElementById('resNote').innerText = med.note;
+                document.getElementById('resSide').innerText = med.side;
+                card.style.display = 'block';
+                return;
+            }
 
-            document.getElementById('resSymptom').innerText = "🩺 อาการที่ใช้: " + med.symptom;
-            document.getElementById('resDose').innerText = tablets.toFixed(1) + " เม็ด";
-            document.getElementById('resFreq').innerText = med.freq;
-            document.getElementById('resTiming').innerText = med.timing;
-            document.getElementById('resNote').innerText = med.note;
-            document.getElementById('resSide').innerText = med.side;
-            card.style.display = 'block';
+            // กรณีต้องการคำนวณตามน้ำหนัก
+            if (weight > 0) {
+                let doseText = "";
+                
+                if (med.type === "fixed") {
+                    doseText = "2 " + med.unit;
+                } else if (med.type === "fixed_adult") {
+                    doseText = (weight >= 40) ? "1 " + med.unit : "0.5 - 1 " + med.unit + " (แนะนำปรึกษาแพทย์/เภสัชกรก่อนใช้ในเด็ก)";
+                } else if (med.type === "syrup") {
+                    // คำนวณขนาดยาน้ำ (ช้อนชา / ซีซี)
+                    let ml = (weight * med.dose) / med.str;
+                    let tsp = ml / 5;
+                    doseText = `${tsp.toFixed(1)} ช้อนชา (${ml.toFixed(1)} mL)`;
+                } else {
+                    // ยาเม็ดคำนวณตามน้ำหนัก
+                    let tablets = (weight * med.dose) / med.str;
+                    doseText = tablets.toFixed(1) + " " + med.unit;
+                }
+
+                document.getElementById('resSymptom').innerText = "🩺 อาการที่ใช้: " + med.symptom;
+                document.getElementById('resDose').innerText = doseText;
+                document.getElementById('resFreq').innerText = med.freq;
+                document.getElementById('resTiming').innerText = med.timing;
+                document.getElementById('resNote').innerText = med.note;
+                document.getElementById('resSide').innerText = med.side;
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
         } else {
             card.style.display = 'none';
         }
