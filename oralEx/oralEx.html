@@ -363,10 +363,10 @@
 <body>
 
 <div class="container">
-    <form>
+    <!-- กำหนดให้ฟอร์มส่งข้อมูล (สามารถใส่ action และ method ที่ต้องการได้) -->
+    <form action="" method="GET">
 	
-	
-	        <h2>ใบรับรองการตรวจสุขภาพช่องปาก</h2>
+        <h2>ใบรับรองการตรวจสุขภาพช่องปาก</h2>
         <p style="text-align: center; font-size: 12px; color: #555; margin: 2px 0 8px 0;">
            งานทันตสาธารณสุข กองสาธารณสุขและสิ่งแวดล้อม เทศบาลเมืองชุมพร (333 ต.ท่าตะเภา อ.เมืองชุมพร จ.ชุมพร 86000)
         </p>
@@ -381,7 +381,8 @@
         <div class="inline-fields">
             <div class="form-group">
                 <label for="patient_name">ชื่อผู้ป่วย</label>
-                <input type="text" id="patient_name" name="patient_name" placeholder="ชื่อ - สกุล ผู้ป่วย">
+                <!-- ใช้ oninput เพื่อซิงค์ข้อมูลชื่อไปหาช่อง fullname อัตโนมัติ -->
+                <input type="text" id="patient_name" name="patient_name" placeholder="ชื่อ - สกุล ผู้ป่วย" oninput="syncName(this, 'fullname')">
             </div>
             <div class="form-group" style="flex: 0.3;">
                 <label for="age">อายุ</label>
@@ -401,17 +402,18 @@
             <div class="form-group" style="flex: 1.5;">
                 <label for="exam_date_2">วันที่ตรวจ / รักษา</label>
                 <input type="date" id="exam_date_2" name="exam_date_2">
-            </div><br>
+            </div>
         </div>
-					<p style="text-align: center ; font-size: 14px; color: #555; margin: 1px 0 8px 0;">
+        
+        <p style="text-align: center; font-size: 14px; color: #555; margin: 10px 0 8px 0;">
            ได้เข้ารับบริการตรวจสุขภาพช่องปาก และวางแผนการรักษา " จริง " และมีความเห็นดังนี้
         </p>
-
 
         <div class="form-group checkbox-group" style="padding: 8px 12px; margin: 6px 0;">
             <label style="margin-right: 10px;"><input type="checkbox" name="result" value="normal">ปกติ (ให้คำแนะนำ วางแผนการส่งเสริมป้องกัน)</label>
             <label style="margin-right: 10px;"><input type="checkbox" name="result" value="decay"> พบฟันผุ</label>
             <label style="margin-right: 10px;"><input type="checkbox" name="result" value="tartar"> พบหินน้ำลาย</label>
+            <label style="margin-right: 10px;"><input type="checkbox" name="result" value="pit"> ควรเคลือบหลุมร่องฟัน</label>
             <label><input type="checkbox" name="result" value="other"> อื่นๆ: <input type="text" name="other_detail" style="width: 350px; display: inline-block; padding: 4px;" placeholder="ระบุ"></label>
         </div>
 
@@ -424,8 +426,10 @@
                 </div>
             </div>
         </div>
-		<br>
-		<hr>
+
+        <br>
+        <hr>
+
         <h2>บันทึกสภาวะโรคฟันผุ</h2>
         <div class="header-info">
             <span>งานทันตสาธารณสุข กองสาธารณสุขและสิ่งแวดล้อม เทศบาลเมืองชุมพร</span>
@@ -434,8 +438,9 @@
 
         <div class="inline-fields">
             <div class="form-group">
-                <label for="fullname">ชื่อ - สกุล</label>
-                <input type="text" id="fullname" name="fullname" placeholder="กรอกชื่อ - สกุล" oninput="syncPatientName(this)">
+                <label for="fullname">ชื่อผู้ป่วย</label>
+                <!-- ใช้ oninput เพื่อซิงค์ข้อมูลชื่อกลับมาหาช่อง patient_name อัตโนมัติ -->
+                <input type="text" id="fullname" name="fullname" placeholder="กรอกชื่อ - สกุล" oninput="syncName(this, 'patient_name')">
             </div>
             <div class="form-group">
                 <label for="idcard">เลขประจำตัวประชาชน</label>
@@ -551,7 +556,6 @@
             </div>
         </div>
 
-
         <button type="button" onclick="window.print();">พิมพ์เอกสาร</button>
     </form>
 </div>
@@ -579,14 +583,14 @@
         }
     }
 
-    function syncPatientName(inputElement) {
-        const patientNameInput = document.getElementById('patient_name');
-        if (patientNameInput) {
-            patientNameInput.value = inputElement.value;
+    // ฟังก์ชันเชื่อมโยงชื่อผู้ป่วยระหว่าง 2 ช่องอัตโนมัติ
+    function syncName(sourceElement, targetId) {
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+            targetElement.value = sourceElement.value;
         }
     }
 </script>
 
 </body>
-</html>
 </html>
