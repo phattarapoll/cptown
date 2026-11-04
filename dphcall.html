@@ -554,7 +554,7 @@
 
             window.speechSynthesis.cancel();
             const firstName = getFirstNameOnly(fullName);
-            const textToSpeech = `ห้องตรวจหมายเลข 2 เชิญ คุณ ${firstName} ยื่นบัตรประชาชน และนั่งรอซักประวัติ พร้อมแจ้งข้อมูลการแพ้ยาและ โรคประจำตัว แก่เจ้าหน้าที่ ขอบคุณครับ`;
+            const textToSpeech = `เชิญ คุณ ${firstName} ยื่นบัตรประชาชน  พร้อมแจ้งข้อมูลการแพ้ยาและ โรคประจำตัว แก่เจ้าหน้าที่  ณ  ห้องตรวจหมายเลข 2  ขอบคุณครับ`;
 
             const utterance = new SpeechSynthesisUtterance(textToSpeech);
             utterance.lang = 'th-TH';
