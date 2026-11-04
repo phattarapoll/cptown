@@ -613,7 +613,7 @@
         if (type === 'current') {
             let waitMinutes = 20;
             if (appt.queueIndex === 0 || appt.queueIndex === 1) waitMinutes = 40;
-            else if (appt.queueIndex === 2) waitMinutes = 20;
+            else if (appt.queueIndex === 2) waitMinutes = 15;
 
             const timeLimitLater = new Date(apptTimestamp.getTime() + waitMinutes * 60000);
             const isOvertime = now >= timeLimitLater;
