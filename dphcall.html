@@ -782,111 +782,102 @@
         }
 
         function createChairCard(appt, type, now) {
-            const apptTimestamp = new Date(appt.parsedDate);
-            const timeParts = String(appt.timeSlot).split('-');
-            if (timeParts[0]) {
-                const [startH, startM] = timeParts[0].trim().split(':').map(Number);
-                if (!isNaN(startH)) {
-                    apptTimestamp.setHours(startH, startM || 0, 0, 0);
-                }
+        const apptTimestamp = new Date(appt.parsedDate);
+        const timeParts = String(appt.timeSlot).split('-');
+        if (timeParts[0]) {
+            const [startH, startM] = timeParts[0].trim().split(':').map(Number);
+            if (!isNaN(startH)) {
+                apptTimestamp.setHours(startH, startM || 0, 0, 0);
             }
-
-            const card = document.createElement('div');
-            const safePatientName = (appt.patientName || '').replace(/'/g, "\\'");
-
-            if (type === 'current') {
-                let waitMinutes = 15;
-                if (appt.queueIndex === 0 || appt.queueIndex === 1) waitMinutes = 30;
-                else if (appt.queueIndex === 2) waitMinutes = 15;
-
-                const timeLimitLater = new Date(apptTimestamp.getTime() + waitMinutes * 60000);
-                const isOvertime = now >= timeLimitLater;
-
-                let statusText = "";
-                let badgeColor = "";
-                let borderColor = "";
-                let iconClass = "fa-user-injured";
-
-                const isLastSlot = appt.isLastQueue || (appt.timeSlot && appt.timeSlot.includes('11:00'));
-
-                if (isLastSlot) {
-                    statusText = "พักบริการหลังจากคิวนี้";
-                    badgeColor = "bg-purple-900 text-purple-200 border border-purple-700";
-                    borderColor = "border-purple-500";
-                    iconClass = "fas fa-coffee";
-                } else {
-                    statusText = isOvertime ? "คิวถัดไปเตรียมติดต่อห้องบริการ" : "คิวปัจจุบัน";
-                    badgeColor = isOvertime ? "bg-amber-900 text-amber-200 border border-amber-700 animate-pulse" : "bg-blue-900 text-blue-200 border border-blue-700";
-                    borderColor = isOvertime ? "border-amber-500" : "border-blue-500";
-                }
-
-                card.className = `p-5 rounded-2xl bg-slate-800 border-2 ${borderColor} shadow-lg flex flex-col items-center relative overflow-hidden w-full mb-3 pt-6`;
-                card.innerHTML = `
-                    <div class="absolute top-0 left-1/2 -translate-x-1/2">
-                        <span class="px-3 py-0.5 rounded-b-xl text-xs font-bold ${badgeColor} shadow-sm border-t-0 inline-block text-center">
-                            ${statusText}
-                        </span>
-                    </div>
-                    
-                    <div class="flex items-center space-x-4 w-full justify-between mt-2">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-14 h-14 rounded-full bg-slate-700 flex items-center justify-center text-blue-400 text-2xl shadow-inner shrink-0 border border-slate-600">
-                                <i class="fas ${iconClass}"></i>
-                            </div>
-                            <div>
-                                <span class="text-xs text-blue-400 font-bold uppercase tracking-wider">--> ห้องตรวจ 2</span>
-                                <h3 class="text-lg font-bold text-white">${maskLastName(appt.patientName)}</h3>
-                                <p class="text-xs text-gray-300"><i class="far fa-clock mr-1"></i>${appt.timeSlot}</p>
-                            </div>
-                        </div>
-
-                        <button onclick="announceQueue('${safePatientName}', this)" title="กดเพื่อเรียกคิว" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 px-4 rounded-xl shadow-md transition-all duration-200 flex items-center gap-2 active:scale-95 shrink-0 border border-blue-500">
-                            <i class="fas fa-volume-up text-lg"></i>
-                            <span class="hidden sm:inline text-sm">เรียกคิว</span>
-                        </button>
-                    </div>
-                `;
-            } else {
-                const isFirst = (type === 'upcoming_first');
-                const cardStyle = isFirst ? 'yellow-flashing rounded-2xl' : 'bg-slate-800/80 border border-slate-700 rounded-2xl shadow-sm';
-                const statusLabel = isFirst ? 'สถานะ : เตรียมรับบริการ' : 'สถานะ : ปกติ';
-                const badgeStyle = isFirst ? 'bg-amber-900 text-amber-200 border border-amber-700 font-bold animate-pulse' : 'bg-slate-700 text-gray-300 border border-slate-600';
-                const iconColor = isFirst ? 'text-amber-400 bg-amber-950/60 border border-amber-800' : 'text-emerald-400 bg-emerald-950/60 border border-emerald-800';
-
-                let timeDiff = apptTimestamp - now;
-                let formattedTime = formatTimeRemaining(timeDiff);
-                let timeRemainingHtml = formattedTime !== "" 
-                    ? `<span class="time-remaining font-semibold text-gray-300" data-timestamp="${apptTimestamp.getTime()}">ในอีก: ${formattedTime}</span>` 
-                    : `<span class="time-remaining font-semibold text-accent-gold" data-timestamp="${apptTimestamp.getTime()}">ถึงคิวแล้ว</span>`;
-
-                card.className = `p-4 pt-6 flex flex-col justify-between ${cardStyle} transition-all duration-300 relative items-center text-center`;
-                card.innerHTML = `
-                    <div class="absolute top-0 left-1/2 -translate-x-1/2 flex items-center gap-1">
-                        <span class="px-3 py-0.5 rounded-b-xl ${badgeStyle} text-[10px] shadow-sm inline-block whitespace-nowrap">
-                            ${statusLabel}
-                        </span>
-                    </div>
-
-                    <button onclick="announceQueue('${safePatientName}', this)" title="เรียกคิวนี้" class="absolute top-2 right-2 w-7 h-7 bg-slate-700 hover:bg-accent-gold text-gray-300 hover:text-white rounded-full flex items-center justify-center transition-all duration-200 border border-slate-600">
-                        <i class="fas fa-volume-up text-xs"></i>
-                    </button>
-
-                    <div class="flex flex-col items-center w-full mt-1 mb-2">
-                        <div class="w-12 h-12 rounded-full ${iconColor} flex items-center justify-center text-lg shrink-0 shadow-inner mb-2">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <h4 class="font-bold text-white text-sm truncate w-full">${maskLastName(appt.patientName)}</h4>
-                        <p class="text-[11px] text-gray-300 mt-0.5"><i class="far fa-clock mr-1"></i>${appt.timeSlot}</p>
-                    </div>
-
-                    <div class="flex items-center justify-center w-full pt-2 border-t border-slate-700 text-[11px]">
-                        ${timeRemainingHtml}
-                    </div>
-                `;
-            }
-
-            return card;
         }
+
+        const card = document.createElement('div');
+
+        if (type === 'current') {
+            let waitMinutes = 20;
+            if (appt.queueIndex === 0 || appt.queueIndex === 1) waitMinutes = 40;
+            else if (appt.queueIndex === 2) waitMinutes = 20;
+
+            const timeLimitLater = new Date(apptTimestamp.getTime() + waitMinutes * 60000);
+            const isOvertime = now >= timeLimitLater;
+
+            let statusText = "";
+            let badgeColor = "";
+            let borderColor = "";
+            let iconClass = "fa-user-injured";
+
+            // จัดการเฉพาะช่วงเวลาสุดท้ายจริงๆ (เช่น คิวสุดท้ายที่เป็นรอบปิดบริการรอบถัดไป แต่ช่วง 10:30-11:00 ให้ทำตัวเหมือนคิว 1 และ 2)
+            const isLastSlot = appt.isLastQueue && !(appt.timeSlot && appt.timeSlot.includes('10:30'));
+
+            if (isLastSlot) {
+                statusText = "พักบริการหลังจากคิวนี้";
+                badgeColor = "bg-purple-300 text-black";
+                borderColor = "border-purple-500";
+                iconClass = "fas fa-coffee";
+            } else {
+                statusText = isOvertime ? "คิวถัดไปเตรียมติดต่อห้องบริการ" : "คิวปัจจุบัน";
+                badgeColor = isOvertime ? "bg-amber-300 text-black animate-pulse" : "bg-blue-300 text-black";
+                borderColor = isOvertime ? "border-amber-500" : "border-blue-500";
+            }
+
+            card.className = `p-5 rounded-2xl bg-white border-2 ${borderColor} shadow-md flex flex-col items-center relative overflow-hidden w-full mb-3 pt-6`;
+            card.innerHTML = `
+                <div class="absolute top-0 left-1/2 -translate-x-1/2">
+                    <span class="px-3 py-0.5 rounded-b-xl text-xs font-bold ${badgeColor} shadow-sm border-t-0 inline-block text-center">
+                        ${statusText}
+                    </span>
+                </div>
+                
+                <div class="flex items-center space-x-4 w-full justify-between mt-2">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-2xl shadow-inner shrink-0">
+                            <i class="fas ${iconClass}"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs text-blue-600 font-bold uppercase tracking-wider">--> ห้องตรวจ2</span>
+                            <h3 class="text-lg font-bold text-primary-navy">${maskLastName(appt.patientName)}</h3>
+                            <p class="text-xs text-gray-500"><i class="far fa-clock mr-1"></i>${appt.timeSlot}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            const isFirst = (type === 'upcoming_first');
+            const cardStyle = isFirst ? 'yellow-flashing rounded-2xl' : 'bg-white/80 border border-gray-200 rounded-2xl shadow-sm';
+            const statusLabel = isFirst ? 'สถานะ : เตรียมรับบริการ' : 'สถานะ : ปกติ';
+            const badgeStyle = isFirst ? 'bg-yellow-300 text-black font-bold animate-pulse' : 'bg-green-300 text-black';
+            const iconColor = isFirst ? 'text-yellow-600 bg-yellow-100' : 'text-green-600 bg-green-100';
+
+            let timeDiff = apptTimestamp - now;
+            let formattedTime = formatTimeRemaining(timeDiff);
+            let timeRemainingHtml = formattedTime !== "" 
+                ? `<span class="time-remaining font-semibold text-gray-600" data-timestamp="${apptTimestamp.getTime()}">ในอีก: ${formattedTime}</span>` 
+                : `<span class="time-remaining font-semibold text-gray-400" data-timestamp="${apptTimestamp.getTime()}">ถึงคิวแล้ว</span>`;
+
+            card.className = `p-4 pt-6 flex flex-col justify-between ${cardStyle} transition-all duration-300 relative items-center text-center`;
+            card.innerHTML = `
+                <div class="absolute top-0 left-1/2 -translate-x-1/2">
+                    <span class="px-3 py-0.5 rounded-b-xl ${badgeStyle} text-[10px] shadow-sm inline-block whitespace-nowrap">
+                        ${statusLabel}
+                    </span>
+                </div>
+
+                <div class="flex flex-col items-center w-full mt-1 mb-2">
+                    <div class="w-12 h-12 rounded-full ${iconColor} flex items-center justify-center text-lg shrink-0 shadow-inner mb-2">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h4 class="font-bold text-primary-navy text-sm truncate w-full">${maskLastName(appt.patientName)}</h4>
+                    <p class="text-[11px] text-gray-500 mt-0.5"><i class="far fa-clock mr-1"></i>${appt.timeSlot}</p>
+                </div>
+
+                <div class="flex items-center justify-center w-full pt-2 border-t border-gray-100 text-[11px]">
+                    ${timeRemainingHtml}
+                </div>
+            `;
+        }
+
+        return card;
+    }
 
         async function fetchNewsFromGoogleSheet() {
             if (!newsBoard) return;
