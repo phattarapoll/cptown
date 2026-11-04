@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>งานทันตสาธารณสุข ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --color-primary: #0F172A;
+            --color-accent: #C19A6B;
+            --color-dark-bg: #0B1325;
+            --color-success: #10B981;
+            --color-error: #EF4444;
+            --color-footer-bg: #111827;
+			--fs-base: clamp(14px, 1.2vw + 10px, 18px);
+			--fs-h2: clamp(1.5rem, 3vw + 1rem, 2.5rem);
+			--fs-h3: clamp(1.25rem, 2vw + 1rem, 2rem);
+		}
+
+        html, body {
+			font-size: var(--fs-base);
+			line-height: normal;
+            height: 100%;
+            margin: 0;
+            font-family: 'Sarabun', sans-serif;
+        }
+		h2 { font-size: var(--fs-h2) !important; }
+		h3 { font-size: var(--fs-h3) !important; }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            padding: 1rem; 
+            box-sizing: border-box;
+            background-color: var(--color-dark-bg);
+            color: #F8FAFC;
+        }
+
+		.service-area-box {
+			background-color: rgba(30, 41, 59, 0.7);
+			backdrop-filter: blur(12px) brightness(1.1);
+			border: 1px solid rgba(193, 154, 107, 0.3);
+			box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+			transition: all 0.3s ease;
+		}
+
+		.service-text {
+			color: #E2E8F0;
+			text-shadow: 0px 0px 1px rgba(0, 0, 0, 0.5);
+		}
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 20px -1px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glassy-section {
+            background-color: rgba(15, 23, 42, 0.65);
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            overflow: visible;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .glassy-panel {
+            background-color: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .floating-alert {
+            position: fixed;
+            top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+            z-index: 1000;
+            background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+            color: #fff;
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            border-left: 5px solid var(--color-accent);
+            box-shadow: 0 15px 25px -3px rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: fadeInOut 5s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateX(20px); }
+            10% { opacity: 1; transform: translateX(0); }
+            90% { opacity: 1; transform: translateX(0); }
+            100% { opacity: 0; transform: translateX(20px); }
+        }
+		
+		.text-accent-gold { color: #C19A6B; }
+
+        .service-card {
+            background-color: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            transition: transform 0.2s ease;
+        }
+
+        .service-card:hover { transform: translateY(-2px); border-color: rgba(193, 154, 107, 0.4); }
+        .service-card .font-medium { color: #F1F5F9 !important; font-weight: 600; }
+
+        .service-status-open { background-color: var(--color-success); color: white; }
+        .service-status-closed { background-color: var(--color-error); color: white; }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #C19A6B 0%, #A68054 100%);
+            color: white;
+            font-weight: 500;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px -1px rgba(193, 154, 107, 0.3);
+        }
+        .btn-gold:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+        #queueDisplay {
+            background-color: rgba(15, 23, 42, 0.5);
+            border-radius: 1rem;
+            border: 1px inset rgba(255, 255, 255, 0.05);
+            overflow-y: auto;
+            overflow-x: visible;
+            padding: 1.5rem;
+        }
+
+        @keyframes superPulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+                transform: translateY(-50%) scale(1);
+            }
+            50% {
+                box-shadow: 0 0 0 15px rgba(239, 68, 68, 0);
+                transform: translateY(-50%) scale(1.1);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+                transform: translateY(-50%) scale(1);
+            }
+        }
+
+        .super-flash-btn {
+            animation: superPulse 1.5s infinite;
+        }
+
+        @keyframes yellowGlowPulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.7); }
+            70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(234, 179, 8, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(234, 179, 8, 0); }
+        }
+        .yellow-flashing {
+            animation: yellowGlowPulse 1.5s infinite;
+            border: 2px solid #EAB308 !important;
+            background-color: rgba(254, 240, 138, 0.15) !important;
+        }
+
+        .header-title-container {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-bg-glow {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 130px;
+            height: 130px;
+            object-fit: contain;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.35;
+            filter: drop-shadow(0 0 15px rgba(193, 154, 107, 0.8)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.4));
+            animation: centerGlowPulse 3s infinite alternate;
+        }
+
+        @keyframes centerGlowPulse {
+            0% {
+                filter: drop-shadow(0 0 10px rgba(193, 154, 107, 0.6)) drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+                transform: translate(-50%, -50%) scale(0.95);
+            }
+            100% {
+                filter: drop-shadow(0 0 22px rgba(193, 154, 107, 1)) drop-shadow(0 0 40px rgba(255, 255, 255, 0.7));
+                transform: translate(-50%, -50%) scale(1.05);
+            }
+        }
+
+        /* ส่วนผู้ให้บริการกึ่งกลางจอโทนมืด */
+        footer {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .provider-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+            backdrop-filter: blur(15px);
+            border: 1.5px solid rgba(193, 154, 107, 0.5);
+            border-radius: 9999px;
+            padding: 0.6rem 1.75rem 0.6rem 0.8rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 20px rgba(193, 154, 107, 0.25);
+            display: inline-flex;
+            align-items: center;
+            gap: 1.25rem;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .provider-card:hover {
+            transform: translateY(-2px) scale(1.02);
+            border-color: rgba(193, 154, 107, 0.9);
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.7), 0 0 30px rgba(193, 154, 107, 0.4);
+        }
+
+        .footer-image {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--color-accent);
+            box-shadow: 0 0 12px rgba(193, 154, 107, 0.6);
+        }
+
+        @keyframes audioPulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.08); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .speaking {
+            animation: audioPulse 0.8s infinite;
+            background-color: #EF4444 !important;
+            color: white !important;
+        }
+
+        @keyframes newsFadeZoom {
+            0% { opacity: 0; transform: translateY(12px) scale(0.97); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .news-animate-card {
+            animation: newsFadeZoom 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-navy': '#0F172A',
+                        'accent-gold': '#C19A6B',
+                        'off-white': '#F8FAFC',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <header class="flex items-center justify-between">
+        <div class="text-lg sm:text-2xl font-bold text-white flex items-center">
+            <span class="w-1.5 h-8 bg-accent-gold mr-3 rounded-full"></span>
+            กองสาธารณสุขและสิ่งแวดล้อม เทศบาลเมืองชุมพร
+        </div>
+        <div class="flex items-center space-x-3">
+            <button onclick="toggleFullscreen()" title="แสดงผลเต็มจอ" class="btn-gold py-2 px-4 rounded-xl text-sm flex items-center gap-1.5">
+                <i id="fullscreenIcon" class="fas fa-expand"></i>
+                <span class="hidden sm:inline">เต็มจอ</span>
+            </button>
+            <a href="index.html" target="_blank" class="btn-gold py-2 px-4 rounded-xl text-sm">
+                <i class="fas fa-desktop mr-2"></i>WEB
+            </a>
+            <a href="recive/index.html" target="_blank" class="btn-gold py-2 px-4 rounded-xl text-sm">
+                <i class="fas fa-star mr-2"></i>ให้คะแนน
+            </a>
+        </div>
+    </header>
+
+    <!-- เมนูด้านข้างซ้าย 1: บริการที่เปิด -->
+    <div id="serviceStatusFloating" class="fixed top-[42%] -translate-y-1/2 left-0 w-80 glassy-panel p-6 rounded-r-3xl z-40 transition-transform duration-500 ease-out transform -translate-x-full">
+        <h2 class="text-2xl font-bold text-white mb-5 flex items-center">
+            <i class="fas fa-tooth mr-2 text-accent-gold"></i>บริการที่เปิด
+        </h2>
+        <div class="grid grid-cols-1 gap-3 max-h-[60vh] overflow-y-auto pr-1">
+            <div class="service-card p-3 rounded-xl border border-gray-700 shadow-sm flex items-center justify-between">
+                <span class="font-medium text-gray-200 flex items-center"><i class="fas fa-search text-accent-gold w-6 mr-2"></i>ตรวจสุขภาพช่องปาก</span>
+                <span class="service-status px-2.5 py-0.5 rounded-lg text-xs font-bold service-status-open">open</span>
+            </div>
+            <div class="service-card p-3 rounded-xl border border-gray-700 shadow-sm flex items-center justify-between">
+                <span class="font-medium text-gray-200 flex items-center"><i class="fas fa-fill-drip text-accent-gold w-6 mr-2"></i>อุดฟัน</span>
+                <span class="service-status px-2.5 py-0.5 rounded-lg text-xs font-bold service-status-open">open</span>
+            </div>
+            <div class="service-card p-3 rounded-xl border border-gray-700 shadow-sm flex items-center justify-between">
+                <span class="font-medium text-gray-200 flex items-center"><i class="fas fa-hand-sparkles text-accent-gold w-6 mr-2"></i>ขูดหินน้ำลาย</span>
+                <span class="service-status px-2.5 py-0.5 rounded-lg text-xs font-bold service-status-open">open</span>
+            </div>
+            <div class="service-card p-3 rounded-xl border border-gray-700 shadow-sm flex items-center justify-between">
+                <span class="font-medium text-gray-200 flex items-center"><i class="fas fa-stethoscope text-accent-gold w-6 mr-2"></i>ถอนฟัน</span>
+                <span class="service-status px-2.5 py-0.5 rounded-lg text-xs font-bold service-status-open">open</span>
+            </div>
+            <div class="service-card p-3 rounded-xl border border-gray-700 shadow-sm flex items-center justify-between">
+                <span class="font-medium text-gray-200 flex items-center"><i class="fas fa-shield-alt text-accent-gold w-6 mr-2"></i>เคลือบหลุมร่องฟัน</span>
+                <span class="service-status px-2.5 py-0.5 rounded-lg text-xs font-bold service-status-open">open</span>
+            </div>
+            <div class="service-card p-3 rounded-xl border border-gray-700 shadow-sm flex items-center justify-between">
+                <span class="font-medium text-gray-200 flex items-center"><i class="fas fa-notes-medical text-accent-gold w-6 mr-2"></i>รักษารากฟัน</span>
+                <span class="service-status px-2.5 py-0.5 rounded-lg text-xs font-bold service-status-closed">closed</span>
+            </div>
+            <div class="service-card p-3 rounded-xl border border-gray-700 shadow-sm flex items-center justify-between">
+                <span class="font-medium text-gray-200 flex items-center"><i class="fas fa-smile text-accent-gold w-6 mr-2"></i>ทำฟันปลอม</span>
+                <span class="service-status px-2.5 py-0.5 rounded-lg text-xs font-bold service-status-closed">closed</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- เมนูด้านข้างซ้าย 2: แผงตรวจสอบเคสผิดปกติ -->
+    <div id="abnormalFloatingPanel" class="fixed top-[58%] -translate-y-1/2 left-0 w-80 glassy-panel p-6 rounded-r-3xl z-40 transition-transform duration-500 ease-out transform -translate-x-full border-l-4 border-red-500">
+        <h2 class="text-xl font-bold text-red-400 mb-4 flex items-center">
+            <i class="fas fa-exclamation-triangle mr-2"></i> พบปัญหา
+        </h2>
+        <div id="abnormalBoard" class="space-y-3 max-h-96 overflow-y-auto text-gray-300">
+            <p class="text-center text-gray-400 text-sm py-4">ไม่พบความผิดปกติขณะนี้</p>
+        </div>
+    </div>
+
+    <!-- ==================== เมนูด้านขวา: กระดานข่าวสาร (หมุนเวียนสลับอัตโนมัติ) ==================== -->
+    <div id="newsFloatingPanel" class="fixed top-[48%] -translate-y-1/2 right-0 w-80 glassy-panel p-6 rounded-l-3xl z-40 transition-transform duration-500 ease-out transform translate-x-full border-r-4 border-accent-gold shadow-2xl">
+        <h2 class="text-lg font-bold text-white mb-3 flex items-center justify-between">
+            <span class="flex items-center"><i class="fas fa-newspaper mr-2 text-accent-gold"></i>ข่าวสาร</span>
+            <span class="text-[10px] bg-accent-gold/20 text-accent-gold px-2.5 py-0.5 rounded-full font-semibold">หมุนเวียนอัตโนมัติ</span>
+        </h2>
+        <div id="newsBoard" class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+            <div id="newsLoading" class="text-center py-6"><i class="fas fa-spinner fa-spin text-accent-gold text-2xl"></i><p class="mt-2 text-sm text-gray-400">กำลังโหลดข่าวสาร...</p></div>
+            <p id="newsError" class="text-center text-red-400 hidden text-sm py-4">เกิดข้อผิดพลาดในการโหลดข่าว</p>
+        </div>
+    </div>
+
+    <button id="toggleNewsPanel" onclick="toggleNewsPanel()" class="fixed top-[48%] -translate-y-1/2 right-0 p-4 rounded-l-2xl shadow-lg z-50 bg-slate-800 text-accent-gold hover:bg-accent-gold hover:text-white transition-all duration-300 border border-slate-700">
+        <i id="toggleNewsIcon" class="fas fa-newspaper text-xl"></i>
+    </button>
+    <!-- ========================================================================================= -->
+
+    <!-- ปุ่มกดเปิด-ปิด เมนูด้านซ้าย -->
+    <button id="toggleServicePanel" onclick="toggleServicePanel()" class="fixed top-[42%] -translate-y-1/2 left-0 p-4 rounded-r-2xl shadow-lg z-50 bg-slate-800 text-accent-gold hover:bg-accent-gold hover:text-white transition-all duration-300 border border-slate-700">
+        <i id="toggleServiceIcon" class="fas fa-stethoscope"></i>
+    </button>
+    <button id="toggleAbnormalPanel" onclick="toggleAbnormalPanel()" class="fixed top-[58%] -translate-y-1/2 left-0 p-4 rounded-r-2xl shadow-lg z-50 bg-red-600 text-white hover:bg-red-700 transition-all duration-300 super-flash-btn border-2 border-yellow-300">
+        <i id="toggleAbnormalIcon" class="fas fa-exclamation-triangle text-yellow-300 text-xl"></i>
+    </button>
+
+    <main>
+        <section class="glassy-section p-6 sm:p-10 flex flex-col">
+            <div class="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
+                <div class="header-title-container px-4 py-2">
+                    <h2 class="text-3xl font-extrabold text-white tracking-tight relative z-10">งานทันตสาธารณสุข</h2>
+                    <img src="assets/images/tm.png" alt="Dental Logo" class="header-bg-glow">
+                </div>
+                <div class="flex items-center gap-2">
+                    <div id="currentTime" class="bg-slate-800 px-4 py-2 rounded-xl text-sm font-semibold text-gray-200 border border-slate-700">
+                        <i class="fas fa-clock mr-2 text-accent-gold"></i>:
+                    </div>
+                </div>
+            </div>
+
+            <div id="scrollingQueueContainer" class="relative">
+                <div id="queueDisplay" class="h-80 sm:h-[450px] relative overflow-y-auto">
+                    <div id="queueLoading" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/80 z-10 rounded-xl">
+                        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent-gold mb-3"></div>
+                        <p class="text-gray-300 font-medium">กำลังเตรียมข้อมูลคิว...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="mt-6 service-area-box p-5 rounded-2xl flex items-start gap-4">
+            <div class="bg-slate-800 text-accent-gold p-3 rounded-xl shadow-md shrink-0 border border-slate-700">
+                <i class="fas fa-hospital-user text-xl"></i>
+            </div>
+            <p class="service-text text-sm sm:text-base leading-relaxed font-medium">
+                <strong class="text-accent-gold font-bold border-b-2 border-accent-gold/40 pb-0.5">เงื่อนไขการบริการ:</strong> 
+                ให้บริการผู้ป่วยในเขตตำบลท่าตะเภา, สิทธิ์ข้าราชการ, พนักงานเทศบาล, ครูและนักเรียนในเขตพื้นที่ 
+            </p>
+        </div>
+    </main>
+
+    <!-- ส่วนแสดงผู้ให้บริการกึ่งกลางจอ -->
+    <footer>
+        <div class="provider-card">
+            <img src="assets/images/admin.jpg" alt="รูปโปรไฟล์" class="footer-image shrink-0">
+            <div class="text-left leading-tight">
+                <p class="text-sm font-bold text-accent-gold tracking-wide">ผู้ให้บริการ : นายภัทรพล ไพศาลวัชรเมธี</p>
+                <p class="text-xs text-gray-300 mt-1 font-medium">ตำแหน่ง : ทันตสาธารณสุขอาวุโส</p>
+            </div>
+        </div>
+    </footer>
+
+    <div id="floatingAlert" class="floating-alert">
+        <div class="bg-accent-gold p-2 rounded-lg text-slate-900"><i class="fas fa-id-card"></i></div>
+        <div>
+            <p class="font-bold text-sm text-white">คำเตือน</p>
+            <p class="text-xs text-gray-200 opacity-90">กรุณานำบัตรประชาชนมาด้วย และมาก่อนเวลา 5-10 นาที</p>
+        </div>
+    </div>
+    
+    <script>
+        const BOOKING_API_URL = 'https://script.google.com/macros/s/AKfycbw8wDGyZWTmG3DLWRwt8_k9x3iYKSxkTl3Rulyll5ObGxOTkJrw3xwB-xBSwBBeOhVE/exec';
+        const NEWS_API_URL = 'https://script.google.com/macros/s/AKfycbzHy1NyAVT3fOQzQpgeKf0L4duDNr94evxd-h-AUkYPKJYhfkQMN7T_iFwjJVtlQlLN/exec';
+
+        const queueDisplay = document.getElementById('queueDisplay');
+        const queueLoading = document.getElementById('queueLoading');
+        const newsBoard = document.getElementById('newsBoard');
+        const newsLoading = document.getElementById('newsLoading');
+        const newsError = document.getElementById('newsError');
+        const abnormalBoard = document.getElementById('abnormalBoard');
+
+        let newsDataList = [];
+        let newsIndex = 0;
+        let newsInterval = null;
+
+        function toggleNewsPanel() {
+            const panel = document.getElementById('newsFloatingPanel');
+            const icon = document.getElementById('toggleNewsIcon');
+            
+            if (panel.classList.contains('translate-x-0')) {
+                panel.classList.remove('translate-x-0');
+                panel.classList.add('translate-x-full');
+                icon.className = 'fas fa-newspaper text-xl';
+                
+                if (newsInterval) {
+                    clearInterval(newsInterval);
+                    newsInterval = null;
+                }
+            } else {
+                panel.classList.remove('translate-x-full');
+                panel.classList.add('translate-x-0');
+                icon.className = 'fas fa-chevron-right text-white';
+                
+                renderCurrentNews();
+                
+                if (!newsInterval) {
+                    newsInterval = setInterval(() => {
+                        rotateNews();
+                    }, 5000);
+                }
+            }
+        }
+
+        async function fetchNewsFromGoogleSheet() {
+            if (!newsBoard) return;
+            if (newsLoading) newsLoading.classList.remove('hidden');
+            if (newsError) newsError.classList.add('hidden');
+
+            try {
+                const response = await fetch(NEWS_API_URL);
+                const data = await response.json();
+                if (newsLoading) newsLoading.classList.add('hidden');
+
+                if (!data || data.length === 0) {
+                    newsBoard.innerHTML = '<p class="text-center text-gray-400 text-sm py-4">ไม่มีข่าวสารในขณะนี้</p>';
+                    return;
+                }
+
+                newsDataList = data;
+                newsIndex = 0;
+                renderCurrentNews();
+
+            } catch (error) {
+                console.error('Fetch News Error:', error);
+                if (newsLoading) newsLoading.classList.add('hidden');
+                if (newsError) newsError.classList.remove('hidden');
+            }
+        }
+
+        function rotateNews() {
+            if (newsDataList.length === 0) return;
+            newsIndex = (newsIndex + 1) % newsDataList.length;
+            renderCurrentNews();
+        }
+
+        function renderCurrentNews() {
+            if (!newsBoard || newsDataList.length === 0) return;
+            newsBoard.innerHTML = '';
+
+            const newsItem = newsDataList[newsIndex];
+            const newsDiv = document.createElement('div');
+            newsDiv.className = 'bg-slate-800/90 border border-slate-700 p-4 rounded-2xl shadow-lg space-y-2.5 news-animate-card backdrop-blur-md relative overflow-hidden text-gray-200';
+            
+            const date = new Date(newsItem.date).toLocaleDateString('th-TH', {
+                year: 'numeric', month: 'long', day: 'numeric'
+            });
+
+            let linkHtml = '';
+            if (newsItem.link && newsItem.link !== '') {
+                linkHtml = `<a href="${newsItem.link}" target="_blank" class="inline-flex items-center text-amber-400 hover:text-amber-300 text-xs mt-2 font-semibold">อ่านรายละเอียดเพิ่มเติม <i class="fas fa-external-link-alt ml-1.5 text-[10px]"></i></a>`;
+            }
+
+            newsDiv.innerHTML = `
+                <div class="absolute top-0 left-0 w-1.5 h-full bg-accent-gold"></div>
+                <div class="flex items-center justify-between pl-2">
+                    <span class="text-[10px] font-bold text-accent-gold bg-accent-gold/15 px-2.5 py-0.5 rounded-full flex items-center gap-1"><i class="far fa-newspaper"></i> ข่าวประชาสัมพันธ์</span>
+                    <span class="text-[10px] text-gray-400 font-mono">${newsIndex + 1}/${newsDataList.length}</span>
+                </div>
+                <p class="font-bold text-white text-sm pl-2 leading-snug">${newsItem.title}</p>
+                <div class="bg-slate-900/60 border border-slate-700/60 p-3 rounded-xl text-xs text-gray-300 leading-relaxed shadow-inner">
+                    <p class="text-[11px] text-gray-400 mb-1"><i class="far fa-calendar-alt mr-1"></i>วันที่ประกาศ: ${date}</p>
+                    ${newsItem.description ? `<p class="mt-1">${newsItem.description}</p>` : ''}
+                    ${linkHtml}
+                </div>
+            `;
+
+            newsBoard.appendChild(newsDiv);
+        }
+
+        function getFirstNameOnly(fullName) {
+            if (!fullName) return '';
+            let name = fullName.trim();
+            name = name.replace(/^(นาย|นางสาว|นาง|ด\.ช\.|ด\.ญ\.|เด็กชาย|เด็กหญิง|ผศ\.|ดร\.|พญ\.|นพ\.)\s*/, '');
+            const parts = name.split(/\s+/);
+            return parts[0] || '';
+        }
+
+        function announceQueue(fullName, btnElement) {
+            if (!('speechSynthesis' in window)) {
+                alert('เบราว์เซอร์ของคุณไม่รองรับระบบออกเสียง');
+                return;
+            }
+
+            window.speechSynthesis.cancel();
+            const firstName = getFirstNameOnly(fullName);
+            const textToSpeech = `เชิญ คุณ ${firstName} ติดต่อห้องตรวจ 2`;
+
+            const utterance = new SpeechSynthesisUtterance(textToSpeech);
+            utterance.lang = 'th-TH';
+            utterance.rate = 0.9;
+            utterance.pitch = 1.0;
+
+            if (btnElement) btnElement.classList.add('speaking');
+            utterance.onend = () => { if (btnElement) btnElement.classList.remove('speaking'); };
+            utterance.onerror = () => { if (btnElement) btnElement.classList.remove('speaking'); };
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function toggleFullscreen() {
+            const icon = document.getElementById('fullscreenIcon');
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().then(() => {
+                    if (icon) icon.className = 'fas fa-compress';
+                }).catch(err => {
+                    console.error(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen().then(() => {
+                        if (icon) icon.className = 'fas fa-expand';
+                    });
+                }
+            }
+        }
+
+        function toggleServicePanel() {
+            const panel = document.getElementById('serviceStatusFloating');
+            const icon = document.getElementById('toggleServiceIcon');
+            if (panel.classList.contains('translate-x-0')) {
+                panel.classList.remove('translate-x-0');
+                panel.classList.add('-translate-x-full');
+                icon.className = 'fas fa-stethoscope';
+            } else {
+                panel.classList.remove('-translate-x-full');
+                panel.classList.add('translate-x-0');
+                icon.className = 'fas fa-chevron-left';
+            }
+        }
+
+        function toggleAbnormalPanel() {
+            const panel = document.getElementById('abnormalFloatingPanel');
+            const icon = document.getElementById('toggleAbnormalIcon');
+            if (panel.classList.contains('translate-x-0')) {
+                panel.classList.remove('translate-x-0');
+                panel.classList.add('-translate-x-full');
+                icon.className = 'fas fa-exclamation-triangle text-yellow-300 text-xl';
+            } else {
+                panel.classList.remove('-translate-x-full');
+                panel.classList.add('translate-x-0');
+                icon.className = 'fas fa-chevron-left text-white';
+            }
+        }
+
+        function updateCurrentTime() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            document.getElementById('currentTime').innerHTML = `<i class="fas fa-clock mr-2 text-accent-gold"></i> ${now.toLocaleDateString('th-TH', options)} น.`;
+        }
+
+        function parseDateSafe(dateStr) {
+            if (!dateStr) return new Date();
+            let d = new Date(dateStr);
+            if (isNaN(d.getTime()) || d.getFullYear() > 2500) {
+                const parts = String(dateStr).split(/[\/\s,:]+/);
+                if (parts.length >= 3) {
+                    let day = parseInt(parts[0]);
+                    let month = parseInt(parts[1]) - 1;
+                    let year = parseInt(parts[2]);
+                    if (year > 2500) year -= 543;
+                    let hr = parseInt(parts[3]) || 0;
+                    let min = parseInt(parts[4]) || 0;
+                    let sec = parseInt(parts[5]) || 0;
+                    d = new Date(year, month, day, hr, min, sec);
+                }
+            }
+            return isNaN(d.getTime()) ? new Date() : d;
+        }
+
+        async function fetchBookingData() {
+            if (queueLoading) queueLoading.classList.remove('hidden');
+            try {
+                const response = await fetch(BOOKING_API_URL);
+                const data = await response.json();
+                if (queueLoading) queueLoading.classList.add('hidden');
+                if (Array.isArray(data)) {
+                    updateQueueDisplay(data);
+                }
+            } catch (error) {
+                console.error('Fetch Queue Error:', error);
+                if (queueLoading) queueLoading.classList.add('hidden');
+                queueDisplay.innerHTML = '<p class="text-center text-red-400 py-10">เกิดข้อผิดพลาดในการโหลดข้อมูลคิว</p>';
+            }
+        }
+
+        function updateQueueDisplay(bookings) {
+            queueDisplay.innerHTML = '';
+            abnormalBoard.innerHTML = '';
+            
+            const now = new Date();
+            const grouped = {};
+            const processedBookings = bookings.map(b => ({ ...b, parsedDate: parseDateSafe(b.date) }));
+
+            processedBookings.forEach(b => {
+                const key = `${b.parsedDate.toDateString()}_${b.timeSlot}`;
+                if (!grouped[key]) grouped[key] = [];
+                grouped[key].push(b);
+            });
+
+            const finalizedBookings = [];
+            for (const key in grouped) {
+                grouped[key].sort((a, b) => a.parsedDate - b.parsedDate);
+                grouped[key].forEach((b, idx) => {
+                    b.isDuplicate = idx > 0;
+                    finalizedBookings.push(b);
+                });
+            }
+
+            finalizedBookings.sort((a, b) => (b.isDuplicate ? 1 : 0) - (a.isDuplicate ? 1 : 0));
+
+            let currentAppt = null;
+            const upcoming = [];
+            const abnormalList = [];
+
+            const validBookings = finalizedBookings.filter(b => !b.isDuplicate);
+            
+            validBookings.forEach((booking, index) => {
+                const bStart = new Date(booking.parsedDate);
+                const timeParts = String(booking.timeSlot).split('-');
+                if (timeParts[0]) {
+                    const [h, m] = timeParts[0].trim().split(':').map(Number);
+                    if (!isNaN(h)) {
+                        bStart.setHours(h, m || 0, 0, 0);
+                    }
+                }
+
+                const bEnd = new Date(bStart);
+                if (timeParts[1]) {
+                    const [h, m] = timeParts[1].split(':').map(Number);
+                    bEnd.setHours(h || 0, m || 0, 0, 0);
+                } else {
+                    bEnd.setHours(bStart.getHours() + 1);
+                }
+                
+                booking.isLastQueue = (index === validBookings.length - 1);
+                booking.queueIndex = index;
+
+                if (now >= bStart && now < bEnd) {
+                    currentAppt = booking;
+                } else if (bStart >= now) {
+                    upcoming.push(booking);
+                }
+            });
+
+            finalizedBookings.forEach(booking => {
+                if (booking.isDuplicate) {
+                    abnormalList.push(booking);
+                }
+            });
+
+            let gridContainer = document.createElement('div');
+            gridContainer.className = 'flex flex-col gap-1';
+
+            if (currentAppt) {
+                const currentCard = createChairCard(currentAppt, 'current', now);
+                gridContainer.appendChild(currentCard);
+            }
+
+            if (upcoming.length > 0) {
+                let sectionTitle = document.createElement('div');
+                sectionTitle.className = 'text-base font-bold text-white border-b border-slate-700 pb-1 px-1 flex items-center mt-2';
+                sectionTitle.innerHTML = `<i class="fas fa-users mr-2 text-accent-gold"></i>ผังรอรับบริการ`;
+                gridContainer.appendChild(sectionTitle);
+
+                let rowDiv = document.createElement('div');
+				rowDiv.className = 'grid grid-cols-2 md:grid-cols-4 gap-3';
+
+                upcoming.forEach((appt, index) => {
+                    const isFirstUpcoming = (index === 0);
+                    const chairCard = createChairCard(appt, isFirstUpcoming ? 'upcoming_first' : 'upcoming_normal', now);
+                    rowDiv.appendChild(chairCard);
+
+                    if ((index + 1) % 4 === 0) {
+                        gridContainer.appendChild(rowDiv);
+                        rowDiv = document.createElement('div');
+                        rowDiv.className = 'grid grid-cols-2 md:grid-cols-4 gap-3';
+                    }
+                });
+
+                if (rowDiv.children.length > 0) {
+                    gridContainer.appendChild(rowDiv);
+                }
+            } else if (!currentAppt && abnormalList.length === 0) {
+                gridContainer.innerHTML = '<p class="text-center text-gray-400 py-10">ไม่มีรายการนัดหมายในขณะนี้</p>';
+            }
+
+            queueDisplay.appendChild(gridContainer);
+
+            const toggleAbnormalBtn = document.getElementById('toggleAbnormalPanel');
+            const toggleAbnormalIcon = document.getElementById('toggleAbnormalIcon');
+
+            if (abnormalList.length > 0) {
+                toggleAbnormalBtn.className = "fixed top-[58%] -translate-y-1/2 left-0 p-4 rounded-r-2xl shadow-lg z-50 bg-red-600 text-white hover:bg-red-700 transition-all duration-300 super-flash-btn border-2 border-yellow-300";
+                toggleAbnormalIcon.className = "fas fa-exclamation-triangle text-yellow-300 text-xl";
+
+                abnormalList.forEach(appt => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'bg-red-950/60 p-3 rounded-xl border border-red-800 shadow-sm mb-2 text-gray-200';
+                    itemDiv.innerHTML = `
+                        <p class="font-bold text-red-400 text-sm">${maskLastName(appt.patientName)}</p>
+                        <span class="inline-block mt-1 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">สถานะ : ไม่ปกติ (ลงทะเบียนใหม่)</span>
+                    `;
+                    abnormalBoard.appendChild(itemDiv);
+                });
+            } else {
+                toggleAbnormalBtn.className = "fixed top-[58%] -translate-y-1/2 left-0 p-4 rounded-r-2xl shadow-lg z-50 bg-slate-800 text-accent-gold hover:bg-accent-gold hover:text-white transition-all duration-300 border border-slate-700";
+                toggleAbnormalIcon.className = "fas fa-exclamation-triangle text-accent-gold text-xl";
+
+                abnormalBoard.innerHTML = '<p class="text-center text-gray-400 text-sm py-4">ไม่พบความผิดปกติ</p>';
+            }
+        }
+
+        function createChairCard(appt, type, now) {
+            const apptTimestamp = new Date(appt.parsedDate);
+            const timeParts = String(appt.timeSlot).split('-');
+            if (timeParts[0]) {
+                const [startH, startM] = timeParts[0].trim().split(':').map(Number);
+                if (!isNaN(startH)) {
+                    apptTimestamp.setHours(startH, startM || 0, 0, 0);
+                }
+            }
+
+            const card = document.createElement('div');
+            const safePatientName = (appt.patientName || '').replace(/'/g, "\\'");
+
+            if (type === 'current') {
+                let waitMinutes = 15;
+                if (appt.queueIndex === 0 || appt.queueIndex === 1) waitMinutes = 30;
+                else if (appt.queueIndex === 2) waitMinutes = 15;
+
+                const timeLimitLater = new Date(apptTimestamp.getTime() + waitMinutes * 60000);
+                const isOvertime = now >= timeLimitLater;
+
+                let statusText = "";
+                let badgeColor = "";
+                let borderColor = "";
+                let iconClass = "fa-user-injured";
+
+                const isLastSlot = appt.isLastQueue || (appt.timeSlot && appt.timeSlot.includes('11:00'));
+
+                if (isLastSlot) {
+                    statusText = "พักบริการหลังจากคิวนี้";
+                    badgeColor = "bg-purple-900 text-purple-200 border border-purple-700";
+                    borderColor = "border-purple-500";
+                    iconClass = "fas fa-coffee";
+                } else {
+                    statusText = isOvertime ? "คิวถัดไปเตรียมติดต่อห้องบริการ" : "คิวปัจจุบัน";
+                    badgeColor = isOvertime ? "bg-amber-900 text-amber-200 border border-amber-700 animate-pulse" : "bg-blue-900 text-blue-200 border border-blue-700";
+                    borderColor = isOvertime ? "border-amber-500" : "border-blue-500";
+                }
+
+                card.className = `p-5 rounded-2xl bg-slate-800 border-2 ${borderColor} shadow-lg flex flex-col items-center relative overflow-hidden w-full mb-3 pt-6`;
+                card.innerHTML = `
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2">
+                        <span class="px-3 py-0.5 rounded-b-xl text-xs font-bold ${badgeColor} shadow-sm border-t-0 inline-block text-center">
+                            ${statusText}
+                        </span>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4 w-full justify-between mt-2">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-14 h-14 rounded-full bg-slate-700 flex items-center justify-center text-blue-400 text-2xl shadow-inner shrink-0 border border-slate-600">
+                                <i class="fas ${iconClass}"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs text-blue-400 font-bold uppercase tracking-wider">--> ห้องตรวจ 2</span>
+                                <h3 class="text-lg font-bold text-white">${maskLastName(appt.patientName)}</h3>
+                                <p class="text-xs text-gray-300"><i class="far fa-clock mr-1"></i>${appt.timeSlot}</p>
+                            </div>
+                        </div>
+
+                        <button onclick="announceQueue('${safePatientName}', this)" title="กดเพื่อเรียกคิว" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 px-4 rounded-xl shadow-md transition-all duration-200 flex items-center gap-2 active:scale-95 shrink-0 border border-blue-500">
+                            <i class="fas fa-volume-up text-lg"></i>
+                            <span class="hidden sm:inline text-sm">เรียกคิว</span>
+                        </button>
+                    </div>
+                `;
+            } else {
+                const isFirst = (type === 'upcoming_first');
+                const cardStyle = isFirst ? 'yellow-flashing rounded-2xl' : 'bg-slate-800/80 border border-slate-700 rounded-2xl shadow-sm';
+                const statusLabel = isFirst ? 'สถานะ : เตรียมรับบริการ' : 'สถานะ : ปกติ';
+                const badgeStyle = isFirst ? 'bg-amber-900 text-amber-200 border border-amber-700 font-bold animate-pulse' : 'bg-slate-700 text-gray-300 border border-slate-600';
+                const iconColor = isFirst ? 'text-amber-400 bg-amber-950/60 border border-amber-800' : 'text-emerald-400 bg-emerald-950/60 border border-emerald-800';
+
+                let timeDiff = apptTimestamp - now;
+                let formattedTime = formatTimeRemaining(timeDiff);
+                let timeRemainingHtml = formattedTime !== "" 
+                    ? `<span class="time-remaining font-semibold text-gray-300" data-timestamp="${apptTimestamp.getTime()}">ในอีก: ${formattedTime}</span>` 
+                    : `<span class="time-remaining font-semibold text-accent-gold" data-timestamp="${apptTimestamp.getTime()}">ถึงคิวแล้ว</span>`;
+
+                card.className = `p-4 pt-6 flex flex-col justify-between ${cardStyle} transition-all duration-300 relative items-center text-center`;
+                card.innerHTML = `
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 flex items-center gap-1">
+                        <span class="px-3 py-0.5 rounded-b-xl ${badgeStyle} text-[10px] shadow-sm inline-block whitespace-nowrap">
+                            ${statusLabel}
+                        </span>
+                    </div>
+
+                    <button onclick="announceQueue('${safePatientName}', this)" title="เรียกคิวนี้" class="absolute top-2 right-2 w-7 h-7 bg-slate-700 hover:bg-accent-gold text-gray-300 hover:text-white rounded-full flex items-center justify-center transition-all duration-200 border border-slate-600">
+                        <i class="fas fa-volume-up text-xs"></i>
+                    </button>
+
+                    <div class="flex flex-col items-center w-full mt-1 mb-2">
+                        <div class="w-12 h-12 rounded-full ${iconColor} flex items-center justify-center text-lg shrink-0 shadow-inner mb-2">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h4 class="font-bold text-white text-sm truncate w-full">${maskLastName(appt.patientName)}</h4>
+                        <p class="text-[11px] text-gray-300 mt-0.5"><i class="far fa-clock mr-1"></i>${appt.timeSlot}</p>
+                    </div>
+
+                    <div class="flex items-center justify-center w-full pt-2 border-t border-slate-700 text-[11px]">
+                        ${timeRemainingHtml}
+                    </div>
+                `;
+            }
+
+            return card;
+        }
+
+        async function fetchNewsFromGoogleSheet() {
+            if (!newsBoard) return;
+            if (newsLoading) newsLoading.classList.remove('hidden');
+            if (newsError) newsError.classList.add('hidden');
+
+            try {
+                const response = await fetch(NEWS_API_URL);
+                const data = await response.json();
+                if (newsLoading) newsLoading.classList.add('hidden');
+
+                if (!data || data.length === 0) {
+                    newsBoard.innerHTML = '<p class="text-center text-gray-400 text-sm py-4">ไม่มีข่าวสารในขณะนี้</p>';
+                    return;
+                }
+
+                newsDataList = data;
+                newsIndex = 0;
+                renderCurrentNews();
+
+            } catch (error) {
+                console.error('Fetch News Error:', error);
+                if (newsLoading) newsLoading.classList.add('hidden');
+                if (newsError) newsError.classList.remove('hidden');
+            }
+        }
+
+        function rotateNews() {
+            if (newsDataList.length === 0) return;
+            newsIndex = (newsIndex + 1) % newsDataList.length;
+            renderCurrentNews();
+        }
+
+        function renderCurrentNews() {
+            if (!newsBoard || newsDataList.length === 0) return;
+            newsBoard.innerHTML = '';
+
+            const newsItem = newsDataList[newsIndex];
+            const newsDiv = document.createElement('div');
+            newsDiv.className = 'bg-slate-800/90 border border-slate-700 p-4 rounded-2xl shadow-lg space-y-2.5 news-animate-card backdrop-blur-md relative overflow-hidden text-gray-200';
+            
+            const date = new Date(newsItem.date).toLocaleDateString('th-TH', {
+                year: 'numeric', month: 'long', day: 'numeric'
+            });
+
+            let linkHtml = '';
+            if (newsItem.link && newsItem.link !== '') {
+                linkHtml = `<a href="${newsItem.link}" target="_blank" class="inline-flex items-center text-amber-400 hover:text-amber-300 text-xs mt-2 font-semibold">อ่านรายละเอียดเพิ่มเติม <i class="fas fa-external-link-alt ml-1.5 text-[10px]"></i></a>`;
+            }
+
+            newsDiv.innerHTML = `
+                <div class="absolute top-0 left-0 w-1.5 h-full bg-accent-gold"></div>
+                <div class="flex items-center justify-between pl-2">
+                    <span class="text-[10px] font-bold text-accent-gold bg-accent-gold/15 px-2.5 py-0.5 rounded-full flex items-center gap-1"><i class="far fa-newspaper"></i> ข่าวประชาสัมพันธ์</span>
+                    <span class="text-[10px] text-gray-400 font-mono">${newsIndex + 1}/${newsDataList.length}</span>
+                </div>
+                <p class="font-bold text-white text-sm pl-2 leading-snug">${newsItem.title}</p>
+                <div class="bg-slate-900/60 border border-slate-700/60 p-3 rounded-xl text-xs text-gray-300 leading-relaxed shadow-inner">
+                    <p class="text-[11px] text-gray-400 mb-1"><i class="far fa-calendar-alt mr-1"></i>วันที่ประกาศ: ${date}</p>
+                    ${newsItem.description ? `<p class="mt-1">${newsItem.description}</p>` : ''}
+                    ${linkHtml}
+                </div>
+            `;
+
+            newsBoard.appendChild(newsDiv);
+        }
+
+        function maskLastName(name) {
+            if (!name) return 'ไม่ระบุชื่อ';
+            let parts = name.trim().split(/\s+/);
+            return parts.length > 1 ? `${parts[0]} ${parts[1][0]}***` : name;
+        }
+
+        function formatTimeRemaining(ms) {
+            if (ms < 0) return "";
+            
+            const totalMinutes = Math.floor(ms / 60000);
+            const days = Math.floor(totalMinutes / 1440);
+            const hours = Math.floor((totalMinutes % 1440) / 60);
+            const mins = totalMinutes % 60;
+
+            let result = "";
+            if (days > 0) result += `${days} วัน `;
+            if (hours > 0) result += `${hours} ชม. `;
+            result += `${mins} นาที`;
+            
+            return result.trim();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 1000);
+
+            fetchBookingData();
+            fetchNewsFromGoogleSheet();
+
+            setInterval(fetchBookingData, 60000); 
+            setInterval(fetchNewsFromGoogleSheet, 300000);
+            
+            setInterval(() => {
+                const currentTime = new Date().getTime();
+                document.querySelectorAll('.time-remaining').forEach(span => {
+                    const target = parseInt(span.dataset.timestamp);
+                    const formatted = formatTimeRemaining(target - currentTime);
+                    if (formatted !== "") {
+                        span.textContent = 'ในอีก: ' + formatted;
+                    } else {
+                        span.textContent = 'ถึงคิวแล้ว';
+                    }
+                });
+            }, 10000);
+        });
+    </script>
+</body>
+</html>
