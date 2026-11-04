@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const loadingDiv = document.getElementById('loading');
     const errorMessageDiv = document.getElementById('error-message');
     const currentYearSpan = document.getElementById('current-year');
-    const printButton = document.getElementById('printButton'); // เพิ่มการเข้าถึงปุ่มพิมพ์
+    const printButton = document.getElementById('printButton');
 
     // ฟังก์ชันสำหรับแปลงวันที่ให้เป็นรูปแบบ "วันจันทร์ ที่ DD เดือน 해당하는ปี พ.ศ."
     function formatDate(dateString) {
@@ -29,44 +29,37 @@ document.addEventListener('DOMContentLoaded', function() {
         return formattedDate;
     }
 
-    // ฟังก์ชันสำหรับแสดงข้อความโหลด
     function showLoading() {
         loadingDiv.style.display = 'block';
         dataTable.style.display = 'none';
         errorMessageDiv.style.display = 'none';
     }
 
-    // ฟังก์ชันสำหรับซ่อนข้อความโหลด
     function hideLoading() {
         loadingDiv.style.display = 'none';
     }
 
-    // ฟังก์ชันสำหรับแสดงตาราง
     function showTable() {
         dataTable.style.display = 'table';
     }
 
-    // ฟังก์ชันสำหรับแสดงข้อผิดพลาด
     function showErrorMessage() {
         errorMessageDiv.style.display = 'block';
         hideLoading();
     }
 
-    // ดึงปีปัจจุบันและแสดงผล (พ.ศ.)
     const now = new Date();
-    const currentBuddhistYear = now.getFullYear() + 543; // แปลงเป็น พ.ศ.
+    const currentBuddhistYear = now.getFullYear() + 543;
     if (currentYearSpan) {
         currentYearSpan.textContent = currentBuddhistYear;
     }
 
-    // เพิ่ม Event Listener สำหรับปุ่มพิมพ์
     if (printButton) {
         printButton.addEventListener('click', function() {
-            window.print(); // สั่งพิมพ์หน้าจอ
+            window.print();
         });
     }
 
-    // เริ่มต้นกระบวนการดึงข้อมูล
     showLoading();
 
     fetch(apiUrl)
@@ -79,6 +72,10 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             hideLoading();
             if (data && Array.isArray(data) && data.length > 0) {
+                // สร้าง Object วันที่ปัจจุบัน (ตัดเวลาออกเพื่อให้เทียบเฉพาะวันได้ถูกต้อง)
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
                 data.forEach(row => {
                     const tr = document.createElement('tr');
                     if (Array.isArray(row) && row.length === 5) {
@@ -88,6 +85,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         const grade = row[3];
                         const note = row[4];
 
+                        // แปลงข้อมูลวันที่ดิบเพื่อนำมาเช็คสถานะ
+                        const rowDate = new Date(rawDate);
+                        rowDate.setHours(0, 0, 0, 0);
+
+                        // ตรวจสอบว่าพ้นกำหนดหรือยัง (วันของแถว < วันปัจจุบัน)
+                        const isCompleted = !isNaN(rowDate.getTime()) && rowDate < today;
+
+                        if (isCompleted) {
+                            tr.classList.add('completed-row'); // เพิ่มคลาสสำหรับแถวที่เสร็จแล้ว
+                        }
+
                         const displayDate = formatDate(rawDate);
                         
                         const tdDate = document.createElement('td');
@@ -95,7 +103,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         tr.appendChild(tdDate);
 
                         const tdSchool = document.createElement('td');
-                        tdSchool.textContent = school;
+                        
+                        // ถ้าเสร็จแล้ว ให้ใส่ป้ายสัญลักษณ์ Completed ต่อท้ายชื่อโรงเรียนหรือในช่องโรงเรียน
+                        if (isCompleted) {
+                            tdSchool.innerHTML = `${school} <span class="completed-badge">✅ Completed</span>`;
+                        } else {
+                            tdSchool.textContent = school;
+                        }
                         tr.appendChild(tdSchool);
 
                         const tdTime = document.createElement('td');
