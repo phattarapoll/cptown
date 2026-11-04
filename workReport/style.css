@@ -32,6 +32,57 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* สไตล์สำหรับปุ่มซ่อน/แสดง */
+.toggle-btn {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Kanit', sans-serif;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.toggle-btn:hover {
+    background-color: #5a6268;
+}
+
+/* สไตล์ป้ายสถานะ (Status Badges) */
+.status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.status-completed {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+
+/* คลาสสำหรับซ่อนแถว */
+tr.hidden-row {
+    display: none !important;
+}
+
+/* ปรับแต่งแถวที่เสร็จแล้วให้จางลงเล็กน้อย (ทางเลือกเสริม) */
+tr.row-completed {
+    background-color: #fcfcfc;
+    color: #686868;
+}
+
 /* สไตล์สำหรับหัวข้อหลัก */
 .main-header {
     text-align: center;
@@ -298,8 +349,15 @@ tr:hover td {
     box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2);
 }
 
+
 /* สไตล์สำหรับการพิมพ์ (Print Media Queries) */
 @media print {
+	@page {
+        margin-top: 0mm; 
+        margin-bottom: 10mm;
+        margin-left: 10mm;
+        margin-right: 10mm;
+    }
     body {
         background-color: #fff;
         padding: 0;
@@ -314,12 +372,19 @@ tr:hover td {
     #print-button-fixed-container {
         display: none;
     }
+
+    /* เพิ่มส่วนนี้: ซ่อนปุ่มซ่อนรายการ และซ่อนป้ายสัญลักษณ์สถานะทั้งหมดเวลาพิมพ์ */
+    .control-panel, 
+    td span[style*="background-color"], 
+    td span[style*="margin-right"] {
+        display: none !important;
+    }
     
     .container {
         box-shadow: none;
         border-radius: 0;
-        padding: 5px 0; /* เปลี่ยนตรงนี้เพื่อเพิ่มระยะห่างด้านบนและล่าง */
-        margin: 0 auto;
+        padding: 0 !important; 
+        margin: 0 auto !important;
         width: 100%;
         max-width: none;
     }
@@ -355,11 +420,11 @@ tr:hover td {
     td {
         font-size: 0.8em;
     }
-    th:nth-child(1), td:nth-child(1) { width: 22%; }
-    th:nth-child(2), td:nth-child(2) { width: 25%; }
-    th:nth-child(3), td:nth-child(3) { width: 8%; white-space: nowrap; }
-    th:nth-child(4), td:nth-child(4) { width: 8%; white-space: nowrap; }
-    td:nth-child(5) { width: 37%; word-wrap: break-word; }
+    th:nth-child(1), td:nth-child(1) { width: 25%; }
+    th:nth-child(2), td:nth-child(2) { width: 22%; }
+    th:nth-child(3), td:nth-child(3) { width: 10%;white-space: nowrap; }
+    th:nth-child(4), td:nth-child(4) { width: 13%; white-space: nowrap; }
+    td:nth-child(5) { width: 30%; word-wrap: break-word; }
 
     td {
         text-align: left;
