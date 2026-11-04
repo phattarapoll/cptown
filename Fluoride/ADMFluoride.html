@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบบริหารจัดการและรายงานออกหน่วยทันตกรรม - เทศบาลเมืองชุมพร</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    * { font-family: 'Sarabun', sans-serif; }
+    
+    @media print {
+      body {
+        background: white !important;
+        color: black !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+      .page-card {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        font-size: 10pt !important;
+      }
+      th, td {
+        border: 1px solid #333 !important;
+        padding: 5px 8px !important;
+        text-align: left !important;
+      }
+      th {
+        background-color: #f1f5f9 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .badge-consent { font-weight: bold !important; color: #047857 !important; }
+      .badge-refuse { font-weight: bold !important; color: #b91c1c !important; }
+      
+      /* ตั้งค่าเริ่มต้นในการพิมพ์ให้ออกมาเป็น แนวนอน (Landscape) */
+      @page {
+        size: A4 landscape;
+        margin: 1cm;
+      }
+    }
+
+    /* Class บังคับสั่งพิมพ์แนวตั้ง (ถ้าเลือกพิมพ์แนวตั้ง) */
+    @media print {
+      body.print-portrait-mode {
+        /* บังคับ CSS Page ให้เป็นแนวตั้ง */
+      }
+    }
+
+    .print-only { display: none; }
+  </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 pb-12">
+
+  <!-- Header แถบบน (โหมดใช้งานปกติ) -->
+  <header class="bg-sky-700 text-white shadow-lg no-print">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="bg-white text-sky-700 p-2.5 rounded-full shadow">
+          <i class="fa-solid fa-tooth text-2xl"></i>
+        </div>
+        <div>
+          <h1 class="text-xl md:text-2xl font-bold">ระบบบริหารจัดการและสรุปรายงานทันตสาธารณสุข</h1>
+          <p class="text-xs md:text-sm text-sky-100">งานทันตสาธารณสุข กองสาธารณสุขและสิ่งแวดล้อม เทศบาลเมืองชุมพร</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="fetchData()" class="bg-sky-600 hover:bg-sky-500 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition shadow">
+          <i class="fa-solid fa-rotate"></i> รีเฟรชข้อมูล
+        </button>
+        <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition shadow">
+          <i class="fa-solid fa-print"></i> พิมพ์รายงานออกหน่วย (A4)
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- หัวกระดาษสำหรับเวลาสั่งพิมพ์ -->
+  <div class="print-only mb-6">
+    <div class="text-center border-b-2 border-slate-800 pb-4 mb-4">
+      <h1 class="text-2xl font-bold">รายงานความประสงค์รับบริการตรวจสุขภาพช่องปากและทาฟลูออไรด์วานิช</h1>
+      <h2 class="text-lg font-semibold text-slate-700">งานทันตสาธารณสุข กองสาธารณสุขและสิ่งแวดล้อม เทศบาลเมืองชุมพร</h2>
+      <p class="text-sm text-slate-600 mt-1" id="printReportMeta">ข้อมูล ณ วันที่: -</p>
+    </div>
+  </div>
+
+  <main class="max-w-7xl mx-auto px-4 mt-6">
+    
+    <!-- Stat Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+        <div>
+          <p class="text-xs font-medium text-slate-500 uppercase">นักเรียนทั้งหมด</p>
+          <h3 class="text-2xl font-bold text-slate-800 mt-1" id="statTotal">0</h3>
+        </div>
+        <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-xl">
+          <i class="fa-solid fa-users"></i>
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+        <div>
+          <p class="text-xs font-medium text-emerald-600 uppercase">ยินยอมรับบริการ</p>
+          <h3 class="text-2xl font-bold text-emerald-600 mt-1" id="statConsent">0</h3>
+        </div>
+        <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center text-xl">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+        <div>
+          <p class="text-xs font-medium text-rose-600 uppercase">ไม่ยินยอม</p>
+          <h3 class="text-2xl font-bold text-rose-600 mt-1" id="statRefuse">0</h3>
+        </div>
+        <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center text-xl">
+          <i class="fa-solid fa-circle-xmark"></i>
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+        <div>
+          <p class="text-xs font-medium text-slate-500 uppercase">อัตราการตอบรับยินยอม</p>
+          <h3 class="text-2xl font-bold text-sky-600 mt-1" id="statRate">0%</h3>
+        </div>
+        <div class="w-12 h-12 bg-sky-50 text-sky-600 rounded-full flex items-center justify-center text-xl">
+          <i class="fa-solid fa-chart-pie"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Panel -->
+    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 mb-6 no-print">
+      <h2 class="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-4 flex items-center gap-2">
+        <i class="fa-solid fa-filter text-sky-600"></i> ตัวกรองคัดแยกข้อมูลสำหรับออกหน่วย
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">โรงเรียน</label>
+          <select id="filterSchool" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-sky-500 outline-none">
+            <option value="ALL">-- ทุกโรงเรียน --</option>
+            <option value="รร.สหศึกษา">รร.สหศึกษา</option>
+            <option value="รร.ฝวาหมินกงลิ">รร.ฝวาหมินกงลิ</option>
+            <option value="ศูนย์เด็กเล็กเทศบาลเมืองชุมพร">ศูนย์เด็กเล็กเทศบาลเมืองชุมพร</option>
+            <option value="รร.เทศบาล1(บ้านท่าตะเภา)">รร.เทศบาล1(บ้านท่าตะเภา)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">ระดับชั้น</label>
+          <select id="filterGrade" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-sky-500 outline-none">
+            <option value="ALL">-- ทุกชั้น --</option>
+            <option value="ก่อนเรียน">ก่อนเรียน</option>
+            <option value="อนุบาล1">อนุบาล1</option>
+            <option value="อนุบาล2">อนุบาล2</option>
+            <option value="อนุบาล3">อนุบาล3</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">ห้อง</label>
+          <select id="filterRoom" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-sky-500 outline-none">
+            <option value="ALL">-- ทุกห้อง --</option>
+            <option value="ห้องรวม">ห้องรวม</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">ความประสงค์</label>
+          <select id="filterConsent" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-sky-500 outline-none">
+            <option value="ALL">-- ทั้งหมด --</option>
+            <option value="ยินยอม">ยินยอม (รับบริการ)</option>
+            <option value="ไม่ยินยอม">ไม่ยินยอม</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">ค้นหาชื่อเด็ก/ผู้ปกครอง</label>
+          <div class="relative">
+            <input type="text" id="searchKeyword" placeholder="พิมพ์ชื่อ..." class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-sm pl-8 focus:ring-2 focus:ring-sky-500 outline-none">
+            <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-3 text-slate-400 text-xs"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Table Card -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden page-card">
+      <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center no-print">
+        <h3 class="font-bold text-slate-700 flex items-center gap-2">
+          <i class="fa-solid fa-list-check text-sky-600"></i> รายชื่อนักเรียนคัดแยกตามกลุ่มเป้าหมาย 
+          <span id="filteredCountBadge" class="bg-sky-100 text-sky-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">0 รายการ</span>
+        </h3>
+        <span class="text-xs text-slate-500">ข้อมูลอัปเดตอัตโนมัติจาก Google Sheet</span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left text-slate-600">
+          <thead class="text-xs text-slate-700 uppercase bg-slate-100 border-b border-slate-200">
+            <tr>
+              <th scope="col" class="px-4 py-3 text-center w-12">ลำดับ</th>
+              <th scope="col" class="px-4 py-3">วัน-เวลา แจ้ง</th>
+              <th scope="col" class="px-4 py-3">ชื่อ-นามสกุล นักเรียน</th>
+              <th scope="col" class="px-4 py-3">โรงเรียน</th>
+              <th scope="col" class="px-4 py-3 text-center">ชั้น/ห้อง</th>
+              <th scope="col" class="px-4 py-3">ชื่อผู้ปกครอง</th>
+              <th scope="col" class="px-4 py-3">เบอร์โทรศัพท์</th>
+              <th scope="col" class="px-4 py-3 text-center">ความประสงค์</th>
+              <th scope="col" class="px-4 py-3">หมายเหตุ/โรคประจำตัว</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr>
+              <td colspan="9" class="text-center py-8 text-slate-400">
+                <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i>
+                <p>กำลังโหลดข้อมูลความยินยอม...</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ลายเซ็นท้ายเอกสารสำหรับการพิมพ์ออกหน่วย -->
+    <div class="print-only mt-12 pt-6">
+      <div class="grid grid-cols-2 gap-8 text-center text-sm">
+        <div>
+          <p class="mb-12">ลงชื่อ.......................................................... ผู้ให้การส่งเสริมป้องกัน</p>
+          <p>( นายภัทรพล ไพศาลวัชรเมธี)</p>
+          <p class="text-xs text-slate-500 mt-1">เจ้าพนักงานทันตสาธารณสุขอาวุโส</p>
+        </div>
+        <div>
+          <p class="mb-12">ลงชื่อ.......................................................... ผู้รับรองข้อมูล</p>
+          <p>(..........................................................)</p>
+          <p class="text-xs text-slate-500 mt-1">ครูประจำชั้น / ผู้แทนโรงเรียน</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // URL Web App จาก Google Apps Script
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzxXjM1Ca4LsBfaPfrmOyC1sNQhlu8_VltS-CJyH2xmdO6nSMNuWgBUv2cxlAzZOC5_Ng/exec';
+
+    let globalData = [];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      fetchData();
+      
+      document.getElementById('filterSchool').addEventListener('change', renderTable);
+      document.getElementById('filterGrade').addEventListener('change', renderTable);
+      document.getElementById('filterRoom').addEventListener('change', renderTable);
+      document.getElementById('filterConsent').addEventListener('change', renderTable);
+      document.getElementById('searchKeyword').addEventListener('input', renderTable);
+      
+      const now = new Date();
+      document.getElementById('printReportMeta').innerText = `พิมพ์เมื่อวันที่: ${now.toLocaleDateString('th-TH')} เวลา ${now.toLocaleTimeString('th-TH')} น.`;
+    });
+
+    // ฟังก์ชันดึงข้อมูลจาก API
+    function fetchData() {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="9" class="text-center py-8 text-slate-400">
+            <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i>
+            <p>กำลังเชื่อมต่อฐานข้อมูล...</p>
+          </td>
+        </tr>`;
+
+      fetch(API_URL)
+        .then(res => res.json())
+        .then(response => {
+          if (response.status === 'success' && response.data) {
+            globalData = response.data;
+          } else {
+            globalData = [];
+          }
+          updateStats();
+          renderTable();
+        })
+        .catch(err => {
+          console.error('เกิดข้อผิดพลาดในการโหลด API:', err);
+          globalData = [];
+          updateStats();
+          renderTable();
+        });
+    }
+
+    // ฟังก์ชันจัดรูปแบบวัน-เวลาให้ตัดสั้นและอ่านง่าย เป็น YYYY-MM-DD HH:mm น.
+    function formatThaiDateTime(dateStr) {
+      if (!dateStr) return '-';
+      
+      let str = String(dateStr).trim();
+      
+      // ตัดส่วน GMT ออกถ้ามี
+      if (str.includes('GMT')) {
+        str = str.split('GMT')[0].trim();
+      }
+      
+      // ดึงแพทเทิร์นวันที่และเวลา YYYY-MM-DD HH:mm
+      const match = str.match(/\d{4}-\d{2}-\d{2}[T\s]\d{2}:\d{2}/);
+      if (match) {
+        return `${match[0].replace('T', ' ')} น.`;
+      }
+      
+      // กรณีแปลงผ่าน Date object
+      const d = new Date(str);
+      if (!isNaN(d.getTime())) {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        return `${year}-${month}-${day} ${hours}:${minutes} น.`;
+      }
+      
+      return str.replace('น.', '').trim() + ' น.';
+    }
+
+    // ฟังก์ชันคำนวณสถิติ
+    function updateStats() {
+      const total = globalData.length;
+      const consentCount = globalData.filter(item => item.consent === 'ยินยอม').length;
+      const refuseCount = globalData.filter(item => item.consent === 'ไม่ยินยอม').length;
+      const rate = total > 0 ? Math.round((consentCount / total) * 100) : 0;
+
+      document.getElementById('statTotal').innerText = total.toLocaleString() + ' คน';
+      document.getElementById('statConsent').innerText = consentCount.toLocaleString() + ' คน';
+      document.getElementById('statRefuse').innerText = refuseCount.toLocaleString() + ' คน';
+      document.getElementById('statRate').innerText = rate + '%';
+    }
+
+    // ฟังก์ชันกรองข้อมูลและแสดงผลตาราง
+    function renderTable() {
+      const schoolFilter = document.getElementById('filterSchool').value;
+      const gradeFilter = document.getElementById('filterGrade').value;
+      const roomFilter = document.getElementById('filterRoom').value;
+      const consentFilter = document.getElementById('filterConsent').value;
+      const search = document.getElementById('searchKeyword').value.trim().toLowerCase();
+
+      const filtered = globalData.filter(item => {
+        const matchSchool = (schoolFilter === 'ALL') || (item.schoolName === schoolFilter);
+        const matchGrade = (gradeFilter === 'ALL') || (item.gradeLevel === gradeFilter);
+        const matchRoom = (roomFilter === 'ALL') || (String(item.roomNo) === roomFilter);
+        const matchConsent = (consentFilter === 'ALL') || (item.consent === consentFilter);
+        
+        const matchSearch = (search === '') || 
+          (item.studentName && item.studentName.toLowerCase().includes(search)) || 
+          (item.parentName && item.parentName.toLowerCase().includes(search)) ||
+          (item.phone && item.phone.includes(search));
+
+        return matchSchool && matchGrade && matchRoom && matchConsent && matchSearch;
+      });
+
+      document.getElementById('filteredCountBadge').innerText = `${filtered.length} รายการ`;
+
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="9" class="text-center py-8 text-slate-400">
+              <i class="fa-solid fa-inbox text-3xl mb-2"></i>
+              <p>ไม่พบข้อมูลตรงตามเงื่อนไขตัวกรองที่ระบุ</p>
+            </td>
+          </tr>`;
+        return;
+      }
+
+      filtered.forEach((item, index) => {
+        const isConsent = item.consent === 'ยินยอม';
+        const badgeClass = isConsent 
+          ? 'bg-emerald-100 text-emerald-800 border border-emerald-200 badge-consent' 
+          : 'bg-rose-100 text-rose-800 border border-rose-200 badge-refuse';
+        const icon = isConsent ? 'fa-check-circle' : 'fa-times-circle';
+
+        const rowHtml = `
+          <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+            <td class="px-4 py-3 text-center font-medium text-slate-500">${index + 1}</td>
+            <td class="px-4 py-3 text-xs text-slate-500">${formatThaiDateTime(item.timestamp)}</td>
+            <td class="px-4 py-3 font-semibold text-slate-800">${item.studentName}</td>
+            <td class="px-4 py-3 text-slate-700">${item.schoolName}</td>
+            <td class="px-4 py-3 text-center font-medium">${item.gradeLevel} / ${item.roomNo}</td>
+            <td class="px-4 py-3 text-slate-700">${item.parentName}</td>
+            <td class="px-4 py-3 text-slate-600 font-mono text-xs">${item.phone}</td>
+            <td class="px-4 py-3 text-center">
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${badgeClass}">
+                <i class="fa-solid ${icon}"></i> ${item.consent}
+              </span>
+            </td>
+            <td class="px-4 py-3 text-slate-500 text-xs">${item.note || '-'}</td>
+          </tr>
+        `;
+        tbody.insertAdjacentHTML('beforeend', rowHtml);
+      });
+    }
+  </script>
+
+</body>
+</html>
