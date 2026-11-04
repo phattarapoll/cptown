@@ -624,7 +624,7 @@
             let iconClass = "fa-user-injured";
 
             // จัดการเฉพาะช่วงเวลาสุดท้ายจริงๆ (เช่น คิวสุดท้ายที่เป็นรอบปิดบริการรอบถัดไป แต่ช่วง 10:30-11:00 ให้ทำตัวเหมือนคิว 1 และ 2)
-            const isLastSlot = appt.isLastQueue && !(appt.timeSlot && appt.timeSlot.includes('10:30'));
+            const isLastSlot = appt.isLastQueue && !(appt.timeSlot && appt.timeSlot.includes('11:00'));
 
             if (isLastSlot) {
                 statusText = "พักบริการหลังจากคิวนี้";
