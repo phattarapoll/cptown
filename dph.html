@@ -613,7 +613,7 @@
         if (type === 'current') {
             let waitMinutes = 20;
             if (appt.queueIndex === 0 || appt.queueIndex === 1) waitMinutes = 40;
-            else if (appt.queueIndex === 2) waitMinutes = 15;
+            else if (appt.queueIndex === 2) waitMinutes = 20;
 
             const timeLimitLater = new Date(apptTimestamp.getTime() + waitMinutes * 60000);
             const isOvertime = now >= timeLimitLater;
@@ -623,19 +623,18 @@
             let borderColor = "";
             let iconClass = "fa-user-injured";
 
-            // จัดการเฉพาะช่วงเวลาสุดท้ายจริงๆ (เช่น คิวสุดท้ายที่เป็นรอบปิดบริการรอบถัดไป แต่ช่วง 10:30-11:00 ให้ทำตัวเหมือนคิว 1 และ 2)
-            const isLastSlot = appt.isLastQueue && !(appt.timeSlot && appt.timeSlot.includes('11:00'));
+            const isRestTime = (appt.timeSlot && appt.timeSlot.includes('11:00')) || appt.isLastQueue;
 
-            if (isLastSlot) {
-                statusText = "พักบริการหลังจากคิวนี้";
-                badgeColor = "bg-purple-300 text-black";
-                borderColor = "border-purple-500";
-                iconClass = "fas fa-coffee";
-            } else {
-                statusText = isOvertime ? "คิวถัดไปเตรียมติดต่อห้องบริการ" : "คิวปัจจุบัน";
-                badgeColor = isOvertime ? "bg-amber-300 text-black animate-pulse" : "bg-blue-300 text-black";
-                borderColor = isOvertime ? "border-amber-500" : "border-blue-500";
-            }
+            if (isRestTime) {
+				statusText = "พักบริการหลังจากคิวนี้";
+				badgeColor = "bg-purple-300 text-black";
+				borderColor = "border-purple-500";
+				iconClass = "fas fa-coffee";
+			} else {
+				statusText = isOvertime ? "คิวถัดไปเตรียมติดต่อห้องบริการ" : "คิวปัจจุบัน";
+				badgeColor = isOvertime ? "bg-amber-300 text-black animate-pulse" : "bg-blue-300 text-black";
+				borderColor = isOvertime ? "border-amber-500" : "border-blue-500";
+			}
 
             card.className = `p-5 rounded-2xl bg-white border-2 ${borderColor} shadow-md flex flex-col items-center relative overflow-hidden w-full mb-3 pt-6`;
             card.innerHTML = `

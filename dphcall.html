@@ -806,10 +806,9 @@
             let borderColor = "";
             let iconClass = "fa-user-injured";
 
-            // จัดการเฉพาะช่วงเวลาสุดท้ายจริงๆ (เช่น คิวสุดท้ายที่เป็นรอบปิดบริการรอบถัดไป แต่ช่วง 10:30-11:00 ให้ทำตัวเหมือนคิว 1 และ 2)
-            const isLastSlot = appt.isLastQueue && !(appt.timeSlot && appt.timeSlot.includes('10:30'));
+            const isRestTime = (appt.timeSlot && appt.timeSlot.includes('11:00')) || appt.isLastQueue;
 
-            if (isLastSlot) {
+            if (isRestTime) {
                 statusText = "พักบริการหลังจากคิวนี้";
                 badgeColor = "bg-purple-300 text-black";
                 borderColor = "border-purple-500";
@@ -819,7 +818,7 @@
                 badgeColor = isOvertime ? "bg-amber-300 text-black animate-pulse" : "bg-blue-300 text-black";
                 borderColor = isOvertime ? "border-amber-500" : "border-blue-500";
             }
-
+            
             card.className = `p-5 rounded-2xl bg-white border-2 ${borderColor} shadow-md flex flex-col items-center relative overflow-hidden w-full mb-3 pt-6`;
             card.innerHTML = `
                 <div class="absolute top-0 left-1/2 -translate-x-1/2">
@@ -839,6 +838,10 @@
                             <p class="text-xs text-gray-500"><i class="far fa-clock mr-1"></i>${appt.timeSlot}</p>
                         </div>
                     </div>
+                    <!-- ปุ่มเรียกชื่อสำหรับคิวปัจจุบัน -->
+                    <button onclick="announceQueue('${appt.patientName}', this)" class="btn-gold py-2 px-4 rounded-xl text-sm flex items-center gap-2 shrink-0 cursor-pointer hover:scale-105 transition-transform">
+                        <i class="fas fa-bullhorn"></i> เรียกคิว
+                    </button>
                 </div>
             `;
         } else {
@@ -870,8 +873,12 @@
                     <p class="text-[11px] text-gray-500 mt-0.5"><i class="far fa-clock mr-1"></i>${appt.timeSlot}</p>
                 </div>
 
-                <div class="flex items-center justify-center w-full pt-2 border-t border-gray-100 text-[11px]">
+                <div class="flex flex-col items-center justify-center w-full pt-2 border-t border-gray-100 gap-2 text-[11px]">
                     ${timeRemainingHtml}
+                    <!-- ปุ่มเรียกชื่อสำหรับคิวล่วงหน้า/คิวถัดๆ ไป -->
+                    <button onclick="announceQueue('${appt.patientName}', this)" class="btn-gold py-1 px-3 rounded-lg text-xs flex items-center gap-1 w-full justify-center">
+                        <i class="fas fa-bullhorn text-[10px]"></i> เรียกคิว
+                    </button>
                 </div>
             `;
         }
