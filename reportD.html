@@ -11,6 +11,7 @@
             --plan-color: #3b82f6;
             --active-color: #a855f7;
             --success-color: #10b981;
+            --fluoride-color: #ec4899; /* เพิ่มสีเฉพาะสำหรับงานฟลูออไรด์ */
             --idle-color: #94a3b8;
             --glass: rgba(255, 255, 255, 0.9);
         }
@@ -24,6 +25,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            position: relative;
         }
 
         @keyframes slideUp {
@@ -97,6 +99,7 @@
         .step-1 .step-icon { background: var(--plan-color); }
         .step-2 .step-icon { background: var(--active-color); }
         .step-3 .step-icon { background: var(--success-color); }
+        .step-4 .step-icon { background: var(--fluoride-color); }
 
         .btn {
             display: block;
@@ -151,12 +154,29 @@
             font-family: 'Sarabun', sans-serif;
             box-sizing: border-box;
         }
+
+        /* ปุ่มดวงตาซ่อนอยู่มุมซ้ายล่าง */
+        .hidden-admin-btn {
+            position: fixed;
+            bottom: 12px;
+            left: 12px;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            cursor: pointer;
+            opacity: 0.3;
+            transition: opacity 0.3s ease;
+            z-index: 999;
+        }
+
+        .hidden-admin-btn:hover {
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <img src="assets\images\tm.png" alt="Logo" class="logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3467/3467739.png'">
+    <img src="assets/images/tm.png" alt="Logo" class="logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3467/3467739.png'">
     <h1 style="color: #1e293b; margin-top: 15px;">ตรวจคัดกรองสุขภาพช่องปากในนักเรียน</h1>
     <label>งานทันตสาธารณสุข ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร(ตึกเก่า)</label>
 </header>
@@ -178,6 +198,11 @@
         <div class="step step-3" id="st-3">
             <div class="step-icon"><i class="fas fa-check-double"></i></div>
             <div style="font-weight: 800; color: var(--success-color);">เสร็จสิ้นกระบวนการ ปี <span class="current-year"></span></div>
+        </div>
+        <!-- ใส่ไอคอนรูปฟัน (fa-tooth) ใน Step 4 -->
+        <div class="step step-4" id="st-4">
+            <div class="step-icon"><i class="fas fa-tooth"></i></div>
+            <div style="font-weight: 800; color: var(--fluoride-color);">ออกหน่วยบริการทาฟลูออไรด์วานิชเพื่อป้องกันฟันผุ ปี <span class="current-year"></span></div>
         </div>
     </div>
 
@@ -201,8 +226,6 @@
     <a href="https://cptown.6te.net/" class="btn btn-sub"><i class="fas fa-globe"></i> เว็บไซต์งานทันตสาธารณสุข</a>
 
     <div style="text-align: center; margin-top: 20px;">
-        <small id="login-btn" onclick="showLogin()" style="cursor:pointer; color: #94a3b8;">จัดการข้อมูล (Admin)</small>
-        
         <div id="login-form" style="display:none; margin-top:15px;">
             <input type="password" id="pass" placeholder="รหัสผ่าน" style="width:200px">
             <button onclick="doLogin()" class="btn-blink" style="padding:10px 20px; border-radius:10px; border:none; cursor:pointer; width:auto; display:inline-block;">ตกลง</button>
@@ -216,10 +239,16 @@
                 <option value="1">วางแผนการออกตรวจ</option>
                 <option value="2">กำลังออกหน่วยคัดกรอง</option>
                 <option value="3">เสร็จสิ้นกระบวนการ</option>
+                <option value="4">ออกหน่วยบริการทาฟลูออไรด์วานิชเพื่อป้องกันฟันผุ</option>
             </select>
             <button onclick="document.getElementById('admin-panel').style.display='none'; document.getElementById('login-btn').style.display='inline';" class="btn-sub" style="margin-top:15px; width:100%; font-size:0.9rem">ออกจากโหมด Admin</button>
         </div>
     </div>
+</div>
+
+<!-- สัญลักษณ์ดวงตาเล็กๆ มุมซ้ายล่างสุดสำหรับเข้าโหมด Admin -->
+<div id="login-btn" class="hidden-admin-btn" onclick="showLogin()" title="Admin Login">
+    <i class="fas fa-eye"></i>
 </div>
 
 <script>
@@ -261,7 +290,7 @@
     }
 
     function updateUI(status) {
-        for(let i=0; i<=3; i++) {
+        for(let i=0; i<=4; i++) {
             const el = document.getElementById('st-'+i);
             if(el) {
                 i == status ? el.classList.add('active') : el.classList.remove('active');
