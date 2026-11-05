@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>แบบแจ้งความประสงค์รับบริการทันตกรรม - เทศบาลเมืองชุมพร</title>
-  <!-- Google Fonts & Font Awesome Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
@@ -13,386 +12,208 @@
     
     body { 
       background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); 
-      margin: 0; 
-      padding: 25px 15px; 
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-      overflow-x: hidden;
+      margin: 0; padding: 25px 15px; min-height: 100vh;
+      display: flex; justify-content: center; align-items: center;
+      position: relative; overflow-x: hidden;
     }
 
-    /* ภาพพื้นหลังลายน้ำตราเทศบาล */
     body::before {
-      content: "";
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: url('image/tm.png');
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: 950px;
-      opacity: 0.12;
-      z-index: -1;
-      pointer-events: none;
+      content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background-repeat: no-repeat; background-position: center; background-size: 950px;
+      opacity: 0.12; z-index: -1; pointer-events: none;
     }
 
-    /* ปุ่มโทรโข่งด้านขวาสุดตรงกลาง + ข้อความใต้ปุ่ม */
     .megaphone-container {
-      position: fixed;
-      right: 20px;
-      top: 50%;
-      transform: translateY(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 100;
+      position: fixed; right: 20px; top: 50%; transform: translateY(-50%);
+      display: flex; flex-direction: column; align-items: center; z-index: 100;
     }
-
     .megaphone-btn {
       background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-      color: white;
-      border: none;
-      width: 55px;
-      height: 55px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 24px;
-      box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
-      animation: pulse 1.8s infinite;
-      transition: transform 0.2s;
+      color: white; border: none; width: 55px; height: 55px; border-radius: 50%;
+      cursor: pointer; display: flex; justify-content: center; align-items: center;
+      font-size: 24px; box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+      animation: pulse 1.8s infinite; transition: transform 0.2s;
     }
-
-    .megaphone-btn:hover {
-      transform: scale(1.1);
-    }
-
+    .megaphone-btn:hover { transform: scale(1.1); }
     .megaphone-text {
-      margin-top: 6px;
-      background: #ffffff;
-      color: #ea580c;
-      padding: 5px 10px;
-      border-radius: 12px;
-      font-size: 11px;
-      font-weight: 700;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      white-space: nowrap;
-      border: 1px solid #ffedd5;
+      margin-top: 6px; background: #ffffff; color: #ea580c;
+      padding: 5px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1); white-space: nowrap; border: 1px solid #ffedd5;
     }
-
     @keyframes pulse {
       0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.6); }
       70% { transform: scale(1.06); box-shadow: 0 0 0 12px rgba(249, 115, 22, 0); }
       100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
     }
 
-    /* แผงข้อความสไลด์ออกมาจากขอบขวา (Side Drawer) */
     .knowledge-drawer {
-      position: fixed;
-      top: 0;
-      right: -400px;
-      width: 360px;
-      height: 100%;
-      background: #ffffff;
-      box-shadow: -8px 0 30px rgba(0, 0, 0, 0.15);
-      z-index: 200;
-      padding: 25px 20px;
-      overflow-y: auto;
+      position: fixed; top: 0; right: -400px; width: 360px; height: 100%;
+      background: #ffffff; box-shadow: -8px 0 30px rgba(0, 0, 0, 0.15);
+      z-index: 200; padding: 25px 20px; overflow-y: auto;
       transition: right 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-      border-top-left-radius: 24px;
-      border-bottom-left-radius: 24px;
+      border-top-left-radius: 24px; border-bottom-left-radius: 24px;
     }
-
-    .knowledge-drawer.open {
-      right: 0;
-    }
-
+    .knowledge-drawer.open { right: 0; }
     .drawer-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 2px solid #f1f5f9;
-      padding-bottom: 12px;
-      margin-bottom: 20px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 2px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 20px;
     }
-
-    .drawer-header h3 {
-      margin: 0;
-      color: #0284c7;
-      font-size: 18px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
+    .drawer-header h3 { margin: 0; color: #0284c7; font-size: 18px; display: flex; align-items: center; gap: 8px; }
     .close-btn {
-      background: #f1f5f9;
-      border: none;
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      font-size: 16px;
-      color: #64748b;
-      cursor: pointer;
-      transition: all 0.2s;
+      background: #f1f5f9; border: none; width: 34px; height: 34px;
+      border-radius: 50%; font-size: 16px; color: #64748b; cursor: pointer; transition: all 0.2s;
     }
-
-    .close-btn:hover {
-      background: #e2e8f0;
-      color: #0f172a;
-    }
-
+    .close-btn:hover { background: #e2e8f0; color: #0f172a; }
     .info-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      margin-bottom: 16px;
-      background: #f8fafc;
-      padding: 14px;
-      border-radius: 14px;
-      border-left: 4px solid #0284c7;
+      display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px;
+      background: #f8fafc; padding: 14px; border-radius: 14px; border-left: 4px solid #0284c7;
     }
-
-    .info-icon {
-      font-size: 20px;
-      color: #0284c7;
-      margin-top: 2px;
-    }
-
-    .info-content h5 {
-      margin: 0 0 4px 0;
-      font-size: 15px;
-      color: #0f172a;
-    }
-
-    .info-content p {
-      margin: 0;
-      font-size: 13px;
-      color: #475569;
-      line-height: 1.5;
-    }
-
-    .info-item.warning {
-      background: #fff7ed;
-      border-left-color: #f97316;
-    }
-
-    .info-icon.warning-icon {
-      color: #ea580c;
-    }
+    .info-icon { font-size: 20px; color: #0284c7; margin-top: 2px; }
+    .info-content h5 { margin: 0 0 4px 0; font-size: 15px; color: #0f172a; }
+    .info-content p { margin: 0; font-size: 13px; color: #475569; line-height: 1.5; }
+    .info-item.warning { background: #fff7ed; border-left-color: #f97316; }
+    .info-icon.warning-icon { color: #ea580c; }
 
     .overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(15, 23, 42, 0.4);
-      z-index: 150;
-      display: none;
-      backdrop-filter: blur(3px);
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.4); z-index: 150; display: none; backdrop-filter: blur(3px);
     }
+    .overlay.show { display: block; }
 
-    .overlay.show {
-      display: block;
-    }
-
-    /* การ์ดฟอร์มหลักแบบโปร่งใสสวยงาม (Glassmorphism) */
     .card { 
-      background: rgba(255, 255, 255, 0.08);
-      padding: 30px 25px; 
-      border-radius: 20px; 
-      max-width: 500px; 
-      width: 100%; 
+      background: rgba(255, 255, 255, 0.12);
+      padding: 30px 25px; border-radius: 20px; max-width: 520px; width: 100%; 
       box-shadow: 0 10px 30px rgba(0, 102, 204, 0.15); 
-      animation: fadeIn 0.6s ease-out;
-      backdrop-filter: blur(6px); /* ช่วยเบลอภาพพื้นหลังเบาๆ เพื่อให้ตัวหนังสือยังคงอ่านง่ายและชัดเจน */
-      border: 1px solid rgba(255, 255, 255, 0.6);
+      animation: fadeIn 0.6s ease-out; backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.6); max-height: 90vh; overflow-y: auto;
     }
-
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(15px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .header-title { 
-      color: #0369a1; 
-      text-align: center; 
-      margin: 0 0 5px 0; 
-      font-size: 24px;
-      font-weight: 700;
+    .header-title { color: #0369a1; text-align: center; margin: 0 0 5px 0; font-size: 24px; font-weight: 700; }
+    p.subtitle { text-align: center; color: #475569; font-size: 14px; margin-top: 0; margin-bottom: 20px; line-height: 1.5; }
+
+    /* ปุ่มสลับโหมดหลักด้านบน */
+    .mode-switch-container {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 22px;
+      background: #e2e8f0; padding: 4px; border-radius: 14px;
     }
-    p.subtitle { 
-      text-align: center; 
-      color: #475569; 
-      font-size: 14px; 
-      margin-top: 0; 
-      margin-bottom: 25px; 
-      line-height: 1.5;
+    .mode-tab {
+      padding: 10px; text-align: center; border-radius: 10px; font-weight: 700; font-size: 14px;
+      cursor: pointer; color: #64748b; transition: all 0.2s; border: none; background: transparent;
+    }
+    .mode-tab.active {
+      background: #ffffff; color: #0284c7; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
     .form-group { margin-bottom: 18px; }
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
     label { font-weight: 600; display: block; margin-bottom: 6px; color: #334155; font-size: 14px; }
     input[type="text"], input[type="tel"], select, textarea { 
-      width: 100%; 
-      padding: 12px 14px; 
-      border: 1.5px solid #cbd5e1; 
-      border-radius: 12px; 
-      box-sizing: border-box; 
-      font-size: 15px; 
-      transition: all 0.3s ease;
-      background: rgba(255, 255, 255, 0.9);
+      width: 100%; padding: 12px 14px; border: 1.5px solid #cbd5e1; 
+      border-radius: 12px; box-sizing: border-box; font-size: 15px; 
+      transition: all 0.3s ease; background: rgba(255, 255, 255, 0.95);
     }
     input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: #0284c7;
-      background: #ffffff;
+      outline: none; border-color: #0284c7; background: #ffffff;
       box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.12);
     }
 
-    /* ปุ่มตัวเลือก อนุญาต / ไม่อนุญาต */
-    .consent-options {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-      margin-top: 8px;
+    /* ปุ่มเลือก ด.ช. / ด.ญ. (สีเทาเมื่อไม่ถูกเลือก) */
+    .gender-select-group {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px;
+    }
+    .gender-btn { position: relative; }
+    .gender-btn input[type="radio"] { position: absolute; opacity: 0; cursor: pointer; }
+    .gender-label {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 10px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 14px;
+      background: #e2e8f0; color: #64748b; border: 1.5px solid #cbd5e1; transition: all 0.2s;
+    }
+    .gender-btn input[type="radio"]:checked + .gender-label {
+      background: #0284c7; color: white; border-color: #0369a1;
+      box-shadow: 0 3px 10px rgba(2, 132, 199, 0.3);
     }
 
+    /* ส่วนหัวข้อชื่อนักเรียน พร้อมปุ่มเพิ่ม (+) เฉพาะโหมดอาจารย์ */
+    .student-header-flex {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;
+    }
+    .add-student-btn {
+      background: #0284c7; color: white; border: none; width: 30px; height: 30px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 14px; transition: all 0.2s; box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);
+    }
+    .add-student-btn:hover { background: #0369a1; transform: scale(1.08); }
+
+    .student-row-box {
+      background: rgba(255, 255, 255, 0.6); padding: 12px; border-radius: 14px;
+      border: 1.5px solid #e2e8f0; margin-bottom: 10px; position: relative;
+    }
+    .student-input-flex { display: flex; gap: 8px; align-items: center; margin-top: 6px; }
+
+    /* ปุ่มตัวเลือก อนุญาต / ไม่อนุญาต (สีเทาเมื่อไม่ได้เลือก) */
+    .consent-options { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 8px; }
     .consent-btn { position: relative; }
     .consent-btn input[type="radio"] { position: absolute; opacity: 0; cursor: pointer; }
-
     .consent-label {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 16px 10px;
-      border-radius: 14px;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 15px;
-      color: white;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 14px 10px; border-radius: 14px; cursor: pointer; font-weight: 700; font-size: 14px;
+      background: #e2e8f0; color: #64748b; border: 1.5px solid #cbd5e1; transition: all 0.2s ease;
       text-align: center;
     }
-
-    .consent-btn.green .consent-label { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
-    .consent-btn.red .consent-label { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
-
-    .consent-btn.green input:checked + .consent-label {
-      transform: scale(1.02);
-      box-shadow: 0 0 0 4px #a7f3d0, 0 6px 15px rgba(16, 185, 129, 0.3);
+    .consent-btn.green input[type="radio"]:checked + .consent-label {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border-color: #059669;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
     }
-
-    .consent-btn.red input:checked + .consent-label {
-      transform: scale(1.02);
-      box-shadow: 0 0 0 4px #fecaca, 0 6px 15px rgba(239, 68, 68, 0.3);
+    .consent-btn.red input[type="radio"]:checked + .consent-label {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border-color: #dc2626;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
     }
+    .consent-label i { font-size: 20px; margin-bottom: 4px; }
 
-    .consent-label i { font-size: 22px; margin-bottom: 6px; }
-
-    /* ปุ่มส่งฟอร์ม */
     button[type="submit"] { 
       background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); 
-      color: white; 
-      border: none; 
-      padding: 14px; 
-      width: 100%; 
-      border-radius: 12px; 
-      font-size: 16px; 
-      font-weight: 700; 
-      cursor: pointer; 
-      margin-top: 10px;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3);
+      color: white; border: none; padding: 14px; width: 100%; border-radius: 12px; 
+      font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 10px;
+      transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3);
     }
-    button[type="submit"]:hover { 
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.4);
-    }
-    button[type="submit"]:disabled { 
-      background: #94a3b8; 
-      cursor: not-allowed; 
-      transform: none;
-      box-shadow: none;
-    }
+    button[type="submit"]:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(2, 132, 199, 0.4); }
+    button[type="submit"]:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
 
-    /* ปุ่มลิงก์ภายนอกเพิ่มเติม */
-    .external-links {
-      display: flex;
-      gap: 10px;
-      margin-top: 15px;
-    }
+    .external-links { display: flex; gap: 10px; margin-top: 15px; }
     .external-btn {
-      flex: 1;
-      background: #ffffff;
-      color: #0284c7;
-      text-align: center;
-      padding: 10px 12px;
-      border-radius: 12px;
-      font-size: 13px;
-      font-weight: 600;
-      text-decoration: none;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      border: 1.5px solid #e0f2fe;
-      transition: all 0.2s;
+      flex: 1; background: #ffffff; color: #0284c7; text-align: center; padding: 10px 12px;
+      border-radius: 12px; font-size: 13px; font-weight: 600; text-decoration: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center;
+      gap: 6px; border: 1.5px solid #e0f2fe; transition: all 0.2s;
     }
-    .external-btn:hover {
-      background: #f0f9ff;
-      border-color: #bae6fd;
-      transform: translateY(-1px);
-    }
+    .external-btn:hover { background: #f0f9ff; border-color: #bae6fd; }
 
-    #message { 
-      display: none; 
-      margin-top: 20px; 
-      padding: 12px; 
-      border-radius: 12px; 
-      text-align: center; 
-      font-weight: 600; 
-      animation: fadeIn 0.4s ease;
-    }
+    #message { display: none; margin-top: 20px; padding: 12px; border-radius: 12px; text-align: center; font-weight: 600; }
     .success { background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
     .error { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
   </style>
 </head>
 <body>
 
-  <!-- ฉากหลังเมื่อเปิดเมนูความรู้ -->
   <div id="overlay" class="overlay" onclick="toggleKnowledge()"></div>
 
-  <!-- ปุ่มโทรโข่งขวาสุดตรงกลาง -->
   <div class="megaphone-container">
     <button type="button" class="megaphone-btn" onclick="toggleKnowledge()" title="ดูประโยชน์และข้อควรระวัง">
       <i class="fa-solid fa-bullhorn"></i>
     </button>
-    <div class="megaphone-text">ข้อดี & ข้อเสีย คลิิก</div>
+    <div class="megaphone-text">ข้อดี & ข้อเสีย</div>
   </div>
 
-  <!-- แผงข้อความความรู้สไลด์ขวา -->
   <div id="knowledgeDrawer" class="knowledge-drawer">
     <div class="drawer-header">
       <h3><i class="fa-solid fa-tooth"></i> ข้อมูลฟลูออไรด์วานิช</h3>
       <button type="button" class="close-btn" onclick="toggleKnowledge()"><i class="fa-solid fa-xmark"></i></button>
     </div>
-
     <!-- ส่วนข้อดี / ประโยชน์ -->
     <div class="info-item">
       <div class="info-icon"><i class="fa-solid fa-shield-halved"></i></div>
@@ -440,29 +261,52 @@
         <p>หากเด็กมีรอยฟันผุอยู่เดิม ฟลูออไรด์จะเข้าไปยับยั้งทำให้รอยผุแข็งขึ้นและเปลี่ยนเป็นสีดำ/น้ำตาล ซึ่งเป็นสัญญาณว่า<strong>ฟันผุหยุดลุกลามแล้ว</strong></p>
       </div>
     </div>
-
-    <div class="info-item warning">
-      <div class="info-icon warning-icon"><i class="fa-solid fa-utensils"></i></div>
-      <div class="info-content">
-        <h5>ข้อปฏิบัติหลังทาทันที</h5>
-        <p>• งดอาหารและน้ำเปล่าอย่างน้อย <strong>30 นาที</strong><br>• งดอาหารแข็ง กรอบ ร้อน หรือเหนียวอย่างน้อย <strong>4 ชั่วโมง</strong><br>• แปรงฟันได้ตามปกติเมื่อกลับถึงบ้าน</p>
-      </div>
-    </div>
   </div>
   
-  <!-- การ์ดฟอร์มหลัก -->
   <div class="card">
     <h2 class="header-title">แบบแจ้งความประสงค์</h2>
     <p class="subtitle">รับบริการตรวจสุขภาพช่องปากและทาฟลูออไรด์วานิช<br>งานทันตสาธารณสุข เทศบาลเมืองชุมพร</p>
 
+    <!-- ปุ่มเลือกสลับโหมดด้านบน -->
+    <div class="mode-switch-container">
+      <button type="button" id="tabParent" class="mode-tab active" onclick="switchMode('parent')">
+        <i class="fa-solid fa-user-shield"></i> ผู้ปกครอง
+      </button>
+      <button type="button" id="tabTeacher" class="mode-tab" onclick="switchMode('teacher')">
+        <i class="fa-solid fa-chalkboard-user"></i> อาจารย์ที่ปรึกษา
+      </button>
+    </div>
+
     <form id="consentForm">
-      <!-- 1. ชื่อ-นามสกุล นักเรียน -->
+      <!-- ส่วนแสดงรายชื่อนักเรียน -->
       <div class="form-group">
-        <label for="studentName"><i class="fa-solid fa-child"></i> ชื่อ-นามสกุล นักเรียน *</label>
-        <input type="text" id="studentName" name="studentName" required placeholder="ด.ช. / ด.ญ. รักฟัน ดูแลช่องปาก">
+        <div class="student-header-flex">
+          <label><i class="fa-solid fa-child"></i> ชื่อ-นามสกุล นักเรียน *</label>
+          <!-- ปุ่ม (+) จะแสดงเฉพาะตอนอยู่โหมดอาจารย์ -->
+          <button type="button" id="addStudentBtn" class="add-student-btn" onclick="addSingleStudentRow()" title="เพิ่มรายชื่อนักเรียน" style="display: none;">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+
+        <div id="studentListContainer">
+          <!-- แถวเริ่มต้น -->
+          <div class="student-row-box" id="defaultStudentRow">
+            <div class="gender-select-group">
+              <div class="gender-btn">
+                <input type="radio" id="boy_0" name="gender_0" value="ด.ช." required checked>
+                <label for="boy_0" class="gender-label"><i class="fa-solid fa-mars text-blue-500"></i> ด.ช.</label>
+              </div>
+              <div class="gender-btn">
+                <input type="radio" id="girl_0" name="gender_0" value="ด.ญ.">
+                <label for="girl_0" class="gender-label"><i class="fa-solid fa-venus text-pink-500"></i> ด.ญ.</label>
+              </div>
+            </div>
+            <input type="text" name="studentName" required placeholder="พิมพ์เฉพาะชื่อ-นามสกุล">
+          </div>
+        </div>
       </div>
 
-      <!-- 2. โรงเรียน -->
+      <!-- โรงเรียน -->
       <div class="form-group">
         <label for="schoolName"><i class="fa-solid fa-school"></i> โรงเรียน *</label>
         <select id="schoolName" name="schoolName" required>
@@ -474,7 +318,7 @@
         </select>
       </div>
 
-      <!-- 3. ชั้น และ ห้อง -->
+      <!-- ชั้น และ ห้อง -->
       <div class="form-row">
         <div class="form-group">
           <label for="gradeLevel"><i class="fa-solid fa-layer-group"></i> ชั้น *</label>
@@ -492,58 +336,46 @@
           <select id="roomNo" name="roomNo" required>
             <option value="" disabled selected>-- เลือกห้อง --</option>
             <option value="ห้องรวม">ห้องรวม</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
+            <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
           </select>
         </div>
       </div>
 
-      <!-- 4. ชื่อ-นามสกุล ผู้ปกครอง -->
-      <div class="form-group">
-        <label for="parentName"><i class="fa-solid fa-user-group"></i> ชื่อ-นามสกุล ผู้ปกครอง *</label>
-        <input type="text" id="parentName" name="parentName" required placeholder="นาย / นาง / นางสาว...">
+      <!-- ส่วนเปลี่ยนฟิลด์ (ผู้ปกครอง / อาจารย์ที่ปรึกษา) -->
+      <div id="contactPersonSection">
+        <div class="form-group">
+          <label for="parentName"><i class="fa-solid fa-user-group"></i> ชื่อ-นามสกุล ผู้ปกครอง *</label>
+          <input type="text" id="parentName" name="contactName" required placeholder="นาย / นาง / นางสาว...">
+        </div>
+        <div class="form-group">
+          <label for="phone"><i class="fa-solid fa-phone"></i> เบอร์โทรศัพท์ ผู้ปกครอง *</label>
+          <input type="tel" id="phone" name="phone" required placeholder="08X-XXX-XXXX">
+        </div>
       </div>
 
-      <!-- 5. เบอร์โทรติดต่อ -->
+      <!-- ความประสงค์ -->
       <div class="form-group">
-        <label for="phone"><i class="fa-solid fa-phone"></i> เบอร์โทรศัพท์ติดต่อ *</label>
-        <input type="tel" id="phone" name="phone" required placeholder="08X-XXX-XXXX">
-      </div>
-
-      <!-- 6. ปุ่มความประสงค์ -->
-      <div class="form-group">
-        <label><i class="fa-solid fa-clipboard-check"></i> ความประสงค์ของผู้ปกครอง *</label>
+        <label><i class="fa-solid fa-clipboard-check"></i> ความประสงค์ *</label>
         <div class="consent-options">
           <div class="consent-btn green">
             <input type="radio" id="agree" name="consent" value="ยินยอม" required>
-            <label for="agree" class="consent-label">
-              <i class="fa-solid fa-circle-check"></i>
-              ยินยอม / อนุญาต
-            </label>
+            <label for="agree" class="consent-label"><i class="fa-solid fa-circle-check"></i> ยินยอม / อนุญาต</label>
           </div>
-
           <div class="consent-btn red">
             <input type="radio" id="disagree" name="consent" value="ไม่ยินยอม">
-            <label for="disagree" class="consent-label">
-              <i class="fa-solid fa-circle-xmark"></i>
-              ไม่อนุญาต
-            </label>
+            <label for="disagree" class="consent-label"><i class="fa-solid fa-circle-xmark"></i> ไม่อนุญาต</label>
           </div>
         </div>
       </div>
 
-      <!-- 7. หมายเหตุ -->
+      <!-- หมายเหตุ -->
       <div class="form-group">
-        <label for="note"><i class="fa-solid fa-pen"></i> หมายเหตุ / โรคประจำตัวเด็ก (ถ้ามี)</label>
-        <textarea id="note" name="note" rows="2" placeholder="เช่น แพ้อาหาร/ยา หรือมีประวัติแพ้สารเคมี"></textarea>
+        <label for="note"><i class="fa-solid fa-pen"></i> หมายเหตุ / โรคประจำตัว (ถ้ามี)</label>
+        <textarea id="note" name="note" rows="2" placeholder="ระบุข้อมูลเพิ่มเติม..."></textarea>
       </div>
 
       <button type="submit" id="submitBtn">บันทึกข้อมูลความประสงค์</button>
 
-      <!-- ปุ่มลิงก์ภายนอกเพิ่มเติม -->
       <div class="external-links">
         <a href="https://phattarapoll.github.io/cptown/workReport/index.html" target="_blank" class="external-btn">
           <i class="fa-solid fa-calendar-days text-sky-600"></i> แผนออกหน่วยบริการ
@@ -561,13 +393,119 @@
   function toggleKnowledge() {
     const drawer = document.getElementById('knowledgeDrawer');
     const overlay = document.getElementById('overlay');
-    
     drawer.classList.toggle('open');
     overlay.classList.toggle('show');
   }
 
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbzxXjM1Ca4LsBfaPfrmOyC1sNQhlu8_VltS-CJyH2xmdO6nSMNuWgBUv2cxlAzZOC5_Ng/exec';
-  
+  // ฟังก์ชันสลับโหมด (ผู้ปกครอง / อาจารย์ที่ปรึกษา)
+  function switchMode(mode) {
+    const tabParent = document.getElementById('tabParent');
+    const tabTeacher = document.getElementById('tabTeacher');
+    const addBtn = document.getElementById('addStudentBtn');
+    const container = document.getElementById('studentListContainer');
+    const contactSection = document.getElementById('contactPersonSection');
+
+    if (mode === 'parent') {
+      tabParent.className = 'mode-tab active';
+      tabTeacher.className = 'mode-tab';
+      addBtn.style.display = 'none'; // ซ่อนปุ่ม + ในโหมดผู้ปกครอง
+
+      // คืนค่าเป็นช่องกรอกคนเดียว
+      container.innerHTML = `
+        <div class="student-row-box" id="defaultStudentRow">
+          <div class="gender-select-group">
+            <div class="gender-btn">
+              <input type="radio" id="boy_0" name="gender_0" value="ด.ช." required checked>
+              <label for="boy_0" class="gender-label"><i class="fa-solid fa-mars text-blue-500"></i> ด.ช.</label>
+            </div>
+            <div class="gender-btn">
+              <input type="radio" id="girl_0" name="gender_0" value="ด.ญ.">
+              <label for="girl_0" class="gender-label"><i class="fa-solid fa-venus text-pink-500"></i> ด.ญ.</label>
+            </div>
+          </div>
+          <input type="text" name="studentName" required placeholder="พิมพ์เฉพาะชื่อ-นามสกุล">
+        </div>
+      `;
+
+      // คืนค่าฟิลด์ผู้ปกครอง
+      contactSection.innerHTML = `
+        <div class="form-group">
+          <label for="parentName"><i class="fa-solid fa-user-group"></i> ชื่อ-นามสกุล ผู้ปกครอง *</label>
+          <input type="text" id="parentName" name="contactName" required placeholder="นาย / นาง / นางสาว...">
+        </div>
+        <div class="form-group">
+          <label for="phone"><i class="fa-solid fa-phone"></i> เบอร์โทรศัพท์ ผู้ปกครอง *</label>
+          <input type="tel" id="phone" name="phone" required placeholder="08X-XXX-XXXX">
+        </div>
+      `;
+
+    } else {
+      tabTeacher.className = 'mode-tab active';
+      tabParent.className = 'mode-tab';
+      addBtn.style.display = 'flex'; // แสดงปุ่ม + เผื่อกดเพิ่มในแท็บ
+
+      // สลับฟิลด์เป็นอาจารย์ที่ปรึกษาทันที
+      contactSection.innerHTML = `
+        <div class="form-group">
+          <label for="teacherName"><i class="fa-solid fa-chalkboard-user"></i> ชื่อ-นามสกุล อาจารย์ที่ปรึกษา *</label>
+          <input type="text" id="teacherName" name="contactName" required placeholder="อ. / คุณครู...">
+        </div>
+        <div class="form-group">
+          <label for="phone"><i class="fa-solid fa-phone"></i> เบอร์โทรศัพท์ อาจารย์ที่ปรึกษา *</label>
+          <input type="tel" id="phone" name="contactPhone" required placeholder="08X-XXX-XXXX">
+        </div>
+      `;
+
+      // ถามทันทีว่ามีกี่คน
+      let countStr = prompt("ต้องการกรอกรายชื่อนักเรียนกี่คนสำหรับห้องนี้?", "5");
+      if (countStr === null) {
+        switchMode('parent'); // ถ้ากด cancel ให้กลับโหมดผู้ปกครอง
+        return;
+      }
+      let count = parseInt(countStr);
+      if (isNaN(count) || count <= 0) count = 1;
+
+      container.innerHTML = '';
+      for (let i = 0; i < count; i++) {
+        appendStudentRow(i);
+      }
+    }
+  }
+
+  // ฟังก์ชันเพิ่มแถวนักเรียน 1 แถว (เมื่อกดปุ่ม + ในโหมดอาจารย์)
+  function addSingleStudentRow() {
+    const container = document.getElementById('studentListContainer');
+    const index = container.children.length;
+    appendStudentRow(index);
+  }
+
+  function appendStudentRow(i) {
+    const container = document.getElementById('studentListContainer');
+    let div = document.createElement('div');
+    div.className = 'student-row-box';
+    div.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+        <span style="font-size: 12px; font-weight: 600; color: #0284c7;">รายชื่อที่ ${i+1}</span>
+        ${container.children.length > 0 ? '<button type="button" onclick="this.closest(\'.student-row-box\').remove()" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 13px;"><i class="fa-solid fa-trash"></i> ลบ</button>' : ''}
+      </div>
+      <div class="gender-select-group">
+        <div class="gender-btn">
+          <input type="radio" id="boy_${i}_${Date.now()}" name="gender_${i}" value="ด.ช." required checked>
+          <label for="boy_${i}_${Date.now()}" class="gender-label"><i class="fa-solid fa-mars text-blue-500"></i> ด.ช.</label>
+        </div>
+        <div class="gender-btn">
+          <input type="radio" id="girl_${i}_${Date.now()}" name="gender_${i}" value="ด.ญ.">
+          <label for="girl_${i}_${Date.now()}" class="gender-label"><i class="fa-solid fa-venus text-pink-500"></i> ด.ญ.</label>
+        </div>
+      </div>
+      <div class="student-input-flex">
+        <input type="text" name="studentName" required placeholder="พิมพ์เฉพาะชื่อ-นามสกุล">
+      </div>
+    `;
+    container.appendChild(div);
+  }
+
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbwsq7qd6kIr3f7DvDfMyaUdKPzxLCXgqqPjiTdf8jWZQxUJlaJC6349xKJD0cKE_5rsAQ/exec'; 
   const form = document.getElementById('consentForm');
   const btn = document.getElementById('submitBtn');
   const msgDiv = document.getElementById('message');
@@ -575,40 +513,54 @@
   form.addEventListener('submit', e => {
     e.preventDefault();
     
+    const rowBoxes = form.querySelectorAll('.student-row-box');
+    let studentFullNames = [];
+
+    rowBoxes.forEach((box, index) => {
+      let genderSelected = box.querySelector('input[type="radio"]:checked');
+      let nameInput = box.querySelector('input[name="studentName"]');
+      if (nameInput && nameInput.value.trim() !== "") {
+        let prefix = genderSelected ? genderSelected.value : "ด.ช.";
+        studentFullNames.push(prefix + " " + nameInput.value.trim());
+      }
+    });
+
+    if (studentFullNames.length === 0) {
+      alert("กรุณากรอกชื่อ-นามสกุลนักเรียนอย่างน้อย 1 คน");
+      return;
+    }
+
     btn.disabled = true;
-    btn.innerText = 'กำลังตรวจสอบข้อมูล...';
+    btn.innerText = 'กำลังบันทึกข้อมูล...';
     msgDiv.style.display = 'none';
 
-    fetch(scriptURL, { 
-      method: 'POST', 
-      body: new FormData(form)
-    })
+    const formData = new FormData(form);
+    formData.delete('studentName');
+    formData.append('studentNames', JSON.stringify(studentFullNames));
+
+    fetch(scriptURL, { method: 'POST', body: formData })
     .then(response => response.json())
-    .then(result => {
-      if (result.status === 'success') {
+    .then(res => {
+      if(res.status === 'success' || !res.status) {
         msgDiv.className = 'success';
-        msgDiv.innerText = '✓ บันทึกข้อมูลความประสงค์เรียบร้อยแล้ว ขอบคุณครับ/ค่ะ';
+        msgDiv.innerText = '✓ บันทึกข้อมูลสำเร็จ ' + studentFullNames.length + ' รายการเรียบร้อยแล้ว ขอบคุณครับ/ค่ะ';
         msgDiv.style.display = 'block';
         form.reset();
-      } else if (result.status === 'duplicate') {
-        msgDiv.className = 'error';
-        msgDiv.innerText = '⚠️ ' + result.message;
-        msgDiv.style.display = 'block';
+        location.reload();
       } else {
         msgDiv.className = 'error';
-        msgDiv.innerText = '✕ เกิดข้อผิดพลาด: ' + (result.message || 'กรุณาลองใหม่อีกครั้ง');
+        msgDiv.innerText = '✕ ' + (res.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
         msgDiv.style.display = 'block';
+        btn.disabled = false;
+        btn.innerText = 'บันทึกข้อมูลความประสงค์';
       }
-      btn.disabled = false;
-      btn.innerText = 'บันทึกข้อมูลความประสงค์';
     })
     .catch(error => {
       msgDiv.className = 'error';
-      msgDiv.innerText = '✕ เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้ง';
+      msgDiv.innerText = '✕ เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย';
       msgDiv.style.display = 'block';
       btn.disabled = false;
       btn.innerText = 'บันทึกข้อมูลความประสงค์';
-      console.error('Error!', error.message);
     });
   });
 </script>
