@@ -554,11 +554,11 @@
 
             window.speechSynthesis.cancel();
             const firstName = getFirstNameOnly(fullName);
-            const textToSpeech = `ห้องตรวจ 2   เชิญ คุณ ${firstName} เตรียมบัตรประชาชน  พร้อมแจ้งข้อมูลการแพ้ยาและ โรคประจำตัว  ขอบคุณครับ`;
+            const textToSpeech = `เชิญ  คุณ ${firstName} เข้ารับบริการ  ณ  ห้องตรวจ 2  ขอบคุณครับ`;
 
             const utterance = new SpeechSynthesisUtterance(textToSpeech);
             utterance.lang = 'th-TH';
-            utterance.rate = 0.9;
+            utterance.rate = 0.86;
             utterance.pitch = 1.0;
 
             if (btnElement) btnElement.classList.add('speaking');
