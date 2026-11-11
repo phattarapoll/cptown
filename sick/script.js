@@ -115,11 +115,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const d = new Date(dateStr);
         if (isNaN(d.getTime())) return false;
 
-        const month = d.getMonth() + 1; // 1-12
-        const day = d.getDate();
-        const year = d.getFullYear();
-
-        // กำหนดรอบปัจจุบันอิงจากวันที่ปัจจุบัน
         const now = new Date();
         const curMonth = now.getMonth() + 1;
         const curYear = now.getFullYear();
@@ -127,15 +122,13 @@ document.addEventListener('DOMContentLoaded', function() {
         let cycleStart, cycleEnd;
 
         if (curMonth >= 10 || curMonth <= 3) {
-            // รอบปัจจุบัน: 1 ตุลาคม ปีที่แล้ว - 31 มีนาคม ปีนี้ (หรือหากอยู่ ม.ค.-มี.ค. คือ ต.ค.ปีก่อนถึง มี.ค.ปีนี้)
             let startYear = curMonth >= 10 ? curYear : curYear - 1;
             let endYear = curMonth >= 10 ? curYear + 1 : curYear;
-            cycleStart = new Date(startYear, 9, 1);   // 1 ต.ค.
-            cycleEnd = new Date(endYear, 2, 31, 23, 59, 59);     // 31 มี.ค.
+            cycleStart = new Date(startYear, 9, 1);   
+            cycleEnd = new Date(endYear, 2, 31, 23, 59, 59);     
         } else {
-            // รอบปัจจุบัน: 1 เมษายน - 30 กันยายน ปีเดียวกัน
-            cycleStart = new Date(curYear, 3, 1);   // 1 เม.ย.
-            cycleEnd = new Date(curYear, 8, 30, 23, 59, 59);     // 30 ก.ย.
+            cycleStart = new Date(curYear, 3, 1);   
+            cycleEnd = new Date(curYear, 8, 30, 23, 59, 59);     
         }
 
         return d >= cycleStart && d <= cycleEnd;
@@ -241,11 +234,144 @@ document.addEventListener('DOMContentLoaded', function() {
                 currentUser = data.user;
                 allLeaveHistory = data.leaveHistory;
                 renderDashboard(data.user, data.leaveHistory);
+                
+                // ตรวจสอบสิทธิ์ Admin และเปิดใช้งานระบบแจ้งเตือนกระพริบ
+                checkAdminAndPendingLeaves(data.user);
             }
         } catch (err) {
             console.error('Failed to fetch user data', err);
         } finally {
             hideLoading();
+        }
+    }
+
+    // --- ระบบตรวจสอบสิทธิ์ Admin และแจ้งเตือนคำขอลา ---
+    async function checkAdminAndPendingLeaves(user) {
+        const adminTrigger = document.getElementById('admin-approval-trigger');
+        if (!adminTrigger) return;
+
+        const isAdmin = user.position && (
+            user.position.includes('ทันตสาธารณสุขอาวุโส') || 
+            user.position.includes('ผู้ดูแลระบบ') ||
+            user.isAdmin === true
+        );
+
+        if (isAdmin) {
+            adminTrigger.classList.remove('hidden');
+            await updateAdminNotificationBadge();
+            setInterval(updateAdminNotificationBadge, 15000);
+        } else {
+            adminTrigger.classList.add('hidden');
+        }
+    }
+
+    async function updateAdminNotificationBadge() {
+        try {
+            const response = await fetch(appsScriptUrl, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `action=getPendingLeaveRequests`
+            });
+            const result = await response.json();
+
+            const adminTrigger = document.getElementById('admin-approval-trigger');
+            const badgeCount = document.getElementById('pending-badge-count');
+
+            if (result.success && result.requests && result.requests.length > 0) {
+                if (adminTrigger) adminTrigger.classList.add('blinking');
+                if (badgeCount) {
+                    badgeCount.style.display = 'inline-block';
+                    badgeCount.textContent = result.requests.length;
+                }
+            } else {
+                if (adminTrigger) adminTrigger.classList.remove('blinking');
+                if (badgeCount) {
+                    badgeCount.style.display = 'none';
+                }
+            }
+        } catch (error) {
+            console.error('Error checking pending leaves:', error);
+        }
+    }
+
+    // --- ฟังก์ชันเปิด/ปิด และจัดการ Modal อนุมัติของ Admin ---
+    window.openAdminApprovalModal = function() {
+        const modal = document.getElementById('admin-approval-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+            fetchAdminPendingRequests();
+        }
+    }
+
+    window.closeAdminApprovalModal = function() {
+        const modal = document.getElementById('admin-approval-modal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    async function fetchAdminPendingRequests() {
+        const tbody = document.getElementById('admin-pending-tbody');
+        if (!tbody) return;
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 20px;">กำลังโหลดข้อมูล...</td></tr>';
+
+        try {
+            const res = await fetch(appsScriptUrl, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'action=getPendingLeaveRequests'
+            });
+            const result = await res.json();
+
+            if (result.success && result.requests && result.requests.length > 0) {
+                tbody.innerHTML = result.requests.map(req => `
+                    <tr style="border-bottom: 1px solid #edf2f7;">
+                        <td style="padding: 12px;"><strong>${req.name}</strong></td>
+                        <td style="padding: 12px;">${req.leaveType} ${req.status === 'รออนุมัติยกเลิก' ? '<br><small style="color:#ef4444;">(ขออนุมัติยกเลิก)</small>' : ''}</td>
+                        <td style="padding: 12px; text-align: center;">${req.duration} วัน</td>
+                        <td style="padding: 12px;">${formatDate(req.startDate)} - ${formatDate(req.endDate)}</td>
+                        <td style="padding: 12px;">${req.reason || '-'}</td>
+                        <td style="padding: 12px; text-align: center;">
+                            <button onclick="processLeaveApproval('${req.leaveId}', 'อนุมัติ')" style="background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-right: 5px;" title="อนุมัติ"><i class="fa-solid fa-check"></i></button>
+                            <button onclick="processLeaveApproval('${req.leaveId}', 'ไม่อนุมัติ')" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;" title="ไม่อนุมัติ"><i class="fa-solid fa-xmark"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 20px; color: #64748b;">ไม่มีรายการคำขอลาที่รออนุมัติในขณะนี้</td></tr>';
+            }
+        } catch (error) {
+            console.error('Error fetching pending leaves:', error);
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: red; padding: 20px;">เกิดข้อผิดพลาดในการเชื่อมต่อ</td></tr>';
+        }
+    }
+
+    window.processLeaveApproval = async function(leaveId, actionType) {
+        if (!confirm(`คุณต้องการ${actionType}คำขอนี้ใช่หรือไม่?`)) return;
+
+        showLoading('กำลังบันทึกข้อมูล', 'กำลังส่งผลการอนุมัติ...');
+        try {
+            const action = actionType === 'อนุมัติ' ? 'approveLeave' : 'rejectLeave';
+            const body = new URLSearchParams({
+                action: action,
+                leaveId: leaveId,
+                approverId: currentUser ? currentUser.id : ''
+            });
+
+            const res = await fetch(appsScriptUrl, { method: 'POST', body });
+            const result = await res.json();
+            hideLoading();
+
+            if (result.success) {
+                alert(result.message);
+                fetchAdminPendingRequests();
+                updateAdminNotificationBadge();
+            } else {
+                alert('เกิดข้อผิดพลาด: ' + (result.message || 'ไม่สามารถดำเนินการได้'));
+            }
+        } catch (error) {
+            hideLoading();
+            alert('เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์');
         }
     }
 
@@ -287,13 +413,11 @@ document.addEventListener('DOMContentLoaded', function() {
             elTotalDur.textContent = sumWorkDurations([dur1, dur2, dur3]);
         }
 
-        // --- กรองและคำนวณวันลาเฉพาะในรอบปัจจุบัน (1 ต.ค. - 31 มี.ค. / 1 เม.ย. - 30 ก.ย.) จากประวัติการลา ---
         let calculatedSickUsed = 0;
         let calculatedVacationUsed = 0;
         let calculatedPersonalUsed = 0;
 
         history.forEach(l => {
-            // พิจารณาเฉพาะรายการที่อนุมัติแล้ว และอยู่ในช่วงรอบวันที่กำหนด
             if (l.status === 'อนุมัติแล้ว' && isDateInCurrentLeaveCycle(l.startDate)) {
                 const dur = parseFloat(l.duration) || 0;
                 if (l.leaveType === 'ลาป่วย') {
@@ -306,14 +430,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // หากต้องการใช้ค่าจากระบบหลังบ้านร่วมด้วย สามารถสลับมาใช้ค่าจาก user object หรือผลรวมที่กรองตามรอบนี้ได้
         const vacationUsed = calculatedVacationUsed > 0 ? calculatedVacationUsed : (parseFloat(user.currentAnnualLeave) || 0);
         const sickUsed = calculatedSickUsed > 0 ? calculatedSickUsed : (parseFloat(user.currentSickLayer || user.currentSickLeave) || 0);
         const personalUsed = calculatedPersonalUsed > 0 ? calculatedPersonalUsed : (parseFloat(user.currentPersonalLeave) || 0);
 
-        // --- คำนวณวันลาพักผ่อนคงเหลือ (หักจากคอลัมน์ J ก่อน แล้วค่อยหักจาก I ตามโจทย์) ---
-        let leaveJ = parseFloat(user.annualLeaveJ) || 0; // วันลาสะสม (คอลัมน์ J)
-        let leaveI = parseFloat(user.annualLeaveI) || 0; // วันลาปกติ (คอลัมน์ I)
+        let leaveJ = parseFloat(user.annualLeaveJ) || 0; 
+        let leaveI = parseFloat(user.annualLeaveI) || 0; 
         let remainingToDeduct = vacationUsed;
 
         if (remainingToDeduct >= leaveJ) {
@@ -340,7 +462,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 	
 	function renderHistory(history) {
-        // คัดลอกและเรียงลำดับจากวันที่ลาใหม่สุด ไปเก่าสุด
         const sortedHistory = [...history].sort((a, b) => {
             const dateA = new Date(a.startDate);
             const dateB = new Date(b.startDate);

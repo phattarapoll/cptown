@@ -9,6 +9,59 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* สไตล์เพิ่มเติมสำหรับปุ่มแจ้งเตือน Admin และอนิเมชั่นกะพริบ */
+        .admin-nav-icon {
+            position: relative;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: 0.3s;
+            margin-right: 10px;
+        }
+        .admin-nav-icon:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        @keyframes pulse-blink {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        .admin-nav-icon.blinking {
+            background: var(--danger, #ef4444) !important;
+            animation: pulse-blink 1.5s infinite;
+        }
+        .badge-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        /* Modal สำหรับ Admin Approval */
+        .admin-modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+    </style>
 </head>
 <body>
 
@@ -25,9 +78,14 @@
                 <i class="fa-solid fa-hospital-user"></i>
                 <span>ระบบวันลาออนไลน์</span>
             </div>
-            <div class="nav-user-info">
+            <div class="nav-user-info" style="display: flex; align-items: center;">
+                <!-- ปุ่มแจ้งเตือนอนุมัติสำหรับ Admin (ซ่อนไว้ก่อนจนกว่าจะตรวจสอบว่าเป็น Admin) -->
+                <button id="admin-approval-trigger" class="admin-nav-icon hidden" title="รายการรออนุมัติวันลา" onclick="openAdminApprovalModal()">
+                    <i class="fa-solid fa-bell"></i>
+                    <span id="pending-badge-count" class="badge-count" style="display: none;">0</span>
+                </button>
                 <span id="nav-user-name"></span>
-                <button onclick="location.reload()" class="logout-btn" title="ออกจากระบบ">
+                <button onclick="location.reload()" class="logout-btn" title="ออกจากระบบ" style="margin-left: 10px;">
                     <i class="fa-solid fa-right-from-bracket"></i>
                 </button>
             </div>
@@ -49,21 +107,18 @@
 				<div class="glass-card work-info">
                     <h3><i class="fa-solid fa-briefcase"></i> ข้อมูลการทำงาน</h3>
                     
-                    <!-- ช่วงที่ 1 -->
                     <div style="margin-bottom: 8px; border-bottom: 1px dashed #e0e0e0; padding-bottom: 6px;">
                         <div class="work-row"><span>เริ่ม1:</span> <strong id="work-start-date-1"></strong></div>
                         <div class="work-row"><span>ออก1:</span> <strong id="work-end-date-1"></strong></div>
                         <div class="work-row" style="font-size: 0.9rem; color: #555;"><span>ระยะเวลา:</span> <strong id="work-duration-1" style="color: var(--primary);"></strong></div>
                     </div>
 
-                    <!-- ช่วงที่ 2 (จะแสดงเมื่อมีข้อมูล) -->
                     <div style="margin-bottom: 8px; border-bottom: 1px dashed #e0e0e0; padding-bottom: 6px;">
                         <div class="work-row"><span>เริ่ม2:</span> <strong id="work-start-date-2">-</strong></div>
                         <div class="work-row"><span>ออก2:</span> <strong id="work-end-date-2">-</strong></div>
                         <div class="work-row" style="font-size: 0.9rem; color: #555;"><span>ระยะเวลา:</span> <strong id="work-duration-2" style="color: var(--primary);">-</strong></div>
                     </div>
 
-                    <!-- ช่วงที่ 3 (จะแสดงเมื่อมีข้อมูล) -->
                     <div style="margin-bottom: 8px; border-bottom: 1px dashed #e0e0e0; padding-bottom: 6px;">
                         <div class="work-row"><span>เริ่ม3:</span> <strong id="work-start-date-3">-</strong></div>
                         <div class="work-row"><span>ออก3:</span> <strong id="work-end-date-3">-</strong></div>
@@ -71,7 +126,8 @@
                     </div>
 
                     <div class="work-total" style="margin-top: 10px;">เริ่มงาน 1 ถึงปัจจุบัน: <span id="total-work-duration"></span></div>
-                </div>            </aside>
+                </div>
+            </aside>
 
             <main class="content-area">
                 <div class="stats-grid">
@@ -104,7 +160,6 @@
                     </div>
                 </div>
 
-                <!-- ส่วนที่ปรับปรุงใหม่: ยื่นคำขอลาใหม่ -->
                 <div class="form-card-modern">
                     <div class="form-header">
                         <div class="icon-box">
@@ -179,6 +234,7 @@
         </div>
     </div>
     
+    <!-- Modal เข้าสู่ระบบ (Keypad สำหรับรหัสผ่านเจ้าหน้าที่) -->
     <div id="login-modal" class="modal">
         <div class="modal-wrapper">
             <span class="close-btn" id="close-login-modal">&times;</span>
@@ -187,6 +243,35 @@
             <div id="password-display" class="pass-box"></div>
             <div id="keypad-container"></div>
             <p class="hint-text">สามารถพิมพ์ผ่านแป้นพิมพ์คอมพิวเตอร์ได้</p>
+        </div>
+    </div>
+
+    <!-- Modal สำหรับระบบอนุมัติวันลาของ Admin (รวมฟังก์ชันจาก check.html) -->
+    <div id="admin-approval-modal" class="modal" style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
+        <div class="admin-modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0; color: var(--text-dark, #1e293b); display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-clipboard-list" style="color: var(--primary);"></i> รายการคำขอลาที่รออนุมัติ
+                </h2>
+                <span onclick="closeAdminApprovalModal()" style="font-size: 1.5rem; cursor: pointer; color: #64748b;">&times;</span>
+            </div>
+            <div class="table-responsive">
+                <table id="admin-pending-leave-table" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th style="background: #f8fafc; padding: 12px; text-align: left; border-bottom: 2px solid #edf2f7;">ชื่อ-นามสกุล</th>
+                            <th style="background: #f8fafc; padding: 12px; text-align: left; border-bottom: 2px solid #edf2f7;">ประเภทการลา</th>
+                            <th style="background: #f8fafc; padding: 12px; text-align: center; border-bottom: 2px solid #edf2f7;">จำนวนวัน</th>
+                            <th style="background: #f8fafc; padding: 12px; text-align: left; border-bottom: 2px solid #edf2f7;">วันที่เริ่ม-สิ้นสุด</th>
+                            <th style="background: #f8fafc; padding: 12px; text-align: left; border-bottom: 2px solid #edf2f7;">เหตุผล</th>
+                            <th style="background: #f8fafc; padding: 12px; text-align: center; border-bottom: 2px solid #edf2f7; width: 160px;">การจัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-pending-tbody">
+                        <!-- รายการจะถูกเติมอัตโนมัติด้วย JavaScript -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -231,8 +316,7 @@
             </table>
         </div>
     </div>
-	
-	<!-- Progress Bar Modal (จำลองการคัดลอกไฟล์แบบแฟลชไดรฟ์) -->
+
     <div id="loading-progress-overlay" class="progress-overlay">
         <div class="progress-box">
             <div class="progress-title">
@@ -247,5 +331,117 @@
     </div>
 
     <script src="script.js"></script>
+    <script>
+        // ฟังก์ชันเสริมสำหรับควบคุม Admin Approval Modal ใน intro.html
+        // ตรวจสอบสถานะ Admin และเช็คคำขอลาที่รออนุมัติเพื่อกระพริบไอคอน
+        function checkAdminPermissionsAndPendingLeaves() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            const adminTrigger = document.getElementById('admin-approval-trigger');
+            
+            // เงื่อนไขสิทธิ์ Admin (เช่น ตำแหน่งเป็น "ทันตสาธารณสุขอาวุโส" หรือมีสิทธิ์ผู้ดูแลระบบ)
+            const isAdmin = currentUser.position && (
+                currentUser.position.includes('ทันตสาธารณสุขอาวุโส') || 
+                currentUser.position.includes('ผู้ดูแลระบบ') ||
+                currentUser.isAdmin === true
+            );
+
+            if (isAdmin && adminTrigger) {
+                adminTrigger.classList.remove('hidden');
+                updatePendingLeaveStatus();
+                // ตรวจสอบสถานะคำขอลาทุกๆ 10 วินาที
+                setInterval(updatePendingLeaveStatus, 10000);
+            } else if (adminTrigger) {
+                adminTrigger.classList.add('hidden');
+            }
+        }
+
+        function updatePendingLeaveStatus() {
+            try {
+                // ดึงข้อมูลคำขอลาทั้งหมดจาก localStorage (ตามโครงสร้างระบบเดิม)
+                const leaveRequests = JSON.parse(localStorage.getItem('leaveRequests') || '[]');
+                const pendingRequests = leaveRequests.filter(req => req.status === 'รออนุมัติ' || req.status === 'pending');
+                
+                const adminTrigger = document.getElementById('admin-approval-trigger');
+                const badgeCount = document.getElementById('pending-badge-count');
+
+                if (pendingRequests.length > 0) {
+                    adminTrigger.classList.add('blinking');
+                    badgeCount.style.display = 'inline-block';
+                    badgeCount.textContent = pendingRequests.length;
+                } else {
+                    adminTrigger.classList.remove('blinking');
+                    badgeCount.style.display = 'none';
+                }
+            } catch (e) {
+                console.error("Error updating pending leave status:", e);
+            }
+        }
+
+        function openAdminApprovalModal() {
+            renderAdminPendingTable();
+            document.getElementById('admin-approval-modal').style.display = 'flex';
+        }
+
+        function closeAdminApprovalModal() {
+            document.getElementById('admin-approval-modal').style.display = 'none';
+        }
+
+        function renderAdminPendingTable() {
+            const tbody = document.getElementById('admin-pending-tbody');
+            tbody.innerHTML = '';
+            
+            try {
+                const leaveRequests = JSON.parse(localStorage.getItem('leaveRequests') || '[]');
+                const pendingRequests = leaveRequests.filter(req => req.status === 'รออนุมัติ' || req.status === 'pending');
+
+                if (pendingRequests.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 30px; color: #64748b;">ไม่มีรายการคำขอลาที่รออนุมัติในขณะนี้</td></tr>`;
+                    return;
+                }
+
+                pendingRequests.forEach((req, index) => {
+                    const tr = document.createElement('tr');
+                    tr.style.borderBottom = '1px solid #edf2f7';
+                    tr.innerHTML = `
+                        <td style="padding: 12px;">${req.name || req.officerName || '-'}</td>
+                        <td style="padding: 12px;">${req.leaveType || req.type || '-'}</td>
+                        <td style="padding: 12px; text-align: center;">${req.totalDays || req.days || '-'} วัน</td>
+                        <td style="padding: 12px;">${req.startDate || ''} ถึง ${req.endDate || ''}</td>
+                        <td style="padding: 12px;">${req.reason || '-'}</td>
+                        <td style="padding: 12px; text-align: center;">
+                            <button onclick="processLeaveApproval('${req.id}', 'อนุมัติ')" style="background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-right: 5px;"><i class="fa-solid fa-check"></i></button>
+                            <button onclick="processLeaveApproval('${req.id}', 'ไม่อนุมัติ')" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (e) {
+                console.error("Error rendering pending table:", e);
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: red;">เกิดข้อผิดพลาดในการโหลดข้อมูล</td></tr>`;
+            }
+        }
+
+        function processLeaveApproval(requestId, actionStatus) {
+            try {
+                let leaveRequests = JSON.parse(localStorage.getItem('leaveRequests') || '[]');
+                leaveRequests = leaveRequests.map(req => {
+                    if (req.id == requestId) {
+                        req.status = actionStatus;
+                    }
+                    return req;
+                });
+                localStorage.setItem('leaveRequests', JSON.stringify(leaveRequests));
+                renderAdminPendingTable();
+                updatePendingLeaveStatus();
+            } catch (e) {
+                console.error("Error processing approval:", e);
+            }
+        }
+
+        // เรียกตรวจสอบสิทธิ์และสถานะเมื่อโหลดหน้าสำเร็จ
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(checkAdminPermissionsAndPendingLeaves, 1000);
+        });
+    </script>
 </body>
 </html>
