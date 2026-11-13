@@ -17,6 +17,8 @@
         color: black !important;
         padding: 0 !important;
         margin: 0 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
       }
       .no-print { display: none !important; }
       .print-only { display: block !important; }
@@ -39,23 +41,15 @@
       }
       th {
         background-color: #f1f5f9 !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
       }
       .badge-consent { font-weight: bold !important; color: #047857 !important; }
       .badge-refuse { font-weight: bold !important; color: #b91c1c !important; }
       
-      /* ตั้งค่าเริ่มต้นในการพิมพ์ให้ออกมาเป็น แนวนอน (Landscape) */
+      /* ตั้งค่าขนาดกระดาษ แนวนอน (Landscape) และกำหนด Scale 66% */
       @page {
         size: A4 landscape;
         margin: 1cm;
-      }
-    }
-
-    /* Class บังคับสั่งพิมพ์แนวตั้ง (ถ้าเลือกพิมพ์แนวตั้ง) */
-    @media print {
-      body.print-portrait-mode {
-        /* บังคับ CSS Page ให้เป็นแนวตั้ง */
+        scale: 0.66;
       }
     }
 
@@ -99,7 +93,7 @@
   <main class="max-w-7xl mx-auto px-4 mt-6">
     
     <!-- Stat Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 no-print">
       <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
         <div>
           <p class="text-xs font-medium text-slate-500 uppercase">นักเรียนทั้งหมด</p>
@@ -242,14 +236,12 @@
     <div class="print-only mt-12 pt-6">
       <div class="grid grid-cols-2 gap-8 text-center text-sm">
         <div>
-          <p class="mb-12">ลงชื่อ.......................................................... ผู้ให้การส่งเสริมป้องกัน</p>
-          <p>( นายภัทรพล ไพศาลวัชรเมธี)</p>
-          <p class="text-xs text-slate-500 mt-1">เจ้าพนักงานทันตสาธารณสุขอาวุโส</p>
+          <p>( นายภัทรพล ไพศาลวัชรเมธี )</p>
+          <p class="text-xs text-slate-500 mt-1">จพ.ทันตสาธารณสุขอาวุโส<br>ผู้ให้บริการส่งเสริมป้องกัน</p>
         </div>
         <div>
-          <p class="mb-12">ลงชื่อ.......................................................... ผู้รับรองข้อมูล</p>
-          <p>(..........................................................)</p>
-          <p class="text-xs text-slate-500 mt-1">ครูประจำชั้น / ผู้แทนโรงเรียน</p>
+          <p>( .......................................................... )</p>
+          <p class="text-xs text-slate-500 mt-1">ครูประจำชั้น <br>ผู้รับรองข้อมูล</p>
         </div>
       </div>
     </div>
@@ -257,7 +249,6 @@
   </main>
 
   <script>
-    // URL Web App จาก Google Apps Script
     const API_URL = 'https://script.google.com/macros/s/AKfycby2CpSFWQ9SWexYDtf4oIPdgq2oBj8PX9XAQJbt-Ux-CP-FevJ92msor6Uota3XtwZS_w/exec';
 
     let globalData = [];
@@ -275,7 +266,6 @@
       document.getElementById('printReportMeta').innerText = `พิมพ์เมื่อวันที่: ${now.toLocaleDateString('th-TH')} เวลา ${now.toLocaleTimeString('th-TH')} น.`;
     });
 
-    // ฟังก์ชันดึงข้อมูลจาก API
     function fetchData() {
       const tbody = document.getElementById('tableBody');
       tbody.innerHTML = `
@@ -305,24 +295,16 @@
         });
     }
 
-    // ฟังก์ชันจัดรูปแบบวัน-เวลาให้ตัดสั้นและอ่านง่าย เป็น YYYY-MM-DD HH:mm น.
     function formatThaiDateTime(dateStr) {
       if (!dateStr) return '-';
-      
       let str = String(dateStr).trim();
-      
-      // ตัดส่วน GMT ออกถ้ามี
       if (str.includes('GMT')) {
         str = str.split('GMT')[0].trim();
       }
-      
-      // ดึงแพทเทิร์นวันที่และเวลา YYYY-MM-DD HH:mm
       const match = str.match(/\d{4}-\d{2}-\d{2}[T\s]\d{2}:\d{2}/);
       if (match) {
         return `${match[0].replace('T', ' ')} น.`;
       }
-      
-      // กรณีแปลงผ่าน Date object
       const d = new Date(str);
       if (!isNaN(d.getTime())) {
         const year = d.getFullYear();
@@ -332,11 +314,9 @@
         const minutes = String(d.getMinutes()).padStart(2, '0');
         return `${year}-${month}-${day} ${hours}:${minutes} น.`;
       }
-      
       return str.replace('น.', '').trim() + ' น.';
     }
 
-    // ฟังก์ชันคำนวณสถิติ
     function updateStats() {
       const total = globalData.length;
       const consentCount = globalData.filter(item => item.consent === 'ยินยอม').length;
@@ -349,7 +329,6 @@
       document.getElementById('statRate').innerText = rate + '%';
     }
 
-    // ฟังก์ชันกรองข้อมูลและแสดงผลตาราง
     function renderTable() {
       const schoolFilter = document.getElementById('filterSchool').value;
       const gradeFilter = document.getElementById('filterGrade').value;

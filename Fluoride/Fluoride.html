@@ -18,9 +18,23 @@
     }
 
     body::before {
-      content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background-repeat: no-repeat; background-position: center; background-size: 950px;
-      opacity: 0.12; z-index: -1; pointer-events: none;
+      content: ""; 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%;
+      /* กำหนดที่อยู่ของไฟล์ภาพพื้นหลัง */
+      background-image: url('image/tm.png'); 
+      background-repeat: no-repeat; 
+      background-position: center; 
+      background-size: 550px; /* ปรับขนาดภาพตามต้องการ */
+      opacity: 0.3; /* ปรับความจาง (0.0 - 1.0) ให้เห็นเป็นลายน้ำลางๆ */
+      z-index: -1; 
+      pointer-events: none;
+      
+      /* เพิ่มเอฟเฟค เช่น ทำให้ภาพเป็นโทนสีเดียว หรือเบลอเล็กน้อย (เลือกใส่เพิ่มได้ตามชอบ) */
+      /* filter: grayscale(100%) blur(1px); */
     }
 
     .megaphone-container {
