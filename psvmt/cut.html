@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Single Deck Pro DJ Studio - Track Splitter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .needle { transform-origin: bottom center; transition: transform 0.05s ease-out; }
+        @keyframes pulse-red {
+            0%, 100% { opacity: 1; border-color: #ef4444; }
+            50% { opacity: 0.4; border-color: #7f1d1d; }
+        }
+        .deleting-anim { animation: pulse-red 0.3s infinite; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col p-4 select-none">
+
+    <!-- ส่วนหัวโปรแกรม -->
+    <header class="flex flex-wrap justify-between items-center bg-slate-900 border border-slate-800 rounded-2xl px-6 py-3 mb-3 shadow-xl">
+        <div class="flex items-center gap-3">
+            <span class="bg-indigo-600 text-white text-xs font-black px-3 py-1.5 rounded-lg uppercase tracking-wider">SPLIT TRACK PRO</span>
+            <h1 id="songTitle" class="text-base font-bold text-slate-200 truncate max-w-md">ยังไม่ได้โหลดไฟล์เพลง</h1>
+        </div>
+        <div class="flex items-center gap-3">
+            <label class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl font-semibold shadow-lg cursor-pointer transition flex items-center gap-2 text-sm">
+                📁 เลือกไฟล์เพลงยาว
+                <input type="file" id="audioFileInput" accept="audio/*" class="hidden">
+            </label>
+        </div>
+    </header>
+
+    <!-- พื้นที่แสดงสถานะการโหลดไฟล์ (Progress Bar) -->
+    <div id="loadingContainer" class="hidden bg-slate-900 border border-slate-800 rounded-xl p-3 mb-3 shadow-lg">
+        <div class="flex justify-between items-center mb-1 text-xs">
+            <span id="loadingStatusText" class="font-semibold text-indigo-300">กำลังโหลดไฟล์เพลง...</span>
+            <span id="loadingPercentText" class="font-mono text-indigo-400 font-bold">0%</span>
+        </div>
+        <div class="w-full bg-slate-950 rounded-full h-2 overflow-hidden border border-slate-800">
+            <div id="progressBar" class="bg-indigo-500 h-2 rounded-full transition-all duration-75" style="width: 0%"></div>
+        </div>
+    </div>
+
+    <!-- พื้นที่หลัก -->
+    <main class="flex-1 flex flex-col bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-2xl gap-4">
+        
+        <!-- แถบแสดงสถานะเวลา -->
+        <div class="flex justify-between items-center text-xs text-slate-400 px-2 font-mono">
+            <div class="flex items-center gap-2">
+                <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span id="loopStatusText">โหมดแยกเพลง: เลื่อนเส้นแดงหรือคลิก แล้วกด "➕ เพิ่มจุดตัดเพลง" เพื่อแตกแทร็ก</span>
+            </div>
+            <div class="text-sm font-bold text-indigo-400">
+                <span id="currentTime">00:00</span> / <span id="durationTime">00:00</span>
+            </div>
+        </div>
+
+        <!-- หน้าจอคลื่นเสียงหลัก -->
+        <div id="waveformContainer" class="relative bg-slate-950 rounded-xl border-2 border-slate-700 overflow-hidden min-h-[140px] h-[160px] flex flex-col group cursor-crosshair transition-all">
+            <!-- เส้นเวลาปัจจุบัน (Playhead) -->
+            <div id="playheadLine" class="absolute top-0 bottom-0 w-[2px] bg-red-500 z-20 pointer-events-none shadow-[0_0_10px_#ef4444]" style="left: 0%;"></div>
+            
+            <!-- เส้นเคอร์เซอร์ตามเมาส์ -->
+            <div id="mouseLine" class="absolute top-0 bottom-0 w-[1px] bg-indigo-400/70 z-10 pointer-events-none hidden"></div>
+            
+            <!-- พื้นที่เลือก Region -->
+            <div id="loopRegion" class="absolute top-0 bottom-0 bg-indigo-500/30 border-x-2 border-indigo-400 z-10 pointer-events-none hidden"></div>
+
+            <!-- ป้ายเมนูลอย -->
+            <div id="clickActionMenu" class="absolute z-30 bg-slate-900/95 border border-slate-700 rounded-xl p-2 shadow-2xl flex flex-col gap-1.5 hidden backdrop-blur-md">
+                <div class="text-[10px] text-slate-400 px-2 pb-1 border-b border-slate-800 font-mono" id="menuTimeLabel">เลือกจุด: 00:00</div>
+                <button id="addSplitFromMenuBtn" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-3 py-2 rounded-lg font-semibold transition text-left flex items-center gap-2">
+                    ➕ เพิ่มเป็นจุดตัดเพลงที่นี่
+                </button>
+                <button id="cutLeftBtn" class="bg-rose-600/80 hover:bg-rose-600 text-white text-xs px-3 py-2 rounded-lg font-semibold transition text-left flex items-center gap-2">
+                    ✂️ ลบจากจุดนี้ไป "ซ้ายสุด"
+                </button>
+                <button id="cutRightBtn" class="bg-rose-600/80 hover:bg-rose-600 text-white text-xs px-3 py-2 rounded-lg font-semibold transition text-left flex items-center gap-2">
+                    ✂️ ลบจากจุดนี้ไป "ขวาสุด"
+                </button>
+            </div>
+
+            <!-- ป้ายสถานะกำลังประมวลผล -->
+            <div id="deletingOverlay" class="absolute inset-0 bg-red-950/80 z-40 flex flex-col items-center justify-center hidden backdrop-blur-sm">
+                <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-red-500 mb-2"></div>
+                <span class="text-red-300 font-bold text-sm">🗑️ กำลังดำเนินการ...</span>
+            </div>
+
+            <canvas id="waveformCanvas" class="w-full h-full"></canvas>
+            
+            <div class="absolute bottom-1.5 left-3 text-[10px] text-slate-400 bg-slate-900/80 px-2 py-0.5 rounded border border-slate-700 pointer-events-none">
+                💡 <span class="text-indigo-300">← / →</span>: ขยับทีละ 1 วิ | <span class="text-emerald-300">Spacebar</span>: เล่น/หยุด | <span class="text-amber-300">คลิกกราฟ</span>: เมนูตัด/เพิ่มจุด
+            </div>
+        </div>
+
+        <!-- แผงควบคุมการเล่น & เพิ่มจุดตัดเพลง -->
+        <div class="flex flex-wrap justify-center items-center gap-3">
+            <button id="playPauseBtn" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition text-sm flex items-center gap-2">
+                ▶ เล่นเพลง (Spacebar)
+            </button>
+            <button id="addSplitBtn" class="bg-amber-600 hover:bg-amber-500 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition text-sm flex items-center gap-2" disabled>
+                ➕ เพิ่มจุดตัดเพลง ณ ตำแหน่งเส้นแดง
+            </button>
+            <button id="resetZoomBtn" class="bg-slate-700 hover:bg-slate-600 text-slate-200 px-4 py-3 rounded-xl font-semibold shadow transition text-sm">
+                🔍 รีเซ็ตซูม
+            </button>
+        </div>
+
+        <!-- ส่วนแสดงรายการเพลงย่อยที่แตกออกมา (Chapters / Split Tracks) -->
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col gap-3">
+            <div class="flex justify-between items-center">
+                <h2 class="text-sm font-bold text-slate-300 flex items-center gap-2">
+                    📂 รายการเพลงย่อยที่ตัดแบ่งไว้ (<span id="trackCount" class="text-indigo-400">0</span> เพลง)
+                </h2>
+                <span class="text-[11px] text-slate-400">ระบบจะกำหนดจุดเริ่มต้น (00:00) และจุดสิ้นสุดให้อัตโนมัติ</span>
+            </div>
+            <div id="tracksListContainer" class="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1">
+                <div class="text-center text-xs text-slate-400 py-4 italic">ยังไม่มีการเพิ่มจุดตัดเพลง (ระบบจะสร้างช่วงเพลงจากจุดที่คุณกำหนด)</div>
+            </div>
+        </div>
+
+        <!-- แผงมิกเซอร์ด้านล่าง -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex flex-col justify-center">
+                <div class="flex justify-between items-center mb-1 text-xs">
+                    <span class="font-semibold text-slate-400">Pitch / Speed</span>
+                    <span id="pitchVal" class="font-mono text-indigo-400">1.0x</span>
+                </div>
+                <input type="range" id="pitchRange" min="0.5" max="2.0" step="0.05" value="1.0" class="w-full accent-indigo-500 cursor-pointer">
+            </div>
+
+            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex flex-col justify-center">
+                <div class="flex justify-between items-center mb-1 text-xs">
+                    <span class="font-semibold text-slate-400">Master Volume</span>
+                    <span id="volVal" class="font-mono text-emerald-400">100%</span>
+                </div>
+                <input type="range" id="volRange" min="0" max="1" step="0.01" value="1" class="w-full accent-emerald-500 cursor-pointer">
+            </div>
+
+            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex flex-col justify-center gap-1.5">
+                <div class="flex justify-between items-center text-xs">
+                    <span class="font-semibold text-emerald-400">EQ Bass</span>
+                    <input type="range" id="eqLow" min="-20" max="20" step="1" value="0" class="w-24 accent-emerald-500 cursor-pointer">
+                </div>
+                <div class="flex justify-between items-center text-xs">
+                    <span class="font-semibold text-rose-400">EQ Treble</span>
+                    <input type="range" id="eqHigh" min="-20" max="20" step="1" value="0" class="w-24 accent-rose-500 cursor-pointer">
+                </div>
+            </div>
+
+            <div class="bg-slate-950 p-2 rounded-xl border border-slate-800 flex items-center justify-between px-4">
+                <div class="flex flex-col items-center w-full">
+                    <span class="text-[9px] text-slate-400 mb-0.5">VU METER</span>
+                    <div class="relative w-32 h-16 bg-slate-900 rounded-t-full border-t border-x border-slate-700 overflow-hidden flex justify-center">
+                        <div id="vuNeedle" class="needle absolute bottom-0 w-1 h-14 bg-red-500 rounded-full origin-bottom" style="transform: rotate(-60deg);"></div>
+                        <div class="absolute bottom-0 w-2.5 h-2.5 bg-slate-300 rounded-full"></div>
+                    </div>
+                    <span id="dbText" class="font-mono text-indigo-400 text-[11px] mt-0.5">-∞ dB</span>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const audioFileInput = document.getElementById('audioFileInput');
+        const songTitle = document.getElementById('songTitle');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const addSplitBtn = document.getElementById('addSplitBtn');
+        const resetZoomBtn = document.getElementById('resetZoomBtn');
+        const waveformCanvas = document.getElementById('waveformCanvas');
+        const waveformContainer = document.getElementById('waveformContainer');
+        const deletingOverlay = document.getElementById('deletingOverlay');
+        const clickActionMenu = document.getElementById('clickActionMenu');
+        const menuTimeLabel = document.getElementById('menuTimeLabel');
+        const addSplitFromMenuBtn = document.getElementById('addSplitFromMenuBtn');
+        const cutLeftBtn = document.getElementById('cutLeftBtn');
+        const cutRightBtn = document.getElementById('cutRightBtn');
+        const ctxWave = waveformCanvas.getContext('2d');
+        const playheadLine = document.getElementById('playheadLine');
+        const mouseLine = document.getElementById('mouseLine');
+        const loopRegion = document.getElementById('loopRegion');
+        const loopStatusText = document.getElementById('loopStatusText');
+        const currentTimeEl = document.getElementById('currentTime');
+        const durationTimeEl = document.getElementById('durationTime');
+        const loadingContainer = document.getElementById('loadingContainer');
+        const loadingStatusText = document.getElementById('loadingStatusText');
+        const loadingPercentText = document.getElementById('loadingPercentText');
+        const progressBar = document.getElementById('progressBar');
+        const pitchRange = document.getElementById('pitchRange');
+        const pitchVal = document.getElementById('pitchVal');
+        const volRange = document.getElementById('volRange');
+        const volVal = document.getElementById('volVal');
+        const eqLow = document.getElementById('eqLow');
+        const eqHigh = document.getElementById('eqHigh');
+        const vuNeedle = document.getElementById('vuNeedle');
+        const dbText = document.getElementById('dbText');
+        const tracksListContainer = document.getElementById('tracksListContainer');
+        const trackCountEl = document.getElementById('trackCount');
+
+        let audioCtx = null, audioBuffer = null, sourceNode = null, gainNode = null, lowFilter = null, highFilter = null, analyser = null;
+        let isPlaying = false;
+        let startTime = 0;
+        let pauseOffset = 0;
+        let playbackRate = 1.0;
+        
+        let zoomStart = 0; 
+        let zoomEnd = 0;   
+        let isDragging = false;
+        let dragStartTime = 0;
+        let selectionStart = 0;
+        let selectionEnd = 0;
+        let hasSelection = false;
+        let clickedTimePoint = 0;
+        let currentFileName = "audio_split.wav";
+        let originalArrayBuffer = null;
+
+        // เก็บรายการจุดตัดเพลง (Split Points)
+        let splitPoints = []; // เก็บเป็นวินาที เช่น [0, 45.5, 120.0, ...]
+
+        function resizeCanvas() {
+            waveformCanvas.width = waveformCanvas.offsetWidth;
+            waveformCanvas.height = waveformCanvas.offsetHeight;
+            drawWaveform();
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60);
+            const s = Math.floor(seconds % 60);
+            return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        audioFileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            currentFileName = file.name;
+            songTitle.textContent = currentFileName;
+
+            loadingContainer.classList.remove('hidden');
+            loadingPercentText.textContent = '0%';
+            progressBar.style.width = '0%';
+            loadingStatusText.textContent = `กำลังโหลดไฟล์: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+
+            const reader = new FileReader();
+            
+            reader.onprogress = (event) => {
+                if (event.lengthComputable) {
+                    const percent = Math.round((event.loaded / event.total) * 100);
+                    loadingPercentText.textContent = `${percent}%`;
+                    progressBar.style.width = `${percent}%`;
+                }
+            };
+
+            reader.onload = async (event) => {
+                loadingPercentText.textContent = '100%';
+                progressBar.style.width = '100%';
+                loadingStatusText.textContent = "กำลังถอดรหัสเสียง (Decoding Audio)...";
+
+                originalArrayBuffer = event.target.result;
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+
+                try {
+                    audioBuffer = await audioCtx.decodeAudioData(originalArrayBuffer.slice(0));
+                    zoomStart = 0;
+                    zoomEnd = audioBuffer.duration;
+                    hasSelection = false;
+                    loopRegion.style.display = 'none';
+                    addSplitBtn.disabled = false;
+                    
+                    // เริ่มต้นกำหนดจุดตัดที่ 0 และ จุดสิ้นสุดเพลง
+                    splitPoints = [0];
+
+                    setTimeout(() => {
+                        loadingContainer.classList.add('hidden');
+                    }, 500);
+
+                    loopStatusText.textContent = "โหลดไฟล์สำเร็จ! เริ่มกำหนดจุดตัดเพลงได้เลยครับ";
+                    durationTimeEl.textContent = formatTime(audioBuffer.duration);
+                    resizeCanvas();
+                    updateTracksList();
+                    stopAudio();
+                    playAudio(0);
+                } catch (err) {
+                    alert('ไม่สามารถถอดรหัสไฟล์เสียงนี้ได้');
+                    loadingContainer.classList.add('hidden');
+                }
+            };
+
+            reader.readAsArrayBuffer(file);
+        });
+
+        function playAudio(offset = 0) {
+            if (!audioBuffer) return;
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            if (isPlaying) {
+                stopAudio(false);
+            }
+
+            sourceNode = audioCtx.createBufferSource();
+            sourceNode.buffer = audioBuffer;
+            sourceNode.playbackRate.value = playbackRate;
+
+            gainNode = audioCtx.createGain();
+            gainNode.gain.value = parseFloat(volRange.value);
+
+            lowFilter = audioCtx.createBiquadFilter();
+            lowFilter.type = 'lowshelf';
+            lowFilter.frequency.value = 320;
+            lowFilter.gain.value = parseFloat(eqLow.value);
+
+            highFilter = audioCtx.createBiquadFilter();
+            highFilter.type = 'highshelf';
+            highFilter.frequency.value = 3200;
+            highFilter.gain.value = parseFloat(eqHigh.value);
+
+            analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 256;
+
+            sourceNode.connect(lowFilter);
+            lowFilter.connect(highFilter);
+            highFilter.connect(gainNode);
+            gainNode.connect(analyser);
+            analyser.connect(audioCtx.destination);
+
+            let playOffset = Math.max(0, Math.min(offset, audioBuffer.duration));
+            
+            if (playOffset < zoomStart) {
+                zoomStart = 0;
+                drawWaveform();
+            } else if (playOffset > zoomEnd) {
+                zoomEnd = audioBuffer.duration;
+                drawWaveform();
+            }
+
+            sourceNode.start(0, playOffset);
+            startTime = audioCtx.currentTime - (playOffset / playbackRate);
+            isPlaying = true;
+            playPauseBtn.textContent = '⏸ หยุดเพลง (Spacebar)';
+            playPauseBtn.className = 'bg-rose-600 hover:bg-rose-500 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition text-sm flex items-center gap-2';
+
+            sourceNode.onended = () => {
+                if (isPlaying) {
+                    stopAudio();
+                }
+            };
+
+            requestAnimationFrame(updatePlaybackProgress);
+        }
+
+        function stopAudio(resetPosition = true) {
+            if (sourceNode) {
+                try { sourceNode.stop(); } catch(e) {}
+                sourceNode.disconnect();
+                sourceNode = null;
+            }
+            isPlaying = false;
+            playPauseBtn.textContent = '▶ เล่นเพลง (Spacebar)';
+            playPauseBtn.className = 'bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition text-sm flex items-center gap-2';
+            if (resetPosition) {
+                pauseOffset = 0;
+            }
+        }
+
+        playPauseBtn.addEventListener('click', togglePlayPause);
+
+        function togglePlayPause() {
+            if (!audioBuffer) {
+                alert('กรุณาเลือกไฟล์เพลงก่อนครับ!');
+                return;
+            }
+            if (isPlaying) {
+                const currentPos = (audioCtx.currentTime - startTime) * playbackRate;
+                pauseOffset = currentPos;
+                stopAudio(false);
+            } else {
+                playAudio(pauseOffset);
+            }
+        }
+
+        // --- คีย์ลัด Keyboard ---
+        window.addEventListener('keydown', (e) => {
+            if (document.activeElement.tagName === 'INPUT') return;
+
+            if (e.code === 'Space') {
+                e.preventDefault();
+                togglePlayPause();
+            }
+
+            if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') {
+                e.preventDefault();
+                if (!audioBuffer) return;
+
+                let currentPos = isPlaying 
+                    ? (audioCtx.currentTime - startTime) * playbackRate 
+                    : pauseOffset;
+
+                if (e.code === 'ArrowLeft') {
+                    currentPos = Math.max(0, currentPos - 1.0);
+                } else {
+                    currentPos = Math.min(audioBuffer.duration, currentPos + 1.0);
+                }
+
+                if (currentPos < zoomStart) {
+                    zoomStart = 0;
+                    drawWaveform();
+                } else if (currentPos > zoomEnd) {
+                    zoomEnd = audioBuffer.duration;
+                    drawWaveform();
+                }
+
+                pauseOffset = currentPos;
+                currentTimeEl.textContent = formatTime(currentPos);
+
+                const currentDurationSpan = zoomEnd - zoomStart;
+                const progressPercent = ((currentPos - zoomStart) / currentDurationSpan) * 100;
+                playheadLine.style.left = `${Math.max(0, Math.min(100, progressPercent))}%`;
+
+                if (isPlaying) {
+                    playAudio(currentPos);
+                }
+            }
+        });
+
+        function updatePlaybackProgress() {
+            if (!isPlaying || !audioBuffer) return;
+
+            const currentPos = (audioCtx.currentTime - startTime) * playbackRate;
+            
+            if (currentPos >= zoomEnd) {
+                playAudio(zoomStart);
+                return;
+            }
+
+            if (currentPos >= audioBuffer.duration) {
+                stopAudio();
+                return;
+            }
+
+            pauseOffset = currentPos;
+            currentTimeEl.textContent = formatTime(currentPos);
+
+            const currentDurationSpan = zoomEnd - zoomStart;
+            const progressPercent = ((currentPos - zoomStart) / currentDurationSpan) * 100;
+            playheadLine.style.left = `${Math.max(0, Math.min(100, progressPercent))}%`;
+
+            if (analyser) {
+                const dataArray = new Uint8Array(analyser.frequencyBinCount);
+                analyser.getByteFrequencyData(dataArray);
+                let sum = 0;
+                for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
+                let avg = sum / dataArray.length;
+                let db = avg === 0 ? -60 : Math.round(20 * Math.log10(avg / 128));
+                dbText.textContent = `${db > 3 ? 3 : db} dB`;
+                let angle = Math.max(-60, Math.min(60, db * 1.5 + 30));
+                vuNeedle.style.transform = `rotate(${angle}deg)`;
+            }
+
+            requestAnimationFrame(updatePlaybackProgress);
+        }
+
+        function drawWaveform() {
+            ctxWave.fillStyle = '#020617';
+            ctxWave.fillRect(0, 0, waveformCanvas.width, waveformCanvas.height);
+
+            if (!audioBuffer) {
+                ctxWave.fillStyle = '#64748b';
+                ctxWave.font = '13px sans-serif';
+                ctxWave.textAlign = 'center';
+                ctxWave.fillText('กรุณาอัปโหลดไฟล์เพลงเพื่อแสดงกราฟคลื่นเสียง', waveformCanvas.width / 2, waveformCanvas.height / 2);
+                return;
+            }
+
+            const rawData = audioBuffer.getChannelData(0);
+            const startSample = Math.floor((zoomStart / audioBuffer.duration) * rawData.length);
+            const endSample = Math.floor((zoomEnd / audioBuffer.duration) * rawData.length);
+            const totalSamples = endSample - startSample;
+            
+            const width = waveformCanvas.width;
+            const height = waveformCanvas.height;
+            const step = Math.ceil(totalSamples / width);
+            const amp = height / 2;
+
+            ctxWave.lineWidth = 1.5;
+            ctxWave.strokeStyle = '#38bdf8';
+            ctxWave.beginPath();
+
+            for (let i = 0; i < width; i++) {
+                let min = 1.0;
+                let max = -1.0;
+                for (let j = 0; j < step; j++) {
+                    const idx = startSample + (i * step) + j;
+                    if (idx < rawData.length) {
+                        const datum = rawData[idx];
+                        if (datum < min) min = datum;
+                        if (datum > max) max = datum;
+                    }
+                }
+                const yMin = (1 + min) * amp;
+                const yMax = (1 + max) * amp;
+                
+                ctxWave.moveTo(i, yMin);
+                ctxWave.lineTo(i, yMax);
+            }
+            ctxWave.stroke();
+
+            // วาดเส้นแบ่งจุดตัดเพลง (Split Markers) สีเหลืองบน Canvas
+            if (splitPoints && splitPoints.length > 0) {
+                ctxWave.lineWidth = 2;
+                splitPoints.forEach((pt, index) => {
+                    if (index === 0) return; // ข้ามจุด 0
+                    if (pt >= zoomStart && pt <= zoomEnd) {
+                        const xPos = ((pt - zoomStart) / (zoomEnd - zoomStart)) * width;
+                        ctxWave.strokeStyle = '#eab308'; // สีเหลือง
+                        ctxWave.beginPath();
+                        ctxWave.moveTo(xPos, 0);
+                        ctxWave.lineTo(xPos, height);
+                        ctxWave.stroke();
+                    }
+                });
+            }
+        }
+
+        // --- ฟังก์ชันเพิ่มจุดตัดเพลง ---
+        function addSplitPointAt(timeSec) {
+            if (!audioBuffer) return;
+            // ป้องกันไม่ให้ซ้ำกับจุดที่มีอยู่แล้วใกล้เคียงกัน (ภายใน 0.5 วินาที)
+            const exists = splitPoints.some(p => Math.abs(p - timeSec) < 0.5);
+            if (exists) return;
+
+            splitPoints.push(timeSec);
+            splitPoints.sort((a, b) => a - b); // เรียงเวลาจากน้อยไปมาก
+            drawWaveform();
+            updateTracksList();
+            loopStatusText.textContent = `เพิ่มจุดตัดเพลงที่เวลา ${formatTime(timeSec)} เรียบร้อยแล้ว`;
+        }
+
+        addSplitBtn.addEventListener('click', () => {
+            const currentPos = isPlaying ? (audioCtx.currentTime - startTime) * playbackRate : pauseOffset;
+            addSplitPointAt(currentPos);
+        });
+
+        addSplitFromMenuBtn.addEventListener('click', () => {
+            clickActionMenu.classList.add('hidden');
+            addSplitPointAt(clickedTimePoint);
+        });
+
+        // --- อัปเดตรายการเพลงย่อยในตาราง ---
+        function updateTracksList() {
+            if (!audioBuffer) return;
+
+            // สร้างช่วงแทร็กจาก splitPoints รวมกับจุดสิ้นสุดเพลง
+            let allPoints = [...splitPoints];
+            if (!allPoints.includes(0)) allPoints.unshift(0);
+            if (!allPoints.includes(audioBuffer.duration)) allPoints.push(audioBuffer.duration);
+            allPoints.sort((a, b) => a - b);
+
+            tracksListContainer.innerHTML = '';
+            let trackCount = allPoints.length - 1;
+            trackCountEl.textContent = trackCount;
+
+            if (trackCount <= 0) {
+                tracksListContainer.innerHTML = '<div class="text-center text-xs text-slate-400 py-4 italic">ยังไม่มีช่วงเพลงย่อย</div>';
+                return;
+            }
+
+            for (let i = 0; i < trackCount; i++) {
+                const startTimeSec = allPoints[i];
+                const endTimeSec = allPoints[i + 1];
+                const trackNum = i + 1;
+                const durationSec = endTimeSec - startTimeSec;
+
+                const row = document.createElement('div');
+                row.className = 'bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-wrap justify-between items-center gap-2 hover:border-indigo-500/50 transition';
+                
+                row.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="bg-indigo-600/30 text-indigo-300 font-mono text-xs px-2.5 py-1 rounded-lg font-bold">Track ${trackNum.toString().padStart(2, '0')}</span>
+                        <div class="text-xs">
+                            <span class="text-slate-200 font-semibold">ช่วงเวลา: ${formatTime(startTimeSec)} - ${formatTime(endTimeSec)}</span>
+                            <span class="text-slate-400 ml-2 font-mono">(ความยาว: ${formatTime(durationSec)})</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="playTrack(${startTimeSec}, ${endTimeSec})" class="bg-indigo-600/80 hover:bg-indigo-600 text-white text-xs px-3 py-1.5 rounded-lg font-semibold transition flex items-center gap-1.5">
+                            ▶ ฟังเพลงนี้
+                        </button>
+                        <button onclick="saveSingleTrack(${startTimeSec}, ${endTimeSec}, ${trackNum})" class="bg-emerald-600/80 hover:bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-lg font-semibold transition flex items-center gap-1.5">
+                            💾 เซฟเพลงนี้ (.wav)
+                        </button>
+                        ${trackNum > 1 ? `<button onclick="removeSplitPoint(${i})" class="bg-rose-600/70 hover:bg-rose-600 text-white text-xs px-2.5 py-1.5 rounded-lg transition" title="ลบจุดตัดนี้">🗑️</button>` : ''}
+                    </div>
+                `;
+                tracksListContainer.appendChild(row);
+            }
+        }
+
+        // ฟังก์ชันกดฟังเฉพาะแทร็กนั้นๆ
+        window.playTrack = function(start, end) {
+            playAudio(start);
+            // ตั้งเวลาให้หยุดอัตโนมัติเมื่อเล่นถึงจุดสิ้นสุดของแทร็ก
+            const checkEnd = () => {
+                if (!isPlaying) return;
+                const currentPos = (audioCtx.currentTime - startTime) * playbackRate;
+                if (currentPos >= end) {
+                    stopAudio();
+                } else {
+                    requestAnimationFrame(checkEnd);
+                }
+            };
+            requestAnimationFrame(checkEnd);
+        };
+
+        // ฟังก์ชันลบจุดตัด
+        window.removeSplitPoint = function(index) {
+            // index ตรงกับ splitPoints[index]
+            splitPoints.splice(index, 1);
+            drawWaveform();
+            updateTracksList();
+        };
+
+        // ฟังก์ชันเซฟแยกเฉพาะเพลงเดี่ยว
+        window.saveSingleTrack = function(startTimeSec, endTimeSec, trackNum) {
+            if (!audioBuffer) return;
+
+            const sampleRate = audioBuffer.sampleRate;
+            const startSample = Math.floor(startTimeSec * sampleRate);
+            const endSample = Math.floor(endTimeSec * sampleRate);
+            const numFrames = endSample - startSample;
+
+            const newBuffer = audioCtx.createBuffer(audioBuffer.numberOfChannels, numFrames, sampleRate);
+            for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
+                const oldData = audioBuffer.getChannelData(channel);
+                const newData = newBuffer.getChannelData(channel);
+                newData.set(oldData.subarray(startSample, endSample), 0);
+            }
+
+            let baseName = currentFileName.replace(/\.[^/.]+$/, "");
+            let fileName = `${baseName}_Track${trackNum.toString().padStart(2, '0')}.wav`;
+
+            const wavData = bufferToWav(newBuffer);
+            const blob = new Blob([wavData], { type: 'audio/wav' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+
+            setTimeout(() => {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                loopStatusText.textContent = `บันทึกไฟล์ "${fileName}" สำเร็จ!`;
+            }, 100);
+        };
+
+        // --- เม้าส์คลิกบนกราฟคลื่นเสียง ---
+        waveformCanvas.addEventListener('mousedown', (e) => {
+            if (!audioBuffer) return;
+            clickActionMenu.classList.add('hidden');
+            const rect = waveformCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const percent = x / rect.width;
+            dragStartTime = zoomStart + (percent * (zoomEnd - zoomStart));
+            isDragging = true;
+        });
+
+        waveformCanvas.addEventListener('mousemove', (e) => {
+            if (!audioBuffer) return;
+            const rect = waveformCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const percent = x / rect.width;
+            
+            mouseLine.style.display = 'block';
+            mouseLine.style.left = `${x}px`;
+        });
+
+        waveformCanvas.addEventListener('mouseup', (e) => {
+            if (!audioBuffer || !isDragging) return;
+            isDragging = false;
+
+            const rect = waveformCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const percent = x / rect.width;
+            clickedTimePoint = zoomStart + (percent * (zoomEnd - zoomStart));
+
+            // แสดงเมนูลอยเมื่อคลิก
+            let menuX = e.clientX - rect.left;
+            let menuY = e.clientY - rect.top;
+            if (menuX + 200 > rect.width) menuX = rect.width - 200;
+            if (menuY + 140 > rect.height) menuY = rect.height - 140;
+
+            clickActionMenu.style.left = `${menuX}px`;
+            clickActionMenu.style.top = `${menuY}px`;
+            menuTimeLabel.textContent = `ตำแหน่ง: ${formatTime(clickedTimePoint)}`;
+            clickActionMenu.classList.remove('hidden');
+
+            pauseOffset = clickedTimePoint;
+            currentTimeEl.textContent = formatTime(clickedTimePoint);
+            const progressPercent = ((clickedTimePoint - zoomStart) / (zoomEnd - zoomStart)) * 100;
+            playheadLine.style.left = `${Math.max(0, Math.min(100, progressPercent))}%`;
+        });
+
+        waveformCanvas.addEventListener('mouseleave', () => {
+            mouseLine.style.display = 'none';
+            if (isDragging) isDragging = false;
+        });
+
+        cutLeftBtn.addEventListener('click', () => {
+            clickActionMenu.classList.add('hidden');
+            if (confirm(`ต้องการลบส่วนตั้งแต่เริ่มต้นถึง ${formatTime(clickedTimePoint)} ใช่หรือไม่?`)) {
+                executeTrim(0, clickedTimePoint);
+            }
+        });
+
+        cutRightBtn.addEventListener('click', () => {
+            clickActionMenu.classList.add('hidden');
+            if (confirm(`ต้องการลบส่วนตั้งแต่ ${formatTime(clickedTimePoint)} ไปจนถึงสิ้นสุดเพลงใช่หรือไม่?`)) {
+                executeTrim(clickedTimePoint, audioBuffer.duration);
+            }
+        });
+
+        function executeTrim(startTimeSec, endTimeSec) {
+            if (!audioBuffer) return;
+
+            deletingOverlay.classList.remove('hidden');
+            waveformContainer.classList.add('deleting-anim');
+
+            setTimeout(() => {
+                const sampleRate = audioBuffer.sampleRate;
+                const startSample = Math.floor(startTimeSec * sampleRate);
+                const endSample = Math.floor(endTimeSec * sampleRate);
+                const totalSamples = audioBuffer.length;
+                const newLength = totalSamples - (endSample - startSample);
+
+                if (newLength <= sampleRate * 0.5) {
+                    alert('ช่วงเวลาที่เหลือสั้นเกินไป!');
+                    deletingOverlay.classList.add('hidden');
+                    waveformContainer.classList.remove('deleting-anim');
+                    return;
+                }
+
+                const newBuffer = audioCtx.createBuffer(audioBuffer.numberOfChannels, newLength, sampleRate);
+
+                for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
+                    const oldData = audioBuffer.getChannelData(channel);
+                    const newData = newBuffer.getChannelData(channel);
+
+                    newData.set(oldData.subarray(0, startSample), 0);
+                    newData.set(oldData.subarray(endSample), startSample);
+                }
+
+                audioBuffer = newBuffer;
+                zoomStart = 0;
+                zoomEnd = audioBuffer.duration;
+                splitPoints = [0];
+                durationTimeEl.textContent = formatTime(audioBuffer.duration);
+                loopStatusText.textContent = "ตัดแต่งส่วนที่ไม่ต้องการเรียบร้อยแล้ว!";
+                
+                drawWaveform();
+                updateTracksList();
+                stopAudio();
+                playAudio(0);
+
+                deletingOverlay.classList.add('hidden');
+                waveformContainer.classList.remove('deleting-anim');
+            }, 300);
+        }
+
+        function bufferToWav(buffer) {
+            const numOfChan = buffer.numberOfChannels;
+            const length = buffer.length * numOfChan * 2 + 44;
+            const out = new DataView(new ArrayBuffer(length));
+            let channels = [];
+            let sampleRate = buffer.sampleRate;
+            let offset = 0;
+            let pos = 0;
+
+            function writeString(str) {
+                for (let i = 0; i < str.length; i++) {
+                    out.setUint8(pos++, str.charCodeAt(i));
+                }
+            }
+
+            writeString('RIFF');
+            out.setUint32(pos, length - 8, true); pos += 4;
+            writeString('WAVE');
+            writeString('fmt ');
+            out.setUint32(pos, 16, true); pos += 4;
+            out.setUint16(pos, 1, true); pos += 2;
+            out.setUint16(pos, numOfChan, true); pos += 2;
+            out.setUint32(pos, sampleRate, true); pos += 4;
+            out.setUint32(pos, sampleRate * numOfChan * 2, true); pos += 4;
+            out.setUint16(pos, numOfChan * 2, true); pos += 2;
+            out.setUint16(pos, 16, true); pos += 2;
+            writeString('data');
+            out.setUint32(pos, length - pos - 4, true); pos += 4;
+
+            for (let i = 0; i < buffer.numberOfChannels; i++) {
+                channels.push(buffer.getChannelData(i));
+            }
+
+            while (offset < buffer.length) {
+                for (let i = 0; i < numOfChan; i++) {
+                    let sample = Math.max(-1, Math.min(1, channels[i][offset]));
+                    sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767);
+                    out.setInt16(pos, sample, true);
+                    pos += 2;
+                }
+                offset++;
+            }
+
+            return out.buffer;
+        }
+
+        waveformCanvas.addEventListener('wheel', (e) => {
+            if (!audioBuffer) return;
+            e.preventDefault();
+            clickActionMenu.classList.add('hidden');
+
+            const rect = waveformCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const mousePercent = x / rect.width;
+            const mouseTime = zoomStart + (mousePercent * (zoomEnd - zoomStart));
+
+            const currentDuration = zoomEnd - zoomStart;
+            let zoomFactor = e.deltaY < 0 ? 0.8 : 1.25;
+            let newDuration = currentDuration * zoomFactor;
+
+            newDuration = Math.max(0.5, Math.min(audioBuffer.duration, newDuration));
+
+            let newStart = mouseTime - (mousePercent * newDuration);
+            let newEnd = newStart + newDuration;
+
+            if (newStart < 0) {
+                newStart = 0;
+                newEnd = newDuration;
+            }
+            if (newEnd > audioBuffer.duration) {
+                newEnd = audioBuffer.duration;
+                newStart = newEnd - newDuration;
+            }
+
+            zoomStart = newStart;
+            zoomEnd = newEnd;
+            drawWaveform();
+        }, { passive: false });
+
+        resetZoomBtn.addEventListener('click', () => {
+            if (!audioBuffer) return;
+            zoomStart = 0;
+            zoomEnd = audioBuffer.duration;
+            clickActionMenu.classList.add('hidden');
+            loopStatusText.textContent = "รีเซ็ตมุมมองคลื่นเสียงเต็มเพลง";
+            drawWaveform();
+        });
+
+        pitchRange.addEventListener('input', (e) => {
+            playbackRate = parseFloat(e.target.value);
+            pitchVal.textContent = `${playbackRate.toFixed(2)}x`;
+            if (sourceNode) sourceNode.playbackRate.value = playbackRate;
+        });
+
+        volRange.addEventListener('input', (e) => {
+            const v = parseFloat(e.target.value);
+            volVal.textContent = `${Math.round(v * 100)}%`;
+            if (gainNode) gainNode.gain.value = v;
+        });
+
+        eqLow.addEventListener('input', (e) => {
+            if (lowFilter) lowFilter.gain.value = parseFloat(e.target.value);
+        });
+
+        eqHigh.addEventListener('input', (e) => {
+            if (highFilter) highFilter.gain.value = parseFloat(e.target.value);
+        });
+
+        drawWaveform();
+    </script>
+</body>
+</html>
