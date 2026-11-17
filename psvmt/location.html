@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบตรวจสอบเสาสัญญาณและอุปกรณ์รับสัญญาณ</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background: #f4f7f6; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h2 { color: #333; text-align: center; }
+        #map { height: 450px; width: 100%; border-radius: 8px; margin-top: 15px; }
+        .btn { display: block; width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; margin-top: 15px; }
+        .btn:hover { background: #0056b3; }
+        
+        /* 📐 จัดเลย์เอาต์ 2 คอลัมน์ ซ้าย-ขวา */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        @media (max-width: 768px) {
+            .dashboard-grid { grid-template-columns: 1fr; } /* มือถือปรับเป็น 1 คอลัมน์เรียงลงมา */
+        }
+        
+        .panel { 
+            background: #f8f9fa; 
+            padding: 15px; 
+            border-radius: 8px; 
+            border: 1px solid #dee2e6;
+            font-size: 14px; 
+            line-height: 1.6; 
+        }
+        .panel h3 { margin-top: 0; color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 5px; }
+
+        /* 🔴 แอนิเมชันจุดสีแดงกึ่งกลางกระพริบ */
+        .center-pulse-dot {
+            width: 14px; height: 14px;
+            background-color: #ff3b30;
+            border: 2px solid white;
+            border-radius: 50%;
+            animation: pulse-red 1.5s infinite;
+        }
+        @keyframes pulse-red {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(255, 59, 48, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 59, 48, 0); }
+        }
+
+        /* 📡 แอนิเมชันเสาสัญญาณที่เรากำลังใช้งานอยู่ */
+        .tower-active-pulse {
+            width: 18px; height: 18px;
+            background-color: #007aff;
+            border: 3px solid white;
+            border-radius: 50%;
+            animation: pulse-tower 1s infinite;
+        }
+        @keyframes pulse-tower {
+            0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(0, 122, 255, 0.7); }
+            50% { transform: scale(1.2); box-shadow: 0 0 0 12px rgba(0, 122, 255, 0); }
+            100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(0, 122, 255, 0); }
+        }
+
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-weight: bold; color: white; }
+        .bg-good { background: #28a745; }
+        .bg-fair { background: #ffc107; color: #333; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>📡 ระบุพิกัด PSVMT</h2>
+    <button class="btn" onclick="checkNetworkStatus()">เริ่มตรวจสอบสัญญาณและอุปกรณ์</button>
+    
+    <div id="map"></div>
+
+    <!-- ส่วนแสดงผลแบบ 2 คอลัมน์ ซ้าย-ขวา -->
+    <div class="dashboard-grid">
+        <div class="panel" id="leftPanel">
+            <h3>📡 รายละเอียดเสาสัญญาณ</h3>
+            <p>กรุณากดปุ่มเพื่อโหลดข้อมูลเสาสัญญาณในพื้นที่...</p>
+        </div>
+        <div class="panel" id="rightPanel">
+            <h3>📱 สถานะเครื่องรับสัญญาณของคุณ</h3>
+            <p>กรุณากดปุ่มเพื่อตรวจสอบสเปกอุปกรณ์และเครือข่าย...</p>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    let map = L.map('map').setView([13.736717, 100.523186], 11);
+
+    L.tileLayer('https://tile.openstreetmap.de/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    let userMarker, radiusCircle;
+    let towerMarkers = [];
+
+    const allTowers = [
+        { 
+            id: "TWR-001", 
+            name: "เสาสถานีชุมพรกลาง (AIS 5G)", 
+            lat: 10.4950, lng: 99.1820, 
+            active: true, 
+            signal: "-78 dBm (สัญญาณดีเยี่ยม)", 
+            signalStatus: "bg-good",
+            tech: "NR / 5G Sub-6GHz",
+            binding: "ไม่มีข้อผูกมัดส่วนบุคคล (Open Access)"
+        },
+        { 
+            id: "TWR-002", 
+            name: "เสาสถานีทุ่งตะโก (True-DTAC)", 
+            lat: 10.2200, lng: 99.0800, 
+            active: false, 
+            signal: "-92 dBm (สัญญาณปานกลาง)", 
+            signalStatus: "bg-fair",
+            tech: "LTE / 4G",
+            binding: "ติดสัญญาบริการรายเดือน"
+        }
+    ];
+
+    function checkNetworkStatus() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                let lat = position.coords.latitude;
+                let lon = position.coords.longitude;
+
+                map.setView([lat, lon], 12);
+
+                if (userMarker) map.removeLayer(userMarker);
+                if (radiusCircle) map.removeLayer(radiusCircle);
+
+                // จุดสีแดงกระพริบกึ่งกลางรัศมี
+                let redDotIcon = L.divIcon({
+                    className: 'custom-center-icon',
+                    html: '<div class="center-pulse-dot"></div>',
+                    iconSize: [14, 14], iconAnchor: [7, 7]
+                });
+                userMarker = L.marker([lat, lon], {icon: redDotIcon}).addTo(map);
+
+                // วงกลมรัศมี 40 กม.
+                radiusCircle = L.circle([lat, lon], {
+                    radius: 40000,
+                    color: '#007bff', fillColor: '#3388ff', fillOpacity: 0.08
+                }).addTo(map);
+
+                towerMarkers.forEach(m => map.removeLayer(m));
+                towerMarkers = [];
+
+                let leftHtml = `<h3>📡 รายละเอียดเสาสัญญาณ</h3>`;
+                
+                allTowers.forEach(tower => {
+                    let markerHtml = tower.active ? '<div class="tower-active-pulse"></div>' : '<div style="width:12px; height:12px; background:#6c757d; border-radius:50%; border:2px solid white;"></div>';
+                    let customIcon = L.divIcon({
+                        className: 'custom-tower-icon', html: markerHtml, iconSize: [18, 18], iconAnchor: [9, 9]
+                    });
+
+                    let tMarker = L.marker([tower.lat, tower.lng], {icon: customIcon}).addTo(map)
+                        .bindPopup(`<b>${tower.name}</b><br>สถานะ: ${tower.active ? '<b>กำลังเชื่อมต่ออยู่ (Active)</b>' : 'เสารอบข้าง'}<br>ความแรง: ${tower.signal}`);
+                    towerMarkers.push(tMarker);
+
+                    if (tower.active) {
+                        leftHtml += `
+                            <p style="background: #e2f0d9; padding: 10px; border-radius: 5px; border-left: 5px solid #28a745; margin-bottom:0;">
+                                🟢 <b>เสาหลักปัจจุบัน:</b> ${tower.name}<br>
+                                📶 <b>ความแรงในการรับ:</b> <span class="badge ${tower.signalStatus}">${tower.signal}</span><br>
+                                📡 <b>ชนิดสัญญาณ:</b> ${tower.tech}<br>
+                                📜 <b>ข้อผูกมัด:</b> <span style="color:#d9534f;">${tower.binding}</span>
+                            </p>
+                        `;
+                    }
+                });
+
+                // ตรวจสอบข้อมูลฝั่งอุปกรณ์ผู้ใช้ (ฝั่งขวา)
+                let userDeviceUA = navigator.userAgent;
+                let deviceName = "สมาร์ทโฟนทั่วไป (Mobile Device)";
+                let boardInfo = "Qualcomm Snapdragon / MediaTek Integrated Baseband";
+                let networkType = "5G NR / 4G LTE Advanced";
+                let carrierName = "AIS 5G Network (จำลองจากซิมการ์ดหลัก)";
+
+                if (/android/i.test(userDeviceUA)) {
+                    deviceName = "Android 5G Smartphone";
+                    boardInfo = "ARMv8 / Snapdragon X-Series Modem Board";
+                } else if (/iphone|ipad/i.test(userDeviceUA)) {
+                    deviceName = "Apple iPhone (iOS Device)";
+                    boardInfo = "Apple Silicon Baseband Subsystem";
+                }
+
+                let rightHtml = `
+                    <h3>📱 สถานะเครื่องรับสัญญาณของคุณ</h3>
+                    <p><b>📱 อุปกรณ์ที่ใช้:</b> ${deviceName}</p>
+                    <p><b>💻 บอร์ด/ชิปเซ็ตประมวลผล:</b> ${boardInfo}</p>
+                    <p><b>📶 สัญญาณที่รับได้:</b> ${networkType}</p>
+                    <p><b>🌐 เครือข่ายผู้ให้บริการ:</b> <span style="color: #007bff; font-weight: bold;">${carrierName}</span></p>
+                    <p><b>📍 พิกัดกึ่งกลางรัศมี:</b> ${lat.toFixed(4)}, ${lon.toFixed(4)}</p>
+                `;
+
+                document.getElementById("leftPanel").innerHTML = leftHtml;
+                document.getElementById("rightPanel").innerHTML = rightHtml;
+
+            }, () => {
+                alert("ไม่สามารถเข้าถึงตำแหน่งปัจจุบันได้");
+            });
+        }
+    }
+</script>
+
+</body>
+</html>
