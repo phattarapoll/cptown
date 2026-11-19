@@ -12,16 +12,18 @@
     * { font-family: 'Sarabun', sans-serif; }
     
     @media print {
-      body {
-        background: white !important;
-        color: black !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
+  body {
+		background: white !important;
+		color: black !important;
+		padding: 0 !important;
+		margin: 0 !important;
+		zoom: 0.63;
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+		}
       .no-print { display: none !important; }
       .print-only { display: block !important; }
+      .print-hide { display: none !important; }
       .page-card {
         box-shadow: none !important;
         border: none !important;
@@ -31,6 +33,7 @@
       }
       table {
         width: 100% !important;
+        table-layout: fixed !important;
         border-collapse: collapse !important;
         font-size: 10pt !important;
       }
@@ -38,18 +41,26 @@
         border: 1px solid #333 !important;
         padding: 5px 8px !important;
         text-align: left !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
       }
       th {
         background-color: #f1f5f9 !important;
       }
+      /* กำหนดความกว้างคอลัมน์ตอนพิมพ์: 10% + 15% + 30% + 20% + 25% = 100% */
+      th.col-seq, td.col-seq { width: 6% !important; text-align: center !important; }
+      th.col-time, td.col-time { width: 19% !important; }
+      th.col-name, td.col-name { width: 28% !important; }
+      th.col-consent, td.col-consent { width: 16% !important; text-align: center !important; }
+      th.col-note, td.col-note { width: 31% !important; }
+
       .badge-consent { font-weight: bold !important; color: #047857 !important; }
       .badge-refuse { font-weight: bold !important; color: #b91c1c !important; }
       
-      /* ตั้งค่าขนาดกระดาษ แนวนอน (Landscape) และกำหนด Scale 66% */
       @page {
-        size: A4 landscape;
+        size: A4 portrait;
         margin: 1cm;
-        scale: 0.66;
+        scale: 0.3;
       }
     }
 
@@ -74,7 +85,7 @@
         <button onclick="fetchData()" class="bg-sky-600 hover:bg-sky-500 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition shadow">
           <i class="fa-solid fa-rotate"></i> รีเฟรชข้อมูล
         </button>
-        <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition shadow">
+        <button onclick="handlePrintReport()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition shadow">
           <i class="fa-solid fa-print"></i> พิมพ์รายงานออกหน่วย (A4)
         </button>
       </div>
@@ -86,6 +97,7 @@
     <div class="text-center border-b-2 border-slate-800 pb-4 mb-4">
       <h1 class="text-2xl font-bold">รายงานความประสงค์รับบริการตรวจสุขภาพช่องปากและทาฟลูออไรด์วานิช</h1>
       <h2 class="text-lg font-semibold text-slate-700">งานทันตสาธารณสุข กองสาธารณสุขและสิ่งแวดล้อม เทศบาลเมืองชุมพร</h2>
+      <p class="text-base font-bold text-slate-800 mt-2" id="printScopeMeta">โรงเรียน: ทุกโรงเรียน | ชั้น/ห้อง: ทุกชั้น / ทุกห้อง</p>
       <p class="text-sm text-slate-600 mt-1" id="printReportMeta">ข้อมูล ณ วันที่: -</p>
     </div>
   </div>
@@ -209,15 +221,15 @@
         <table class="w-full text-sm text-left text-slate-600">
           <thead class="text-xs text-slate-700 uppercase bg-slate-100 border-b border-slate-200">
             <tr>
-              <th scope="col" class="px-4 py-3 text-center w-12">ลำดับ</th>
-              <th scope="col" class="px-4 py-3">วัน-เวลา แจ้ง</th>
-              <th scope="col" class="px-4 py-3">ชื่อ-นามสกุล นักเรียน</th>
-              <th scope="col" class="px-4 py-3">โรงเรียน</th>
-              <th scope="col" class="px-4 py-3 text-center">ชั้น/ห้อง</th>
-              <th scope="col" class="px-4 py-3">ชื่อผู้ปกครอง</th>
-              <th scope="col" class="px-4 py-3">เบอร์โทรศัพท์</th>
-              <th scope="col" class="px-4 py-3 text-center">ความประสงค์</th>
-              <th scope="col" class="px-4 py-3">หมายเหตุ/โรคประจำตัว</th>
+              <th scope="col" class="px-4 py-3 text-center w-12 col-seq">ลำดับ</th>
+              <th scope="col" class="px-4 py-3 col-time">วัน-เวลา แจ้ง</th>
+              <th scope="col" class="px-4 py-3 col-name">ชื่อ-นามสกุล นักเรียน</th>
+              <th scope="col" class="px-4 py-3 print-hide">โรงเรียน</th>
+              <th scope="col" class="px-4 py-3 text-center print-hide">ชั้น/ห้อง</th>
+              <th scope="col" class="px-4 py-3 print-hide">ชื่อผู้ปกครอง</th>
+              <th scope="col" class="px-4 py-3 print-hide">เบอร์โทรศัพท์</th>
+              <th scope="col" class="px-4 py-3 text-center col-consent">ความประสงค์</th>
+              <th scope="col" class="px-4 py-3 col-note">หมายเหตุ/โรคประจำตัว</th>
             </tr>
           </thead>
           <tbody id="tableBody">
@@ -262,9 +274,28 @@
       document.getElementById('filterConsent').addEventListener('change', renderTable);
       document.getElementById('searchKeyword').addEventListener('input', renderTable);
       
+      updatePrintHeaderMeta();
+    });
+
+    function updatePrintHeaderMeta() {
+      const schoolVal = document.getElementById('filterSchool').value;
+      const gradeVal = document.getElementById('filterGrade').value;
+      const roomVal = document.getElementById('filterRoom').value;
+
+      const schoolText = (schoolVal === 'ALL') ? 'ทุกโรงเรียน' : schoolVal;
+      const gradeText = (gradeVal === 'ALL') ? 'ทุกชั้น' : gradeVal;
+      const roomText = (roomVal === 'ALL') ? 'ทุกห้อง' : roomVal;
+
+      document.getElementById('printScopeMeta').innerText = `โรงเรียน: ${schoolText}  |  ชั้น/ห้อง: ${gradeText} / ${roomText}`;
+
       const now = new Date();
       document.getElementById('printReportMeta').innerText = `พิมพ์เมื่อวันที่: ${now.toLocaleDateString('th-TH')} เวลา ${now.toLocaleTimeString('th-TH')} น.`;
-    });
+    }
+
+    function handlePrintReport() {
+      updatePrintHeaderMeta();
+      window.print();
+    }
 
     function fetchData() {
       const tbody = document.getElementById('tableBody');
@@ -330,6 +361,8 @@
     }
 
     function renderTable() {
+      updatePrintHeaderMeta();
+
       const schoolFilter = document.getElementById('filterSchool').value;
       const gradeFilter = document.getElementById('filterGrade').value;
       const roomFilter = document.getElementById('filterRoom').value;
@@ -375,19 +408,19 @@
 
         const rowHtml = `
           <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
-            <td class="px-4 py-3 text-center font-medium text-slate-500">${index + 1}</td>
-            <td class="px-4 py-3 text-xs text-slate-500">${formatThaiDateTime(item.timestamp)}</td>
-            <td class="px-4 py-3 font-semibold text-slate-800">${item.studentName}</td>
-            <td class="px-4 py-3 text-slate-700">${item.schoolName}</td>
-            <td class="px-4 py-3 text-center font-medium">${item.gradeLevel} / ${item.roomNo}</td>
-            <td class="px-4 py-3 text-slate-700">${item.parentName}</td>
-            <td class="px-4 py-3 text-slate-600 font-mono text-xs">${item.phone}</td>
-            <td class="px-4 py-3 text-center">
+            <td class="px-4 py-3 text-center font-medium text-slate-500 col-seq">${index + 1}</td>
+            <td class="px-4 py-3 text-xs text-slate-500 col-time">${formatThaiDateTime(item.timestamp)}</td>
+            <td class="px-4 py-3 font-semibold text-slate-800 col-name">${item.studentName}</td>
+            <td class="px-4 py-3 text-slate-700 print-hide">${item.schoolName}</td>
+            <td class="px-4 py-3 text-center font-medium print-hide">${item.gradeLevel} / ${item.roomNo}</td>
+            <td class="px-4 py-3 text-slate-700 print-hide">${item.parentName}</td>
+            <td class="px-4 py-3 text-slate-600 font-mono text-xs print-hide">${item.phone}</td>
+            <td class="px-4 py-3 text-center col-consent">
               <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${badgeClass}">
                 <i class="fa-solid ${icon}"></i> ${item.consent}
               </span>
             </td>
-            <td class="px-4 py-3 text-slate-500 text-xs">${item.note || '-'}</td>
+            <td class="px-4 py-3 text-slate-500 text-xs col-note">${item.note || '-'}</td>
           </tr>
         `;
         tbody.insertAdjacentHTML('beforeend', rowHtml);
