@@ -18,7 +18,8 @@
             --fs-base: clamp(14px, 1.2vw + 10px, 18px);
             --fs-h2: clamp(1.5rem, 3vw + 1rem, 2.5rem);
             --fs-h3: clamp(1.25rem, 2vw + 1rem, 2rem);
-
+            
+            /* FM Radio Themes */
             --fm-accent-cyan: #00f2fe;
             --fm-accent-blue: #4facfe;
             --fm-accent-purple: #7f00ff;
@@ -273,6 +274,7 @@
             animation: newsFadeZoom 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
+        /* --- FM Radio Floating Button & Spinning Animation --- */
         .fm-trigger-btn {
             position: fixed;
             bottom: 1.5rem;
@@ -281,8 +283,8 @@
             height: 48px;
             border-radius: 50%;
             background: linear-gradient(135deg, #00f2fe, #4facfe, #7f00ff);
-            background-size: 200% 200%;
-            border: 2px solid rgba(255, 255, 255, 0.4);
+            background-size: 101% 101%;
+            border: 1px solid rgba(255, 255, 255, 0.4);
             box-shadow: 0 8px 20px rgba(0, 242, 254, 0.35);
             display: flex;
             align-items: center;
@@ -317,6 +319,7 @@
             animation: audioWaveGlow 1.8s infinite;
         }
 
+        /* --- FM Modal Studio Styles --- */
         .fm-modal-backdrop {
             position: fixed;
             inset: 0;
@@ -745,7 +748,7 @@
                             <i class="fas fa-tower-broadcast"></i>
                         </div>
                         <div>
-                            <h1 class="text-lg font-bold text-white">Music BY งานทันตสาธารณสุข ทม.ชพ.</h1>
+                            <h1 class="text-lg font-bold text-white">FM Radio & Sound Studio</h1>
                             <p class="text-xs text-cyan-400">ระบบเสียงเพลงบรรเลงผ่อนคลายสำหรับผู้ป่วย</p>
                         </div>
                     </div>
@@ -760,6 +763,7 @@
                     </div>
                 </header>
 
+                <!-- Spectrum Visualizer -->
                 <section class="fm-visualizer-card">
                     <div class="fm-track-overlay">
                         <div class="fm-track-title" id="fmDisplayTrackTitle">ยังไม่ได้เลือกเพลง</div>
@@ -768,6 +772,7 @@
                     <canvas id="fmVisualizerCanvas"></canvas>
                 </section>
 
+                <!-- Timeline & Cue System -->
                 <section class="fm-timeline-container">
                     <div class="fm-time-display">
                         <span id="fmCurrentTime">00:00</span>
@@ -784,12 +789,14 @@
                     </div>
                 </section>
 
+                <!-- Controls Bar -->
                 <div class="fm-transport-bar">
                     <button class="fm-btn fm-btn-circle" id="fmBtnPrev"><i class="fas fa-backward-step"></i></button>
                     <button class="fm-btn fm-btn-circle fm-btn-primary" id="fmBtnPlay"><i class="fas fa-play" id="fmPlayIcon"></i></button>
                     <button class="fm-btn fm-btn-circle" id="fmBtnNext"><i class="fas fa-forward-step"></i></button>
                 </div>
 
+                <!-- Equalizer Controls -->
                 <div class="flex justify-between items-center mb-3 text-xs">
                     <span class="font-semibold text-gray-300">Sound FX & Equalizer</span>
                     <div class="flex gap-1.5 overflow-x-auto">
@@ -839,6 +846,7 @@
                 </section>
             </main>
 
+            <!-- Sidebar Playlist -->
             <aside class="fm-sidebar">
                 <div class="text-sm font-semibold mb-3 flex items-center gap-2 text-white">
                     <i class="fas fa-list-ul text-cyan-400"></i> รายการเพลงบรรเลง
@@ -852,6 +860,7 @@
             </aside>
         </div>
     </div>
+    <!-- ==================== END FM RADIO COMPONENT ==================== -->
 
     <main>
         <section class="glassy-section p-6 sm:p-10 flex flex-col">
@@ -888,6 +897,7 @@
         </div>
     </main>
 
+    <!-- ส่วนแสดงผู้ให้บริการกึ่งกลางจอ -->
     <footer>
         <div class="provider-card">
             <img src="assets/images/admin.jpg" alt="รูปโปรไฟล์" class="footer-image shrink-0">
@@ -920,8 +930,6 @@
         let newsDataList = [];
         let newsIndex = 0;
         let newsInterval = null;
-        let latestBookingsCache = [];
-        let lastAnnouncedKey = null;
 
         function toggleNewsPanel() {
             const panel = document.getElementById('newsFloatingPanel');
@@ -1027,7 +1035,7 @@
 
         function announceQueue(fullName, btnElement) {
             if (!('speechSynthesis' in window)) {
-                console.warn('เบราว์เซอร์ของคุณไม่รองรับระบบออกเสียง');
+                alert('เบราว์เซอร์ของคุณไม่รองรับระบบออกเสียง');
                 return;
             }
 
@@ -1124,7 +1132,6 @@
                 const data = await response.json();
                 if (queueLoading) queueLoading.classList.add('hidden');
                 if (Array.isArray(data)) {
-                    latestBookingsCache = data;
                     updateQueueDisplay(data);
                 }
             } catch (error) {
@@ -1202,12 +1209,9 @@
             let gridContainer = document.createElement('div');
             gridContainer.className = 'flex flex-col gap-1';
 
-            let currentAnnounceBtn = null;
-
             if (currentAppt) {
                 const currentCard = createChairCard(currentAppt, 'current', now, upcoming.length > 0);
                 gridContainer.appendChild(currentCard);
-                currentAnnounceBtn = currentCard.querySelector('.announce-current-btn');
             }
 
             if (upcoming.length > 0) {
@@ -1239,18 +1243,6 @@
             }
 
             queueDisplay.appendChild(gridContainer);
-
-            if (currentAppt) {
-                const currentKey = `${currentAppt.parsedDate.toDateString()}_${currentAppt.timeSlot}_${currentAppt.patientName}`;
-                if (currentKey !== lastAnnouncedKey) {
-                    lastAnnouncedKey = currentKey;
-                    setTimeout(() => {
-                        announceQueue(currentAppt.patientName, currentAnnounceBtn);
-                    }, 300);
-                }
-            } else {
-                lastAnnouncedKey = null;
-            }
 
             const toggleAbnormalBtn = document.getElementById('toggleAbnormalPanel');
             const toggleAbnormalIcon = document.getElementById('toggleAbnormalIcon');
@@ -1335,7 +1327,8 @@
                                 <p class="text-xs text-gray-500"><i class="far fa-clock mr-1"></i>${appt.timeSlot}</p>
                             </div>
                         </div>
-                        <button onclick="announceQueue('${appt.patientName}', this)" class="announce-current-btn btn-gold py-2 px-4 rounded-xl text-sm flex items-center gap-2 shrink-0 cursor-pointer hover:scale-105 transition-transform">
+                        <!-- ปุ่มเรียกชื่อสำหรับคิวปัจจุบัน -->
+                        <button onclick="announceQueue('${appt.patientName}', this)" class="btn-gold py-2 px-4 rounded-xl text-sm flex items-center gap-2 shrink-0 cursor-pointer hover:scale-105 transition-transform">
                             <i class="fas fa-bullhorn"></i> เรียกคิว
                         </button>
                     </div>
@@ -1371,6 +1364,7 @@
 
                     <div class="flex flex-col items-center justify-center w-full pt-2 border-t border-gray-100 gap-2 text-[11px]">
                         ${timeRemainingHtml}
+                        <!-- ปุ่มเรียกชื่อสำหรับคิวล่วงหน้า/คิวถัดๆ ไป -->
                         <button onclick="announceQueue('${appt.patientName}', this)" class="btn-gold py-1 px-3 rounded-lg text-xs flex items-center gap-1 w-full justify-center">
                             <i class="fas fa-bullhorn text-[10px]"></i> เรียกคิว
                         </button>
@@ -1424,14 +1418,11 @@
                         span.textContent = 'ถึงคิวแล้ว';
                     }
                 });
-                if (latestBookingsCache.length > 0) {
-                    updateQueueDisplay(latestBookingsCache);
-                }
             }, 10000);
         });
 
         /* ==========================================================================
-           FM RADIO SYSTEM ENGINE
+           FM RADIO SYSTEM ENGINE (integrated from FM.html)
            ========================================================================== */
         let audioCtx;
         let analyserNode;
