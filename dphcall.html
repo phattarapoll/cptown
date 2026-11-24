@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>งานทันตสาธารณสุข ศูนย์บริการสาธารณสุขเทศบาลเมืองชุมพร</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --color-primary: #0F172A;
@@ -15,20 +15,26 @@
             --color-success: #10B981;
             --color-error: #EF4444;
             --color-footer-bg: #111827;
-			--fs-base: clamp(14px, 1.2vw + 10px, 18px);
-			--fs-h2: clamp(1.5rem, 3vw + 1rem, 2.5rem);
-			--fs-h3: clamp(1.25rem, 2vw + 1rem, 2rem);
-		}
+            --fs-base: clamp(14px, 1.2vw + 10px, 18px);
+            --fs-h2: clamp(1.5rem, 3vw + 1rem, 2.5rem);
+            --fs-h3: clamp(1.25rem, 2vw + 1rem, 2rem);
+
+            --fm-accent-cyan: #00f2fe;
+            --fm-accent-blue: #4facfe;
+            --fm-accent-purple: #7f00ff;
+            --fm-accent-pink: #ff007f;
+            --fm-panel-border: rgba(255, 255, 255, 0.12);
+        }
 
         html, body {
-			font-size: var(--fs-base);
-			line-height: normal;
+            font-size: var(--fs-base);
+            line-height: normal;
             height: 100%;
             margin: 0;
             font-family: 'Sarabun', sans-serif;
         }
-		h2 { font-size: var(--fs-h2) !important; }
-		h3 { font-size: var(--fs-h3) !important; }
+        h2 { font-size: var(--fs-h2) !important; }
+        h3 { font-size: var(--fs-h3) !important; }
 
         body {
             display: flex;
@@ -39,18 +45,18 @@
             color: #F8FAFC;
         }
 
-		.service-area-box {
-			background-color: rgba(30, 41, 59, 0.7);
-			backdrop-filter: blur(12px) brightness(1.1);
-			border: 1px solid rgba(193, 154, 107, 0.3);
-			box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-			transition: all 0.3s ease;
-		}
+        .service-area-box {
+            background-color: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px) brightness(1.1);
+            border: 1px solid rgba(193, 154, 107, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
 
-		.service-text {
-			color: #E2E8F0;
-			text-shadow: 0px 0px 1px rgba(0, 0, 0, 0.5);
-		}
+        .service-text {
+            color: #E2E8F0;
+            text-shadow: 0px 0px 1px rgba(0, 0, 0, 0.5);
+        }
 
         main {
             flex: 1;
@@ -92,8 +98,8 @@
         .floating-alert {
             position: fixed;
             top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
+            left: 50%;
+            transform: translate(-50%, -50%);
             z-index: 1000;
             background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
             color: #fff;
@@ -113,8 +119,8 @@
             90% { opacity: 1; transform: translateX(0); }
             100% { opacity: 0; transform: translateX(20px); }
         }
-		
-		.text-accent-gold { color: #C19A6B; }
+        
+        .text-accent-gold { color: #C19A6B; }
 
         .service-card {
             background-color: rgba(30, 41, 59, 0.8);
@@ -266,6 +272,358 @@
         .news-animate-card {
             animation: newsFadeZoom 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
+
+        .fm-trigger-btn {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00f2fe, #4facfe, #7f00ff);
+            background-size: 200% 200%;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 20px rgba(0, 242, 254, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: black;
+            cursor: pointer;
+            z-index: 90;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .fm-trigger-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 35px rgba(0, 242, 254, 0.7);
+        }
+
+        @keyframes spinDisk {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes audioWaveGlow {
+            0% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0.7); }
+            70% { box-shadow: 0 0 0 18px rgba(0, 242, 254, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0); }
+        }
+
+        .fm-trigger-btn.is-playing .spin-icon {
+            animation: spinDisk 3s linear infinite;
+        }
+
+        .fm-trigger-btn.is-playing {
+            animation: audioWaveGlow 1.8s infinite;
+        }
+
+        .fm-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 14, 23, 0.85);
+            backdrop-filter: blur(16px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .fm-modal-backdrop.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .fm-studio-container {
+            width: 100%;
+            max-width: 1100px;
+            max-height: 90vh;
+            overflow-y: auto;
+            background: rgba(22, 28, 45, 0.95);
+            border: 1px solid var(--fm-panel-border);
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 25px;
+            font-family: 'Prompt', 'Sarabun', sans-serif;
+            color: #f0f4f8;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+
+        .fm-modal-backdrop.active .fm-studio-container {
+            transform: scale(1);
+        }
+
+        @media (max-width: 992px) {
+            .fm-studio-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .fm-visualizer-card {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 16px;
+            border: 1px solid var(--fm-panel-border);
+            padding: 15px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .fm-visualizer-card canvas {
+            width: 100%;
+            height: 160px;
+            display: block;
+            border-radius: 8px;
+        }
+
+        .fm-track-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            pointer-events: none;
+        }
+
+        .fm-track-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .fm-track-status {
+            font-size: 0.8rem;
+            color: var(--fm-accent-cyan);
+            font-weight: 300;
+        }
+
+        .fm-timeline-container {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 16px;
+            border-radius: 16px;
+            border: 1px solid var(--fm-panel-border);
+            margin-bottom: 20px;
+        }
+
+        .fm-time-display {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #8a99ad;
+            margin-bottom: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .fm-seek-wrapper {
+            position: relative;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .fm-seek-progress {
+            position: absolute;
+            top: 0; left: 0; height: 100%;
+            background: linear-gradient(90deg, var(--fm-accent-cyan), var(--fm-accent-blue));
+            border-radius: 4px;
+            width: 0%;
+        }
+
+        .fm-cue-marker {
+            position: absolute;
+            top: -5px; width: 4px; height: 18px;
+            background: var(--fm-accent-pink);
+            border-radius: 2px;
+            box-shadow: 0 0 8px var(--fm-accent-pink);
+            transform: translateX(-50%);
+            display: none;
+        }
+
+        .fm-cue-controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .fm-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--fm-panel-border);
+            color: #f0f4f8;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .fm-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .fm-btn-primary {
+            background: linear-gradient(135deg, var(--fm-accent-blue), var(--fm-accent-purple));
+            border: none;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        .fm-btn-accent {
+            background: rgba(255, 0, 127, 0.15);
+            border-color: rgba(255, 0, 127, 0.4);
+            color: #ff66b2;
+        }
+
+        .fm-transport-bar {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .fm-btn-circle {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            padding: 0;
+            font-size: 1.1rem;
+        }
+
+        .fm-fx-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 12px;
+        }
+
+        .fm-control-card {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 12px;
+            border: 1px solid var(--fm-panel-border);
+            padding: 12px 8px;
+            text-align: center;
+        }
+
+        .fm-control-label {
+            font-size: 0.75rem;
+            color: #8a99ad;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .fm-slider-wrapper {
+            height: 85px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .fm-vertical-slider {
+            transform: rotate(-90deg);
+            width: 80px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .fm-vertical-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: var(--fm-accent-cyan);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--fm-accent-cyan);
+        }
+
+        .fm-value-display {
+            font-size: 0.7rem;
+            font-family: 'Inter', sans-serif;
+            color: var(--fm-accent-cyan);
+            margin-top: 6px;
+        }
+
+        .fm-sidebar {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            border: 1px solid var(--fm-panel-border);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .fm-upload-box {
+            border: 2px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 15px;
+        }
+
+        .fm-upload-box:hover {
+            border-color: var(--fm-accent-cyan);
+            background: rgba(0, 242, 254, 0.05);
+        }
+
+        .fm-playlist {
+            list-style: none;
+            overflow-y: auto;
+            max-height: 320px;
+            flex-grow: 1;
+        }
+
+        .fm-playlist-item {
+            padding: 8px 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.02);
+            margin-bottom: 6px;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: grab;
+            border: 1px solid transparent;
+            transition: background 0.2s;
+        }
+
+        .fm-playlist-item.active {
+            border-color: var(--fm-accent-cyan);
+            background: rgba(0, 242, 254, 0.1);
+            color: var(--fm-accent-cyan);
+        }
+
+        .fm-preset-chip {
+            padding: 3px 8px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            font-size: 0.7rem;
+            color: #8a99ad;
+            cursor: pointer;
+            border: 1px solid var(--fm-panel-border);
+            white-space: nowrap;
+        }
+
+        .fm-preset-chip.active {
+            background: var(--fm-accent-blue);
+            color: #fff;
+            border-color: var(--fm-accent-blue);
+        }
     </style>
     <script>
         tailwind.config = {
@@ -373,6 +731,128 @@
         <i id="toggleAbnormalIcon" class="fas fa-exclamation-triangle text-yellow-300 text-xl"></i>
     </button>
 
+    <!-- ==================== FM RADIO FLOATING BUTTON & MODAL ==================== -->
+    <button id="fmTriggerBtn" class="fm-trigger-btn" onclick="openFMModal()" title="เปิดเครื่องเล่นเพลง FM Sound Studio">
+        <i class="fas fa-compact-disc text-2xl spin-icon"></i>
+    </button>
+
+    <div id="fmModalBackdrop" class="fm-modal-backdrop">
+        <div class="fm-studio-container">
+            <main>
+                <header class="flex items-center justify-between mb-5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-500 flex items-center justify-center text-black text-lg font-bold shadow-lg shadow-cyan-500/30">
+                            <i class="fas fa-tower-broadcast"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-lg font-bold text-white">Music BY งานทันตสาธารณสุข ทม.ชพ.</h1>
+                            <p class="text-xs text-cyan-400">ระบบเสียงเพลงบรรเลงผ่อนคลายสำหรับผู้ป่วย</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-2 bg-slate-900/60 px-3 py-1.5 rounded-full border border-slate-700 text-xs">
+                            <span id="fmStatusDot" class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                            <span id="fmStatusText" class="text-gray-400">พร้อมใช้งาน</span>
+                        </div>
+                        <button onclick="closeFMModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-gray-400 hover:text-white transition-colors">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </header>
+
+                <section class="fm-visualizer-card">
+                    <div class="fm-track-overlay">
+                        <div class="fm-track-title" id="fmDisplayTrackTitle">ยังไม่ได้เลือกเพลง</div>
+                        <div class="fm-track-status" id="fmDisplayTrackStatus">คลิกเพิ่มเพลงเพื่อเริ่มเล่น</div>
+                    </div>
+                    <canvas id="fmVisualizerCanvas"></canvas>
+                </section>
+
+                <section class="fm-timeline-container">
+                    <div class="fm-time-display">
+                        <span id="fmCurrentTime">00:00</span>
+                        <span id="fmDurationTime">00:00</span>
+                    </div>
+                    <div class="fm-seek-wrapper" id="fmSeekBarWrapper">
+                        <div class="fm-seek-progress" id="fmSeekBarProgress"></div>
+                        <div class="fm-cue-marker" id="fmCueMarker"></div>
+                    </div>
+                    <div class="fm-cue-controls">
+                        <button class="fm-btn fm-btn-accent" id="fmBtnSetCue"><i class="fas fa-bookmark"></i> มาร์คจุดเริ่ม</button>
+                        <button class="fm-btn" id="fmBtnJumpCue"><i class="fas fa-arrow-right-to-line"></i> ไปจุดมาร์ค</button>
+                        <button class="fm-btn" id="fmBtnClearCue"><i class="fas fa-trash-can"></i> ล้างจุดมาร์ค</button>
+                    </div>
+                </section>
+
+                <div class="fm-transport-bar">
+                    <button class="fm-btn fm-btn-circle" id="fmBtnPrev"><i class="fas fa-backward-step"></i></button>
+                    <button class="fm-btn fm-btn-circle fm-btn-primary" id="fmBtnPlay"><i class="fas fa-play" id="fmPlayIcon"></i></button>
+                    <button class="fm-btn fm-btn-circle" id="fmBtnNext"><i class="fas fa-forward-step"></i></button>
+                </div>
+
+                <div class="flex justify-between items-center mb-3 text-xs">
+                    <span class="font-semibold text-gray-300">Sound FX & Equalizer</span>
+                    <div class="flex gap-1.5 overflow-x-auto">
+                        <div class="fm-preset-chip active" onclick="applyEQPreset('flat', event)">Flat</div>
+                        <div class="fm-preset-chip" onclick="applyEQPreset('bass', event)">Bass Boost</div>
+                        <div class="fm-preset-chip" onclick="applyEQPreset('vocal', event)">Vocal Clarity</div>
+                        <div class="fm-preset-chip" onclick="applyEQPreset('radio', event)">Vintage Radio</div>
+                    </div>
+                </div>
+
+                <section class="fm-fx-grid">
+                    <div class="fm-control-card">
+                        <span class="fm-control-label">ความเร็ว</span>
+                        <div class="fm-slider-wrapper">
+                            <input type="range" class="fm-vertical-slider" id="fmSpeedSlider" min="0.5" max="1.5" step="0.05" value="1">
+                        </div>
+                        <div class="fm-value-display" id="fmSpeedValue">1.0x</div>
+                    </div>
+                    <div class="fm-control-card">
+                        <span class="fm-control-label">เบส (Low)</span>
+                        <div class="fm-slider-wrapper">
+                            <input type="range" class="fm-vertical-slider" id="fmBassSlider" min="-12" max="12" step="1" value="0">
+                        </div>
+                        <div class="fm-value-display" id="fmBassValue">0 dB</div>
+                    </div>
+                    <div class="fm-control-card">
+                        <span class="fm-control-label">กลาง (Mid)</span>
+                        <div class="fm-slider-wrapper">
+                            <input type="range" class="fm-vertical-slider" id="fmMidSlider" min="-12" max="12" step="1" value="0">
+                        </div>
+                        <div class="fm-value-display" id="fmMidValue">0 dB</div>
+                    </div>
+                    <div class="fm-control-card">
+                        <span class="fm-control-label">แหลม (High)</span>
+                        <div class="fm-slider-wrapper">
+                            <input type="range" class="fm-vertical-slider" id="fmTrebleSlider" min="-12" max="12" step="1" value="0">
+                        </div>
+                        <div class="fm-value-display" id="fmTrebleValue">0 dB</div>
+                    </div>
+                    <div class="fm-control-card">
+                        <span class="fm-control-label">ความดัง</span>
+                        <div class="fm-slider-wrapper">
+                            <input type="range" class="fm-vertical-slider" id="fmVolumeSlider" min="0" max="1" step="0.01" value="0.8">
+                        </div>
+                        <div class="fm-value-display" id="fmVolumeValue">80%</div>
+                    </div>
+                </section>
+            </main>
+
+            <aside class="fm-sidebar">
+                <div class="text-sm font-semibold mb-3 flex items-center gap-2 text-white">
+                    <i class="fas fa-list-ul text-cyan-400"></i> รายการเพลงบรรเลง
+                </div>
+                <div class="fm-upload-box" onclick="document.getElementById('fmAudioFileInput').click()">
+                    <i class="fas fa-cloud-arrow-up text-cyan-400 text-xl mb-1"></i>
+                    <p class="text-xs text-gray-400">เพิ่มไฟล์เพลงจากเครื่อง</p>
+                    <input type="file" id="fmAudioFileInput" multiple accept="audio/*" style="display: none;">
+                </div>
+                <ul class="fm-playlist" id="fmPlaylist"></ul>
+            </aside>
+        </div>
+    </div>
+
     <main>
         <section class="glassy-section p-6 sm:p-10 flex flex-col">
             <div class="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
@@ -408,7 +888,6 @@
         </div>
     </main>
 
-    <!-- ส่วนแสดงผู้ให้บริการกึ่งกลางจอ -->
     <footer>
         <div class="provider-card">
             <img src="assets/images/admin.jpg" alt="รูปโปรไฟล์" class="footer-image shrink-0">
@@ -441,6 +920,8 @@
         let newsDataList = [];
         let newsIndex = 0;
         let newsInterval = null;
+        let latestBookingsCache = [];
+        let lastAnnouncedKey = null;
 
         function toggleNewsPanel() {
             const panel = document.getElementById('newsFloatingPanel');
@@ -546,7 +1027,7 @@
 
         function announceQueue(fullName, btnElement) {
             if (!('speechSynthesis' in window)) {
-                alert('เบราว์เซอร์ของคุณไม่รองรับระบบออกเสียง');
+                console.warn('เบราว์เซอร์ของคุณไม่รองรับระบบออกเสียง');
                 return;
             }
 
@@ -643,6 +1124,7 @@
                 const data = await response.json();
                 if (queueLoading) queueLoading.classList.add('hidden');
                 if (Array.isArray(data)) {
+                    latestBookingsCache = data;
                     updateQueueDisplay(data);
                 }
             } catch (error) {
@@ -720,9 +1202,12 @@
             let gridContainer = document.createElement('div');
             gridContainer.className = 'flex flex-col gap-1';
 
+            let currentAnnounceBtn = null;
+
             if (currentAppt) {
                 const currentCard = createChairCard(currentAppt, 'current', now, upcoming.length > 0);
                 gridContainer.appendChild(currentCard);
+                currentAnnounceBtn = currentCard.querySelector('.announce-current-btn');
             }
 
             if (upcoming.length > 0) {
@@ -732,7 +1217,7 @@
                 gridContainer.appendChild(sectionTitle);
 
                 let rowDiv = document.createElement('div');
-				rowDiv.className = 'grid grid-cols-2 md:grid-cols-4 gap-3';
+                rowDiv.className = 'grid grid-cols-2 md:grid-cols-4 gap-3';
 
                 upcoming.forEach((appt, index) => {
                     const isFirstUpcoming = (index === 0);
@@ -754,6 +1239,18 @@
             }
 
             queueDisplay.appendChild(gridContainer);
+
+            if (currentAppt) {
+                const currentKey = `${currentAppt.parsedDate.toDateString()}_${currentAppt.timeSlot}_${currentAppt.patientName}`;
+                if (currentKey !== lastAnnouncedKey) {
+                    lastAnnouncedKey = currentKey;
+                    setTimeout(() => {
+                        announceQueue(currentAppt.patientName, currentAnnounceBtn);
+                    }, 300);
+                }
+            } else {
+                lastAnnouncedKey = null;
+            }
 
             const toggleAbnormalBtn = document.getElementById('toggleAbnormalPanel');
             const toggleAbnormalIcon = document.getElementById('toggleAbnormalIcon');
@@ -838,8 +1335,7 @@
                                 <p class="text-xs text-gray-500"><i class="far fa-clock mr-1"></i>${appt.timeSlot}</p>
                             </div>
                         </div>
-                        <!-- ปุ่มเรียกชื่อสำหรับคิวปัจจุบัน -->
-                        <button onclick="announceQueue('${appt.patientName}', this)" class="btn-gold py-2 px-4 rounded-xl text-sm flex items-center gap-2 shrink-0 cursor-pointer hover:scale-105 transition-transform">
+                        <button onclick="announceQueue('${appt.patientName}', this)" class="announce-current-btn btn-gold py-2 px-4 rounded-xl text-sm flex items-center gap-2 shrink-0 cursor-pointer hover:scale-105 transition-transform">
                             <i class="fas fa-bullhorn"></i> เรียกคิว
                         </button>
                     </div>
@@ -875,7 +1371,6 @@
 
                     <div class="flex flex-col items-center justify-center w-full pt-2 border-t border-gray-100 gap-2 text-[11px]">
                         ${timeRemainingHtml}
-                        <!-- ปุ่มเรียกชื่อสำหรับคิวล่วงหน้า/คิวถัดๆ ไป -->
                         <button onclick="announceQueue('${appt.patientName}', this)" class="btn-gold py-1 px-3 rounded-lg text-xs flex items-center gap-1 w-full justify-center">
                             <i class="fas fa-bullhorn text-[10px]"></i> เรียกคิว
                         </button>
@@ -884,72 +1379,6 @@
             }
 
             return card;
-        }
-
-        async function fetchNewsFromGoogleSheet() {
-            if (!newsBoard) return;
-            if (newsLoading) newsLoading.classList.remove('hidden');
-            if (newsError) newsError.classList.add('hidden');
-
-            try {
-                const response = await fetch(NEWS_API_URL);
-                const data = await response.json();
-                if (newsLoading) newsLoading.classList.add('hidden');
-
-                if (!data || data.length === 0) {
-                    newsBoard.innerHTML = '<p class="text-center text-gray-400 text-sm py-4">ไม่มีข่าวสารในขณะนี้</p>';
-                    return;
-                }
-
-                newsDataList = data;
-                newsIndex = 0;
-                renderCurrentNews();
-
-            } catch (error) {
-                console.error('Fetch News Error:', error);
-                if (newsLoading) newsLoading.classList.add('hidden');
-                if (newsError) newsError.classList.remove('hidden');
-            }
-        }
-
-        function rotateNews() {
-            if (newsDataList.length === 0) return;
-            newsIndex = (newsIndex + 1) % newsDataList.length;
-            renderCurrentNews();
-        }
-
-        function renderCurrentNews() {
-            if (!newsBoard || newsDataList.length === 0) return;
-            newsBoard.innerHTML = '';
-
-            const newsItem = newsDataList[newsIndex];
-            const newsDiv = document.createElement('div');
-            newsDiv.className = 'bg-slate-800/90 border border-slate-700 p-4 rounded-2xl shadow-lg space-y-2.5 news-animate-card backdrop-blur-md relative overflow-hidden text-gray-200';
-            
-            const date = new Date(newsItem.date).toLocaleDateString('th-TH', {
-                year: 'numeric', month: 'long', day: 'numeric'
-            });
-
-            let linkHtml = '';
-            if (newsItem.link && newsItem.link !== '') {
-                linkHtml = `<a href="${newsItem.link}" target="_blank" class="inline-flex items-center text-amber-400 hover:text-amber-300 text-xs mt-2 font-semibold">อ่านรายละเอียดเพิ่มเติม <i class="fas fa-external-link-alt ml-1.5 text-[10px]"></i></a>`;
-            }
-
-            newsDiv.innerHTML = `
-                <div class="absolute top-0 left-0 w-1.5 h-full bg-accent-gold"></div>
-                <div class="flex items-center justify-between pl-2">
-                    <span class="text-[10px] font-bold text-accent-gold bg-accent-gold/15 px-2.5 py-0.5 rounded-full flex items-center gap-1"><i class="far fa-newspaper"></i> ข่าวประชาสัมพันธ์</span>
-                    <span class="text-[10px] text-gray-400 font-mono">${newsIndex + 1}/${newsDataList.length}</span>
-                </div>
-                <p class="font-bold text-white text-sm pl-2 leading-snug">${newsItem.title}</p>
-                <div class="bg-slate-900/60 border border-slate-700/60 p-3 rounded-xl text-xs text-gray-300 leading-relaxed shadow-inner">
-                    <p class="text-[11px] text-gray-400 mb-1"><i class="far fa-calendar-alt mr-1"></i>วันที่ประกาศ: ${date}</p>
-                    ${newsItem.description ? `<p class="mt-1">${newsItem.description}</p>` : ''}
-                    ${linkHtml}
-                </div>
-            `;
-
-            newsBoard.appendChild(newsDiv);
         }
 
         function maskLastName(name) {
@@ -995,8 +1424,498 @@
                         span.textContent = 'ถึงคิวแล้ว';
                     }
                 });
+                if (latestBookingsCache.length > 0) {
+                    updateQueueDisplay(latestBookingsCache);
+                }
             }, 10000);
         });
+
+        /* ==========================================================================
+           FM RADIO SYSTEM ENGINE
+           ========================================================================== */
+        let audioCtx;
+        let analyserNode;
+        let bassNode, midNode, trebleNode;
+        let decks = [null, null];
+        let activeDeckIndex = 0;
+
+        let playlist = [];
+        let currentTrackIndex = -1;
+        let cuePointTime = null;
+        let isPlaying = false;
+        let isFadingPause = false;
+        let draggedTrackIndex = null;
+
+        const fmModalBackdrop = document.getElementById('fmModalBackdrop');
+        const fmTriggerBtn = document.getElementById('fmTriggerBtn');
+        const fmVisualizerCanvas = document.getElementById('fmVisualizerCanvas');
+        const fmCanvasCtx = fmVisualizerCanvas.getContext('2d');
+        const fmPlayBtn = document.getElementById('fmBtnPlay');
+        const fmPlayIcon = document.getElementById('fmPlayIcon');
+        const fmDisplayTitle = document.getElementById('fmDisplayTrackTitle');
+        const fmDisplayStatus = document.getElementById('fmDisplayTrackStatus');
+        const fmStatusDot = document.getElementById('fmStatusDot');
+        const fmStatusText = document.getElementById('fmStatusText');
+
+        const fmSeekBarWrapper = document.getElementById('fmSeekBarWrapper');
+        const fmSeekBarProgress = document.getElementById('fmSeekBarProgress');
+        const fmCueMarker = document.getElementById('fmCueMarker');
+        const fmCurrentTimeEl = document.getElementById('fmCurrentTime');
+        const fmDurationTimeEl = document.getElementById('fmDurationTime');
+
+        function openFMModal() {
+            fmModalBackdrop.classList.add('active');
+            initAudioEngine();
+        }
+
+        function closeFMModal() {
+            fmModalBackdrop.classList.remove('active');
+        }
+
+        function createDeck() {
+            const audio = new Audio();
+            audio.crossOrigin = "anonymous";
+            const source = audioCtx.createMediaElementSource(audio);
+            const gain = audioCtx.createGain();
+            gain.gain.value = parseFloat(document.getElementById('fmVolumeSlider').value);
+
+            source.connect(gain);
+            gain.connect(bassNode);
+
+            audio.addEventListener('timeupdate', () => {
+                if (decks[activeDeckIndex] && decks[activeDeckIndex].audio === audio) {
+                    updateProgress(audio);
+                }
+            });
+
+            audio.addEventListener('ended', () => {
+                if (decks[activeDeckIndex] && decks[activeDeckIndex].audio === audio) {
+                    handleNextTrack();
+                }
+            });
+
+            return { audio, source, gain };
+        }
+
+        function initAudioEngine() {
+            if (audioCtx) return;
+
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            audioCtx = new AudioContext();
+
+            analyserNode = audioCtx.createAnalyser();
+            analyserNode.fftSize = 128;
+
+            bassNode = audioCtx.createBiquadFilter();
+            bassNode.type = 'lowshelf';
+            bassNode.frequency.value = 250;
+            bassNode.gain.value = parseFloat(document.getElementById('fmBassSlider').value);
+
+            midNode = audioCtx.createBiquadFilter();
+            midNode.type = 'peaking';
+            midNode.frequency.value = 1500;
+            midNode.Q.value = 1;
+            midNode.gain.value = parseFloat(document.getElementById('fmMidSlider').value);
+
+            trebleNode = audioCtx.createBiquadFilter();
+            trebleNode.type = 'highshelf';
+            trebleNode.frequency.value = 4000;
+            trebleNode.gain.value = parseFloat(document.getElementById('fmTrebleSlider').value);
+
+            bassNode.connect(midNode);
+            midNode.connect(trebleNode);
+            trebleNode.connect(analyserNode);
+            analyserNode.connect(audioCtx.destination);
+
+            decks[0] = createDeck();
+            decks[1] = createDeck();
+
+            renderVisualizer();
+        }
+
+        function getActiveDeck() {
+            return decks ? decks[activeDeckIndex] : null;
+        }
+
+        function getTargetVolume() {
+            return parseFloat(document.getElementById('fmVolumeSlider').value);
+        }
+
+        function renderVisualizer() {
+            requestAnimationFrame(renderVisualizer);
+
+            const width = fmVisualizerCanvas.width = fmVisualizerCanvas.clientWidth;
+            const height = fmVisualizerCanvas.height = fmVisualizerCanvas.clientHeight;
+            fmCanvasCtx.clearRect(0, 0, width, height);
+
+            if (!analyserNode) return;
+
+            const bufferLength = analyserNode.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            analyserNode.getByteFrequencyData(dataArray);
+
+            const barWidth = (width / bufferLength) * 2;
+            let x = 0;
+
+            for (let i = 0; i < bufferLength; i++) {
+                const barHeight = (dataArray[i] / 255) * height;
+
+                const gradient = fmCanvasCtx.createLinearGradient(0, height, 0, 0);
+                gradient.addColorStop(0, '#00f2fe');
+                gradient.addColorStop(0.5, '#4facfe');
+                gradient.addColorStop(1, '#ff007f');
+
+                fmCanvasCtx.fillStyle = gradient;
+                fmCanvasCtx.fillRect(x, height - barHeight, barWidth - 2, barHeight);
+                x += barWidth;
+            }
+        }
+
+        document.getElementById('fmAudioFileInput').addEventListener('change', function(e) {
+            initAudioEngine();
+            const files = Array.from(e.target.files);
+
+            files.forEach(file => {
+                playlist.push({
+                    title: file.name.replace(/\.[^/.]+$/, ""),
+                    url: URL.createObjectURL(file)
+                });
+            });
+
+            renderPlaylist();
+
+            if (currentTrackIndex === -1 && playlist.length > 0) {
+                loadTrack(0, false, false);
+            }
+        });
+
+        function reorderPlaylist(fromIdx, toIdx) {
+            if (
+                fromIdx === null || toIdx === null || 
+                fromIdx < 0 || toIdx < 0 || 
+                fromIdx >= playlist.length || toIdx >= playlist.length || 
+                fromIdx === toIdx
+            ) {
+                return;
+            }
+
+            const [movedTrack] = playlist.splice(fromIdx, 1);
+            playlist.splice(toIdx, 0, movedTrack);
+
+            if (currentTrackIndex === fromIdx) {
+                currentTrackIndex = toIdx;
+            } else if (fromIdx < currentTrackIndex && toIdx >= currentTrackIndex) {
+                currentTrackIndex--;
+            } else if (fromIdx > currentTrackIndex && toIdx <= currentTrackIndex) {
+                currentTrackIndex++;
+            }
+
+            renderPlaylist();
+        }
+
+        function renderPlaylist() {
+            const container = document.getElementById('fmPlaylist');
+            container.innerHTML = '';
+
+            playlist.forEach((track, idx) => {
+                const li = document.createElement('li');
+                li.className = `fm-playlist-item ${idx === currentTrackIndex ? 'active' : ''}`;
+                li.draggable = true;
+
+                li.innerHTML = `
+                    <span class="truncate max-w-[190px] flex items-center gap-1.5">
+                        <i class="fas fa-grip-lines text-gray-500 mr-1"></i>
+                        ${idx + 1}. ${track.title}
+                    </span>
+                    <i class="fas fa-play text-[10px]"></i>
+                `;
+
+                li.addEventListener('click', () => {
+                    loadTrack(idx, true, isPlaying);
+                });
+
+                li.addEventListener('dragstart', (e) => {
+                    draggedTrackIndex = idx;
+                    li.classList.add('opacity-50');
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/plain', String(idx));
+                });
+
+                li.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                });
+
+                li.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    const fromIdx = draggedTrackIndex !== null ? draggedTrackIndex : parseInt(e.dataTransfer.getData('text/plain'), 10);
+                    reorderPlaylist(fromIdx, idx);
+                });
+
+                li.addEventListener('dragend', () => {
+                    draggedTrackIndex = null;
+                });
+
+                container.appendChild(li);
+            });
+        }
+
+        function loadTrack(index, autoPlay = false, useCrossfade = false) {
+            if (index < 0 || index >= playlist.length) return;
+            initAudioEngine();
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            const prevIndex = currentTrackIndex;
+            currentTrackIndex = index;
+            const track = playlist[index];
+            const speed = parseFloat(document.getElementById('fmSpeedSlider').value);
+            const targetVol = getTargetVolume();
+
+            clearCuePoint();
+            renderPlaylist();
+            fmDisplayTitle.textContent = track.title;
+
+            const oldDeck = decks[activeDeckIndex];
+            const canCrossfade = useCrossfade && autoPlay && prevIndex !== -1 && prevIndex !== index && !oldDeck.audio.paused;
+
+            if (canCrossfade) {
+                const nextDeckIndex = activeDeckIndex === 0 ? 1 : 0;
+                const nextDeck = decks[nextDeckIndex];
+                const fadeDuration = 1.5;
+                const now = audioCtx.currentTime;
+
+                nextDeck.audio.src = track.url;
+                nextDeck.audio.playbackRate = speed;
+                nextDeck.gain.gain.cancelScheduledValues(now);
+                nextDeck.gain.gain.setValueAtTime(0.0001, now);
+                nextDeck.audio.play();
+                nextDeck.gain.gain.exponentialRampToValueAtTime(Math.max(targetVol, 0.0001), now + fadeDuration);
+
+                oldDeck.gain.gain.cancelScheduledValues(now);
+                oldDeck.gain.gain.setValueAtTime(Math.max(oldDeck.gain.gain.value, 0.0001), now);
+                oldDeck.gain.gain.exponentialRampToValueAtTime(0.0001, now + fadeDuration);
+
+                activeDeckIndex = nextDeckIndex;
+                isPlaying = true;
+                updatePlaybackUI(true);
+                fmDisplayStatus.textContent = "กำลัง Crossfade...";
+
+                setTimeout(() => {
+                    if (activeDeckIndex !== 0 && decks[0] === oldDeck) {
+                        oldDeck.audio.pause();
+                        oldDeck.gain.gain.value = 0;
+                    } else if (activeDeckIndex !== 1 && decks[1] === oldDeck) {
+                        oldDeck.audio.pause();
+                        oldDeck.gain.gain.value = 0;
+                    }
+                    if (currentTrackIndex === index && isPlaying) {
+                        fmDisplayStatus.textContent = "กำลังเล่น...";
+                    }
+                }, fadeDuration * 1000 + 100);
+            } else {
+                decks.forEach(d => d.audio.pause());
+                oldDeck.audio.src = track.url;
+                oldDeck.audio.playbackRate = speed;
+                oldDeck.gain.gain.setValueAtTime(targetVol, audioCtx.currentTime);
+                fmDisplayStatus.textContent = "พร้อมเล่น";
+
+                if (autoPlay) {
+                    playAudio();
+                }
+            }
+        }
+
+        function updatePlaybackUI(active) {
+            if (active) {
+                fmPlayIcon.className = "fas fa-pause";
+                fmStatusDot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10B981]";
+                fmStatusText.textContent = "ON AIR (เปิดเพลง)";
+                fmTriggerBtn.classList.add('is-playing');
+            } else {
+                fmPlayIcon.className = "fas fa-play";
+                fmStatusDot.className = "w-2.5 h-2.5 rounded-full bg-red-500";
+                fmStatusText.textContent = "PAUSED (หยุดเพลง)";
+                fmTriggerBtn.classList.remove('is-playing');
+            }
+        }
+
+        function playAudio() {
+            initAudioEngine();
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            if (playlist.length === 0) return;
+
+            const deck = getActiveDeck();
+            if (!deck.audio.src) {
+                loadTrack(0, false, false);
+            }
+
+            const now = audioCtx.currentTime;
+            const targetVol = getTargetVolume();
+            deck.gain.gain.cancelScheduledValues(now);
+            deck.gain.gain.setValueAtTime(0.0001, now);
+            deck.audio.play();
+            deck.gain.gain.exponentialRampToValueAtTime(Math.max(targetVol, 0.0001), now + 0.25);
+
+            isPlaying = true;
+            isFadingPause = false;
+            updatePlaybackUI(true);
+            fmDisplayStatus.textContent = "กำลังเล่น...";
+        }
+
+        function pauseAudio() {
+            const deck = getActiveDeck();
+            if (!deck || !audioCtx || isFadingPause) return;
+
+            isFadingPause = true;
+            isPlaying = false;
+            updatePlaybackUI(false);
+            fmDisplayStatus.textContent = "กำลังหยุด...";
+
+            const now = audioCtx.currentTime;
+            deck.gain.gain.cancelScheduledValues(now);
+            deck.gain.gain.setValueAtTime(Math.max(deck.gain.gain.value, 0.0001), now);
+            deck.gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+
+            setTimeout(() => {
+                if (!isPlaying && isFadingPause) {
+                    deck.audio.pause();
+                    fmDisplayStatus.textContent = "หยุดชั่วคราว";
+                }
+                isFadingPause = false;
+            }, 270);
+        }
+
+        fmPlayBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                pauseAudio();
+            } else {
+                playAudio();
+            }
+        });
+
+        document.getElementById('fmBtnPrev').addEventListener('click', () => {
+            if (currentTrackIndex > 0) {
+                loadTrack(currentTrackIndex - 1, true, isPlaying);
+            }
+        });
+
+        function handleNextTrack() {
+            if (currentTrackIndex < playlist.length - 1) {
+                loadTrack(currentTrackIndex + 1, true, isPlaying);
+            } else {
+                pauseAudio();
+            }
+        }
+
+        document.getElementById('fmBtnNext').addEventListener('click', handleNextTrack);
+
+        function updateProgress(audioEl) {
+            if (!audioEl || !audioEl.duration) return;
+            const current = audioEl.currentTime;
+            const duration = audioEl.duration;
+            const pct = (current / duration) * 100;
+
+            fmSeekBarProgress.style.width = `${pct}%`;
+            fmCurrentTimeEl.textContent = formatTime(current);
+            fmDurationTimeEl.textContent = formatTime(duration);
+        }
+
+        fmSeekBarWrapper.addEventListener('click', (e) => {
+            const deck = getActiveDeck();
+            if (!deck || !deck.audio.duration) return;
+            const rect = fmSeekBarWrapper.getBoundingClientRect();
+            const clickPos = (e.clientX - rect.left) / rect.width;
+            deck.audio.currentTime = clickPos * deck.audio.duration;
+        });
+
+        document.getElementById('fmBtnSetCue').addEventListener('click', () => {
+            const deck = getActiveDeck();
+            if (!deck || !deck.audio.duration) return;
+            cuePointTime = deck.audio.currentTime;
+            const pct = (cuePointTime / deck.audio.duration) * 100;
+            fmCueMarker.style.left = `${pct}%`;
+            fmCueMarker.style.display = 'block';
+        });
+
+        document.getElementById('fmBtnJumpCue').addEventListener('click', () => {
+            const deck = getActiveDeck();
+            if (deck && cuePointTime !== null) {
+                deck.audio.currentTime = cuePointTime;
+            }
+        });
+
+        document.getElementById('fmBtnClearCue').addEventListener('click', clearCuePoint);
+
+        function clearCuePoint() {
+            cuePointTime = null;
+            fmCueMarker.style.display = 'none';
+        }
+
+        function formatTime(secs) {
+            const m = Math.floor(secs / 60);
+            const s = Math.floor(secs % 60);
+            return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        }
+
+        document.getElementById('fmSpeedSlider').addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            if (decks[0]) decks[0].audio.playbackRate = val;
+            if (decks[1]) decks[1].audio.playbackRate = val;
+            document.getElementById('fmSpeedValue').textContent = `${val.toFixed(2)}x`;
+        });
+
+        document.getElementById('fmVolumeSlider').addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            const deck = getActiveDeck();
+            if (deck && audioCtx && isPlaying) {
+                deck.gain.gain.setTargetAtTime(val, audioCtx.currentTime, 0.03);
+            }
+            document.getElementById('fmVolumeValue').textContent = `${Math.round(val * 100)}%`;
+        });
+
+        document.getElementById('fmBassSlider').addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            if (bassNode) bassNode.gain.value = val;
+            document.getElementById('fmBassValue').textContent = `${val} dB`;
+        });
+
+        document.getElementById('fmMidSlider').addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            if (midNode) midNode.gain.value = val;
+            document.getElementById('fmMidValue').textContent = `${val} dB`;
+        });
+
+        document.getElementById('fmTrebleSlider').addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            if (trebleNode) trebleNode.gain.value = val;
+            document.getElementById('fmTrebleValue').textContent = `${val} dB`;
+        });
+
+        function applyEQPreset(preset, evt) {
+            document.querySelectorAll('.fm-preset-chip').forEach(el => el.classList.remove('active'));
+            if (evt && evt.target) evt.target.classList.add('active');
+
+            let b = 0, m = 0, t = 0;
+            if (preset === 'bass') { b = 8; m = -2; t = 1; }
+            else if (preset === 'vocal') { b = -3; m = 6; t = 3; }
+            else if (preset === 'radio') { b = -8; m = 4; t = -6; }
+
+            document.getElementById('fmBassSlider').value = b;
+            document.getElementById('fmMidSlider').value = m;
+            document.getElementById('fmTrebleSlider').value = t;
+
+            if (bassNode) bassNode.gain.value = b;
+            if (midNode) midNode.gain.value = m;
+            if (trebleNode) trebleNode.gain.value = t;
+
+            document.getElementById('fmBassValue').textContent = `${b} dB`;
+            document.getElementById('fmMidValue').textContent = `${m} dB`;
+            document.getElementById('fmTrebleValue').textContent = `${t} dB`;
+        }
     </script>
 </body>
 </html>
