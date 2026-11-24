@@ -306,7 +306,6 @@
             width: 90px;
         }
 
-        /* Custom Range Slider Styling */
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none;
             width: 14px;
@@ -385,9 +384,13 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            cursor: pointer;
+            cursor: grab;
             border: 1px solid transparent;
-            transition: all 0.2s;
+            transition: background 0.2s, border-color 0.2s, transform 0.1s;
+        }
+
+        .playlist-item:active {
+            cursor: grabbing;
         }
 
         .playlist-item:hover {
@@ -400,11 +403,24 @@
             color: var(--accent-cyan);
         }
 
+        .playlist-item.dragging {
+            opacity: 0.4;
+            border: 1px dashed var(--accent-cyan);
+        }
+
+        .playlist-item.drag-over {
+            border-top: 2px solid var(--accent-cyan);
+            background: rgba(0, 242, 254, 0.15);
+        }
+
         .playlist-item-name {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 200px;
+            max-width: 210px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .transport-bar {
@@ -456,7 +472,7 @@
         <main class="main-studio">
             <header class="header">
                 <div class="logo-title">
-                    <div class="logo-icon"><i class="fa-solid font-awesome-logo-full fa-tower-broadcast"></i></div>
+                    <div class="logo-icon"><i class="fa-solid fa-tower-broadcast"></i></div>
                     <h1>RADIO STUDIO PRO</h1>
                 </div>
                 <div class="status-badge">
@@ -565,26 +581,29 @@
             </div>
 
             <ul class="playlist" id="playlist">
-                <!-- Playlist Items dynamically populated -->
+                <!-- Dynamic Playlist Items -->
             </ul>
         </aside>
     </div>
 
-    <!-- Web Audio API Script -->
+    <!-- Web Audio API & Drag and Drop Script -->
     <script>
         // Global Audio Context & Nodes
         let audioCtx;
-        let audioElement;
-        let trackSource;
         let analyserNode;
-        let gainNode;
         let bassNode, midNode, trebleNode;
+
+        // Dual Deck System (สำหรับ Crossfade)
+        let decks = [null, null];
+        let activeDeckIndex = 0;
 
         // Player State
         let playlist = [];
         let currentTrackIndex = -1;
         let cuePointTime = null;
         let isPlaying = false;
+        let isFadingPause = false;
+        let draggedTrackIndex = null;
 
         // DOM Elements
         const visualizer = document.getElementById('visualizer');
@@ -603,60 +622,85 @@
         const currentTimeEl = document.getElementById('currentTime');
         const durationTimeEl = document.getElementById('durationTime');
 
-        // Initialize Audio System
+        // Create Individual Deck
+        function createDeck() {
+            const audio = new Audio();
+            audio.crossOrigin = "anonymous";
+            const source = audioCtx.createMediaElementSource(audio);
+            const gain = audioCtx.createGain();
+            gain.gain.value = parseFloat(document.getElementById('volumeSlider').value);
+
+            source.connect(gain);
+            gain.connect(bassNode);
+
+            audio.addEventListener('timeupdate', () => {
+                if (decks[activeDeckIndex] && decks[activeDeckIndex].audio === audio) {
+                    updateProgress(audio);
+                }
+            });
+
+            audio.addEventListener('ended', () => {
+                if (decks[activeDeckIndex] && decks[activeDeckIndex].audio === audio) {
+                    handleNextTrack();
+                }
+            });
+
+            return { audio, source, gain };
+        }
+
+        // Initialize Audio Context & Chain Nodes
         function initAudioEngine() {
             if (audioCtx) return;
 
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             audioCtx = new AudioContext();
 
-            audioElement = new Audio();
-            audioElement.crossOrigin = "anonymous";
-
-            // Node Creation
-            trackSource = audioCtx.createMediaElementSource(audioElement);
             analyserNode = audioCtx.createAnalyser();
             analyserNode.fftSize = 128;
 
-            gainNode = audioCtx.createGain();
-
-            // EQ Filters
+            // Filters Setup
             bassNode = audioCtx.createBiquadFilter();
             bassNode.type = 'lowshelf';
             bassNode.frequency.value = 250;
+            bassNode.gain.value = parseFloat(document.getElementById('bassSlider').value);
 
             midNode = audioCtx.createBiquadFilter();
             midNode.type = 'peaking';
             midNode.frequency.value = 1500;
             midNode.Q.value = 1;
+            midNode.gain.value = parseFloat(document.getElementById('midSlider').value);
 
             trebleNode = audioCtx.createBiquadFilter();
             trebleNode.type = 'highshelf';
             trebleNode.frequency.value = 4000;
+            trebleNode.gain.value = parseFloat(document.getElementById('trebleSlider').value);
 
-            // Chain Node Connections: Source -> Bass -> Mid -> Treble -> Gain -> Analyser -> Output
-            trackSource
-                .connect(bassNode)
-                .connect(midNode)
-                .connect(trebleNode)
-                .connect(gainNode)
-                .connect(analyserNode)
-                .connect(audioCtx.destination);
+            // Connect Chains: Decks -> Bass -> Mid -> Treble -> Analyser -> Destination
+            bassNode.connect(midNode);
+            midNode.connect(trebleNode);
+            trebleNode.connect(analyserNode);
+            analyserNode.connect(audioCtx.destination);
 
-            // Audio Events
-            audioElement.addEventListener('timeupdate', updateProgress);
-            audioElement.addEventListener('ended', handleNextTrack);
+            decks[0] = createDeck();
+            decks[1] = createDeck();
 
             renderVisualizer();
         }
 
-        // --- Visualizer Renderer ---
+        function getActiveDeck() {
+            return decks ? decks[activeDeckIndex] : null;
+        }
+
+        function getTargetVolume() {
+            return parseFloat(document.getElementById('volumeSlider').value);
+        }
+
+        // --- Spectrum Renderer ---
         function renderVisualizer() {
             requestAnimationFrame(renderVisualizer);
-            
+
             const width = visualizer.width = visualizer.clientWidth;
             const height = visualizer.height = visualizer.clientHeight;
-
             canvasCtx.clearRect(0, 0, width, height);
 
             if (!analyserNode) return;
@@ -671,7 +715,6 @@
             for (let i = 0; i < bufferLength; i++) {
                 const barHeight = (dataArray[i] / 255) * height;
 
-                // Dynamic Gradient Spectrum
                 const gradient = canvasCtx.createLinearGradient(0, height, 0, 0);
                 gradient.addColorStop(0, '#00f2fe');
                 gradient.addColorStop(0.5, '#4facfe');
@@ -679,31 +722,55 @@
 
                 canvasCtx.fillStyle = gradient;
                 canvasCtx.fillRect(x, height - barHeight, barWidth - 2, barHeight);
-
                 x += barWidth;
             }
         }
 
-        // --- File Upload & Playlist Management ---
+        // --- File Upload ---
         document.getElementById('audioFileInput').addEventListener('change', function(e) {
             initAudioEngine();
             const files = Array.from(e.target.files);
 
             files.forEach(file => {
-                const track = {
+                playlist.push({
                     title: file.name.replace(/\.[^/.]+$/, ""),
                     url: URL.createObjectURL(file)
-                };
-                playlist.push(track);
+                });
             });
 
             renderPlaylist();
 
             if (currentTrackIndex === -1 && playlist.length > 0) {
-                loadTrack(0);
+                loadTrack(0, false, false);
             }
         });
 
+        // --- Reorder Playlist (Drag & Drop) ---
+        function reorderPlaylist(fromIdx, toIdx) {
+            if (
+                fromIdx === null || toIdx === null || 
+                fromIdx < 0 || toIdx < 0 || 
+                fromIdx >= playlist.length || toIdx >= playlist.length || 
+                fromIdx === toIdx
+            ) {
+                return;
+            }
+
+            const [movedTrack] = playlist.splice(fromIdx, 1);
+            playlist.splice(toIdx, 0, movedTrack);
+
+            if (currentTrackIndex === fromIdx) {
+                currentTrackIndex = toIdx;
+            } else if (fromIdx < currentTrackIndex && toIdx >= currentTrackIndex) {
+                currentTrackIndex--;
+            } else if (fromIdx > currentTrackIndex && toIdx <= currentTrackIndex) {
+                currentTrackIndex++;
+            }
+
+            renderPlaylist();
+        }
+
+        // --- Render Playlist UI ---
         function renderPlaylist() {
             const container = document.getElementById('playlist');
             container.innerHTML = '';
@@ -711,44 +778,150 @@
             playlist.forEach((track, idx) => {
                 const li = document.createElement('li');
                 li.className = `playlist-item ${idx === currentTrackIndex ? 'active' : ''}`;
+                li.draggable = true;
+
                 li.innerHTML = `
-                    <span class="playlist-item-name"><i class="fa-solid fa-music"></i> ${track.title}</span>
+                    <span class="playlist-item-name">
+                        <i class="fa-solid fa-grip-lines" style="color: var(--text-muted); margin-right: 6px;"></i>
+                        ${idx + 1}. ${track.title}
+                    </span>
                     <i class="fa-solid fa-play" style="font-size: 0.75rem;"></i>
                 `;
-                li.onclick = () => loadTrack(idx, true);
+
+                li.addEventListener('click', () => {
+                    loadTrack(idx, true, isPlaying);
+                });
+
+                // Drag & Drop Handlers
+                li.addEventListener('dragstart', (e) => {
+                    draggedTrackIndex = idx;
+                    li.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/plain', String(idx));
+                });
+
+                li.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    if (draggedTrackIndex !== null && draggedTrackIndex !== idx) {
+                        li.classList.add('drag-over');
+                    }
+                });
+
+                li.addEventListener('dragleave', () => {
+                    li.classList.remove('drag-over');
+                });
+
+                li.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    li.classList.remove('drag-over');
+                    const fromIdx = draggedTrackIndex !== null ? draggedTrackIndex : parseInt(e.dataTransfer.getData('text/plain'), 10);
+                    reorderPlaylist(fromIdx, idx);
+                });
+
+                li.addEventListener('dragend', () => {
+                    draggedTrackIndex = null;
+                    document.querySelectorAll('.playlist-item').forEach(item => {
+                        item.classList.remove('dragging', 'drag-over');
+                    });
+                });
+
                 container.appendChild(li);
             });
         }
 
-        function loadTrack(index, autoPlay = false) {
+        // --- Load & Crossfade Track ---
+        function loadTrack(index, autoPlay = false, useCrossfade = false) {
             if (index < 0 || index >= playlist.length) return;
-            
-            currentTrackIndex = index;
-            const track = playlist[index];
-
-            audioElement.src = track.url;
-            displayTitle.textContent = track.title;
-            displayStatus.textContent = "พร้อมเล่น";
-
-            clearCuePoint();
-            renderPlaylist();
-
-            if (autoPlay) {
-                playAudio();
-            }
-        }
-
-        // --- Playback Controls ---
-        function playAudio() {
             initAudioEngine();
             if (audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
 
+            const prevIndex = currentTrackIndex;
+            currentTrackIndex = index;
+            const track = playlist[index];
+            const speed = parseFloat(document.getElementById('speedSlider').value);
+            const targetVol = getTargetVolume();
+
+            clearCuePoint();
+            renderPlaylist();
+            displayTitle.textContent = track.title;
+
+            const oldDeck = decks[activeDeckIndex];
+            const canCrossfade = useCrossfade && autoPlay && prevIndex !== -1 && prevIndex !== index && !oldDeck.audio.paused;
+
+            if (canCrossfade) {
+                const nextDeckIndex = activeDeckIndex === 0 ? 1 : 0;
+                const nextDeck = decks[nextDeckIndex];
+                const fadeDuration = 1.5; // crossfade 1.5s
+                const now = audioCtx.currentTime;
+
+                nextDeck.audio.src = track.url;
+                nextDeck.audio.playbackRate = speed;
+                nextDeck.gain.gain.cancelScheduledValues(now);
+                nextDeck.gain.gain.setValueAtTime(0.0001, now);
+                nextDeck.audio.play();
+                nextDeck.gain.gain.exponentialRampToValueAtTime(Math.max(targetVol, 0.0001), now + fadeDuration);
+
+                oldDeck.gain.gain.cancelScheduledValues(now);
+                oldDeck.gain.gain.setValueAtTime(Math.max(oldDeck.gain.gain.value, 0.0001), now);
+                oldDeck.gain.gain.exponentialRampToValueAtTime(0.0001, now + fadeDuration);
+
+                activeDeckIndex = nextDeckIndex;
+                isPlaying = true;
+                playIcon.className = "fa-solid fa-pause";
+                statusDot.classList.add('active');
+                statusText.textContent = "ON AIR (กำลังกระจายเสียง)";
+                displayStatus.textContent = "กำลัง Crossfade ต่อเพลง...";
+
+                setTimeout(() => {
+                    if (activeDeckIndex !== 0 && decks[0] === oldDeck) {
+                        oldDeck.audio.pause();
+                        oldDeck.gain.gain.value = 0;
+                    } else if (activeDeckIndex !== 1 && decks[1] === oldDeck) {
+                        oldDeck.audio.pause();
+                        oldDeck.gain.gain.value = 0;
+                    }
+                    if (currentTrackIndex === index && isPlaying) {
+                        displayStatus.textContent = "กำลังเล่น...";
+                    }
+                }, fadeDuration * 1000 + 100);
+            } else {
+                decks.forEach(d => d.audio.pause());
+                oldDeck.audio.src = track.url;
+                oldDeck.audio.playbackRate = speed;
+                oldDeck.gain.gain.setValueAtTime(targetVol, audioCtx.currentTime);
+                displayStatus.textContent = "พร้อมเล่น";
+
+                if (autoPlay) {
+                    playAudio();
+                }
+            }
+        }
+
+        // --- Play & Pause Control with Fade ---
+        function playAudio() {
+            initAudioEngine();
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
             if (playlist.length === 0) return;
 
-            audioElement.play();
+            const deck = getActiveDeck();
+            if (!deck.audio.src) {
+                loadTrack(0, false, false);
+            }
+
+            const now = audioCtx.currentTime;
+            const targetVol = getTargetVolume();
+            deck.gain.gain.cancelScheduledValues(now);
+            deck.gain.gain.setValueAtTime(0.0001, now);
+            deck.audio.play();
+            deck.gain.gain.exponentialRampToValueAtTime(Math.max(targetVol, 0.0001), now + 0.25);
+
             isPlaying = true;
+            isFadingPause = false;
             playIcon.className = "fa-solid fa-pause";
             statusDot.classList.add('active');
             statusText.textContent = "ON AIR (กำลังกระจายเสียง)";
@@ -756,12 +929,28 @@
         }
 
         function pauseAudio() {
-            audioElement.pause();
+            const deck = getActiveDeck();
+            if (!deck || !audioCtx || isFadingPause) return;
+
+            isFadingPause = true;
             isPlaying = false;
             playIcon.className = "fa-solid fa-play";
             statusDot.classList.remove('active');
             statusText.textContent = "PAUSED (หยุดชั่วคราว)";
-            displayStatus.textContent = "หยุดชั่วคราว";
+            displayStatus.textContent = "กำลังลดเสียงเพื่อหยุด...";
+
+            const now = audioCtx.currentTime;
+            deck.gain.gain.cancelScheduledValues(now);
+            deck.gain.gain.setValueAtTime(Math.max(deck.gain.gain.value, 0.0001), now);
+            deck.gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+
+            setTimeout(() => {
+                if (!isPlaying && isFadingPause) {
+                    deck.audio.pause();
+                    displayStatus.textContent = "หยุดชั่วคราว";
+                }
+                isFadingPause = false;
+            }, 270);
         }
 
         playBtn.addEventListener('click', () => {
@@ -773,12 +962,14 @@
         });
 
         document.getElementById('btnPrev').addEventListener('click', () => {
-            if (currentTrackIndex > 0) loadTrack(currentTrackIndex - 1, isPlaying);
+            if (currentTrackIndex > 0) {
+                loadTrack(currentTrackIndex - 1, true, isPlaying);
+            }
         });
 
         function handleNextTrack() {
             if (currentTrackIndex < playlist.length - 1) {
-                loadTrack(currentTrackIndex + 1, true);
+                loadTrack(currentTrackIndex + 1, true, isPlaying);
             } else {
                 pauseAudio();
             }
@@ -786,12 +977,11 @@
 
         document.getElementById('btnNext').addEventListener('click', handleNextTrack);
 
-        // --- Timeline & Precise Cue Controls ---
-        function updateProgress() {
-            if (!audioElement.duration) return;
-
-            const current = audioElement.currentTime;
-            const duration = audioElement.duration;
+        // --- Seek & Progress Bar ---
+        function updateProgress(audioEl) {
+            if (!audioEl || !audioEl.duration) return;
+            const current = audioEl.currentTime;
+            const duration = audioEl.duration;
             const pct = (current / duration) * 100;
 
             seekBarProgress.style.width = `${pct}%`;
@@ -800,25 +990,27 @@
         }
 
         seekBarWrapper.addEventListener('click', (e) => {
-            if (!audioElement.duration) return;
+            const deck = getActiveDeck();
+            if (!deck || !deck.audio.duration) return;
             const rect = seekBarWrapper.getBoundingClientRect();
             const clickPos = (e.clientX - rect.left) / rect.width;
-            audioElement.currentTime = clickPos * audioElement.duration;
+            deck.audio.currentTime = clickPos * deck.audio.duration;
         });
 
-        // Cue Point logic
+        // --- Cue System ---
         document.getElementById('btnSetCue').addEventListener('click', () => {
-            if (!audioElement.duration) return;
-            cuePointTime = audioElement.currentTime;
-            
-            const pct = (cuePointTime / audioElement.duration) * 100;
+            const deck = getActiveDeck();
+            if (!deck || !deck.audio.duration) return;
+            cuePointTime = deck.audio.currentTime;
+            const pct = (cuePointTime / deck.audio.duration) * 100;
             cueMarker.style.left = `${pct}%`;
             cueMarker.style.display = 'block';
         });
 
         document.getElementById('btnJumpCue').addEventListener('click', () => {
-            if (cuePointTime !== null) {
-                audioElement.currentTime = cuePointTime;
+            const deck = getActiveDeck();
+            if (deck && cuePointTime !== null) {
+                deck.audio.currentTime = cuePointTime;
             }
         });
 
@@ -835,16 +1027,20 @@
             return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
         }
 
-        // --- Audio FX Adjustments ---
+        // --- FX & Equalizer Controls ---
         document.getElementById('speedSlider').addEventListener('input', (e) => {
             const val = parseFloat(e.target.value);
-            if (audioElement) audioElement.playbackRate = val;
+            if (decks[0]) decks[0].audio.playbackRate = val;
+            if (decks[1]) decks[1].audio.playbackRate = val;
             document.getElementById('speedValue').textContent = `${val.toFixed(2)}x`;
         });
 
         document.getElementById('volumeSlider').addEventListener('input', (e) => {
             const val = parseFloat(e.target.value);
-            if (gainNode) gainNode.gain.value = val;
+            const deck = getActiveDeck();
+            if (deck && audioCtx && isPlaying) {
+                deck.gain.gain.setTargetAtTime(val, audioCtx.currentTime, 0.03);
+            }
             document.getElementById('volumeValue').textContent = `${Math.round(val * 100)}%`;
         });
 
@@ -866,10 +1062,9 @@
             document.getElementById('trebleValue').textContent = `${val} dB`;
         });
 
-        // --- Equalizer Presets ---
         function applyEQPreset(preset) {
             document.querySelectorAll('.preset-chip').forEach(el => el.classList.remove('active'));
-            event.target.classList.add('active');
+            if (event && event.target) event.target.classList.add('active');
 
             let b = 0, m = 0, t = 0;
             if (preset === 'bass') { b = 8; m = -2; t = 1; }
